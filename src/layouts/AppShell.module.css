@@ -1,0 +1,19 @@
+.root {
+  height: 100vh;
+  min-height: 680px;
+  display: grid;
+  grid-template-rows: var(--titlebar-height) minmax(0, 1fr) var(--statusbar-height);
+  overflow: hidden;
+  background: var(--color-background);
+}
+
+.body {
+  min-height: 0;
+  display: flex;
+}
+
+.content {
+  min-width: 0;
+  flex: 1;
+  overflow: auto;
+}

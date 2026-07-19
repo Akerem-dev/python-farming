@@ -1,0 +1,40 @@
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: #0c1117;
+  --color-app-chrome: #0b1016;
+  --color-sidebar: #0e141b;
+  --color-surface: #111821;
+  --color-surface-raised: #151d27;
+  --color-surface-hover: #19232f;
+  --color-border: #25303d;
+  --color-border-subtle: #1c2631;
+  --color-border-strong: #334151;
+  --color-border-focus: #7b6231;
+  --color-track: #26313e;
+
+  --color-text-primary: #f2f4f6;
+  --color-text-secondary: #c5cbd2;
+  --color-text-muted: #949da8;
+  --color-text-dim: #66717e;
+
+  --color-accent: #f1ae2f;
+  --color-accent-strong: #ffc04b;
+  --color-accent-soft: rgba(241, 174, 47, 0.105);
+  --color-accent-ink: #1b1406;
+
+  --color-success: #65c67b;
+  --color-info: #70a6ff;
+  --color-info-soft: rgba(112, 166, 255, 0.12);
+  --color-warning: #f1ae2f;
+  --color-danger: #ef6b73;
+
+  --color-code-background: #0d131a;
+  --color-code-inline: #1b2430;
+  --color-code-text: #cbd2da;
+  --color-code-comment: #6d9a63;
+  --color-code-string: #dda76b;
+  --color-terminal-text: #9ca7b3;
+
+  --shadow-panel: 0 18px 44px rgba(0, 0, 0, 0.1);
+}

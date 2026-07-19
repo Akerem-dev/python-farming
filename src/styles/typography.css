@@ -1,0 +1,14 @@
+body,
+button,
+input,
+textarea,
+select {
+  font-family: var(--font-ui);
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: var(--font-mono);
+}

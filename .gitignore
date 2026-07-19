@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Frontend output
+dist/
+
+# Tauri / Rust
+src-tauri/target/
+
+# Runtime builds
+python-runtime/dist/
+python-runtime/build/
+python-runtime/.venv/
+
+# Local environment
+.env
+.env.local
+*.local
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Logs
+*.log
+npm-debug.log*

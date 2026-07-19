@@ -1,0 +1,28 @@
+.root {
+  min-height: 100vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--space-3);
+  padding: var(--space-8);
+  background: var(--color-background);
+  text-align: center;
+}
+
+.root > span {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.root h1 {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-size: 30px;
+}
+
+.root p {
+  max-width: 480px;
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+}

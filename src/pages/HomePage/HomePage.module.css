@@ -1,0 +1,271 @@
+.page {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 0.34fr);
+  gap: var(--space-4);
+  padding: var(--space-4);
+}
+
+.mainColumn,
+.sideColumn {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: var(--space-4);
+}
+
+.panel {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.continuePanel {
+  min-height: 156px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-6);
+  padding: var(--space-6);
+  background:
+    linear-gradient(115deg, rgba(241, 174, 47, 0.065), transparent 42%),
+    var(--color-surface);
+}
+
+.continuePanel h1,
+.panel h2 {
+  margin: 5px 0 0;
+  color: var(--color-text-primary);
+  letter-spacing: -0.035em;
+}
+
+.continuePanel h1 {
+  font-size: clamp(22px, 2.1vw, 30px);
+}
+
+.continuePanel p,
+.stagePanel p {
+  max-width: 620px;
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  line-height: 1.6;
+}
+
+.continueProgress {
+  width: min(420px, 80%);
+  margin-top: var(--space-5);
+}
+
+.panel:not(.continuePanel) {
+  padding: var(--space-5);
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.panel h2 {
+  font-size: 17px;
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  font-size: 10px;
+  font-weight: 760;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.meta {
+  color: var(--color-text-dim);
+  font-size: 10px;
+}
+
+.levelGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.levelCard {
+  min-height: 130px;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+}
+
+.levelCard strong {
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.levelCard > span {
+  color: var(--color-text-dim);
+  font-size: 10px;
+}
+
+.levelIndex {
+  margin-bottom: var(--space-3);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.levelBadge {
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--color-info-soft);
+  color: var(--color-info);
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.lessonList,
+.featureList,
+.statRows {
+  display: grid;
+  gap: 10px;
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.completed {
+  color: var(--color-success);
+}
+
+.current {
+  color: var(--color-accent);
+}
+
+.featureList {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.featureList span {
+  padding: 10px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+}
+
+.masteryRing {
+  width: 130px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  margin: var(--space-2) auto var(--space-5);
+  border-radius: 50%;
+  background: conic-gradient(var(--color-accent) 0 18%, var(--color-track) 18% 100%);
+}
+
+.masteryRing::before {
+  content: "";
+  width: 104px;
+  aspect-ratio: 1;
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-surface);
+}
+
+.masteryRing div {
+  position: relative;
+  display: grid;
+  text-align: center;
+}
+
+.masteryRing strong {
+  color: var(--color-text-primary);
+  font-size: 26px;
+}
+
+.masteryRing span {
+  color: var(--color-text-dim);
+  font-size: 9px;
+}
+
+.statRows span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.statRows b {
+  color: var(--color-text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.reviewList {
+  display: grid;
+  gap: 6px;
+}
+
+.reviewList button {
+  min-height: 42px;
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 9px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.reviewList button:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.reviewList button span {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.reviewList button b {
+  color: var(--color-accent);
+}
+
+.stagePanel {
+  border-color: rgba(241, 174, 47, 0.24);
+}
+
+@media (max-width: 1180px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .sideColumn {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 920px) {
+  .levelGrid,
+  .twoColumns,
+  .sideColumn {
+    grid-template-columns: 1fr 1fr;
+  }
+}

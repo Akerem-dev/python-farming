@@ -1,0 +1,26 @@
+.root {
+  display: grid;
+  grid-template-columns: minmax(64px, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.track {
+  height: 4px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-track);
+}
+
+.value {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--color-accent);
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+  font-variant-numeric: tabular-nums;
+}

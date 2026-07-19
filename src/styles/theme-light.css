@@ -1,0 +1,39 @@
+[data-theme="light"] {
+  color-scheme: light;
+  --color-background: #ecebe7;
+  --color-app-chrome: #f5f4f0;
+  --color-sidebar: #efeee9;
+  --color-surface: #faf9f5;
+  --color-surface-raised: #f3f1eb;
+  --color-surface-hover: #ebe8df;
+  --color-border: #d3d0c7;
+  --color-border-subtle: #e1ded6;
+  --color-border-strong: #bdb8aa;
+  --color-border-focus: #aa7414;
+  --color-track: #d9d6cd;
+
+  --color-text-primary: #171a1f;
+  --color-text-secondary: #323943;
+  --color-text-muted: #66707b;
+  --color-text-dim: #8b929a;
+
+  --color-accent: #d58a00;
+  --color-accent-strong: #c27c00;
+  --color-accent-soft: rgba(213, 138, 0, 0.12);
+  --color-accent-ink: #ffffff;
+
+  --color-success: #278944;
+  --color-info: #2d6ac8;
+  --color-info-soft: rgba(45, 106, 200, 0.12);
+  --color-warning: #d58a00;
+  --color-danger: #c74750;
+
+  --color-code-background: #20262d;
+  --color-code-inline: #e6e2d8;
+  --color-code-text: #e5e9ed;
+  --color-code-comment: #80b979;
+  --color-code-string: #e6ad70;
+  --color-terminal-text: #c6cdd5;
+
+  --shadow-panel: 0 18px 44px rgba(32, 28, 18, 0.06);
+}
