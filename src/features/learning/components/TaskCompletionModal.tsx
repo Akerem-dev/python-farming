@@ -51,7 +51,7 @@ export function TaskCompletionModal({
         </div>
         <div>
           <span>Kazanılan deneyim</span>
-          <strong>+{xpReward} XP</strong>
+          <strong>{xpReward > 0 ? `+${xpReward} XP` : "Daha önce kazanıldı"}</strong>
         </div>
         <div className={actionsClassName}>
           <Button onClick={onReview}>Testleri incele</Button>
