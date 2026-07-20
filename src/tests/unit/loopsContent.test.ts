@@ -26,9 +26,8 @@ describe("loops module content", () => {
   it("publishes a valid shuffled code ordering lesson", () => {
     const lesson = modulePackage.lessons.find((candidate) => candidate.mode === "code-ordering");
     const blockIds = lesson?.ordering?.blocks.map((block) => block.id) ?? [];
-    const correctIds = lesson?.validation.answer?.kind === "order"
-      ? lesson.validation.answer.correctBlockIds
-      : [];
+    const answer = lesson?.validation.answer;
+    const correctIds = answer?.kind === "order" ? answer.correctBlockIds : [];
 
     expect(blockIds).toEqual(["loop", "done", "body", "header"]);
     expect(correctIds).toEqual(["header", "loop", "body", "done"]);
