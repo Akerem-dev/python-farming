@@ -3,7 +3,7 @@ import type { RuntimeDiagnostic, RuntimeResponseStatus } from "./runtimeProtocol
 export type RuntimeEvent =
   | {
       type: "runtime_status";
-      status: "offline" | "starting" | "ready" | "busy" | "stopping";
+      status: "offline" | "starting" | "ready" | "busy" | "stopping" | "error";
     }
   | {
       type: "execution_started";
