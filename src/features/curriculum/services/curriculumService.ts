@@ -1,12 +1,19 @@
 import type {
   CurriculumCatalog,
+  CurriculumChoiceOption,
   CurriculumLesson,
+  CurriculumLessonMode,
   CurriculumModulePackage,
   CurriculumModulePackageIndex,
 } from "../types";
 
 const curriculumUrl = "/content/curriculum.json";
 const packageIndexUrl = "/content/module-packages.json";
+const lessonModes = new Set<CurriculumLessonMode>([
+  "code",
+  "output-prediction",
+  "code-completion",
+]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
   if (!value || typeof value !== "object") {
@@ -39,6 +46,17 @@ function assertPackageIndex(value: unknown): asserts value is CurriculumModulePa
   }
 }
 
+function assertChoiceOption(value: unknown): asserts value is CurriculumChoiceOption {
+  if (!value || typeof value !== "object") {
+    throw new Error("Tahmin görevinde geçersiz bir cevap seçeneği bulundu.");
+  }
+
+  const candidate = value as Partial<CurriculumChoiceOption>;
+  if (typeof candidate.id !== "string" || typeof candidate.label !== "string") {
+    throw new Error("Tahmin görevi seçenekleri beklenen biçimde değil.");
+  }
+}
+
 function assertLesson(value: unknown): asserts value is CurriculumLesson {
   if (!value || typeof value !== "object") {
     throw new Error("Modül paketinde geçersiz bir ders bulundu.");
@@ -55,6 +73,33 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     !candidate.validation
   ) {
     throw new Error("Modül paketindeki ders yapısı beklenen biçimde değil.");
+  }
+
+  const mode = candidate.mode ?? "code";
+  if (!lessonModes.has(mode)) {
+    throw new Error(`${candidate.id} dersinde desteklenmeyen görev modu bulundu: ${mode}`);
+  }
+
+  if (mode === "output-prediction") {
+    if (
+      !candidate.choice ||
+      typeof candidate.choice.prompt !== "string" ||
+      !Array.isArray(candidate.choice.options) ||
+      candidate.choice.options.length < 2
+    ) {
+      throw new Error(`${candidate.id} tahmin görevinin seçenekleri eksik.`);
+    }
+
+    candidate.choice.options.forEach(assertChoiceOption);
+    const optionIds = candidate.choice.options.map((option) => option.id);
+    if (new Set(optionIds).size !== optionIds.length) {
+      throw new Error(`${candidate.id} tahmin görevinde tekrar eden seçenek kimliği var.`);
+    }
+
+    const correctOptionId = candidate.validation.answer?.correctOptionId;
+    if (!correctOptionId || !optionIds.includes(correctOptionId)) {
+      throw new Error(`${candidate.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
+    }
   }
 }
 
