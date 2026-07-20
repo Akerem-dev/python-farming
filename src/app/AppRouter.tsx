@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { HomePage } from "../pages/HomePage";
 import { NotFoundPage } from "../pages/NotFoundPage";
-import { WorkspacePage } from "../pages/WorkspacePage";
 import { routes, type AppRoute } from "./routes";
+
+const WorkspacePage = lazy(async () => {
+  const module = await import("../pages/WorkspacePage");
+  return { default: module.WorkspacePage };
+});
 
 function getCurrentRoute(): string {
   const value = window.location.hash.replace(/^#/, "");
@@ -11,6 +15,25 @@ function getCurrentRoute(): string {
 
 export function navigate(route: AppRoute): void {
   window.location.hash = route;
+}
+
+function WorkspaceLoadingState() {
+  return (
+    <div
+      role="status"
+      aria-live="polite"
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "grid",
+        placeItems: "center",
+        background: "var(--color-background)",
+        color: "var(--color-text-muted)",
+      }}
+    >
+      Çalışma alanı yükleniyor…
+    </div>
+  );
 }
 
 export function AppRouter() {
@@ -27,7 +50,11 @@ export function AppRouter() {
   }
 
   if (route === routes.workspace) {
-    return <WorkspacePage />;
+    return (
+      <Suspense fallback={<WorkspaceLoadingState />}>
+        <WorkspacePage />
+      </Suspense>
+    );
   }
 
   return <NotFoundPage />;

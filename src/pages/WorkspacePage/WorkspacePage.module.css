@@ -122,6 +122,28 @@
   font-size: 10px;
 }
 
+.hintPanel {
+  display: grid;
+  gap: 6px;
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid rgba(241, 174, 47, 0.28);
+  border-radius: var(--radius-md);
+  background: rgba(241, 174, 47, 0.055);
+}
+
+.hintPanel strong {
+  color: var(--color-text-primary);
+  font-size: 12px;
+}
+
+.hintPanel p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
 .briefActions {
   margin-top: var(--space-6);
   color: var(--color-text-dim);
@@ -130,7 +152,8 @@
 
 .editorPanel {
   display: grid;
-  grid-template-rows: 46px minmax(0, 1fr) 28px;
+  grid-template-rows: 46px minmax(0, 1fr) 30px;
+  overflow: hidden;
 }
 
 .editorHeader {
@@ -147,13 +170,21 @@
 }
 
 .activeTab {
-  min-width: 110px;
+  min-width: 116px;
   display: flex;
   align-items: center;
+  gap: 8px;
   padding: 0 var(--space-4);
   border-bottom: 2px solid var(--color-accent);
   color: var(--color-text-primary);
   font-family: var(--font-mono);
+}
+
+.activeTab i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--color-accent);
 }
 
 .editorHeader button,
@@ -164,46 +195,17 @@
   cursor: pointer;
 }
 
-.editor {
-  position: relative;
-  overflow: auto;
-  padding: var(--space-4) 0;
+.editorHeader button:disabled,
+.terminalPanel header button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.editorHost {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: var(--color-code-background);
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.75;
-}
-
-.codeLine {
-  display: grid;
-  grid-template-columns: 50px 1fr;
-  min-height: 24px;
-}
-
-.codeLine > span {
-  padding-right: 14px;
-  color: var(--color-text-dim);
-  text-align: right;
-  user-select: none;
-}
-
-.codeLine code {
-  color: var(--color-code-text);
-  white-space: pre;
-}
-
-.codeLine .comment {
-  color: var(--color-code-comment);
-}
-
-.cursor {
-  width: 2px;
-  height: 18px;
-  position: absolute;
-  top: 68px;
-  left: 78px;
-  background: var(--color-text-primary);
-  animation: cursorBlink 1.1s step-end infinite;
 }
 
 .editorStatus {
