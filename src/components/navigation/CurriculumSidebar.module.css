@@ -50,15 +50,31 @@
 }
 
 .row {
+  width: 100%;
   min-height: 36px;
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) 16px;
   align-items: center;
   gap: 6px;
   padding: 0 8px;
+  border: 0;
   border-radius: var(--radius-sm);
+  background: transparent;
   color: var(--color-text-muted);
+  font: inherit;
   font-size: 11px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.row:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.035);
+  color: var(--color-text-primary);
+}
+
+.row:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
 }
 
 .active {
@@ -71,12 +87,18 @@
   color: var(--color-success);
 }
 
-.active .state {
+.active .state,
+.available .state {
   color: var(--color-accent);
 }
 
 .locked {
   color: var(--color-text-dim);
+  cursor: not-allowed;
+}
+
+.locked:disabled {
+  opacity: 1;
 }
 
 .number {
