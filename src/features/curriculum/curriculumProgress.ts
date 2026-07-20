@@ -120,7 +120,17 @@ export function isLessonUnlocked(
   }
 
   const lesson = catalog.lessons.find((item) => item.id === lessonId);
-  if (!lesson || !isModuleUnlocked(catalog, lesson.moduleId, completedLessonIds)) {
+  if (!lesson) {
+    return false;
+  }
+
+  // Yeni içerikler daha eski bir ön koşul eklese bile, önceki sürümlerde
+  // tamamlanan dersler tekrar ve inceleme amacıyla açılabilir kalır.
+  if (completedLessonIds.includes(lessonId)) {
+    return true;
+  }
+
+  if (!isModuleUnlocked(catalog, lesson.moduleId, completedLessonIds)) {
     return false;
   }
 
