@@ -149,6 +149,8 @@ fn execute_python_sync(
     command
         .args(&interpreter.prefix_args)
         .arg("-I")
+        .arg("-X")
+        .arg("utf8")
         .arg("-B")
         .arg(&source_path)
         .current_dir(&workspace)
