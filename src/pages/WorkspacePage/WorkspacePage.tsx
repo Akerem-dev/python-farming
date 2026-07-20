@@ -14,6 +14,7 @@ import {
   getCurrentLesson,
   useCurriculumStore,
 } from "../../features/curriculum/store/curriculumStore";
+import { PracticeAnswerPanel } from "../../features/learning/components/PracticeAnswerPanel";
 import { StdinPanel } from "../../features/learning/components/StdinPanel";
 import { TaskCompletionModal } from "../../features/learning/components/TaskCompletionModal";
 import { TaskResultsPanel } from "../../features/learning/components/TaskResultsPanel";
@@ -40,6 +41,12 @@ const runtimeStatusLabels = {
   error: "Hata",
 } as const;
 
+const lessonModeLabels = {
+  code: "Kod görevi",
+  "output-prediction": "Çıktıyı tahmin et",
+  "code-completion": "Kod tamamlama",
+} as const;
+
 type TerminalView = "output" | "tests";
 
 export function WorkspacePage() {
@@ -51,6 +58,9 @@ export function WorkspacePage() {
   const selectLesson = useCurriculumStore((state) => state.selectLesson);
   const selectResumeLesson = useCurriculumStore((state) => state.selectResumeLesson);
   const currentLesson = getCurrentLesson(catalog, currentLessonId);
+  const lessonMode = currentLesson?.mode ?? "code";
+  const isOutputPrediction = lessonMode === "output-prediction";
+  const isCodeCompletion = lessonMode === "code-completion";
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
   const loadProgress = useProgressStore((state) => state.loadProgress);
@@ -59,9 +69,8 @@ export function WorkspacePage() {
 
   const nextLesson = getNextLesson(catalog, currentLessonId, completedLessonIds);
   const previousLesson = getPreviousLesson(catalog, currentLessonId);
-  const currentModule = getOrderedModules(catalog).find(
-    (module) => module.id === currentLesson?.moduleId,
-  ) ?? null;
+  const currentModule =
+    getOrderedModules(catalog).find((module) => module.id === currentLesson?.moduleId) ?? null;
   const moduleCompleted = currentModule
     ? isModuleCompleted(currentModule, completedLessonIds)
     : false;
@@ -94,9 +103,11 @@ export function WorkspacePage() {
   const validationResult = useTaskValidationStore((state) => state.result);
   const validationError = useTaskValidationStore((state) => state.errorMessage);
   const stdinText = useTaskValidationStore((state) => state.stdinText);
+  const selectedOptionId = useTaskValidationStore((state) => state.selectedOptionId);
   const isCompletionOpen = useTaskValidationStore((state) => state.isCompletionOpen);
   const startValidationSession = useTaskValidationStore((state) => state.startSession);
   const setStdinText = useTaskValidationStore((state) => state.setStdinText);
+  const setSelectedOptionId = useTaskValidationStore((state) => state.setSelectedOptionId);
   const validateTask = useTaskValidationStore((state) => state.validateTask);
   const clearValidationResult = useTaskValidationStore((state) => state.clearResult);
   const resetValidationSession = useTaskValidationStore((state) => state.resetSession);
@@ -118,6 +129,10 @@ export function WorkspacePage() {
       }),
     [runtimeError, runtimeHealth, runtimeOutput, runtimeStatus],
   );
+  const displayedTerminalText =
+    isOutputPrediction && !runtimeOutput && !runtimeError
+      ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
+      : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
@@ -205,6 +220,10 @@ export function WorkspacePage() {
   };
 
   const handleRun = () => {
+    if (isOutputPrediction) {
+      return;
+    }
+
     setTerminalView("output");
     void executeCode(
       activeDocument.content,
@@ -263,6 +282,19 @@ export function WorkspacePage() {
     runtimeStatus === "checking" ||
     runtimeStatus === "offline" ||
     runtimeStatus === "running";
+  const validationDisabled =
+    validationStatus === "checking" ||
+    (!isOutputPrediction && runtimeBusyOrUnavailable) ||
+    (isOutputPrediction && !selectedOptionId);
+  const validationLabel =
+    validationStatus === "checking"
+      ? "Kontrol ediliyor…"
+      : isOutputPrediction
+        ? "Tahmini Kontrol Et"
+        : isCodeCompletion
+          ? "Eksikleri Kontrol Et"
+          : "Görevi Kontrol Et";
+  const resetLabel = isOutputPrediction ? "Tahmini temizle" : "Başlangıç koduna dön";
   const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
   return (
@@ -296,10 +328,23 @@ export function WorkspacePage() {
               </ul>
             </div>
             <div>
-              <span className={styles.eyebrow}>Örnek çıktı</span>
+              <span className={styles.eyebrow}>
+                {isOutputPrediction ? "Çıktı biçimi" : "Örnek çıktı"}
+              </span>
               <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
           </div>
+
+          {isOutputPrediction && currentLesson.choice ? (
+            <PracticeAnswerPanel
+              className={styles.answerPanel}
+              prompt={currentLesson.choice.prompt}
+              options={currentLesson.choice.options}
+              selectedOptionId={selectedOptionId}
+              onSelect={setSelectedOptionId}
+              disabled={validationStatus === "checking"}
+            />
+          ) : null}
 
           <StdinPanel
             className={styles.stdinPanel}
@@ -347,6 +392,7 @@ export function WorkspacePage() {
                 {activeDocument.name}
                 {activeDocument.saveStatus === "dirty" ? <i aria-label="Kaydedilmemiş değişiklik" /> : null}
               </span>
+              <span className={styles.modeBadge}>{lessonModeLabels[lessonMode]}</span>
               <button type="button" aria-label="Yeni dosya ekle" disabled>＋</button>
             </div>
             <span className={styles.runtimeStatus} data-status={runtimeStatus}>
@@ -358,12 +404,15 @@ export function WorkspacePage() {
           <CodeEditor
             documentId={activeDocumentId}
             className={styles.editorHost}
-            ariaLabel="Python kod editörü"
+            ariaLabel={isOutputPrediction ? "Salt okunur Python kodu" : "Python kod editörü"}
+            readOnly={isOutputPrediction}
           />
 
           <footer className={styles.editorStatus}>
             <span>Satır {activeDocument.cursor.line}, Sütun {activeDocument.cursor.column}</span>
-            <span>UTF-8 · {saveStatusLabels[activeDocument.saveStatus]}</span>
+            <span>
+              UTF-8 · {isOutputPrediction ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
+            </span>
           </footer>
         </section>
 
@@ -395,7 +444,9 @@ export function WorkspacePage() {
           </header>
 
           {terminalView === "output" ? (
-            <pre className={terminalHasError ? styles.terminalError : undefined}>{terminalText}</pre>
+            <pre className={terminalHasError ? styles.terminalError : undefined}>
+              {displayedTerminalText}
+            </pre>
           ) : (
             <TaskResultsPanel
               className={styles.testResults}
@@ -412,20 +463,23 @@ export function WorkspacePage() {
           )}
 
           <div className={styles.runActions}>
-            <Button onClick={handleReset}>Başlangıç koduna dön</Button>
+            <Button onClick={handleReset}>{resetLabel}</Button>
             <Button
+              variant={isOutputPrediction ? "primary" : undefined}
               onClick={() => void handleValidate()}
-              disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
+              disabled={validationDisabled}
             >
-              {validationStatus === "checking" ? "Kontrol ediliyor…" : "Görevi Kontrol Et"}
+              {validationLabel}
             </Button>
-            <Button
-              variant="primary"
-              onClick={handleRun}
-              disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
-            >
-              {runtimeStatus === "running" ? "Çalıştırılıyor…" : "Çalıştır"}
-            </Button>
+            {!isOutputPrediction ? (
+              <Button
+                variant="primary"
+                onClick={handleRun}
+                disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
+              >
+                {runtimeStatus === "running" ? "Çalıştırılıyor…" : "Çalıştır"}
+              </Button>
+            ) : null}
           </div>
         </section>
       </div>
