@@ -211,11 +211,19 @@ export function getNextLesson(
 ): CurriculumLesson | null {
   const lessons = getOrderedLessons(catalog);
   const index = lessons.findIndex((lesson) => lesson.id === currentLessonId);
-  const nextLesson = index >= 0 ? lessons[index + 1] ?? null : null;
+  if (index < 0) {
+    return null;
+  }
 
-  return nextLesson && isLessonUnlocked(catalog, nextLesson.id, completedLessonIds)
-    ? nextLesson
-    : null;
+  return (
+    lessons
+      .slice(index + 1)
+      .find(
+        (lesson) =>
+          !completedLessonIds.includes(lesson.id) &&
+          isLessonUnlocked(catalog, lesson.id, completedLessonIds),
+      ) ?? null
+  );
 }
 
 export function getPreviousLesson(
