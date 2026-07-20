@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  getNextLesson,
   getResumeLesson,
   isLessonUnlocked,
 } from "../../features/curriculum/curriculumProgress";
@@ -85,5 +86,15 @@ describe("curriculum compatibility", () => {
     expect(isLessonUnlocked(catalog, "variables-1", legacyProgress)).toBe(true);
     expect(isLessonUnlocked(catalog, "variables-2", legacyProgress)).toBe(true);
     expect(getResumeLesson(catalog, legacyProgress, "variables-2")?.id).toBe("intro-1");
+  });
+
+  it("skips legacy-completed lessons after the final introduction lesson", () => {
+    const completed = ["intro-1", "intro-2", "variables-1", "variables-2"];
+    expect(getNextLesson(catalog, "intro-2", completed)).toBeNull();
+  });
+
+  it("continues into the first incomplete lesson of the next module", () => {
+    const completed = ["intro-1", "intro-2"];
+    expect(getNextLesson(catalog, "intro-2", completed)?.id).toBe("variables-1");
   });
 });
