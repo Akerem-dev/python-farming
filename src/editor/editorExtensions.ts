@@ -8,11 +8,13 @@ import { pythonFarmingEditorTheme } from "./editorTheme";
 interface CreateEditorExtensionsOptions {
   onContentChange: (content: string) => void;
   onCursorChange: (line: number, column: number) => void;
+  readOnly?: boolean;
 }
 
 export function createEditorExtensions({
   onContentChange,
   onCursorChange,
+  readOnly = false,
 }: CreateEditorExtensionsOptions): Extension[] {
   return [
     basicSetup,
@@ -20,9 +22,11 @@ export function createEditorExtensions({
     pythonFarmingEditorTheme,
     keymap.of([indentWithTab]),
     EditorState.tabSize.of(4),
+    EditorState.readOnly.of(readOnly),
+    EditorView.editable.of(!readOnly),
     EditorView.lineWrapping,
     EditorView.updateListener.of((update) => {
-      if (update.docChanged) {
+      if (update.docChanged && !readOnly) {
         onContentChange(update.state.doc.toString());
       }
 
