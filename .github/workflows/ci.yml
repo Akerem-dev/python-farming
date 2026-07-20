@@ -74,4 +74,4 @@ jobs:
             libayatana-appindicator3-dev \
             librsvg2-dev >/dev/null
           cd src-tauri
-          cargo test --all-targets
+          cargo test --all-targets -q
