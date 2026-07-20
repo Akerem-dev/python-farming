@@ -1,0 +1,362 @@
+{
+  "moduleId": "operators",
+  "lessons": [
+    {
+      "id": "beginner.operators.arithmetic",
+      "moduleId": "operators",
+      "order": 1,
+      "title": "Dört işlem operatörleri",
+      "summary": "Python’da toplama, çıkarma, çarpma ve bölme işlemlerini doğrudan sayılar ve değişkenler üzerinde kullanabilirsin.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Bir sepetin ara toplamını hesapla",
+        "instructions": [
+          "defter_fiyati değişkenine 45 değerini ata.",
+          "kalem_fiyati değişkenine 15 değerini ata.",
+          "İki defter ve üç kalemin toplamını ara_toplam değişkeninde hesapla.",
+          "Sonucu belirtilen biçimde ekrana yazdır."
+        ],
+        "requirements": [
+          "+ ve * operatörleri kullanılmalı.",
+          "ara_toplam değişkeni tanımlanmalı.",
+          "Sonuç 135 TL olmalı."
+        ],
+        "sampleOutput": "Ara toplam: 135 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Sepet ara toplamını hesapla\n\ndefter_fiyati = 45\nkalem_fiyati = 15\n\nara_toplam = 0\n\nprint(f\"Ara toplam: {ara_toplam} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Önce ürün toplamlarını bul",
+          "body": "İki defter için defter_fiyati * 2, üç kalem için kalem_fiyati * 3 yazabilirsin."
+        },
+        {
+          "title": "Sonuçları topla",
+          "body": "İki çarpma işlemini + operatörüyle birleştir."
+        },
+        {
+          "title": "Tam ifade",
+          "body": "ara_toplam = defter_fiyati * 2 + kalem_fiyati * 3"
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.arithmetic",
+        "title": "Bir sepetin ara toplamını hesapla",
+        "xpReward": 40,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-total", "kind": "assignment", "name": "ara_toplam", "label": "ara_toplam değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "total-type", "kind": "variable_type", "name": "ara_toplam", "expectedType": "int", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AAra toplam:\\s*135\\s*TL\\s*\\Z", "flags": "i", "label": "Gizli test 2", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.operators.precedence",
+      "moduleId": "operators",
+      "order": 2,
+      "title": "İşlem önceliğini tahmin et",
+      "summary": "Çarpma ve bölme, toplama ve çıkarmadan önce değerlendirilir. Parantezler ise sırayı açıkça değiştirir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi sayı görünür?",
+        "options": [
+          { "id": "answer-20", "label": "20" },
+          { "id": "answer-14", "label": "14" },
+          { "id": "answer-24", "label": "24" },
+          { "id": "answer-10", "label": "10" }
+        ]
+      },
+      "task": {
+        "title": "Kodu çalıştırmadan çıktıyı seç",
+        "instructions": [
+          "Sağdaki kodu satır satır incele.",
+          "Python’ın işlem önceliğini düşün.",
+          "Terminali çalıştırmadan doğru seçeneği işaretle."
+        ],
+        "requirements": [
+          "Çarpma işlemi önce değerlendirilir.",
+          "Seçeneklerden yalnız biri işaretlenmeli.",
+          "Tahmin kontrol edilmeden kod çalıştırılamaz."
+        ],
+        "sampleOutput": "Tek satırda bir tam sayı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sonuc = 2 + 3 * 4\nprint(sonuc)"
+      },
+      "hints": [
+        {
+          "title": "Çarpma daha önceliklidir",
+          "body": "3 * 4 işlemi, 2 ile toplama yapılmadan önce hesaplanır."
+        },
+        {
+          "title": "İlk ara sonuç",
+          "body": "3 * 4 işleminin sonucu 12’dir."
+        },
+        {
+          "title": "Son adım",
+          "body": "2 + 12 işlemini hesapla."
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.precedence",
+        "title": "İşlem önceliğini tahmin et",
+        "xpReward": 35,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-14"
+        }
+      }
+    },
+    {
+      "id": "beginner.operators.division-completion",
+      "moduleId": "operators",
+      "order": 3,
+      "title": "Bölme türlerini tamamla",
+      "summary": "/ normal bölme, // tam bölme ve % kalan bulma için kullanılır.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Eksik bölme ifadelerini doldur",
+        "instructions": [
+          "tam_bolum değişkeninde 17 // 5 sonucunu hesapla.",
+          "kalan değişkeninde 17 % 5 sonucunu hesapla.",
+          "Yer tutucu isimleri gerçek ifadelerle değiştir.",
+          "Kodu çalıştırıp ardından gizli testleri kontrol et."
+        ],
+        "requirements": [
+          "// ve % operatörleri kullanılmalı.",
+          "tam_bolum değeri 3 olmalı.",
+          "kalan değeri 2 olmalı."
+        ],
+        "sampleOutput": "Tam bölüm: 3, kalan: 2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sayi = 17\n\ntam_bolum = __TAM_BOLUM_IFADESI__\nkalan = __KALAN_IFADESI__\n\nprint(f\"Tam bölüm: {tam_bolum}, kalan: {kalan}\")"
+      },
+      "hints": [
+        {
+          "title": "Tam bölme operatörü",
+          "body": "Ondalık kısmı atmak için // kullanılır."
+        },
+        {
+          "title": "Kalan operatörü",
+          "body": "Bölme işleminden kalanı bulmak için % kullanılır."
+        },
+        {
+          "title": "Tamamlama ifadeleri",
+          "body": "Yer tutucuları sırasıyla sayi // 5 ve sayi % 5 ifadeleriyle değiştir."
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.division-completion",
+        "title": "Bölme türlerini tamamla",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-whole", "kind": "assignment", "name": "tam_bolum", "label": "tam_bolum değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "assign-remainder", "kind": "assignment", "name": "kalan", "label": "kalan değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "whole-type", "kind": "variable_type", "name": "tam_bolum", "expectedType": "int", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "remainder-type", "kind": "variable_type", "name": "kalan", "expectedType": "int", "label": "Gizli test 2", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ATam bölüm:\\s*3,\\s*kalan:\\s*2\\s*\\Z", "flags": "i", "label": "Gizli test 3", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.operators.comparison-prediction",
+      "moduleId": "operators",
+      "order": 4,
+      "title": "Karşılaştırma çıktısını tahmin et",
+      "summary": "Karşılaştırma operatörleri iki değeri kıyaslar ve sonuç olarak True veya False üretir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "İki print() satırı terminale hangi değerleri sırayla yazar?",
+        "options": [
+          { "id": "answer-true-false", "label": "True\nFalse" },
+          { "id": "answer-false-true", "label": "False\nTrue" },
+          { "id": "answer-true-true", "label": "True\nTrue" },
+          { "id": "answer-false-false", "label": "False\nFalse" }
+        ]
+      },
+      "task": {
+        "title": "İki karşılaştırmanın sonucunu seç",
+        "instructions": [
+          "puan değişkeninin değerini incele.",
+          ">= ve == operatörlerini ayrı ayrı değerlendir.",
+          "İki satırlık doğru çıktı seçeneğini işaretle."
+        ],
+        "requirements": [
+          "İlk karşılaştırma puanın 50’ye eşit veya büyük olup olmadığını sorar.",
+          "İkinci karşılaştırma puanın tam olarak 100 olup olmadığını sorar.",
+          "Cevap sırası print() satırlarıyla aynı olmalı."
+        ],
+        "sampleOutput": "İki satırda True veya False",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "puan = 75\n\nprint(puan >= 50)\nprint(puan == 100)"
+      },
+      "hints": [
+        {
+          "title": "İlk soru",
+          "body": "75 değeri 50’den büyüktür."
+        },
+        {
+          "title": "İkinci soru",
+          "body": "== operatörü iki değerin tamamen eşit olmasını ister."
+        },
+        {
+          "title": "Sıralamayı koru",
+          "body": "Önce >= işleminin, sonra == işleminin sonucu yazılır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.comparison-prediction",
+        "title": "Karşılaştırma çıktısını tahmin et",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-true-false"
+        }
+      }
+    },
+    {
+      "id": "beginner.operators.assignment-completion",
+      "moduleId": "operators",
+      "order": 5,
+      "title": "Atama operatörlerini tamamla",
+      "summary": "+= ve -= operatörleri mevcut değeri güncellerken aynı değişkeni tekrar yazma ihtiyacını azaltır.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Bakiye güncellemelerini tamamla",
+        "instructions": [
+          "İlk yer tutucuyu 25 değeriyle değiştir.",
+          "İkinci yer tutucuyu 10 değeriyle değiştir.",
+          "+= ve -= satırlarını koru.",
+          "Son bakiyenin 115 olduğunu doğrula."
+        ],
+        "requirements": [
+          "+= ile bakiyeye 25 eklenmeli.",
+          "-= ile bakiyeden 10 çıkarılmalı.",
+          "Ekrana yalnız son bakiye yazdırılmalı."
+        ],
+        "sampleOutput": "Son bakiye: 115 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "bakiye = 100\n\nbakiye += __EKLENECEK_TUTAR__\nbakiye -= __CIKARILACAK_TUTAR__\n\nprint(f\"Son bakiye: {bakiye} TL\")"
+      },
+      "hints": [
+        {
+          "title": "İlk güncelleme",
+          "body": "bakiye += 25 ifadesi mevcut bakiyeye 25 ekler."
+        },
+        {
+          "title": "İkinci güncelleme",
+          "body": "bakiye -= 10 ifadesi güncel bakiyeden 10 çıkarır."
+        },
+        {
+          "title": "Yer tutucuları değiştir",
+          "body": "__EKLENECEK_TUTAR__ yerine 25, __CIKARILACAK_TUTAR__ yerine 10 yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.assignment-completion",
+        "title": "Atama operatörlerini tamamla",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-balance", "kind": "assignment", "name": "bakiye", "label": "bakiye değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call_count", "name": "print", "min": 1, "max": 1, "label": "print() bir kez kullanıldı", "visibility": "visible" },
+          { "id": "balance-type", "kind": "variable_type", "name": "bakiye", "expectedType": "int", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ASon bakiye:\\s*115\\s*TL\\s*\\Z", "flags": "i", "label": "Gizli test 2", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.operators.checkout-challenge",
+      "moduleId": "operators",
+      "order": 6,
+      "title": "Operatörler final görevi",
+      "summary": "Birden fazla aritmetik operatörü tek bir gerçekçi hesaplama içinde doğru sırayla kullan.",
+      "levelLabel": "Chapter Challenge",
+      "mode": "code",
+      "task": {
+        "title": "İndirimli sipariş tutarını hesapla",
+        "instructions": [
+          "urun_fiyati değerini adet ile çarp.",
+          "Ara toplamdan indirim değerini çıkar.",
+          "Sonuca kargo ücretini ekle.",
+          "Hesabı odenecek_tutar değişkeninde saklayıp ekrana yazdır."
+        ],
+        "requirements": [
+          "*, - ve + operatörleri birlikte kullanılmalı.",
+          "odenecek_tutar değişkeni tanımlanmalı.",
+          "Sonuç 655 TL olmalı."
+        ],
+        "sampleOutput": "Ödenecek tutar: 655 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "urun_fiyati = 240\nadet = 3\nindirim = 90\nkargo = 25\n\nodenecek_tutar = 0\n\nprint(f\"Ödenecek tutar: {odenecek_tutar} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Önce ara toplam",
+          "body": "urun_fiyati * adet ifadesi indirim öncesi toplamı verir."
+        },
+        {
+          "title": "İndirimi çıkar",
+          "body": "Çarpma sonucundan indirim değişkenini çıkar."
+        },
+        {
+          "title": "Kargoyu ekle",
+          "body": "Tam ifade: urun_fiyati * adet - indirim + kargo"
+        }
+      ],
+      "validation": {
+        "id": "beginner.operators.checkout-challenge",
+        "title": "İndirimli sipariş tutarını hesapla",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-payable", "kind": "assignment", "name": "odenecek_tutar", "label": "odenecek_tutar değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "payable-type", "kind": "variable_type", "name": "odenecek_tutar", "expectedType": "int", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AÖdenecek tutar:\\s*655\\s*TL\\s*\\Z", "flags": "i", "label": "Gizli test 2", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
