@@ -3,14 +3,17 @@ import { routes } from "../../app/routes";
 import { Button } from "../../components/common/Button";
 import { CodeEditor } from "../../editor/CodeEditor";
 import { useEditorStore } from "../../editor/editorStore";
+import {
+  getCurrentLesson,
+  useCurriculumStore,
+} from "../../features/curriculum/store/curriculumStore";
 import { StdinPanel } from "../../features/learning/components/StdinPanel";
 import { TaskCompletionModal } from "../../features/learning/components/TaskCompletionModal";
 import { TaskResultsPanel } from "../../features/learning/components/TaskResultsPanel";
-import { getLessonHint } from "../../features/learning/services/lessonSessionService";
 import { splitStdinText } from "../../features/learning/services/taskValidationService";
 import { useLearningStore } from "../../features/learning/store/learningStore";
 import { useTaskValidationStore } from "../../features/learning/store/taskValidationStore";
-import { variablesIntroductionTask } from "../../features/learning/taskSpecs";
+import { useProgressStore } from "../../features/progress/store/progressStore";
 import { AppShell } from "../../layouts/AppShell";
 import { formatTerminalOutput } from "../../runtime/terminalFormatter";
 import { useRuntimeStore } from "../../runtime/runtimeStore";
@@ -33,18 +36,39 @@ const runtimeStatusLabels = {
 type TerminalView = "output" | "tests";
 
 export function WorkspacePage() {
+  const catalog = useCurriculumStore((state) => state.catalog);
+  const curriculumStatus = useCurriculumStore((state) => state.status);
+  const curriculumError = useCurriculumStore((state) => state.errorMessage);
+  const currentLessonId = useCurriculumStore((state) => state.currentLessonId);
+  const loadCatalog = useCurriculumStore((state) => state.loadCatalog);
+  const selectLesson = useCurriculumStore((state) => state.selectLesson);
+  const selectNextLesson = useCurriculumStore((state) => state.selectNextLesson);
+  const selectPreviousLesson = useCurriculumStore((state) => state.selectPreviousLesson);
+  const currentLesson = getCurrentLesson(catalog, currentLessonId);
+  const orderedLessons = useMemo(
+    () => [...(catalog?.lessons ?? [])].sort((left, right) => left.order - right.order),
+    [catalog],
+  );
+  const currentLessonIndex = orderedLessons.findIndex((lesson) => lesson.id === currentLessonId);
+  const hasPreviousLesson = currentLessonIndex > 0;
+  const hasNextLesson = currentLessonIndex >= 0 && currentLessonIndex < orderedLessons.length - 1;
+
   const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
   const activeDocument = useEditorStore((state) =>
     state.documents.find((document) => document.id === state.activeDocumentId),
   );
+  const loadLessonDocument = useEditorStore((state) => state.loadLessonDocument);
   const markDocumentSaving = useEditorStore((state) => state.markDocumentSaving);
   const markDocumentSaved = useEditorStore((state) => state.markDocumentSaved);
   const resetDocument = useEditorStore((state) => state.resetDocument);
+
   const usedHintCount = useLearningStore((state) => state.usedHintCount);
   const maxHintCount = useLearningStore((state) => state.maxHintCount);
   const currentStep = useLearningStore((state) => state.currentStep);
   const totalSteps = useLearningStore((state) => state.totalSteps);
+  const startLesson = useLearningStore((state) => state.startLesson);
   const revealNextHint = useLearningStore((state) => state.revealNextHint);
+
   const runtimeStatus = useRuntimeStore((state) => state.status);
   const runtimeHealth = useRuntimeStore((state) => state.health);
   const runtimeOutput = useRuntimeStore((state) => state.output);
@@ -52,23 +76,28 @@ export function WorkspacePage() {
   const checkRuntime = useRuntimeStore((state) => state.checkRuntime);
   const executeCode = useRuntimeStore((state) => state.executeCode);
   const clearOutput = useRuntimeStore((state) => state.clearOutput);
+
   const validationStatus = useTaskValidationStore((state) => state.status);
   const validationResult = useTaskValidationStore((state) => state.result);
   const validationError = useTaskValidationStore((state) => state.errorMessage);
   const stdinText = useTaskValidationStore((state) => state.stdinText);
   const isCompletionOpen = useTaskValidationStore((state) => state.isCompletionOpen);
+  const startValidationSession = useTaskValidationStore((state) => state.startSession);
   const setStdinText = useTaskValidationStore((state) => state.setStdinText);
   const validateTask = useTaskValidationStore((state) => state.validateTask);
   const clearValidationResult = useTaskValidationStore((state) => state.clearResult);
   const resetValidationSession = useTaskValidationStore((state) => state.resetSession);
   const closeCompletion = useTaskValidationStore((state) => state.closeCompletion);
+
+  const loadProgress = useProgressStore((state) => state.loadProgress);
+  const completeLesson = useProgressStore((state) => state.completeLesson);
+  const rememberLesson = useProgressStore((state) => state.rememberLesson);
+
   const [visibleHintIndex, setVisibleHintIndex] = useState<number | null>(null);
   const [terminalView, setTerminalView] = useState<TerminalView>("output");
 
-  const visibleHint = useMemo(
-    () => (visibleHintIndex === null ? null : getLessonHint(visibleHintIndex)),
-    [visibleHintIndex],
-  );
+  const visibleHint =
+    visibleHintIndex === null ? null : currentLesson?.hints[visibleHintIndex] ?? null;
   const terminalText = useMemo(
     () =>
       formatTerminalOutput({
@@ -86,8 +115,50 @@ export function WorkspacePage() {
     runtimeOutput?.status === "timeout";
 
   useEffect(() => {
+    let active = true;
+    void Promise.all([loadCatalog(), loadProgress()]).then(([loadedCatalog, progress]) => {
+      if (
+        active &&
+        progress?.lastLessonId &&
+        loadedCatalog?.lessons.some((lesson) => lesson.id === progress.lastLessonId)
+      ) {
+        selectLesson(progress.lastLessonId);
+      }
+    });
     void checkRuntime();
-  }, [checkRuntime]);
+    return () => {
+      active = false;
+    };
+  }, [checkRuntime, loadCatalog, loadProgress, selectLesson]);
+
+  useEffect(() => {
+    if (!currentLesson) {
+      return;
+    }
+
+    loadLessonDocument(
+      currentLesson.id,
+      currentLesson.editor.filename,
+      currentLesson.editor.starterCode,
+    );
+    startLesson(
+      currentLesson.id,
+      currentLesson.task.instructions.length,
+      currentLesson.hints.length,
+    );
+    startValidationSession(currentLesson.task.defaultStdin);
+    clearOutput();
+    setVisibleHintIndex(null);
+    setTerminalView("output");
+    void rememberLesson(currentLesson.id);
+  }, [
+    clearOutput,
+    currentLesson,
+    loadLessonDocument,
+    rememberLesson,
+    startLesson,
+    startValidationSession,
+  ]);
 
   useEffect(() => {
     if (!activeDocument || activeDocument.saveStatus !== "dirty") {
@@ -97,31 +168,34 @@ export function WorkspacePage() {
     const documentId = activeDocument.id;
     const savingTimer = window.setTimeout(() => {
       markDocumentSaving(documentId);
-
       window.setTimeout(() => {
         markDocumentSaved(documentId);
       }, 180);
     }, 650);
 
     return () => window.clearTimeout(savingTimer);
-  }, [activeDocument?.content, activeDocument?.id, markDocumentSaved, markDocumentSaving]);
+  }, [activeDocument, markDocumentSaved, markDocumentSaving]);
 
   useEffect(() => {
     clearValidationResult();
   }, [activeDocument?.content, clearValidationResult]);
 
+  if (!currentLesson || !activeDocument) {
+    const message = curriculumStatus === "error" ? curriculumError : "Ders içeriği yükleniyor…";
+    return (
+      <AppShell activeRoute={routes.workspace} compactCurriculum context="Müfredat yükleniyor">
+        <div className={styles.workspaceState}>{message}</div>
+      </AppShell>
+    );
+  }
+
   const handleHint = () => {
     if (usedHintCount >= maxHintCount) {
       return;
     }
-
     setVisibleHintIndex(usedHintCount);
     revealNextHint();
   };
-
-  if (!activeDocument) {
-    return null;
-  }
 
   const handleRun = () => {
     setTerminalView("output");
@@ -136,18 +210,21 @@ export function WorkspacePage() {
     const result = await validateTask(
       activeDocument.content,
       activeDocument.name,
-      variablesIntroductionTask,
+      currentLesson.validation,
     );
 
     if (result) {
       setTerminalView("tests");
+      if (result.passed) {
+        await completeLesson(currentLesson.id, currentLesson.validation.xpReward);
+      }
     }
   };
 
   const handleReset = () => {
     resetDocument(activeDocument.id);
     clearOutput();
-    resetValidationSession();
+    resetValidationSession(currentLesson.task.defaultStdin);
     setTerminalView("output");
   };
 
@@ -161,31 +238,37 @@ export function WorkspacePage() {
     setTerminalView("tests");
   };
 
+  const handleContinue = () => {
+    closeCompletion();
+    if (hasNextLesson) {
+      selectNextLesson();
+    }
+  };
+
   const runtimeBusyOrUnavailable =
     runtimeStatus === "checking" ||
     runtimeStatus === "offline" ||
     runtimeStatus === "running";
+  const context = `Başlangıç / 2.${currentLesson.order} ${currentLesson.title}`;
 
   return (
-    <AppShell activeRoute={routes.workspace} compactCurriculum context="Başlangıç / 2.1 Değişkenler">
+    <AppShell activeRoute={routes.workspace} compactCurriculum context={context}>
       <div className={styles.workspace}>
         <section className={styles.briefPanel}>
           <div className={styles.stepRow}>
-            <span>Beginner Learning</span>
+            <span>{currentLesson.levelLabel}</span>
             <strong>Adım {currentStep} / {totalSteps}</strong>
           </div>
-          <h1>Değişkenler nedir?</h1>
-          <p className={styles.intro}>
-            Değişkenler, verileri isim vererek saklamanı ve daha sonra yeniden kullanmanı sağlar.
-          </p>
+          <h1>{currentLesson.title}</h1>
+          <p className={styles.intro}>{currentLesson.summary}</p>
 
           <div className={styles.taskBlock}>
             <span className={styles.eyebrow}>Görevin</span>
-            <h2>Kendini tanıtan iki değişken oluştur</h2>
+            <h2>{currentLesson.task.title}</h2>
             <ol>
-              <li><code>ad</code> değişkenine kendi adını ata.</li>
-              <li><code>yas</code> değişkenine yaşını ata.</li>
-              <li>İki değeri tek bir cümlede ekrana yazdır.</li>
+              {currentLesson.task.instructions.map((instruction) => (
+                <li key={instruction}>{instruction}</li>
+              ))}
             </ol>
           </div>
 
@@ -193,14 +276,14 @@ export function WorkspacePage() {
             <div>
               <span className={styles.eyebrow}>Gereksinimler</span>
               <ul>
-                <li>İki değişken tanımlanmalı.</li>
-                <li><code>print()</code> kullanılmalı.</li>
-                <li>Beklenen biçim korunmalı.</li>
+                {currentLesson.task.requirements.map((requirement) => (
+                  <li key={requirement}>{requirement}</li>
+                ))}
               </ul>
             </div>
             <div>
               <span className={styles.eyebrow}>Örnek çıktı</span>
-              <pre>Merhaba, ben Ali ve 20 yaşındayım.</pre>
+              <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
           </div>
 
@@ -208,6 +291,8 @@ export function WorkspacePage() {
             className={styles.stdinPanel}
             value={stdinText}
             onChange={setStdinText}
+            enabled={currentLesson.task.stdinEnabled}
+            placeholder={currentLesson.task.stdinPlaceholder}
             disabled={runtimeStatus === "running" || validationStatus === "checking"}
           />
 
@@ -219,10 +304,13 @@ export function WorkspacePage() {
             </aside>
           ) : null}
 
+          <div className={styles.lessonNavigation}>
+            <Button onClick={selectPreviousLesson} disabled={!hasPreviousLesson}>Önceki ders</Button>
+            <Button onClick={selectNextLesson} disabled={!hasNextLesson}>Sonraki ders</Button>
+          </div>
+
           <div className={styles.briefActions}>
-            <Button onClick={handleHint} disabled={usedHintCount >= maxHintCount}>
-              İpucu al
-            </Button>
+            <Button onClick={handleHint} disabled={usedHintCount >= maxHintCount}>İpucu al</Button>
             <span>İpucu kullanımı: {usedHintCount} / {maxHintCount}</span>
           </div>
         </section>
@@ -319,11 +407,13 @@ export function WorkspacePage() {
 
       <TaskCompletionModal
         open={isCompletionOpen}
-        taskTitle={variablesIntroductionTask.title}
+        taskTitle={currentLesson.task.title}
         score={validationResult?.score ?? 0}
-        xpReward={variablesIntroductionTask.xpReward}
+        xpReward={currentLesson.validation.xpReward}
         onClose={closeCompletion}
         onReview={handleReviewResults}
+        onContinue={handleContinue}
+        continueLabel={hasNextLesson ? "Sonraki ders" : "Modülü bitir"}
         backdropClassName={styles.completionBackdrop}
         modalClassName={styles.completionModal}
         badgeClassName={styles.completionBadge}
