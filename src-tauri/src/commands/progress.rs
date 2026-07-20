@@ -1,6 +1,9 @@
 use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
-use std::{fs, time::{SystemTime, UNIX_EPOCH}};
+use std::{
+    fs,
+    time::{SystemTime, UNIX_EPOCH},
+};
 use tauri::Manager;
 
 #[derive(Debug, Serialize)]
