@@ -40,12 +40,18 @@ export type TaskCheck =
       flags?: string;
     });
 
+export interface ChoiceAnswerValidation {
+  kind: "choice";
+  correctOptionId: string;
+}
+
 export interface TaskValidationSpec {
   id: string;
   title: string;
   xpReward: number;
   timeoutMs: number;
   checks: TaskCheck[];
+  answer?: ChoiceAnswerValidation;
 }
 
 export interface TaskCheckResult {

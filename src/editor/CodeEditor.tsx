@@ -9,12 +9,14 @@ interface CodeEditorProps {
   documentId: string;
   ariaLabel?: string;
   className?: string;
+  readOnly?: boolean;
 }
 
 export function CodeEditor({
   documentId,
   ariaLabel = "Python kod editörü",
   className = "",
+  readOnly = false,
 }: CodeEditorProps) {
   const hostRef = useRef<HTMLDivElement | null>(null);
   const viewRef = useRef<EditorView | null>(null);
@@ -34,6 +36,7 @@ export function CodeEditor({
       extensions: createEditorExtensions({
         onContentChange: (content) => updateDocumentContent(document.id, content),
         onCursorChange: (line, column) => updateCursor(document.id, { line, column }),
+        readOnly,
       }),
     });
 
@@ -48,7 +51,7 @@ export function CodeEditor({
       view.destroy();
       viewRef.current = null;
     };
-  }, [document?.id, updateCursor, updateDocumentContent]);
+  }, [document?.id, readOnly, updateCursor, updateDocumentContent]);
 
   useEffect(() => {
     if (!document || !viewRef.current) {
@@ -58,5 +61,12 @@ export function CodeEditor({
     replaceEditorContent(viewRef.current, document.content);
   }, [document?.content, document?.revision]);
 
-  return <div ref={hostRef} className={className} aria-label={ariaLabel} />;
+  return (
+    <div
+      ref={hostRef}
+      className={className}
+      aria-label={ariaLabel}
+      data-read-only={readOnly || undefined}
+    />
+  );
 }

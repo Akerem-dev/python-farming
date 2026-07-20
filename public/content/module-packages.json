@@ -1,6 +1,7 @@
 {
   "version": 1,
   "files": [
-    "/content/modules/python-introduction.json"
+    "/content/modules/python-introduction.json",
+    "/content/modules/operators.json"
   ]
 }

@@ -29,7 +29,7 @@ export function TaskResultsPanel({
     return (
       <section className={className} aria-live="polite">
         <strong>Görev kontrol ediliyor…</strong>
-        <p>AST gereksinimleri ve gizli testler çalıştırılıyor.</p>
+        <p>Görev gereksinimleri ve gizli kontroller değerlendiriliyor.</p>
       </section>
     );
   }
@@ -47,7 +47,7 @@ export function TaskResultsPanel({
     return (
       <section className={className}>
         <strong>Henüz görev kontrolü yapılmadı.</strong>
-        <p>Kodu çalıştırdıktan sonra “Görevi Kontrol Et” düğmesini kullan.</p>
+        <p>Hazır olduğunda görev kontrol düğmesini kullan.</p>
       </section>
     );
   }
@@ -65,7 +65,7 @@ export function TaskResultsPanel({
         </div>
         <p>
           {result.passed
-            ? "Bütün görünen gereksinimler ve gizli testler geçti."
+            ? "Bütün görünen gereksinimler ve gizli kontroller geçti."
             : "Başarısız kontrolleri düzeltip yeniden deneyebilirsin."}
         </p>
       </div>
@@ -85,10 +85,12 @@ export function TaskResultsPanel({
         ))}
       </div>
 
-      <div className={hiddenSummaryClassName}>
-        <span>Gizli testler</span>
-        <strong>{passedHiddenCount} / {hiddenChecks.length} geçti</strong>
-      </div>
+      {hiddenChecks.length > 0 ? (
+        <div className={hiddenSummaryClassName}>
+          <span>Gizli kontroller</span>
+          <strong>{passedHiddenCount} / {hiddenChecks.length} geçti</strong>
+        </div>
+      ) : null}
 
       {result.runtimeError ? (
         <details>

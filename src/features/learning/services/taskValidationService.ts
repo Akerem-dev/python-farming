@@ -224,6 +224,46 @@ export function parseTaskValidationOutput(output: string): TaskValidationResult 
   return parsed as TaskValidationResult;
 }
 
+export function validateChoiceAnswer(
+  spec: TaskValidationSpec,
+  selectedOptionId: string | null,
+): TaskValidationResult {
+  if (!spec.answer || spec.answer.kind !== "choice") {
+    throw new Error("Bu görev seçim tabanlı bir cevap doğrulaması içermiyor.");
+  }
+
+  const hasSelection = Boolean(selectedOptionId);
+  const isCorrect = selectedOptionId === spec.answer.correctOptionId;
+  const checks = [
+    {
+      id: "choice-selected",
+      label: "Bir tahmin seçildi",
+      visibility: "visible" as const,
+      passed: hasSelection,
+      message: hasSelection ? "Tahminin kaydedildi." : "Önce seçeneklerden birini seçmelisin.",
+    },
+    {
+      id: "choice-correct",
+      label: "Gizli cevap kontrolü",
+      visibility: "hidden" as const,
+      passed: isCorrect,
+      message: isCorrect ? "Tahmin doğru." : "Tahmin beklenen çıktıyla eşleşmedi.",
+    },
+  ];
+  const passedCount = checks.filter((check) => check.passed).length;
+
+  return {
+    taskId: spec.id,
+    passed: hasSelection && isCorrect,
+    score: Math.round((passedCount / checks.length) * 100),
+    checks,
+    stdout: "",
+    stderr: "",
+    runtimeError: null,
+    durationMs: 0,
+  };
+}
+
 export async function validateTaskSource(options: {
   source: string;
   filename: string;
