@@ -1,4 +1,5 @@
 import type { CurriculumChoiceOption } from "../../curriculum/types";
+import styles from "./PracticeAnswerPanel.module.css";
 
 interface PracticeAnswerPanelProps {
   prompt: string;
@@ -18,7 +19,7 @@ export function PracticeAnswerPanel({
   className,
 }: PracticeAnswerPanelProps) {
   return (
-    <fieldset className={className} disabled={disabled}>
+    <fieldset className={`${styles.panel} ${className ?? ""}`.trim()} disabled={disabled}>
       <legend>Çıktı tahminin</legend>
       <p>{prompt}</p>
       <div>
