@@ -1,10 +1,24 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { useCurriculumStore } from "../../features/curriculum/store/curriculumStore";
 import type { CurriculumCatalog } from "../../features/curriculum/types";
+import { useProgressStore } from "../../features/progress/store/progressStore";
 
 const catalog: CurriculumCatalog = {
   version: 1,
-  levels: [],
+  levels: [
+    {
+      id: "beginner",
+      title: "Başlangıç",
+      modules: [
+        {
+          id: "module",
+          number: "01",
+          title: "Test modülü",
+          lessonIds: ["lesson-1", "lesson-2"],
+        },
+      ],
+    },
+  ],
   lessons: [
     {
       id: "lesson-1",
@@ -51,6 +65,13 @@ const catalog: CurriculumCatalog = {
 
 describe("curriculumStore", () => {
   beforeEach(() => {
+    useProgressStore.setState({
+      completedLessonIds: [],
+      totalXp: 0,
+      lastLessonId: null,
+      status: "ready",
+      errorMessage: null,
+    });
     useCurriculumStore.setState({
       status: "ready",
       catalog,
@@ -59,12 +80,19 @@ describe("curriculumStore", () => {
     });
   });
 
-  it("moves to the next lesson", () => {
+  it("keeps the next lesson locked until the current lesson is complete", () => {
+    useCurriculumStore.getState().selectNextLesson();
+    expect(useCurriculumStore.getState().currentLessonId).toBe("lesson-1");
+  });
+
+  it("moves to the next lesson after the prerequisite is complete", () => {
+    useProgressStore.setState({ completedLessonIds: ["lesson-1"] });
     useCurriculumStore.getState().selectNextLesson();
     expect(useCurriculumStore.getState().currentLessonId).toBe("lesson-2");
   });
 
   it("moves back to the previous lesson", () => {
+    useProgressStore.setState({ completedLessonIds: ["lesson-1"] });
     useCurriculumStore.setState({ currentLessonId: "lesson-2" });
     useCurriculumStore.getState().selectPreviousLesson();
     expect(useCurriculumStore.getState().currentLessonId).toBe("lesson-1");

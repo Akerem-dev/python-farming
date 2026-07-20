@@ -1,4 +1,9 @@
 import { useEffect, useMemo } from "react";
+import {
+  getModuleAccessState,
+  getModuleProgress,
+  getResumeLesson,
+} from "../../features/curriculum/curriculumProgress";
 import { useCurriculumStore } from "../../features/curriculum/store/curriculumStore";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import { ProgressBar } from "../common/ProgressBar";
@@ -8,12 +13,21 @@ interface CurriculumSidebarProps {
   compact?: boolean;
 }
 
+const stateSymbols = {
+  completed: "✓",
+  active: "●",
+  available: "›",
+  locked: "×",
+  "coming-soon": "—",
+} as const;
+
 export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
   const catalog = useCurriculumStore((state) => state.catalog);
   const currentLessonId = useCurriculumStore((state) => state.currentLessonId);
   const loadCatalog = useCurriculumStore((state) => state.loadCatalog);
   const selectLesson = useCurriculumStore((state) => state.selectLesson);
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
+  const lastLessonId = useProgressStore((state) => state.lastLessonId);
   const loadProgress = useProgressStore((state) => state.loadProgress);
 
   useEffect(() => {
@@ -32,18 +46,31 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
   const moduleRows = useMemo(
     () =>
       modules.map((module) => {
-        const available = module.lessonIds.length > 0;
-        const completed =
-          available && module.lessonIds.every((lessonId) => completedLessonIds.includes(lessonId));
-        const active = currentLesson?.moduleId === module.id;
-        const state = active ? "active" : completed ? "done" : available ? "available" : "locked";
-        const targetLessonId =
-          module.lessonIds.find((lessonId) => !completedLessonIds.includes(lessonId)) ??
-          module.lessonIds[0] ??
-          null;
-        return { module, state, targetLessonId };
+        const state = getModuleAccessState(
+          catalog,
+          module,
+          completedLessonIds,
+          currentLesson?.moduleId ?? null,
+        );
+        const moduleProgress = getModuleProgress(module, completedLessonIds);
+        const resumeLesson = getResumeLesson(
+          {
+            version: catalog?.version ?? 1,
+            levels: catalog?.levels ?? [],
+            lessons: (catalog?.lessons ?? []).filter((lesson) => lesson.moduleId === module.id),
+          },
+          completedLessonIds,
+          currentLesson?.moduleId === module.id ? currentLesson.id : lastLessonId,
+        );
+
+        return {
+          module,
+          moduleProgress,
+          state,
+          targetLessonId: resumeLesson?.id ?? module.lessonIds[0] ?? null,
+        };
       }),
-    [completedLessonIds, currentLesson?.moduleId, modules],
+    [catalog, completedLessonIds, currentLesson, lastLessonId, modules],
   );
 
   return (
@@ -56,30 +83,44 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
       <div className={styles.levelLabel}>{catalog?.levels[0]?.title ?? "Başlangıç seviyesi"}</div>
 
       <div className={styles.list}>
-        {moduleRows.map(({ module, state, targetLessonId }) => (
-          <button
-            type="button"
-            className={`${styles.row} ${styles[state]}`}
-            key={module.id}
-            disabled={!targetLessonId}
-            onClick={() => targetLessonId && selectLesson(targetLessonId)}
-          >
-            <span className={styles.number}>{module.number}</span>
-            <span className={styles.title}>{module.title}</span>
-            <span className={styles.state} aria-hidden="true">
-              {state === "done" ? "✓" : state === "active" ? "●" : state === "available" ? "›" : "○"}
-            </span>
-          </button>
-        ))}
+        {moduleRows.map(({ module, moduleProgress, state, targetLessonId }) => {
+          const disabled = state === "locked" || state === "coming-soon" || !targetLessonId;
+          const statusLabel =
+            state === "coming-soon"
+              ? "Yakında"
+              : moduleProgress.total > 0
+                ? `${moduleProgress.completed}/${moduleProgress.total}`
+                : "";
+
+          return (
+            <button
+              type="button"
+              className={`${styles.row} ${styles[state]}`}
+              key={module.id}
+              disabled={disabled}
+              onClick={() => targetLessonId && selectLesson(targetLessonId)}
+              title={state === "coming-soon" ? "Bu modülün dersleri henüz yayımlanmadı." : undefined}
+            >
+              <span className={styles.number}>{module.number}</span>
+              <span className={styles.title}>
+                {module.title}
+                {statusLabel ? <small>{statusLabel}</small> : null}
+              </span>
+              <span className={styles.state} aria-hidden="true">
+                {stateSymbols[state]}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       <div className={styles.progressBox}>
         <div className={styles.progressHeader}>
-          <span>Genel ilerleme</span>
+          <span>Yayımlanan içerik</span>
           <strong>%{progress}</strong>
         </div>
         <ProgressBar value={progress} />
-        <p>{completedCount} / {totalLessons} mevcut ders tamamlandı</p>
+        <p>{completedCount} / {totalLessons} ders tamamlandı</p>
       </div>
     </aside>
   );

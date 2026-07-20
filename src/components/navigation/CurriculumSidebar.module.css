@@ -51,7 +51,7 @@
 
 .row {
   width: 100%;
-  min-height: 36px;
+  min-height: 42px;
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr) 16px;
   align-items: center;
@@ -68,7 +68,7 @@
 }
 
 .row:not(:disabled):hover {
-  background: rgba(255, 255, 255, 0.035);
+  background: var(--color-surface-hover);
   color: var(--color-text-primary);
 }
 
@@ -83,7 +83,8 @@
   box-shadow: inset 2px 0 0 var(--color-accent);
 }
 
-.done .state {
+.completed .state,
+.completed small {
   color: var(--color-success);
 }
 
@@ -92,13 +93,15 @@
   color: var(--color-accent);
 }
 
-.locked {
+.locked,
+.coming-soon {
   color: var(--color-text-dim);
   cursor: not-allowed;
+  opacity: 0.68;
 }
 
-.locked:disabled {
-  opacity: 1;
+.coming-soon {
+  opacity: 0.52;
 }
 
 .number {
@@ -109,13 +112,23 @@
 
 .title {
   min-width: 0;
+  display: grid;
+  gap: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.title small {
+  color: var(--color-text-dim);
+  font-size: 8px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
 .state {
   text-align: center;
+  font-family: var(--font-mono);
 }
 
 .progressBox {

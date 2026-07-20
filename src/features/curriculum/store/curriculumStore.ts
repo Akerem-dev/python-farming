@@ -1,4 +1,11 @@
 import { create } from "zustand";
+import { useProgressStore } from "../../progress/store/progressStore";
+import {
+  getNextLesson,
+  getPreviousLesson,
+  getResumeLesson,
+  isLessonUnlocked,
+} from "../curriculumProgress";
 import { loadCurriculumCatalog } from "../services/curriculumService";
 import type { CurriculumCatalog, CurriculumLesson } from "../types";
 
@@ -11,12 +18,9 @@ interface CurriculumState {
   errorMessage: string | null;
   loadCatalog: () => Promise<CurriculumCatalog | null>;
   selectLesson: (lessonId: string) => void;
+  selectResumeLesson: (lastLessonId?: string | null) => void;
   selectNextLesson: () => void;
   selectPreviousLesson: () => void;
-}
-
-function sortedLessons(catalog: CurriculumCatalog | null) {
-  return [...(catalog?.lessons ?? [])].sort((left, right) => left.order - right.order);
 }
 
 export const useCurriculumStore = create<CurriculumState>((set, get) => ({
@@ -33,13 +37,21 @@ export const useCurriculumStore = create<CurriculumState>((set, get) => ({
     set({ status: "loading", errorMessage: null });
     try {
       const catalog = await loadCurriculumCatalog();
+      const progress = useProgressStore.getState();
+      const resumeLesson = getResumeLesson(
+        catalog,
+        progress.completedLessonIds,
+        progress.lastLessonId,
+      );
+
       set((state) => ({
         status: "ready",
         catalog,
         currentLessonId:
-          state.currentLessonId && catalog.lessons.some((lesson) => lesson.id === state.currentLessonId)
+          state.currentLessonId &&
+          isLessonUnlocked(catalog, state.currentLessonId, progress.completedLessonIds)
             ? state.currentLessonId
-            : catalog.lessons[0]?.id ?? null,
+            : resumeLesson?.id ?? catalog.lessons[0]?.id ?? null,
         errorMessage: null,
       }));
       return catalog;
@@ -54,28 +66,38 @@ export const useCurriculumStore = create<CurriculumState>((set, get) => ({
   },
 
   selectLesson: (lessonId) =>
-    set((state) =>
-      state.catalog?.lessons.some((lesson) => lesson.id === lessonId)
+    set((state) => {
+      const completedLessonIds = useProgressStore.getState().completedLessonIds;
+      return state.catalog && isLessonUnlocked(state.catalog, lessonId, completedLessonIds)
         ? { currentLessonId: lessonId }
-        : state,
-    ),
+        : state;
+    }),
+
+  selectResumeLesson: (lastLessonId) =>
+    set((state) => {
+      const progress = useProgressStore.getState();
+      const lesson = getResumeLesson(
+        state.catalog,
+        progress.completedLessonIds,
+        lastLessonId ?? progress.lastLessonId,
+      );
+      return lesson ? { currentLessonId: lesson.id } : state;
+    }),
 
   selectNextLesson: () =>
     set((state) => {
-      const lessons = sortedLessons(state.catalog);
-      const index = lessons.findIndex((lesson) => lesson.id === state.currentLessonId);
-      return index >= 0 && index < lessons.length - 1
-        ? { currentLessonId: lessons[index + 1]?.id ?? state.currentLessonId }
-        : state;
+      const lesson = getNextLesson(
+        state.catalog,
+        state.currentLessonId,
+        useProgressStore.getState().completedLessonIds,
+      );
+      return lesson ? { currentLessonId: lesson.id } : state;
     }),
 
   selectPreviousLesson: () =>
     set((state) => {
-      const lessons = sortedLessons(state.catalog);
-      const index = lessons.findIndex((lesson) => lesson.id === state.currentLessonId);
-      return index > 0
-        ? { currentLessonId: lessons[index - 1]?.id ?? state.currentLessonId }
-        : state;
+      const lesson = getPreviousLesson(state.catalog, state.currentLessonId);
+      return lesson ? { currentLessonId: lesson.id } : state;
     }),
 }));
 
