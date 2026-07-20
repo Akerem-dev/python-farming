@@ -1,6 +1,8 @@
 interface StdinPanelProps {
   value: string;
   onChange: (value: string) => void;
+  enabled?: boolean;
+  placeholder?: string;
   disabled?: boolean;
   className?: string;
 }
@@ -8,11 +10,17 @@ interface StdinPanelProps {
 export function StdinPanel({
   value,
   onChange,
+  enabled = true,
+  placeholder = "Kerem\n23",
   disabled = false,
   className,
 }: StdinPanelProps) {
+  if (!enabled) {
+    return null;
+  }
+
   return (
-    <details className={className}>
+    <details className={className} open>
       <summary>
         <span>Program girdisi</span>
         <small>input() kullanan görevler için</small>
@@ -22,7 +30,7 @@ export function StdinPanel({
         <textarea
           value={value}
           onChange={(event) => onChange(event.target.value)}
-          placeholder={"Kerem\n23"}
+          placeholder={placeholder}
           spellCheck={false}
           disabled={disabled}
           aria-label="Programa gönderilecek standart giriş"
