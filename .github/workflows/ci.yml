@@ -57,26 +57,21 @@ jobs:
     name: Rust runtime tests
     runs-on: ubuntu-22.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Install Tauri system dependencies
+      - name: Fetch, prepare and test runtime
+        shell: bash
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+          git init -q .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
             libwebkit2gtk-4.1-dev \
             build-essential \
-            curl \
-            wget \
             file \
             libxdo-dev \
             libssl-dev \
             libayatana-appindicator3-dev \
-            librsvg2-dev
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Run Rust tests
-        working-directory: src-tauri
-        run: cargo test --all-targets
+            librsvg2-dev >/dev/null
+          cd src-tauri
+          cargo test --all-targets
