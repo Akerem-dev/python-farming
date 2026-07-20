@@ -7,6 +7,8 @@ interface TaskCompletionModalProps {
   xpReward: number;
   onClose: () => void;
   onReview: () => void;
+  onContinue?: () => void;
+  continueLabel?: string;
   backdropClassName?: string;
   modalClassName?: string;
   badgeClassName?: string;
@@ -20,6 +22,8 @@ export function TaskCompletionModal({
   xpReward,
   onClose,
   onReview,
+  onContinue = onClose,
+  continueLabel = "Devam et",
   backdropClassName,
   modalClassName,
   badgeClassName,
@@ -51,7 +55,7 @@ export function TaskCompletionModal({
         </div>
         <div className={actionsClassName}>
           <Button onClick={onReview}>Testleri incele</Button>
-          <Button variant="primary" onClick={onClose}>Devam et</Button>
+          <Button variant="primary" onClick={onContinue}>{continueLabel}</Button>
         </div>
       </section>
     </div>
