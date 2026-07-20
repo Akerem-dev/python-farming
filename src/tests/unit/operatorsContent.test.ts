@@ -31,7 +31,9 @@ describe("operators module content", () => {
       (candidate) => candidate.mode === "output-prediction",
     )) {
       const optionIds = lesson.choice?.options.map((option) => option.id) ?? [];
-      expect(optionIds).toContain(lesson.validation.answer?.correctOptionId);
+      const answer = lesson.validation.answer;
+      const correctOptionId = answer?.kind === "choice" ? answer.correctOptionId : null;
+      expect(optionIds).toContain(correctOptionId);
     }
   });
 
