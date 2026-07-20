@@ -1,0 +1,221 @@
+{
+  "version": 1,
+  "levels": [
+    {
+      "id": "beginner",
+      "title": "Başlangıç seviyesi",
+      "modules": [
+        {
+          "id": "python-introduction",
+          "number": "01",
+          "title": "Python’a Giriş",
+          "lessonIds": []
+        },
+        {
+          "id": "variables-data-types",
+          "number": "02",
+          "title": "Değişkenler ve Veri Tipleri",
+          "lessonIds": [
+            "beginner.variables.introduction",
+            "beginner.variables.calculation",
+            "beginner.variables.input"
+          ]
+        },
+        {
+          "id": "operators",
+          "number": "03",
+          "title": "Operatörler",
+          "lessonIds": []
+        },
+        {
+          "id": "conditionals",
+          "number": "04",
+          "title": "Koşullar",
+          "lessonIds": []
+        },
+        {
+          "id": "loops",
+          "number": "05",
+          "title": "Döngüler",
+          "lessonIds": []
+        },
+        {
+          "id": "functions",
+          "number": "06",
+          "title": "Fonksiyonlar",
+          "lessonIds": []
+        },
+        {
+          "id": "lists-tuples",
+          "number": "07",
+          "title": "Listeler ve Tuple",
+          "lessonIds": []
+        },
+        {
+          "id": "dictionaries-sets",
+          "number": "08",
+          "title": "Sözlükler ve Kümeler",
+          "lessonIds": []
+        }
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "beginner.variables.introduction",
+      "moduleId": "variables-data-types",
+      "order": 1,
+      "title": "Değişkenler nedir?",
+      "summary": "Değişkenler, verileri isim vererek saklamanı ve daha sonra yeniden kullanmanı sağlar.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Kendini tanıtan iki değişken oluştur",
+        "instructions": [
+          "ad değişkenine kendi adını ata.",
+          "yas değişkenine yaşını ata.",
+          "İki değeri tek bir cümlede ekrana yazdır."
+        ],
+        "requirements": [
+          "ad ve yas değişkenleri tanımlanmalı.",
+          "print() kullanılmalı.",
+          "Beklenen çıktı biçimi korunmalı."
+        ],
+        "sampleOutput": "Merhaba, ben Ali ve 20 yaşındayım.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Kendini tanıtan iki değişken oluştur\n\nad = \"\"\nyas = 0\n\nprint(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\")"
+      },
+      "hints": [
+        {
+          "title": "Metin değerleri tırnak içine yazılır",
+          "body": "ad değişkenine değer verirken çift veya tek tırnak kullan."
+        },
+        {
+          "title": "Yaş sayısal olmalı",
+          "body": "yas değişkenine tırnaksız, sıfırdan büyük bir tam sayı ata."
+        },
+        {
+          "title": "f-string kullanabilirsin",
+          "body": "print(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\") biçimi değişkenleri metne yerleştirir."
+        }
+      ],
+      "validation": {
+        "id": "beginner.variables.introduction",
+        "title": "Kendini tanıtan iki değişken oluştur",
+        "xpReward": 40,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-ad", "kind": "assignment", "name": "ad", "label": "ad değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "assign-yas", "kind": "assignment", "name": "yas", "label": "yas değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "ad-string", "kind": "variable_type", "name": "ad", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "ad-not-empty", "kind": "variable_non_empty", "name": "ad", "label": "Gizli test 2", "visibility": "hidden" },
+          { "id": "yas-integer", "kind": "variable_type", "name": "yas", "expectedType": "int", "label": "Gizli test 3", "visibility": "hidden" },
+          { "id": "yas-positive", "kind": "variable_positive", "name": "yas", "label": "Gizli test 4", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AMerhaba,\\s*ben\\s+.+\\s+ve\\s+\\d+\\s+yaşındayım\\.\\s*\\Z", "flags": "i", "label": "Gizli test 5", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.variables.calculation",
+      "moduleId": "variables-data-types",
+      "order": 2,
+      "title": "Değişkenlerle hesaplama",
+      "summary": "Sayısal değişkenleri işlemlerde kullanabilir ve sonucu başka bir değişkende saklayabilirsin.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Bir alışveriş toplamı hesapla",
+        "instructions": [
+          "urun değişkenine Defter metnini ata.",
+          "fiyat değişkenine 45, adet değişkenine 2 değerini ata.",
+          "toplam değişkeninde fiyat ile adeti çarp ve sonucu yazdır."
+        ],
+        "requirements": [
+          "urun, fiyat, adet ve toplam değişkenleri tanımlanmalı.",
+          "print() kullanılmalı.",
+          "Toplam değer 90 olmalı."
+        ],
+        "sampleOutput": "2 adet Defter toplam 90 TL.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Alışveriş toplamını hesapla\n\nurun = \"Defter\"\nfiyat = 45\nadet = 2\ntoplam = 0\n\nprint(f\"{adet} adet {urun} toplam {toplam} TL.\")"
+      },
+      "hints": [
+        { "title": "Çarpma operatörü", "body": "İki sayıyı çarpmak için * operatörünü kullan." },
+        { "title": "Sonucu sakla", "body": "toplam = fiyat * adet ifadesi sonucu toplam değişkenine atar." },
+        { "title": "Çıktıyı kontrol et", "body": "Beklenen toplam 90 olmalı ve cümle örnek çıktı biçiminde yazdırılmalı." }
+      ],
+      "validation": {
+        "id": "beginner.variables.calculation",
+        "title": "Bir alışveriş toplamı hesapla",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-urun", "kind": "assignment", "name": "urun", "label": "urun değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "assign-toplam", "kind": "assignment", "name": "toplam", "label": "toplam değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "urun-string", "kind": "variable_type", "name": "urun", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "toplam-positive", "kind": "variable_positive", "name": "toplam", "label": "Gizli test 2", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A2\\s+adet\\s+Defter\\s+toplam\\s+90\\s+TL\\.\\s*\\Z", "flags": "i", "label": "Gizli test 3", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.variables.input",
+      "moduleId": "variables-data-types",
+      "order": 3,
+      "title": "Kullanıcıdan veri alma",
+      "summary": "input() ile kullanıcıdan metin alabilir, int() ile sayıya dönüştürebilirsin.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Ad ve yaş bilgisini kullanıcıdan al",
+        "instructions": [
+          "ad değerini input() ile kullanıcıdan al.",
+          "yas değerini input() ile al ve int() kullanarak tam sayıya dönüştür.",
+          "Bilgileri tek bir cümlede yazdır."
+        ],
+        "requirements": [
+          "input() ve int() kullanılmalı.",
+          "ad ve yas değişkenleri tanımlanmalı.",
+          "Program girdisi sırasıyla ad ve yaş olmalı."
+        ],
+        "sampleOutput": "Merhaba, ben Kerem ve 23 yaşındayım.",
+        "stdinEnabled": true,
+        "stdinPlaceholder": "Her input() çağrısı için bir satır yaz.\nÖrnek:\nKerem\n23",
+        "defaultStdin": "Kerem\n23"
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Kullanıcıdan ad ve yaş bilgisini al\n\nad = input(\"Adın: \")\nyas = int(input(\"Yaşın: \"))\n\nprint(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\")"
+      },
+      "hints": [
+        { "title": "input() her zaman metin döndürür", "body": "Ad için input() sonucu doğrudan kullanılabilir." },
+        { "title": "Yaşı dönüştür", "body": "Sayısal işlem için int(input(...)) kullanarak metni tam sayıya çevir." },
+        { "title": "Program girdisi sırası", "body": "Girdi panelinin ilk satırı ad, ikinci satırı yaş olarak programa gönderilir." }
+      ],
+      "validation": {
+        "id": "beginner.variables.input",
+        "title": "Ad ve yaş bilgisini kullanıcıdan al",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "call-input", "kind": "call", "name": "input", "label": "input() kullanıldı", "visibility": "visible" },
+          { "id": "call-int", "kind": "call", "name": "int", "label": "int() kullanıldı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "ad-string", "kind": "variable_type", "name": "ad", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
+          { "id": "yas-integer", "kind": "variable_type", "name": "yas", "expectedType": "int", "label": "Gizli test 2", "visibility": "hidden" },
+          { "id": "yas-positive", "kind": "variable_positive", "name": "yas", "label": "Gizli test 3", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "(?s)\\AAdın:\\s*Yaşın:\\s*Merhaba,\\s*ben\\s+Kerem\\s+ve\\s+23\\s+yaşındayım\\.\\s*\\Z", "flags": "i", "label": "Gizli test 4", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
