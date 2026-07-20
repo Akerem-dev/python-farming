@@ -1,0 +1,427 @@
+{
+  "moduleId": "loops",
+  "lessons": [
+    {
+      "id": "beginner.loops.for-range",
+      "moduleId": "loops",
+      "order": 1,
+      "title": "for ve range ile tekrar",
+      "summary": "for döngüsü bir değer dizisi üzerinde sırayla ilerler; range() ise düzenli sayı aralıkları üretir.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "1’den 5’e kadar sayıları yazdır",
+        "instructions": [
+          "range() ile 1, 2, 3, 4 ve 5 sayılarını üret.",
+          "for döngüsünde her sayıyı sayi değişkenine al.",
+          "Her değeri ayrı satırda ekrana yazdır."
+        ],
+        "requirements": [
+          "Gerçek bir for döngüsü kullanılmalı.",
+          "range() çağrısı bulunmalı.",
+          "Çıktı 1’den 5’e kadar sıralı olmalı."
+        ],
+        "sampleOutput": "1\n2\n3\n4\n5",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# 1'den 5'e kadar sayıları yazdır\n\nfor sayi in range(1, 1):\n    print(sayi)"
+      },
+      "hints": [
+        {
+          "title": "range son değeri içermez",
+          "body": "5 sayısının da üretilmesi için bitiş değerini 6 yazmalısın."
+        },
+        {
+          "title": "Başlangıç ve bitiş",
+          "body": "range(1, 6) ifadesi 1’den başlar ve 6’ya gelmeden durur."
+        },
+        {
+          "title": "Tam döngü",
+          "body": "for sayi in range(1, 6): satırının altına girintili print(sayi) yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.for-range",
+        "title": "1’den 5’e kadar sayıları yazdır",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "for-node", "kind": "node_count", "nodeName": "For", "min": 1, "label": "for döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "range-call", "kind": "call", "name": "range", "label": "range() kullanıldı", "visibility": "visible" },
+          { "id": "print-call", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A1\\s*2\\s*3\\s*4\\s*5\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.loops.range-prediction",
+      "moduleId": "loops",
+      "order": 2,
+      "title": "range çıktısını tahmin et",
+      "summary": "range() başlangıç, bitiş ve adım değerleriyle ileri veya geri yönde sayı üretebilir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Bu döngü terminale hangi sayıları sırayla yazar?",
+        "options": [
+          { "id": "answer-a", "label": "2\n4\n6\n8" },
+          { "id": "answer-b", "label": "2\n4\n6" },
+          { "id": "answer-c", "label": "1\n3\n5\n7" },
+          { "id": "answer-d", "label": "2\n3\n4\n5\n6\n7" }
+        ]
+      },
+      "task": {
+        "title": "Adım değerini okuyup çıktıyı seç",
+        "instructions": [
+          "range() içindeki üç sayıyı başlangıç, bitiş ve adım olarak yorumla.",
+          "Bitiş değerinin çıktıya dahil olmadığını unutma.",
+          "Doğru dört satırlık seçeneği işaretle."
+        ],
+        "requirements": [
+          "Başlangıç değeri 2’dir.",
+          "Her turda sayı 2 artar.",
+          "8 bitiş sınırıdır ve üretilmez."
+        ],
+        "sampleOutput": "Dört veya üç satırda tam sayılar",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "for sayi in range(2, 8, 2):\n    print(sayi)"
+      },
+      "hints": [
+        {
+          "title": "Üçüncü değer adımdır",
+          "body": "range(2, 8, 2) her turda değeri 2 artırır."
+        },
+        {
+          "title": "8 dahil değildir",
+          "body": "range() bitiş sınırına ulaştığında durur; 8 yazdırılmaz."
+        },
+        {
+          "title": "Sayıları sırala",
+          "body": "2’den başlayıp 8’e ulaşmadan ikişer ilerle."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.range-prediction",
+        "title": "range çıktısını tahmin et",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-b"
+        }
+      }
+    },
+    {
+      "id": "beginner.loops.while-countdown",
+      "moduleId": "loops",
+      "order": 3,
+      "title": "while ile geri sayım",
+      "summary": "while döngüsü, verilen koşul True kaldığı sürece aynı kod bloğunu tekrarlar.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "3’ten geriye say ve başlat",
+        "instructions": [
+          "sayac değişkenini 3 değeriyle başlat.",
+          "sayac sıfırdan büyükken çalışan bir while döngüsü kur.",
+          "Her turda sayacı yazdırıp bir azalt.",
+          "Döngü bitince Başla! metnini yazdır."
+        ],
+        "requirements": [
+          "Gerçek bir while döngüsü bulunmalı.",
+          "Sayaç her turda azalmalı.",
+          "Program 3, 2, 1 ve Başla! çıktısını üretmeli."
+        ],
+        "sampleOutput": "3\n2\n1\nBaşla!",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sayac = 3\n\nwhile sayac > 0:\n    print(sayac)\n    # Sayacı burada azalt\n\nprint(\"Başla!\")"
+      },
+      "hints": [
+        {
+          "title": "Döngünün bitmesi gerekir",
+          "body": "sayac değeri değişmezse koşul hep True kalır."
+        },
+        {
+          "title": "Bir azalt",
+          "body": "sayac -= 1 ifadesi mevcut değeri bir azaltır."
+        },
+        {
+          "title": "Girintiye dikkat et",
+          "body": "sayac -= 1 satırı while bloğunun içinde, print(sayac) ile aynı girintide olmalı."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.while-countdown",
+        "title": "3’ten geriye say ve başlat",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "while-node", "kind": "node_count", "nodeName": "While", "min": 1, "label": "while döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "update-node", "kind": "node_count", "nodeName": "AugAssign", "min": 1, "label": "Sayaç güncellendi", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A3\\s*2\\s*1\\s*Başla!\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.loops.ordering",
+      "moduleId": "loops",
+      "order": 4,
+      "title": "Döngü bloklarını sırala",
+      "summary": "Python’da satır sırası ve girinti programın anlamını belirler. Blokları çalışan bir geri sayım programına dönüştür.",
+      "levelLabel": "Code Ordering",
+      "mode": "code-ordering",
+      "ordering": {
+        "prompt": "Blokları başlık, döngü satırı, girintili gövde ve bitiş mesajı sırasına getir.",
+        "blocks": [
+          { "id": "loop", "code": "for sayi in range(3, 0, -1):" },
+          { "id": "done", "code": "print(\"Başla!\")" },
+          { "id": "body", "code": "    print(sayi)" },
+          { "id": "header", "code": "print(\"Geri sayım\")" }
+        ]
+      },
+      "task": {
+        "title": "Dört kod bloğunu çalışan sıraya getir",
+        "instructions": [
+          "Soldaki blokları yukarı ve aşağı düğmeleriyle taşı.",
+          "Program önce Geri sayım başlığını yazdırmalı.",
+          "Döngü 3, 2 ve 1 sayılarını üretmeli.",
+          "Başla! mesajı döngü bittikten sonra gelmeli."
+        ],
+        "requirements": [
+          "Bütün bloklar bir kez kullanılmalı.",
+          "Girintili print satırı for satırından sonra gelmeli.",
+          "Bitiş mesajı döngü gövdesinin dışında kalmalı."
+        ],
+        "sampleOutput": "Geri sayım\n3\n2\n1\nBaşla!",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "for sayi in range(3, 0, -1):\nprint(\"Başla!\")\n    print(sayi)\nprint(\"Geri sayım\")"
+      },
+      "hints": [
+        {
+          "title": "Başlık önce gelir",
+          "body": "Geri sayım metnini yazdıran blok programın ilk satırı olmalı."
+        },
+        {
+          "title": "Gövde döngüden sonra gelir",
+          "body": "Girintili print(sayi) bloğu for satırının hemen altında olmalı."
+        },
+        {
+          "title": "Bitiş mesajı en sondadır",
+          "body": "Başla! metni döngü tamamlandıktan sonra yazdırılmalı."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.ordering",
+        "title": "Döngü bloklarını sırala",
+        "xpReward": 50,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "order",
+          "correctBlockIds": ["header", "loop", "body", "done"]
+        }
+      }
+    },
+    {
+      "id": "beginner.loops.break-continue",
+      "moduleId": "loops",
+      "order": 5,
+      "title": "break ve continue kontrolü",
+      "summary": "continue mevcut turu atlar; break ise döngüyü tamamen sonlandırır.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Tek sayıları seç ve 9’da dur",
+        "instructions": [
+          "1’den 10’a kadar sayılar üzerinde for döngüsü kur.",
+          "Çift sayılarda continue ile sonraki tura geç.",
+          "Sayı 9 olduğunda break ile döngüyü bitir.",
+          "Kalan sayıları ekrana yazdır."
+        ],
+        "requirements": [
+          "for, continue ve break yapıları kullanılmalı.",
+          "Çift sayılar yazdırılmamalı.",
+          "9 ve sonrasındaki sayılar yazdırılmamalı."
+        ],
+        "sampleOutput": "1\n3\n5\n7",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "for sayi in range(1, 11):\n    # 9 olduğunda döngüyü bitir\n    # Çift sayılarda bu turu atla\n    print(sayi)"
+      },
+      "hints": [
+        {
+          "title": "Önce durma koşulu",
+          "body": "if sayi == 9: bloğunun içinde break kullan."
+        },
+        {
+          "title": "Çift sayı testi",
+          "body": "sayi % 2 == 0 ifadesi çift sayılarda True olur."
+        },
+        {
+          "title": "continue konumu",
+          "body": "Çift sayı koşulunun içinde continue yaz; print(sayi) koşulların altında kalsın."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.break-continue",
+        "title": "Tek sayıları seç ve 9’da dur",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "for-node", "kind": "node_count", "nodeName": "For", "min": 1, "label": "for döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "continue-node", "kind": "node_count", "nodeName": "Continue", "min": 1, "label": "continue kullanıldı", "visibility": "visible" },
+          { "id": "break-node", "kind": "node_count", "nodeName": "Break", "min": 1, "label": "break kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A1\\s*3\\s*5\\s*7\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.loops.infinite-debugging",
+      "moduleId": "loops",
+      "order": 6,
+      "title": "Hata Avcısı: sonsuz döngü",
+      "summary": "Bir while koşulu hiçbir zaman False olmuyorsa program kendi kendine duramaz. Timeout belirtisini okuyup kök nedeni düzelt.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "Timeout / sonsuz döngü",
+        "symptom": "Program aynı sayıyı sürekli yazdırır ve dört saniyelik çalışma sınırında otomatik durdurulur.",
+        "workflow": [
+          "Bozuk kodu çalıştır ve terminalde timeout mesajını gözlemle.",
+          "while koşulunda kullanılan sayac değişkeninin döngü içinde değişip değişmediğini kontrol et.",
+          "Her tur sonunda sayacı bir artıran satırı doğru girintiyle ekle.",
+          "Programın 1’den 5’e kadar yazdırıp kendiliğinden durduğunu doğrula."
+        ]
+      },
+      "task": {
+        "title": "Sonsuz while döngüsünü sonlandır",
+        "instructions": [
+          "Başlangıç kodunu önce değiştirmeden çalıştır.",
+          "Timeout mesajından sonra döngünün neden bitmediğini bul.",
+          "sayac değişkenini her turda bir artır.",
+          "Düzeltmeyi çalıştırıp gizli testleri kontrol et."
+        ],
+        "requirements": [
+          "while döngüsü korunmalı.",
+          "Sayaç döngü içinde güncellenmeli.",
+          "Çıktı 1’den 5’e kadar olmalı ve program durmalı."
+        ],
+        "sampleOutput": "1\n2\n3\n4\n5",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sayac = 1\n\nwhile sayac <= 5:\n    print(sayac)"
+      },
+      "hints": [
+        {
+          "title": "Koşuldaki değer değişmiyor",
+          "body": "sayac hep 1 kaldığı için sayac <= 5 koşulu sürekli True olur."
+        },
+        {
+          "title": "Güncelleme satırı gerekli",
+          "body": "Döngü gövdesine sayac += 1 ekle."
+        },
+        {
+          "title": "Girintiyi koru",
+          "body": "sayac += 1 satırı print(sayac) ile aynı girinti seviyesinde olmalı."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.infinite-debugging",
+        "title": "Sonsuz while döngüsünü sonlandır",
+        "xpReward": 60,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "while-node", "kind": "node_count", "nodeName": "While", "min": 1, "label": "while döngüsü korundu", "visibility": "visible" },
+          { "id": "update-node", "kind": "node_count", "nodeName": "AugAssign", "min": 1, "label": "Sayaç güncellendi", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A1\\s*2\\s*3\\s*4\\s*5\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.loops.final-sum",
+      "moduleId": "loops",
+      "order": 7,
+      "title": "Döngüler final görevi",
+      "summary": "Bir döngü içinde birikimli değer güncelleyerek sayı dizisinin toplamını hesapla.",
+      "levelLabel": "Chapter Challenge",
+      "mode": "code",
+      "task": {
+        "title": "1’den 10’a kadar sayıların toplamını bul",
+        "instructions": [
+          "toplam değişkenini sıfırla başlat.",
+          "range() ile 1’den 10’a kadar sayıları üret.",
+          "Her sayıyı toplam değişkenine ekle.",
+          "Döngü bittikten sonra sonucu belirtilen biçimde yazdır."
+        ],
+        "requirements": [
+          "for döngüsü ve range() kullanılmalı.",
+          "toplam değeri döngü içinde güncellenmeli.",
+          "Sonuç 55 olmalı."
+        ],
+        "sampleOutput": "Toplam: 55",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "toplam = 0\n\n# 1'den 10'a kadar sayıları toplama ekle\n\nprint(f\"Toplam: {toplam}\")"
+      },
+      "hints": [
+        {
+          "title": "Aralık 10’u içermeli",
+          "body": "range(1, 11) ifadesi 1’den 10’a kadar değer üretir."
+        },
+        {
+          "title": "Birikimli toplama",
+          "body": "Döngü içinde toplam += sayi kullanabilirsin."
+        },
+        {
+          "title": "Tam yapı",
+          "body": "for sayi in range(1, 11): satırının altında girintili toplam += sayi yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.loops.final-sum",
+        "title": "1’den 10’a kadar sayıların toplamını bul",
+        "xpReward": 70,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "for-node", "kind": "node_count", "nodeName": "For", "min": 1, "label": "for döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "range-call", "kind": "call", "name": "range", "label": "range() kullanıldı", "visibility": "visible" },
+          { "id": "update-node", "kind": "node_count", "nodeName": "AugAssign", "min": 1, "label": "Toplam döngü içinde güncellendi", "visibility": "visible" },
+          { "id": "total-type", "kind": "variable_type", "name": "toplam", "expectedType": "int", "label": "Gizli tür testi", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AToplam:\\s*55\\s*\\Z", "flags": "i", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
