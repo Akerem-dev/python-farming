@@ -3,8 +3,14 @@ import { routes } from "../../app/routes";
 import { Button } from "../../components/common/Button";
 import { CodeEditor } from "../../editor/CodeEditor";
 import { useEditorStore } from "../../editor/editorStore";
+import { StdinPanel } from "../../features/learning/components/StdinPanel";
+import { TaskCompletionModal } from "../../features/learning/components/TaskCompletionModal";
+import { TaskResultsPanel } from "../../features/learning/components/TaskResultsPanel";
 import { getLessonHint } from "../../features/learning/services/lessonSessionService";
+import { splitStdinText } from "../../features/learning/services/taskValidationService";
 import { useLearningStore } from "../../features/learning/store/learningStore";
+import { useTaskValidationStore } from "../../features/learning/store/taskValidationStore";
+import { variablesIntroductionTask } from "../../features/learning/taskSpecs";
 import { AppShell } from "../../layouts/AppShell";
 import { formatTerminalOutput } from "../../runtime/terminalFormatter";
 import { useRuntimeStore } from "../../runtime/runtimeStore";
@@ -23,6 +29,8 @@ const runtimeStatusLabels = {
   running: "Çalışıyor",
   error: "Hata",
 } as const;
+
+type TerminalView = "output" | "tests";
 
 export function WorkspacePage() {
   const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
@@ -44,7 +52,18 @@ export function WorkspacePage() {
   const checkRuntime = useRuntimeStore((state) => state.checkRuntime);
   const executeCode = useRuntimeStore((state) => state.executeCode);
   const clearOutput = useRuntimeStore((state) => state.clearOutput);
+  const validationStatus = useTaskValidationStore((state) => state.status);
+  const validationResult = useTaskValidationStore((state) => state.result);
+  const validationError = useTaskValidationStore((state) => state.errorMessage);
+  const stdinText = useTaskValidationStore((state) => state.stdinText);
+  const isCompletionOpen = useTaskValidationStore((state) => state.isCompletionOpen);
+  const setStdinText = useTaskValidationStore((state) => state.setStdinText);
+  const validateTask = useTaskValidationStore((state) => state.validateTask);
+  const clearValidationResult = useTaskValidationStore((state) => state.clearResult);
+  const resetValidationSession = useTaskValidationStore((state) => state.resetSession);
+  const closeCompletion = useTaskValidationStore((state) => state.closeCompletion);
   const [visibleHintIndex, setVisibleHintIndex] = useState<number | null>(null);
+  const [terminalView, setTerminalView] = useState<TerminalView>("output");
 
   const visibleHint = useMemo(
     () => (visibleHintIndex === null ? null : getLessonHint(visibleHintIndex)),
@@ -87,6 +106,10 @@ export function WorkspacePage() {
     return () => window.clearTimeout(savingTimer);
   }, [activeDocument?.content, activeDocument?.id, markDocumentSaved, markDocumentSaving]);
 
+  useEffect(() => {
+    clearValidationResult();
+  }, [activeDocument?.content, clearValidationResult]);
+
   const handleHint = () => {
     if (usedHintCount >= maxHintCount) {
       return;
@@ -101,13 +124,47 @@ export function WorkspacePage() {
   }
 
   const handleRun = () => {
-    void executeCode(activeDocument.content, activeDocument.name);
+    setTerminalView("output");
+    void executeCode(
+      activeDocument.content,
+      activeDocument.name,
+      splitStdinText(stdinText),
+    );
+  };
+
+  const handleValidate = async () => {
+    const result = await validateTask(
+      activeDocument.content,
+      activeDocument.name,
+      variablesIntroductionTask,
+    );
+
+    if (result) {
+      setTerminalView("tests");
+    }
   };
 
   const handleReset = () => {
     resetDocument(activeDocument.id);
     clearOutput();
+    resetValidationSession();
+    setTerminalView("output");
   };
+
+  const handleClearTerminal = () => {
+    clearOutput();
+    clearValidationResult();
+  };
+
+  const handleReviewResults = () => {
+    closeCompletion();
+    setTerminalView("tests");
+  };
+
+  const runtimeBusyOrUnavailable =
+    runtimeStatus === "checking" ||
+    runtimeStatus === "offline" ||
+    runtimeStatus === "running";
 
   return (
     <AppShell activeRoute={routes.workspace} compactCurriculum context="Başlangıç / 2.1 Değişkenler">
@@ -146,6 +203,13 @@ export function WorkspacePage() {
               <pre>Merhaba, ben Ali ve 20 yaşındayım.</pre>
             </div>
           </div>
+
+          <StdinPanel
+            className={styles.stdinPanel}
+            value={stdinText}
+            onChange={setStdinText}
+            disabled={runtimeStatus === "running" || validationStatus === "checking"}
+          />
 
           {visibleHint ? (
             <aside className={styles.hintPanel} aria-live="polite">
@@ -192,28 +256,79 @@ export function WorkspacePage() {
 
         <section className={styles.terminalPanel}>
           <header>
-            <div><strong>Çıktı / Terminal</strong><span>Problemler</span></div>
-            <button type="button" onClick={clearOutput} disabled={!runtimeOutput && !runtimeError}>
+            <div>
+              <button
+                type="button"
+                className={terminalView === "output" ? styles.terminalTabActive : styles.terminalTab}
+                onClick={() => setTerminalView("output")}
+              >
+                Çıktı / Terminal
+              </button>
+              <button
+                type="button"
+                className={terminalView === "tests" ? styles.terminalTabActive : styles.terminalTab}
+                onClick={() => setTerminalView("tests")}
+              >
+                Testler{validationResult ? ` · %${validationResult.score}` : ""}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={handleClearTerminal}
+              disabled={!runtimeOutput && !runtimeError && !validationResult && !validationError}
+            >
               Temizle
             </button>
           </header>
-          <pre className={terminalHasError ? styles.terminalError : undefined}>{terminalText}</pre>
+
+          {terminalView === "output" ? (
+            <pre className={terminalHasError ? styles.terminalError : undefined}>{terminalText}</pre>
+          ) : (
+            <TaskResultsPanel
+              className={styles.testResults}
+              summaryClassName={styles.testSummary}
+              checkListClassName={styles.checkList}
+              checkRowClassName={styles.checkRow}
+              passedClassName={styles.checkPassed}
+              failedClassName={styles.checkFailed}
+              hiddenSummaryClassName={styles.hiddenSummary}
+              status={validationStatus}
+              result={validationResult}
+              errorMessage={validationError}
+            />
+          )}
+
           <div className={styles.runActions}>
             <Button onClick={handleReset}>Başlangıç koduna dön</Button>
             <Button
+              onClick={() => void handleValidate()}
+              disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
+            >
+              {validationStatus === "checking" ? "Kontrol ediliyor…" : "Görevi Kontrol Et"}
+            </Button>
+            <Button
               variant="primary"
               onClick={handleRun}
-              disabled={
-                runtimeStatus === "checking" ||
-                runtimeStatus === "offline" ||
-                runtimeStatus === "running"
-              }
+              disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
             >
               {runtimeStatus === "running" ? "Çalıştırılıyor…" : "Çalıştır"}
             </Button>
           </div>
         </section>
       </div>
+
+      <TaskCompletionModal
+        open={isCompletionOpen}
+        taskTitle={variablesIntroductionTask.title}
+        score={validationResult?.score ?? 0}
+        xpReward={variablesIntroductionTask.xpReward}
+        onClose={closeCompletion}
+        onReview={handleReviewResults}
+        backdropClassName={styles.completionBackdrop}
+        modalClassName={styles.completionModal}
+        badgeClassName={styles.completionBadge}
+        actionsClassName={styles.completionActions}
+      />
     </AppShell>
   );
 }
