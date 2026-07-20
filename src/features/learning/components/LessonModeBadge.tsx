@@ -6,6 +6,7 @@ const labels: Record<CurriculumLessonMode, string> = {
   "output-prediction": "Çıktıyı tahmin et",
   "code-completion": "Kod tamamlama",
   debugging: "Hata Avcısı",
+  "code-ordering": "Kod sıralama",
 };
 
 interface LessonModeBadgeProps {
