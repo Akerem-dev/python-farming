@@ -169,7 +169,10 @@ export async function loadCurriculumCatalog() {
   const packageValues = await Promise.all(
     packageIndexValue.files.map((file) => readJson(file, "Modül paketi")),
   );
-  packageValues.forEach(assertModulePackage);
+  const packages = packageValues.map((value) => {
+    assertModulePackage(value);
+    return value;
+  });
 
-  return mergeModulePackages(catalogValue, packageValues);
+  return mergeModulePackages(catalogValue, packages);
 }
