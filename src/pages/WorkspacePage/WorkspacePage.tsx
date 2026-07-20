@@ -15,6 +15,7 @@ import {
   useCurriculumStore,
 } from "../../features/curriculum/store/curriculumStore";
 import { DebugGuide } from "../../features/debugging/components/DebugGuide";
+import { CodeOrderingPanel } from "../../features/learning/components/CodeOrderingPanel";
 import { PracticeAnswerPanel } from "../../features/learning/components/PracticeAnswerPanel";
 import { StdinPanel } from "../../features/learning/components/StdinPanel";
 import { TaskCompletionModal } from "../../features/learning/components/TaskCompletionModal";
@@ -47,6 +48,7 @@ const lessonModeLabels = {
   "output-prediction": "Çıktıyı tahmin et",
   "code-completion": "Kod tamamlama",
   debugging: "Hata Avcısı",
+  "code-ordering": "Kod sıralama",
 } as const;
 
 type TerminalView = "output" | "tests";
@@ -64,6 +66,8 @@ export function WorkspacePage() {
   const isOutputPrediction = lessonMode === "output-prediction";
   const isCodeCompletion = lessonMode === "code-completion";
   const isDebugging = lessonMode === "debugging";
+  const isCodeOrdering = lessonMode === "code-ordering";
+  const usesLocalAnswer = isOutputPrediction || isCodeOrdering;
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
   const loadProgress = useProgressStore((state) => state.loadProgress);
@@ -83,6 +87,7 @@ export function WorkspacePage() {
     state.documents.find((document) => document.id === state.activeDocumentId),
   );
   const loadLessonDocument = useEditorStore((state) => state.loadLessonDocument);
+  const updateDocumentContent = useEditorStore((state) => state.updateDocumentContent);
   const markDocumentSaving = useEditorStore((state) => state.markDocumentSaving);
   const markDocumentSaved = useEditorStore((state) => state.markDocumentSaved);
   const resetDocument = useEditorStore((state) => state.resetDocument);
@@ -107,10 +112,12 @@ export function WorkspacePage() {
   const validationError = useTaskValidationStore((state) => state.errorMessage);
   const stdinText = useTaskValidationStore((state) => state.stdinText);
   const selectedOptionId = useTaskValidationStore((state) => state.selectedOptionId);
+  const orderedBlockIds = useTaskValidationStore((state) => state.orderedBlockIds);
   const isCompletionOpen = useTaskValidationStore((state) => state.isCompletionOpen);
   const startValidationSession = useTaskValidationStore((state) => state.startSession);
   const setStdinText = useTaskValidationStore((state) => state.setStdinText);
   const setSelectedOptionId = useTaskValidationStore((state) => state.setSelectedOptionId);
+  const moveOrderedBlock = useTaskValidationStore((state) => state.moveOrderedBlock);
   const validateTask = useTaskValidationStore((state) => state.validateTask);
   const clearValidationResult = useTaskValidationStore((state) => state.clearResult);
   const resetValidationSession = useTaskValidationStore((state) => state.resetSession);
@@ -119,6 +126,24 @@ export function WorkspacePage() {
   const [visibleHintIndex, setVisibleHintIndex] = useState<number | null>(null);
   const [terminalView, setTerminalView] = useState<TerminalView>("output");
   const [completionXpReward, setCompletionXpReward] = useState(0);
+
+  const initialOrderedBlockIds = useMemo(
+    () => currentLesson?.ordering?.blocks.map((block) => block.id) ?? [],
+    [currentLesson?.ordering],
+  );
+  const orderedSource = useMemo(() => {
+    if (!currentLesson?.ordering) {
+      return null;
+    }
+
+    const blockMap = new Map(
+      currentLesson.ordering.blocks.map((block) => [block.id, block.code]),
+    );
+    return orderedBlockIds
+      .map((blockId) => blockMap.get(blockId))
+      .filter((code): code is string => typeof code === "string")
+      .join("\n");
+  }, [currentLesson?.ordering, orderedBlockIds]);
 
   const visibleHint =
     visibleHintIndex === null ? null : currentLesson?.hints[visibleHintIndex] ?? null;
@@ -134,12 +159,16 @@ export function WorkspacePage() {
   );
   const debuggingIntro =
     ">>> Hata Avcısı hazır.\n>>> Önce bozuk kodu çalıştır, traceback’in son satırını oku ve ardından hatayı düzelt.";
+  const orderingIntro =
+    ">>> Kod sıralama görevi hazır.\n>>> Blokları çalışan program sırasına getir; sağdaki ön izleme otomatik güncellenir.";
   const displayedTerminalText =
     isOutputPrediction && !runtimeOutput && !runtimeError
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
-      : isDebugging && !runtimeOutput && !runtimeError
-        ? debuggingIntro
-        : terminalText;
+      : isCodeOrdering && !runtimeOutput && !runtimeError
+        ? orderingIntro
+        : isDebugging && !runtimeOutput && !runtimeError
+          ? debuggingIntro
+          : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
@@ -176,7 +205,7 @@ export function WorkspacePage() {
       currentLesson.task.instructions.length,
       currentLesson.hints.length,
     );
-    startValidationSession(currentLesson.task.defaultStdin);
+    startValidationSession(currentLesson.task.defaultStdin, initialOrderedBlockIds);
     clearOutput();
     setVisibleHintIndex(null);
     setTerminalView("output");
@@ -185,10 +214,32 @@ export function WorkspacePage() {
   }, [
     clearOutput,
     currentLesson,
+    initialOrderedBlockIds,
     loadLessonDocument,
     rememberLesson,
     startLesson,
     startValidationSession,
+  ]);
+
+  useEffect(() => {
+    if (
+      !isCodeOrdering ||
+      !currentLesson ||
+      !activeDocument ||
+      activeDocument.id !== `lesson:${currentLesson.id}` ||
+      orderedSource === null ||
+      activeDocument.content === orderedSource
+    ) {
+      return;
+    }
+
+    updateDocumentContent(activeDocument.id, orderedSource);
+  }, [
+    activeDocument,
+    currentLesson,
+    isCodeOrdering,
+    orderedSource,
+    updateDocumentContent,
   ]);
 
   useEffect(() => {
@@ -229,7 +280,7 @@ export function WorkspacePage() {
   };
 
   const handleRun = () => {
-    if (isOutputPrediction) {
+    if (usesLocalAnswer) {
       return;
     }
 
@@ -262,7 +313,7 @@ export function WorkspacePage() {
   const handleReset = () => {
     resetDocument(activeDocument.id);
     clearOutput();
-    resetValidationSession(currentLesson.task.defaultStdin);
+    resetValidationSession(currentLesson.task.defaultStdin, initialOrderedBlockIds);
     setTerminalView("output");
   };
 
@@ -293,28 +344,33 @@ export function WorkspacePage() {
     runtimeStatus === "running";
   const validationDisabled =
     validationStatus === "checking" ||
-    (!isOutputPrediction && runtimeBusyOrUnavailable) ||
+    (!usesLocalAnswer && runtimeBusyOrUnavailable) ||
     (isOutputPrediction && !selectedOptionId);
   const validationLabel =
     validationStatus === "checking"
       ? "Kontrol ediliyor…"
       : isOutputPrediction
         ? "Tahmini Kontrol Et"
-        : isDebugging
-          ? "Düzeltmeyi Kontrol Et"
-          : isCodeCompletion
-            ? "Eksikleri Kontrol Et"
-            : "Görevi Kontrol Et";
+        : isCodeOrdering
+          ? "Sıralamayı Kontrol Et"
+          : isDebugging
+            ? "Düzeltmeyi Kontrol Et"
+            : isCodeCompletion
+              ? "Eksikleri Kontrol Et"
+              : "Görevi Kontrol Et";
   const resetLabel = isOutputPrediction
     ? "Tahmini temizle"
-    : isDebugging
-      ? "Hatalı koda dön"
-      : "Başlangıç koduna dön";
+    : isCodeOrdering
+      ? "İlk sıralamaya dön"
+      : isDebugging
+        ? "Hatalı koda dön"
+        : "Başlangıç koduna dön";
   const runLabel = runtimeStatus === "running"
     ? "Çalıştırılıyor…"
     : isDebugging
       ? "Kodu / Hatayı Çalıştır"
       : "Çalıştır";
+  const editorReadOnly = isOutputPrediction || isCodeOrdering;
   const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
   return (
@@ -349,7 +405,13 @@ export function WorkspacePage() {
             </div>
             <div>
               <span className={styles.eyebrow}>
-                {isOutputPrediction ? "Çıktı biçimi" : isDebugging ? "Düzeltme sonrası çıktı" : "Örnek çıktı"}
+                {isOutputPrediction
+                  ? "Çıktı biçimi"
+                  : isDebugging
+                    ? "Düzeltme sonrası çıktı"
+                    : isCodeOrdering
+                      ? "Doğru program çıktısı"
+                      : "Örnek çıktı"}
               </span>
               <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
@@ -362,6 +424,16 @@ export function WorkspacePage() {
               options={currentLesson.choice.options}
               selectedOptionId={selectedOptionId}
               onSelect={setSelectedOptionId}
+              disabled={validationStatus === "checking"}
+            />
+          ) : null}
+
+          {isCodeOrdering && currentLesson.ordering ? (
+            <CodeOrderingPanel
+              prompt={currentLesson.ordering.prompt}
+              blocks={currentLesson.ordering.blocks}
+              orderedBlockIds={orderedBlockIds}
+              onMove={moveOrderedBlock}
               disabled={validationStatus === "checking"}
             />
           ) : null}
@@ -431,14 +503,14 @@ export function WorkspacePage() {
           <CodeEditor
             documentId={activeDocumentId}
             className={styles.editorHost}
-            ariaLabel={isOutputPrediction ? "Salt okunur Python kodu" : "Python kod editörü"}
-            readOnly={isOutputPrediction}
+            ariaLabel={editorReadOnly ? "Salt okunur Python kodu" : "Python kod editörü"}
+            readOnly={editorReadOnly}
           />
 
           <footer className={styles.editorStatus}>
             <span>Satır {activeDocument.cursor.line}, Sütun {activeDocument.cursor.column}</span>
             <span>
-              UTF-8 · {isOutputPrediction ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
+              UTF-8 · {editorReadOnly ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
             </span>
           </footer>
         </section>
@@ -492,13 +564,13 @@ export function WorkspacePage() {
           <div className={styles.runActions}>
             <Button onClick={handleReset}>{resetLabel}</Button>
             <Button
-              variant={isOutputPrediction ? "primary" : undefined}
+              variant={usesLocalAnswer ? "primary" : undefined}
               onClick={() => void handleValidate()}
               disabled={validationDisabled}
             >
               {validationLabel}
             </Button>
-            {!isOutputPrediction ? (
+            {!usesLocalAnswer ? (
               <Button
                 variant="primary"
                 onClick={handleRun}
