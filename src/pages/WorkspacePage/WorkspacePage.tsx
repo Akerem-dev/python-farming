@@ -1,25 +1,76 @@
+import { useEffect, useMemo, useState } from "react";
 import { routes } from "../../app/routes";
 import { Button } from "../../components/common/Button";
+import { CodeEditor } from "../../editor/CodeEditor";
+import { useEditorStore } from "../../editor/editorStore";
+import { getLessonHint } from "../../features/learning/services/lessonSessionService";
+import { useLearningStore } from "../../features/learning/store/learningStore";
 import { AppShell } from "../../layouts/AppShell";
 import styles from "./WorkspacePage.module.css";
 
-const codeLines = [
-  "# Kodunuzu buraya yazın",
-  "",
-  'ad = ""',
-  "yas = 0",
-  "",
-  'print(f"Merhaba, ben {ad} ve {yas} yaşındayım.")',
-];
+const saveStatusLabels = {
+  saved: "Kaydedildi",
+  dirty: "Kaydedilmedi",
+  saving: "Kaydediliyor…",
+} as const;
 
 export function WorkspacePage() {
+  const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
+  const activeDocument = useEditorStore((state) =>
+    state.documents.find((document) => document.id === state.activeDocumentId),
+  );
+  const markDocumentSaving = useEditorStore((state) => state.markDocumentSaving);
+  const markDocumentSaved = useEditorStore((state) => state.markDocumentSaved);
+  const resetDocument = useEditorStore((state) => state.resetDocument);
+  const usedHintCount = useLearningStore((state) => state.usedHintCount);
+  const maxHintCount = useLearningStore((state) => state.maxHintCount);
+  const currentStep = useLearningStore((state) => state.currentStep);
+  const totalSteps = useLearningStore((state) => state.totalSteps);
+  const revealNextHint = useLearningStore((state) => state.revealNextHint);
+  const [visibleHintIndex, setVisibleHintIndex] = useState<number | null>(null);
+
+  const visibleHint = useMemo(
+    () => (visibleHintIndex === null ? null : getLessonHint(visibleHintIndex)),
+    [visibleHintIndex],
+  );
+
+  useEffect(() => {
+    if (!activeDocument || activeDocument.saveStatus !== "dirty") {
+      return;
+    }
+
+    const documentId = activeDocument.id;
+    const savingTimer = window.setTimeout(() => {
+      markDocumentSaving(documentId);
+
+      window.setTimeout(() => {
+        markDocumentSaved(documentId);
+      }, 180);
+    }, 650);
+
+    return () => window.clearTimeout(savingTimer);
+  }, [activeDocument?.content, activeDocument?.id, markDocumentSaved, markDocumentSaving]);
+
+  const handleHint = () => {
+    if (usedHintCount >= maxHintCount) {
+      return;
+    }
+
+    setVisibleHintIndex(usedHintCount);
+    revealNextHint();
+  };
+
+  if (!activeDocument) {
+    return null;
+  }
+
   return (
     <AppShell activeRoute={routes.workspace} compactCurriculum context="Başlangıç / 2.1 Değişkenler">
       <div className={styles.workspace}>
         <section className={styles.briefPanel}>
           <div className={styles.stepRow}>
             <span>Beginner Learning</span>
-            <strong>Adım 1 / 6</strong>
+            <strong>Adım {currentStep} / {totalSteps}</strong>
           </div>
           <h1>Değişkenler nedir?</h1>
           <p className={styles.intro}>
@@ -51,39 +102,56 @@ export function WorkspacePage() {
             </div>
           </div>
 
+          {visibleHint ? (
+            <aside className={styles.hintPanel} aria-live="polite">
+              <span className={styles.eyebrow}>İpucu {visibleHintIndex! + 1}</span>
+              <strong>{visibleHint.title}</strong>
+              <p>{visibleHint.body}</p>
+            </aside>
+          ) : null}
+
           <div className={styles.briefActions}>
-            <Button>İpucu al</Button>
-            <span>İpucu kullanımı: 0 / 3</span>
+            <Button onClick={handleHint} disabled={usedHintCount >= maxHintCount}>
+              İpucu al
+            </Button>
+            <span>İpucu kullanımı: {usedHintCount} / {maxHintCount}</span>
           </div>
         </section>
 
         <section className={styles.editorPanel}>
           <header className={styles.editorHeader}>
-            <div><span className={styles.activeTab}>main.py</span><button type="button">＋</button></div>
+            <div>
+              <span className={styles.activeTab}>
+                {activeDocument.name}
+                {activeDocument.saveStatus === "dirty" ? <i aria-label="Kaydedilmemiş değişiklik" /> : null}
+              </span>
+              <button type="button" aria-label="Yeni dosya ekle" disabled>＋</button>
+            </div>
             <span>Python 3.12</span>
           </header>
-          <div className={styles.editor} aria-label="Python kod editörü ön izlemesi">
-            {codeLines.map((line, index) => (
-              <div className={styles.codeLine} key={`${index}-${line}`}>
-                <span>{index + 1}</span>
-                <code className={index === 0 ? styles.comment : ""}>{line || " "}</code>
-              </div>
-            ))}
-            <div className={styles.cursor} />
-          </div>
-          <footer className={styles.editorStatus}>Satır 1, Sütun 1 · UTF-8 · Kaydedilmedi</footer>
+
+          <CodeEditor
+            documentId={activeDocumentId}
+            className={styles.editorHost}
+            ariaLabel="Python kod editörü"
+          />
+
+          <footer className={styles.editorStatus}>
+            <span>Satır {activeDocument.cursor.line}, Sütun {activeDocument.cursor.column}</span>
+            <span>UTF-8 · {saveStatusLabels[activeDocument.saveStatus]}</span>
+          </footer>
         </section>
 
         <section className={styles.terminalPanel}>
           <header>
             <div><strong>Çıktı / Terminal</strong><span>Problemler</span></div>
-            <button type="button">Temizle</button>
+            <button type="button" disabled>Temizle</button>
           </header>
-          <pre>Python runtime sonraki aşamada bağlanacak.
+          <pre>Python çalışma motoru Aşama 3&apos;te bağlanacak.
 &gt;&gt;&gt; _</pre>
           <div className={styles.runActions}>
-            <Button>Sıfırla</Button>
-            <Button variant="primary" disabled>Çalıştır — Aşama 2</Button>
+            <Button onClick={() => resetDocument(activeDocument.id)}>Başlangıç koduna dön</Button>
+            <Button variant="primary" disabled>Çalıştır — Aşama 3</Button>
           </div>
         </section>
       </div>
