@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
+import { navigate } from "../../app/AppRouter";
 import { routes } from "../../app/routes";
 import { Button } from "../../components/common/Button";
 import { CodeEditor } from "../../editor/CodeEditor";
 import { useEditorStore } from "../../editor/editorStore";
+import {
+  getNextLesson,
+  getOrderedModules,
+  getPreviousLesson,
+  isModuleCompleted,
+} from "../../features/curriculum/curriculumProgress";
 import {
   getCurrentLesson,
   useCurriculumStore,
@@ -42,16 +49,22 @@ export function WorkspacePage() {
   const currentLessonId = useCurriculumStore((state) => state.currentLessonId);
   const loadCatalog = useCurriculumStore((state) => state.loadCatalog);
   const selectLesson = useCurriculumStore((state) => state.selectLesson);
-  const selectNextLesson = useCurriculumStore((state) => state.selectNextLesson);
-  const selectPreviousLesson = useCurriculumStore((state) => state.selectPreviousLesson);
+  const selectResumeLesson = useCurriculumStore((state) => state.selectResumeLesson);
   const currentLesson = getCurrentLesson(catalog, currentLessonId);
-  const orderedLessons = useMemo(
-    () => [...(catalog?.lessons ?? [])].sort((left, right) => left.order - right.order),
-    [catalog],
-  );
-  const currentLessonIndex = orderedLessons.findIndex((lesson) => lesson.id === currentLessonId);
-  const hasPreviousLesson = currentLessonIndex > 0;
-  const hasNextLesson = currentLessonIndex >= 0 && currentLessonIndex < orderedLessons.length - 1;
+
+  const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
+  const loadProgress = useProgressStore((state) => state.loadProgress);
+  const completeLesson = useProgressStore((state) => state.completeLesson);
+  const rememberLesson = useProgressStore((state) => state.rememberLesson);
+
+  const nextLesson = getNextLesson(catalog, currentLessonId, completedLessonIds);
+  const previousLesson = getPreviousLesson(catalog, currentLessonId);
+  const currentModule = getOrderedModules(catalog).find(
+    (module) => module.id === currentLesson?.moduleId,
+  ) ?? null;
+  const moduleCompleted = currentModule
+    ? isModuleCompleted(currentModule, completedLessonIds)
+    : false;
 
   const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
   const activeDocument = useEditorStore((state) =>
@@ -89,12 +102,9 @@ export function WorkspacePage() {
   const resetValidationSession = useTaskValidationStore((state) => state.resetSession);
   const closeCompletion = useTaskValidationStore((state) => state.closeCompletion);
 
-  const loadProgress = useProgressStore((state) => state.loadProgress);
-  const completeLesson = useProgressStore((state) => state.completeLesson);
-  const rememberLesson = useProgressStore((state) => state.rememberLesson);
-
   const [visibleHintIndex, setVisibleHintIndex] = useState<number | null>(null);
   const [terminalView, setTerminalView] = useState<TerminalView>("output");
+  const [completionXpReward, setCompletionXpReward] = useState(0);
 
   const visibleHint =
     visibleHintIndex === null ? null : currentLesson?.hints[visibleHintIndex] ?? null;
@@ -116,20 +126,16 @@ export function WorkspacePage() {
 
   useEffect(() => {
     let active = true;
-    void Promise.all([loadCatalog(), loadProgress()]).then(([loadedCatalog, progress]) => {
-      if (
-        active &&
-        progress?.lastLessonId &&
-        loadedCatalog?.lessons.some((lesson) => lesson.id === progress.lastLessonId)
-      ) {
-        selectLesson(progress.lastLessonId);
+    void Promise.all([loadCatalog(), loadProgress()]).then(([, progress]) => {
+      if (active) {
+        selectResumeLesson(progress?.lastLessonId);
       }
     });
     void checkRuntime();
     return () => {
       active = false;
     };
-  }, [checkRuntime, loadCatalog, loadProgress, selectLesson]);
+  }, [checkRuntime, loadCatalog, loadProgress, selectResumeLesson]);
 
   useEffect(() => {
     if (!currentLesson) {
@@ -150,6 +156,7 @@ export function WorkspacePage() {
     clearOutput();
     setVisibleHintIndex(null);
     setTerminalView("output");
+    setCompletionXpReward(0);
     void rememberLesson(currentLesson.id);
   }, [
     clearOutput,
@@ -207,6 +214,9 @@ export function WorkspacePage() {
   };
 
   const handleValidate = async () => {
+    const alreadyCompleted = completedLessonIds.includes(currentLesson.id);
+    setCompletionXpReward(alreadyCompleted ? 0 : currentLesson.validation.xpReward);
+
     const result = await validateTask(
       activeDocument.content,
       activeDocument.name,
@@ -240,16 +250,20 @@ export function WorkspacePage() {
 
   const handleContinue = () => {
     closeCompletion();
-    if (hasNextLesson) {
-      selectNextLesson();
+    const latestCompletedIds = useProgressStore.getState().completedLessonIds;
+    const latestNextLesson = getNextLesson(catalog, currentLesson.id, latestCompletedIds);
+    if (latestNextLesson) {
+      selectLesson(latestNextLesson.id);
+      return;
     }
+    navigate(routes.home);
   };
 
   const runtimeBusyOrUnavailable =
     runtimeStatus === "checking" ||
     runtimeStatus === "offline" ||
     runtimeStatus === "running";
-  const context = `Başlangıç / 2.${currentLesson.order} ${currentLesson.title}`;
+  const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
   return (
     <AppShell activeRoute={routes.workspace} compactCurriculum context={context}>
@@ -305,8 +319,19 @@ export function WorkspacePage() {
           ) : null}
 
           <div className={styles.lessonNavigation}>
-            <Button onClick={selectPreviousLesson} disabled={!hasPreviousLesson}>Önceki ders</Button>
-            <Button onClick={selectNextLesson} disabled={!hasNextLesson}>Sonraki ders</Button>
+            <Button
+              onClick={() => previousLesson && selectLesson(previousLesson.id)}
+              disabled={!previousLesson}
+            >
+              Önceki ders
+            </Button>
+            <Button
+              onClick={() => nextLesson && selectLesson(nextLesson.id)}
+              disabled={!nextLesson}
+              title={!nextLesson && !moduleCompleted ? "Önce mevcut dersi tamamla." : undefined}
+            >
+              Sonraki ders
+            </Button>
           </div>
 
           <div className={styles.briefActions}>
@@ -409,11 +434,11 @@ export function WorkspacePage() {
         open={isCompletionOpen}
         taskTitle={currentLesson.task.title}
         score={validationResult?.score ?? 0}
-        xpReward={currentLesson.validation.xpReward}
+        xpReward={completionXpReward}
         onClose={closeCompletion}
         onReview={handleReviewResults}
         onContinue={handleContinue}
-        continueLabel={hasNextLesson ? "Sonraki ders" : "Modülü bitir"}
+        continueLabel={nextLesson ? "Sonraki ders" : moduleCompleted ? "Modülü bitir" : "Devam et"}
         backdropClassName={styles.completionBackdrop}
         modalClassName={styles.completionModal}
         badgeClassName={styles.completionBadge}
