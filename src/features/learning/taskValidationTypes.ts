@@ -16,6 +16,12 @@ export type TaskCheck =
       name: string;
     })
   | (TaskCheckBase & {
+      kind: "call_count";
+      name: string;
+      min: number;
+      max?: number;
+    })
+  | (TaskCheckBase & {
       kind: "variable_type";
       name: string;
       expectedType: "str" | "int" | "float" | "bool" | "list" | "tuple" | "dict" | "set";
