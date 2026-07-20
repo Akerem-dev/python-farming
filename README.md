@@ -4,7 +4,7 @@ Python Farming, başlangıç seviyesinden uzman Python geliştiriciliğine uzana
 
 ## Mevcut aşama
 
-**Aşama 2 — Gerçek kod editörü ve çalışma oturumu**
+**Aşama 3 — Yerel Python çalışma motoru**
 
 Bu sürümde şunlar çalışır:
 
@@ -13,20 +13,23 @@ Bu sürümde şunlar çalışır:
 - Ana müfredat ve çalışma ekranları
 - CodeMirror 6 tabanlı gerçek Python editörü
 - Python sözdizimi renklendirmesi
-- Satır ve sütun takibi
-- Kaydedilmemiş değişiklik ve otomatik kayıt göstergesi
-- Başlangıç koduna geri dönme
-- Kademeli ders ipucu state'i
-- Zustand tabanlı editör ve öğrenme oturumu
-- CPython sidecar için sürümlenmiş runtime protokol sözleşmesi
-- Workspace ekranı için lazy loading / code splitting
-- Editör store birim testleri
+- Satır, sütun ve kaydetme durumu takibi
+- Kademeli ders ipuçları
+- Yerel Python 3 yorumlayıcısını otomatik bulma
+- Tauri IPC üzerinden gerçek Python kodu çalıştırma
+- Gerçek `stdout`, `stderr`, traceback, çıkış kodu ve çalışma süresi
+- Sonsuz döngülere karşı dört saniyelik ders çalışma sınırı
+- Kaynak kod, stdin ve terminal çıktısı için güvenli boyut sınırları
+- Her çalıştırmada geçici ve ayrı çalışma klasörü
+- TypeScript ve Rust birim testleri
+- GitHub Actions üzerinde frontend ve Rust CI
 
 Henüz bağlanmayan sistemler:
 
-- Gerçek CPython runtime
-- Terminal stdin/stdout iletişimi
-- Gizli test doğrulaması
+- Uygulamayla paketlenen gömülü CPython dağıtımı
+- İşletim sistemi seviyesinde üretim sandbox'ı
+- İnteraktif stdin formu
+- Gizli test ve görev doğrulama motoru
 - SQLite ilerleme kaydı
 - JSON tabanlı ders içerik motoru
 
@@ -34,27 +37,28 @@ Henüz bağlanmayan sistemler:
 
 - Node.js 20.19 veya üzeri
 - npm 10 veya üzeri
-- Masaüstü geliştirme için Rust ve Tauri işletim sistemi ön koşulları
+- Rust stable ve Tauri işletim sistemi ön koşulları
+- Aşama 3 geliştirme runtime'ı için PATH üzerinde Python 3
+
+Windows'ta Python Launcher (`py -3`) veya `python`; macOS/Linux'ta `python3` veya `python` otomatik olarak aranır. Özel bir yorumlayıcı kullanmak için `PYTHON_FARMING_PYTHON` ortam değişkeni ayarlanabilir.
 
 ## İlk kurulum
-
-Bu branch'te eski `package-lock.json`, üretim ortamına özel registry adresleri içerdiği için kaldırılmıştır. Kendi bilgisayarında bir kez aşağıdaki komutu çalıştır; npm, `.npmrc` üzerinden resmî registry'yi kullanarak yeni lock dosyasını oluşturacaktır.
 
 ```bash
 npm install
 ```
 
-Oluşan `package-lock.json` dosyasını repository'ye eklemek gerekir.
+Oluşan `package-lock.json` dosyası repository'ye eklenmelidir.
 
 ## Çalıştırma
+
+Tarayıcı arayüz ön izlemesi:
 
 ```bash
 npm run dev
 ```
 
-Tarayıcı ön izlemesi `http://localhost:1420` adresinde açılır.
-
-Tauri masaüstü penceresi:
+Tarayıcı ön izlemesinde güvenlik gereği Python çalıştırılmaz. Gerçek masaüstü runtime için:
 
 ```bash
 npm run tauri:dev
@@ -66,16 +70,15 @@ npm run tauri:dev
 npm run typecheck
 npm test
 npm run build
+cd src-tauri
+cargo fmt --all -- --check
+cargo test --all-targets
 ```
 
-## Aşama 2 doğrulaması
+## Runtime güvenlik sınırı
 
-- TypeScript type-check: başarılı
-- Vitest: 3/3 test başarılı
-- Production build: başarılı
-- Ana uygulama paketi: yaklaşık 206 KB
-- Çalışma alanı / editör paketi: yaklaşık 471 KB ve yalnız gerektiğinde yüklenir
+Aşama 3, eğitim akışını doğrulamak için sistemde kurulu Python'u `-I -B` bayraklarıyla ayrı geçici klasörde çalıştırır; süreyi ve çıktı boyutunu sınırlar. Bu yapı henüz kötü niyetli kodu işletim sistemi seviyesinde izole eden tam bir güvenlik sandbox'ı değildir. Son kullanıcı sürümünde imzalı gömülü CPython, daha sıkı dosya izinleri ve platforma özel süreç kısıtlamaları kullanılacaktır.
 
 ## Sonraki aşama
 
-Aşama 3'te izole CPython çalışma süreci, Tauri IPC sınırı, gerçek terminal çıktısı, zaman aşımı ve kod çalıştırma düğmesi bağlanacaktır.
+Aşama 4'te stdin kullanıcı arayüzü, görev testleri, AST tabanlı gereksinim doğrulaması ve başarı/başarısızlık geri bildirimi eklenecektir.

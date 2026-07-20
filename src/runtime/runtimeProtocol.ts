@@ -63,9 +63,17 @@ export interface RuntimeResponse<TPayload = unknown> {
   diagnostics: RuntimeDiagnostic[];
 }
 
+export interface RuntimeHealthResult {
+  status: "ready" | "offline";
+  version?: string;
+  executable?: string;
+  message: string;
+}
+
 export interface ExecuteCodeResult {
   stdout: string;
   stderr: string;
   exitCode: number | null;
   durationMs: number;
+  truncated: boolean;
 }
