@@ -12,6 +12,9 @@ pub fn run() {
             app_version,
             commands::runtime::runtime_health_check,
             commands::runtime::execute_python,
+            commands::progress::load_progress,
+            commands::progress::complete_lesson_progress,
+            commands::progress::set_last_lesson,
         ])
         .run(tauri::generate_context!())
         .expect("Python Farming başlatılırken kritik bir hata oluştu");

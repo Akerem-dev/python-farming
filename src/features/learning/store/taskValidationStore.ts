@@ -16,6 +16,7 @@ interface TaskValidationStore {
   result: TaskValidationResult | null;
   errorMessage: string | null;
   isCompletionOpen: boolean;
+  startSession: (stdinText?: string) => void;
   setStdinText: (value: string) => void;
   validateTask: (
     source: string,
@@ -23,7 +24,7 @@ interface TaskValidationStore {
     spec: TaskValidationSpec,
   ) => Promise<TaskValidationResult | null>;
   clearResult: () => void;
-  resetSession: () => void;
+  resetSession: (stdinText?: string) => void;
   closeCompletion: () => void;
 }
 
@@ -35,13 +36,20 @@ function getErrorMessage(error: unknown) {
   return typeof error === "string" ? error : "Görev kontrol edilirken bilinmeyen bir hata oluştu.";
 }
 
-export const useTaskValidationStore = create<TaskValidationStore>((set, get) => ({
-  status: "idle",
-  stdinText: "",
-  result: null,
-  errorMessage: null,
-  isCompletionOpen: false,
+function sessionState(stdinText = "") {
+  return {
+    status: "idle" as const,
+    stdinText,
+    result: null,
+    errorMessage: null,
+    isCompletionOpen: false,
+  };
+}
 
+export const useTaskValidationStore = create<TaskValidationStore>((set, get) => ({
+  ...sessionState(),
+
+  startSession: (stdinText = "") => set(sessionState(stdinText)),
   setStdinText: (stdinText) => set({ stdinText }),
 
   validateTask: async (source, filename, spec) => {
@@ -91,14 +99,6 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
       isCompletionOpen: false,
     }),
 
-  resetSession: () =>
-    set({
-      status: "idle",
-      stdinText: "",
-      result: null,
-      errorMessage: null,
-      isCompletionOpen: false,
-    }),
-
+  resetSession: (stdinText = "") => set(sessionState(stdinText)),
   closeCompletion: () => set({ isCompletionOpen: false }),
 }));

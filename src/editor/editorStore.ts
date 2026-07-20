@@ -21,6 +21,7 @@ const initialDocument: EditorDocument = {
 
 interface EditorState extends EditorSessionSnapshot {
   setActiveDocument: (documentId: string) => void;
+  loadLessonDocument: (lessonId: string, filename: string, starterCode: string) => void;
   updateDocumentContent: (documentId: string, content: string) => void;
   updateCursor: (documentId: string, cursor: EditorCursorPosition) => void;
   markDocumentSaving: (documentId: string) => void;
@@ -47,6 +48,25 @@ export const useEditorStore = create<EditorState>((set) => ({
         ? { activeDocumentId: documentId }
         : state,
     ),
+
+  loadLessonDocument: (lessonId, filename, starterCode) => {
+    const documentId = `lesson:${lessonId}`;
+    set({
+      activeDocumentId: documentId,
+      documents: [
+        {
+          id: documentId,
+          name: filename,
+          language: "python",
+          content: starterCode,
+          initialContent: starterCode,
+          saveStatus: "saved",
+          cursor: { line: 1, column: 1 },
+          revision: 0,
+        },
+      ],
+    });
+  },
 
   updateDocumentContent: (documentId, content) =>
     set((state) => ({
