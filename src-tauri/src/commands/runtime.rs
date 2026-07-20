@@ -1,7 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::{
-    env,
-    fs,
+    env, fs,
     io::{Read, Write},
     path::{Path, PathBuf},
     process::{Command, ExitStatus, Stdio},
@@ -191,18 +190,14 @@ fn execute_python_sync(
 
     let timeout = Duration::from_millis(timeout_ms);
     let (exit_status, timed_out) = wait_for_child(&mut child, timeout)?;
-    let stdout = stdout_reader
-        .join()
-        .unwrap_or_else(|_| CapturedOutput {
-            text: String::new(),
-            truncated: false,
-        });
-    let stderr = stderr_reader
-        .join()
-        .unwrap_or_else(|_| CapturedOutput {
-            text: "Python stderr çıktısı okunamadı.".to_string(),
-            truncated: false,
-        });
+    let stdout = stdout_reader.join().unwrap_or_else(|_| CapturedOutput {
+        text: String::new(),
+        truncated: false,
+    });
+    let stderr = stderr_reader.join().unwrap_or_else(|_| CapturedOutput {
+        text: "Python stderr çıktısı okunamadı.".to_string(),
+        truncated: false,
+    });
 
     let duration_ms = started_at.elapsed().as_millis().min(u64::MAX as u128) as u64;
     let truncated = stdout.truncated || stderr.truncated;
