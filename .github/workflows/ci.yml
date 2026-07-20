@@ -38,8 +38,24 @@ jobs:
       - name: Production build
         run: npm run build
 
+  rust-format:
+    name: Rust formatting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Check formatting
+        working-directory: src-tauri
+        run: cargo fmt --all -- --check
+
   rust-runtime:
-    name: Rust runtime checks
+    name: Rust runtime tests
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -61,12 +77,6 @@ jobs:
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt, clippy
-
-      - name: Check formatting
-        working-directory: src-tauri
-        run: cargo fmt --all -- --check
 
       - name: Run Rust tests
         working-directory: src-tauri
