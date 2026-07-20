@@ -6,6 +6,16 @@ export interface CurriculumCatalog {
   lessons: CurriculumLesson[];
 }
 
+export interface CurriculumModulePackageIndex {
+  version: number;
+  files: string[];
+}
+
+export interface CurriculumModulePackage {
+  moduleId: string;
+  lessons: CurriculumLesson[];
+}
+
 export interface CurriculumLevel {
   id: string;
   title: string;

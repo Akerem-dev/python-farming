@@ -1,0 +1,345 @@
+{
+  "moduleId": "python-introduction",
+  "lessons": [
+    {
+      "id": "beginner.introduction.first-output",
+      "moduleId": "python-introduction",
+      "order": 1,
+      "title": "İlk Python çıktın",
+      "summary": "print() fonksiyonu, bir metni veya değeri terminalde göstermek için kullanılır.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Ekrana ilk mesajını yazdır",
+        "instructions": [
+          "print() fonksiyonunun içine \"Merhaba, Python Farming!\" metnini yaz.",
+          "Metnin tırnak içinde olduğundan emin ol.",
+          "Kodu çalıştır ve terminal çıktısını kontrol et."
+        ],
+        "requirements": [
+          "print() tam bir kez kullanılmalı.",
+          "Mesaj tek satırda yazdırılmalı.",
+          "Çıktı büyük-küçük harf ve noktalama işaretleriyle aynı olmalı."
+        ],
+        "sampleOutput": "Merhaba, Python Farming!",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# İlk Python programın\n\nprint(\"\")"
+      },
+      "hints": [
+        {
+          "title": "Metinler tırnak içine yazılır",
+          "body": "print(\"Merhaba, Python Farming!\") biçiminde çift tırnak kullanabilirsin."
+        },
+        {
+          "title": "Parantezleri kapat",
+          "body": "print ile açtığın parantezin satır sonunda kapandığından emin ol."
+        },
+        {
+          "title": "Beklenen metni birebir kullan",
+          "body": "Boşluk, virgül ve ünlem işareti de testin bir parçasıdır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.introduction.first-output",
+        "title": "Ekrana ilk mesajını yazdır",
+        "xpReward": 25,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "print-once",
+            "kind": "call_count",
+            "name": "print",
+            "min": 1,
+            "max": 1,
+            "label": "print() bir kez kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AMerhaba,\\s+Python\\s+Farming!\\s*\\Z",
+            "flags": "",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.introduction.values",
+      "moduleId": "python-introduction",
+      "order": 2,
+      "title": "Metinler ve sayılar",
+      "summary": "Python, metinleri tırnak içinde; sayıları ise tırnaksız biçimde doğrudan yazdırabilir.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Bir metin ve bir sayı yazdır",
+        "instructions": [
+          "İlk satırda \"Python öğreniyorum\" metnini yazdır.",
+          "İkinci satırda 2026 sayısını yazdır.",
+          "İki değer için iki ayrı print() çağrısı kullan."
+        ],
+        "requirements": [
+          "print() iki kez kullanılmalı.",
+          "İlk çıktı metin, ikinci çıktı sayı olmalı.",
+          "Çıktılar iki ayrı satırda görünmeli."
+        ],
+        "sampleOutput": "Python öğreniyorum\n2026",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Metinler tırnak içinde, sayılar tırnaksız yazılır\n\nprint(\"\")\nprint(0)"
+      },
+      "hints": [
+        {
+          "title": "İlk değer metindir",
+          "body": "Python öğreniyorum ifadesini çift veya tek tırnak içine yaz."
+        },
+        {
+          "title": "İkinci değer sayıdır",
+          "body": "2026 değerini tırnak kullanmadan print(2026) biçiminde yaz."
+        },
+        {
+          "title": "Her print() yeni satır oluşturur",
+          "body": "İki ayrı print() çağrısı kullanırsan çıktılar alt alta görünür."
+        }
+      ],
+      "validation": {
+        "id": "beginner.introduction.values",
+        "title": "Bir metin ve bir sayı yazdır",
+        "xpReward": 30,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "print-twice",
+            "kind": "call_count",
+            "name": "print",
+            "min": 2,
+            "max": 2,
+            "label": "print() iki kez kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\APython\\s+öğreniyorum\\s*\\n2026\\s*\\Z",
+            "flags": "",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.introduction.expressions",
+      "moduleId": "python-introduction",
+      "order": 3,
+      "title": "Python hesap yapabilir",
+      "summary": "Bir matematiksel ifadeyi print() içine yazdığında Python önce işlemi yapar, sonra sonucu gösterir.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "İki işlemin sonucunu yazdır",
+        "instructions": [
+          "İlk print() içinde 8 + 4 işlemini yap.",
+          "İkinci print() içinde 3 * 5 işlemini yap.",
+          "Sonuçları kendin yazmak yerine işlemleri Python’a yaptır."
+        ],
+        "requirements": [
+          "print() iki kez kullanılmalı.",
+          "Toplama sonucu 12 olmalı.",
+          "Çarpma sonucu 15 olmalı."
+        ],
+        "sampleOutput": "12\n15",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# İşlemleri Python'a yaptır\n\nprint(0)\nprint(0)"
+      },
+      "hints": [
+        {
+          "title": "Toplama operatörü",
+          "body": "Toplama için + işaretini kullan: print(8 + 4)."
+        },
+        {
+          "title": "Çarpma operatörü",
+          "body": "Çarpma için * işaretini kullan: print(3 * 5)."
+        },
+        {
+          "title": "Sonucu değil işlemi yaz",
+          "body": "İki işlemi doğrudan print() çağrılarının içine yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.introduction.expressions",
+        "title": "İki işlemin sonucunu yazdır",
+        "xpReward": 35,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "print-twice",
+            "kind": "call_count",
+            "name": "print",
+            "min": 2,
+            "max": 2,
+            "label": "print() iki kez kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A12\\s*\\n15\\s*\\Z",
+            "flags": "",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.introduction.comments-order",
+      "moduleId": "python-introduction",
+      "order": 4,
+      "title": "Yorumlar ve çalışma sırası",
+      "summary": "Python kodu yukarıdan aşağıya çalıştırır; # ile başlayan yorum satırlarını ise çalıştırmaz.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Satırları doğru sıraya getir",
+        "instructions": [
+          "\"Birinci satır\" çıktısını önce gösterecek print() çağrısını üste taşı.",
+          "\"İkinci satır\" çıktısını onun altına yerleştir.",
+          "# ile başlayan açıklama satırını koru."
+        ],
+        "requirements": [
+          "print() iki kez kullanılmalı.",
+          "Çıktılar doğru sırada olmalı.",
+          "Yorum satırı terminalde görünmemeli."
+        ],
+        "sampleOutput": "Birinci satır\nİkinci satır",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "print(\"İkinci satır\")\n\n# Bu satır yalnızca kodu açıklar; terminalde görünmez.\n\nprint(\"Birinci satır\")"
+      },
+      "hints": [
+        {
+          "title": "Kod yukarıdan aşağıya çalışır",
+          "body": "İlk görünmesini istediğin print() çağrısını daha yukarıya taşı."
+        },
+        {
+          "title": "Yorum satırını değiştirme",
+          "body": "# ile başlayan satır Python tarafından çalıştırılmaz."
+        },
+        {
+          "title": "Beklenen sıra",
+          "body": "Önce Birinci satır, ardından İkinci satır yazdırılmalı."
+        }
+      ],
+      "validation": {
+        "id": "beginner.introduction.comments-order",
+        "title": "Satırları doğru sıraya getir",
+        "xpReward": 35,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "print-twice",
+            "kind": "call_count",
+            "name": "print",
+            "min": 2,
+            "max": 2,
+            "label": "print() iki kez kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ABirinci\\s+satır\\s*\\nİkinci\\s+satır\\s*\\Z",
+            "flags": "",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.introduction.fix-syntax",
+      "moduleId": "python-introduction",
+      "order": 5,
+      "title": "İlk hatanı düzelt",
+      "summary": "Sözdizimi hataları, Python kodun yapısını anlayamadığında oluşur. Hata mesajı çoğu zaman sorunlu satırı gösterir.",
+      "levelLabel": "Beginner Learning",
+      "task": {
+        "title": "Eksik tırnağı bul ve düzelt",
+        "instructions": [
+          "Kodu çalıştır ve terminaldeki SyntaxError mesajını incele.",
+          "Metnin sonundaki eksik çift tırnağı ekle.",
+          "Programın Kod çalışıyor! mesajını yazdırmasını sağla."
+        ],
+        "requirements": [
+          "Kod sözdizimi hatası vermeden çalışmalı.",
+          "print() bir kez kullanılmalı.",
+          "Beklenen mesaj doğru yazdırılmalı."
+        ],
+        "sampleOutput": "Kod çalışıyor!",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Hata mesajını okuyup eksik tırnağı tamamla\n\nprint(\"Kod çalışıyor!)"
+      },
+      "hints": [
+        {
+          "title": "Tırnaklar çift hâlde kullanılır",
+          "body": "Metin çift tırnakla başlıyorsa çift tırnakla bitmelidir."
+        },
+        {
+          "title": "Parantezden önce kontrol et",
+          "body": "Kapanış parantezinden hemen önce eksik bir \" karakteri bulunuyor."
+        },
+        {
+          "title": "Düzeltilmiş satır",
+          "body": "print(\"Kod çalışıyor!\") biçimini kullan."
+        }
+      ],
+      "validation": {
+        "id": "beginner.introduction.fix-syntax",
+        "title": "Eksik tırnağı bul ve düzelt",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "print-once",
+            "kind": "call_count",
+            "name": "print",
+            "min": 1,
+            "max": 1,
+            "label": "print() bir kez kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AKod\\s+çalışıyor!\\s*\\Z",
+            "flags": "",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
