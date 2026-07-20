@@ -35,6 +35,7 @@ except SyntaxError as error:
 
 assigned_names = set()
 called_names = set()
+called_counts = {}
 
 
 def collect_target(target):
@@ -43,6 +44,11 @@ def collect_target(target):
     elif isinstance(target, (ast.Tuple, ast.List)):
         for element in target.elts:
             collect_target(element)
+
+
+def collect_call(name):
+    called_names.add(name)
+    called_counts[name] = called_counts.get(name, 0) + 1
 
 
 if tree is not None:
@@ -56,9 +62,9 @@ if tree is not None:
             collect_target(node.target)
         elif isinstance(node, ast.Call):
             if isinstance(node.func, ast.Name):
-                called_names.add(node.func.id)
+                collect_call(node.func.id)
             elif isinstance(node.func, ast.Attribute):
-                called_names.add(node.func.attr)
+                collect_call(node.func.attr)
 
 namespace = {"__name__": "__main__"}
 stdout_buffer = io.StringIO()
@@ -110,6 +116,21 @@ for check in spec.get("checks", []):
         name = check["name"]
         passed = name in called_names
         message = f"{name}() çağrısı bulundu." if passed else f"{name}() kullanılmadı."
+    elif kind == "call_count":
+        name = check["name"]
+        minimum = int(check.get("min", 0))
+        maximum = check.get("max")
+        maximum = int(maximum) if maximum is not None else None
+        count = called_counts.get(name, 0)
+        passed = count >= minimum and (maximum is None or count <= maximum)
+        if passed:
+            message = f"{name}() çağrı sayısı doğru: {count}."
+        elif maximum is not None and minimum == maximum:
+            message = f"{name}() tam {minimum} kez kullanılmalı; bulunan: {count}."
+        elif maximum is not None:
+            message = f"{name}() {minimum} ile {maximum} kez kullanılmalı; bulunan: {count}."
+        else:
+            message = f"{name}() en az {minimum} kez kullanılmalı; bulunan: {count}."
     elif runtime_error is not None:
         passed = False
         message = "Kod çalışırken bir Python hatası oluştu."
