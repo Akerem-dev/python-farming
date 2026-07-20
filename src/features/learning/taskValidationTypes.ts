@@ -22,6 +22,12 @@ export type TaskCheck =
       max?: number;
     })
   | (TaskCheckBase & {
+      kind: "node_count";
+      nodeName: string;
+      min: number;
+      max?: number;
+    })
+  | (TaskCheckBase & {
       kind: "variable_type";
       name: string;
       expectedType: "str" | "int" | "float" | "bool" | "list" | "tuple" | "dict" | "set";
