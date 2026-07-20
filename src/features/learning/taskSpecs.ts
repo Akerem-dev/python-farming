@@ -61,7 +61,7 @@ export const variablesIntroductionTask: TaskValidationSpec = {
       id: "expected-output",
       kind: "stdout_regex",
       pattern: "^Merhaba,\\s*ben\\s+.+\\s+ve\\s+\\d+\\s+yaşındayım\\.\\s*$",
-      flags: "im",
+      flags: "i",
       label: "Gizli test 5",
       visibility: "hidden",
     },
