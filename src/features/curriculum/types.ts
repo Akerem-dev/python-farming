@@ -4,11 +4,17 @@ export type CurriculumLessonMode =
   | "code"
   | "output-prediction"
   | "code-completion"
-  | "debugging";
+  | "debugging"
+  | "code-ordering";
 
 export interface CurriculumChoiceOption {
   id: string;
   label: string;
+}
+
+export interface CurriculumCodeBlock {
+  id: string;
+  code: string;
 }
 
 export interface CurriculumDebuggingGuide {
@@ -57,6 +63,10 @@ export interface CurriculumLesson {
   choice?: {
     prompt: string;
     options: CurriculumChoiceOption[];
+  };
+  ordering?: {
+    prompt: string;
+    blocks: CurriculumCodeBlock[];
   };
   debugging?: CurriculumDebuggingGuide;
   task: {

@@ -29,3 +29,9 @@
   background: rgba(224, 108, 117, 0.1);
   color: #f19a9f;
 }
+
+.badge[data-mode="code-ordering"] {
+  border-color: rgba(198, 120, 221, 0.34);
+  background: rgba(198, 120, 221, 0.1);
+  color: #cf8ee7;
+}

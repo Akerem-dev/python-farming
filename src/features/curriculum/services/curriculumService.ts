@@ -1,6 +1,7 @@
 import type {
   CurriculumCatalog,
   CurriculumChoiceOption,
+  CurriculumCodeBlock,
   CurriculumLesson,
   CurriculumLessonMode,
   CurriculumModulePackage,
@@ -14,6 +15,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "output-prediction",
   "code-completion",
   "debugging",
+  "code-ordering",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -58,6 +60,17 @@ function assertChoiceOption(value: unknown): asserts value is CurriculumChoiceOp
   }
 }
 
+function assertCodeBlock(value: unknown): asserts value is CurriculumCodeBlock {
+  if (!value || typeof value !== "object") {
+    throw new Error("Kod sıralama görevinde geçersiz bir blok bulundu.");
+  }
+
+  const candidate = value as Partial<CurriculumCodeBlock>;
+  if (typeof candidate.id !== "string" || typeof candidate.code !== "string") {
+    throw new Error("Kod sıralama blokları beklenen biçimde değil.");
+  }
+}
+
 function assertLesson(value: unknown): asserts value is CurriculumLesson {
   if (!value || typeof value !== "object") {
     throw new Error("Modül paketinde geçersiz bir ders bulundu.");
@@ -97,9 +110,42 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       throw new Error(`${candidate.id} tahmin görevinde tekrar eden seçenek kimliği var.`);
     }
 
-    const correctOptionId = candidate.validation.answer?.correctOptionId;
+    const correctOptionId =
+      candidate.validation.answer?.kind === "choice"
+        ? candidate.validation.answer.correctOptionId
+        : null;
     if (!correctOptionId || !optionIds.includes(correctOptionId)) {
       throw new Error(`${candidate.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
+    }
+  }
+
+  if (mode === "code-ordering") {
+    if (
+      !candidate.ordering ||
+      typeof candidate.ordering.prompt !== "string" ||
+      !Array.isArray(candidate.ordering.blocks) ||
+      candidate.ordering.blocks.length < 2
+    ) {
+      throw new Error(`${candidate.id} kod sıralama blokları eksik.`);
+    }
+
+    candidate.ordering.blocks.forEach(assertCodeBlock);
+    const blockIds = candidate.ordering.blocks.map((block) => block.id);
+    if (new Set(blockIds).size !== blockIds.length) {
+      throw new Error(`${candidate.id} kod sıralama görevinde tekrar eden blok kimliği var.`);
+    }
+
+    const correctBlockIds =
+      candidate.validation.answer?.kind === "order"
+        ? candidate.validation.answer.correctBlockIds
+        : null;
+    if (
+      !correctBlockIds ||
+      correctBlockIds.length !== blockIds.length ||
+      new Set(correctBlockIds).size !== blockIds.length ||
+      correctBlockIds.some((blockId) => !blockIds.includes(blockId))
+    ) {
+      throw new Error(`${candidate.id} kod sıralama görevinin doğru sıra verisi geçersiz.`);
     }
   }
 

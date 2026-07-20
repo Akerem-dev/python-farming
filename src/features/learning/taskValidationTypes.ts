@@ -51,13 +51,20 @@ export interface ChoiceAnswerValidation {
   correctOptionId: string;
 }
 
+export interface OrderAnswerValidation {
+  kind: "order";
+  correctBlockIds: string[];
+}
+
+export type TaskAnswerValidation = ChoiceAnswerValidation | OrderAnswerValidation;
+
 export interface TaskValidationSpec {
   id: string;
   title: string;
   xpReward: number;
   timeoutMs: number;
   checks: TaskCheck[];
-  answer?: ChoiceAnswerValidation;
+  answer?: TaskAnswerValidation;
 }
 
 export interface TaskCheckResult {
