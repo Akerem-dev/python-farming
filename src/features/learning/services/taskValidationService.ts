@@ -36,6 +36,7 @@ except SyntaxError as error:
 assigned_names = set()
 called_names = set()
 called_counts = {}
+node_counts = {}
 
 
 def collect_target(target):
@@ -53,6 +54,9 @@ def collect_call(name):
 
 if tree is not None:
     for node in ast.walk(tree):
+        node_name = type(node).__name__
+        node_counts[node_name] = node_counts.get(node_name, 0) + 1
+
         if isinstance(node, ast.Assign):
             for target in node.targets:
                 collect_target(target)
@@ -101,6 +105,14 @@ def check_result(check, passed, message):
     }
 
 
+def count_message(label, count, minimum, maximum):
+    if maximum is not None and minimum == maximum:
+        return f"{label} tam {minimum} kez bulunmalı; bulunan: {count}."
+    if maximum is not None:
+        return f"{label} {minimum} ile {maximum} kez bulunmalı; bulunan: {count}."
+    return f"{label} en az {minimum} kez bulunmalı; bulunan: {count}."
+
+
 for check in spec.get("checks", []):
     kind = check.get("kind")
 
@@ -123,14 +135,23 @@ for check in spec.get("checks", []):
         maximum = int(maximum) if maximum is not None else None
         count = called_counts.get(name, 0)
         passed = count >= minimum and (maximum is None or count <= maximum)
-        if passed:
-            message = f"{name}() çağrı sayısı doğru: {count}."
-        elif maximum is not None and minimum == maximum:
-            message = f"{name}() tam {minimum} kez kullanılmalı; bulunan: {count}."
-        elif maximum is not None:
-            message = f"{name}() {minimum} ile {maximum} kez kullanılmalı; bulunan: {count}."
-        else:
-            message = f"{name}() en az {minimum} kez kullanılmalı; bulunan: {count}."
+        message = (
+            f"{name}() çağrı sayısı doğru: {count}."
+            if passed
+            else count_message(f"{name}()", count, minimum, maximum)
+        )
+    elif kind == "node_count":
+        node_name = check["nodeName"]
+        minimum = int(check.get("min", 0))
+        maximum = check.get("max")
+        maximum = int(maximum) if maximum is not None else None
+        count = node_counts.get(node_name, 0)
+        passed = count >= minimum and (maximum is None or count <= maximum)
+        message = (
+            f"{node_name} yapısı bulundu: {count}."
+            if passed
+            else count_message(node_name, count, minimum, maximum)
+        )
     elif runtime_error is not None:
         passed = False
         message = "Kod çalışırken bir Python hatası oluştu."
