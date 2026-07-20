@@ -14,6 +14,7 @@ import {
   getCurrentLesson,
   useCurriculumStore,
 } from "../../features/curriculum/store/curriculumStore";
+import { DebugGuide } from "../../features/debugging/components/DebugGuide";
 import { PracticeAnswerPanel } from "../../features/learning/components/PracticeAnswerPanel";
 import { StdinPanel } from "../../features/learning/components/StdinPanel";
 import { TaskCompletionModal } from "../../features/learning/components/TaskCompletionModal";
@@ -45,6 +46,7 @@ const lessonModeLabels = {
   code: "Kod görevi",
   "output-prediction": "Çıktıyı tahmin et",
   "code-completion": "Kod tamamlama",
+  debugging: "Hata Avcısı",
 } as const;
 
 type TerminalView = "output" | "tests";
@@ -61,6 +63,7 @@ export function WorkspacePage() {
   const lessonMode = currentLesson?.mode ?? "code";
   const isOutputPrediction = lessonMode === "output-prediction";
   const isCodeCompletion = lessonMode === "code-completion";
+  const isDebugging = lessonMode === "debugging";
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
   const loadProgress = useProgressStore((state) => state.loadProgress);
@@ -129,15 +132,21 @@ export function WorkspacePage() {
       }),
     [runtimeError, runtimeHealth, runtimeOutput, runtimeStatus],
   );
+  const debuggingIntro =
+    ">>> Hata Avcısı hazır.\n>>> Önce bozuk kodu çalıştır, traceback’in son satırını oku ve ardından hatayı düzelt.";
   const displayedTerminalText =
     isOutputPrediction && !runtimeOutput && !runtimeError
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
-      : terminalText;
+      : isDebugging && !runtimeOutput && !runtimeError
+        ? debuggingIntro
+        : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
     runtimeOutput?.status === "error" ||
     runtimeOutput?.status === "timeout";
+  const runtimeHasPythonError =
+    runtimeOutput?.status === "error" || Boolean(runtimeOutput?.stderr.trim());
 
   useEffect(() => {
     let active = true;
@@ -291,10 +300,21 @@ export function WorkspacePage() {
       ? "Kontrol ediliyor…"
       : isOutputPrediction
         ? "Tahmini Kontrol Et"
-        : isCodeCompletion
-          ? "Eksikleri Kontrol Et"
-          : "Görevi Kontrol Et";
-  const resetLabel = isOutputPrediction ? "Tahmini temizle" : "Başlangıç koduna dön";
+        : isDebugging
+          ? "Düzeltmeyi Kontrol Et"
+          : isCodeCompletion
+            ? "Eksikleri Kontrol Et"
+            : "Görevi Kontrol Et";
+  const resetLabel = isOutputPrediction
+    ? "Tahmini temizle"
+    : isDebugging
+      ? "Hatalı koda dön"
+      : "Başlangıç koduna dön";
+  const runLabel = runtimeStatus === "running"
+    ? "Çalıştırılıyor…"
+    : isDebugging
+      ? "Kodu / Hatayı Çalıştır"
+      : "Çalıştır";
   const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
   return (
@@ -329,7 +349,7 @@ export function WorkspacePage() {
             </div>
             <div>
               <span className={styles.eyebrow}>
-                {isOutputPrediction ? "Çıktı biçimi" : "Örnek çıktı"}
+                {isOutputPrediction ? "Çıktı biçimi" : isDebugging ? "Düzeltme sonrası çıktı" : "Örnek çıktı"}
               </span>
               <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
@@ -343,6 +363,13 @@ export function WorkspacePage() {
               selectedOptionId={selectedOptionId}
               onSelect={setSelectedOptionId}
               disabled={validationStatus === "checking"}
+            />
+          ) : null}
+
+          {isDebugging && currentLesson.debugging ? (
+            <DebugGuide
+              guide={currentLesson.debugging}
+              runtimeHasError={runtimeHasPythonError}
             />
           ) : null}
 
@@ -392,7 +419,7 @@ export function WorkspacePage() {
                 {activeDocument.name}
                 {activeDocument.saveStatus === "dirty" ? <i aria-label="Kaydedilmemiş değişiklik" /> : null}
               </span>
-              <span className={styles.modeBadge}>{lessonModeLabels[lessonMode]}</span>
+              <span className={styles.modeBadge} data-mode={lessonMode}>{lessonModeLabels[lessonMode]}</span>
               <button type="button" aria-label="Yeni dosya ekle" disabled>＋</button>
             </div>
             <span className={styles.runtimeStatus} data-status={runtimeStatus}>
@@ -477,7 +504,7 @@ export function WorkspacePage() {
                 onClick={handleRun}
                 disabled={runtimeBusyOrUnavailable || validationStatus === "checking"}
               >
-                {runtimeStatus === "running" ? "Çalıştırılıyor…" : "Çalıştır"}
+                {runLabel}
               </Button>
             ) : null}
           </div>
