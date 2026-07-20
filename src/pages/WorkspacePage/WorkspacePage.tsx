@@ -146,7 +146,7 @@ export function WorkspacePage() {
     runtimeOutput?.status === "error" ||
     runtimeOutput?.status === "timeout";
   const runtimeHasPythonError =
-    runtimeOutput?.status === "error" || Boolean(runtimeOutput?.stderr.trim());
+    runtimeOutput?.status === "error" || Boolean(runtimeOutput?.result.stderr.trim());
 
   useEffect(() => {
     let active = true;
