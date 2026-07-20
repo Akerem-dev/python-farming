@@ -13,6 +13,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "code",
   "output-prediction",
   "code-completion",
+  "debugging",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -99,6 +100,19 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     const correctOptionId = candidate.validation.answer?.correctOptionId;
     if (!correctOptionId || !optionIds.includes(correctOptionId)) {
       throw new Error(`${candidate.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
+    }
+  }
+
+  if (mode === "debugging") {
+    if (
+      !candidate.debugging ||
+      typeof candidate.debugging.errorType !== "string" ||
+      typeof candidate.debugging.symptom !== "string" ||
+      !Array.isArray(candidate.debugging.workflow) ||
+      candidate.debugging.workflow.length < 2 ||
+      candidate.debugging.workflow.some((step) => typeof step !== "string")
+    ) {
+      throw new Error(`${candidate.id} hata ayıklama rehberi eksik.`);
     }
   }
 }

@@ -1,0 +1,93 @@
+.guide {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid rgba(224, 108, 117, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(224, 108, 117, 0.055);
+}
+
+.guide header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.guide header > div {
+  display: grid;
+  gap: 4px;
+}
+
+.guide header span {
+  color: #e06c75;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.guide header strong {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.guide header i {
+  padding: 5px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text-dim);
+  font-size: 9px;
+  font-style: normal;
+  white-space: nowrap;
+}
+
+.guide header i[data-active] {
+  border-color: rgba(224, 108, 117, 0.32);
+  background: rgba(224, 108, 117, 0.1);
+  color: #f19a9f;
+}
+
+.guide > p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.65;
+}
+
+.guide ol {
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.guide li {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-3);
+}
+
+.guide li > span {
+  display: grid;
+  width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 999px;
+  background: rgba(224, 108, 117, 0.12);
+  color: #f19a9f;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.guide li p {
+  margin: 2px 0 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}

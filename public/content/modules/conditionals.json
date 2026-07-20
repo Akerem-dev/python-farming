@@ -1,0 +1,417 @@
+{
+  "moduleId": "conditionals",
+  "lessons": [
+    {
+      "id": "beginner.conditionals.first-if",
+      "moduleId": "conditionals",
+      "order": 1,
+      "title": "İlk if koşulun",
+      "summary": "if, yalnızca verdiğin koşul True olduğunda girintili kod bloğunu çalıştırır.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Sıcak havayı algılayan koşulu tamamla",
+        "instructions": [
+          "__KOSUL__ yer tutucusunu gerçek bir karşılaştırmayla değiştir.",
+          "Sıcaklık 25 veya daha yüksekse mesaj yazdır.",
+          "if satırının sonundaki iki noktayı koru.",
+          "Kodu çalıştırıp testleri kontrol et."
+        ],
+        "requirements": [
+          "Kodda gerçek bir if yapısı bulunmalı.",
+          "sicaklik değişkeni karşılaştırılmalı.",
+          "Hava sıcak. çıktısı üretilmeli."
+        ],
+        "sampleOutput": "Hava sıcak.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sicaklik = 30\n\nif __KOSUL__:\n    print(\"Hava sıcak.\")"
+      },
+      "hints": [
+        {
+          "title": "Karşılaştırma operatörü",
+          "body": "Bir değerin eşit veya büyük olup olmadığını >= ile kontrol edebilirsin."
+        },
+        {
+          "title": "Değişkeni kullan",
+          "body": "Koşulda sicaklik değişkenini 25 ile karşılaştır."
+        },
+        {
+          "title": "Tam koşul",
+          "body": "if sicaklik >= 25:"
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.first-if",
+        "title": "Sıcak havayı algılayan koşulu tamamla",
+        "xpReward": 40,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-node", "kind": "node_count", "nodeName": "If", "min": 1, "label": "if yapısı kullanıldı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AHava sıcak\\.\\s*\\Z", "flags": "i", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.conditionals.logical-prediction",
+      "moduleId": "conditionals",
+      "order": 2,
+      "title": "Mantıksal çıktıyı tahmin et",
+      "summary": "and iki koşulun da, or ise koşullardan en az birinin True olmasını ister.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "İki print() satırı hangi Boolean değerlerini sırayla yazar?",
+        "options": [
+          { "id": "true-true", "label": "True\nTrue" },
+          { "id": "true-false", "label": "True\nFalse" },
+          { "id": "false-true", "label": "False\nTrue" },
+          { "id": "false-false", "label": "False\nFalse" }
+        ]
+      },
+      "task": {
+        "title": "and ve or sonuçlarını seç",
+        "instructions": [
+          "yas >= 18 karşılaştırmasının sonucunu bul.",
+          "ogrenci değişkeninin Boolean değerini dikkate al.",
+          "and ve or ifadelerini ayrı ayrı değerlendir.",
+          "İki satırlık doğru seçeneği işaretle."
+        ],
+        "requirements": [
+          "and için iki taraf da True olmalı.",
+          "or için tek bir True yeterlidir.",
+          "Çıktı sırası print() satırlarıyla aynı olmalı."
+        ],
+        "sampleOutput": "İki satırda True veya False",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "yas = 20\nogrenci = True\n\nprint(yas >= 18 and ogrenci)\nprint(yas < 18 or ogrenci)"
+      },
+      "hints": [
+        {
+          "title": "İlk ifade",
+          "body": "20 >= 18 True ve ogrenci de True."
+        },
+        {
+          "title": "İkinci ifade",
+          "body": "20 < 18 False olsa da or ifadesinin diğer tarafı True."
+        },
+        {
+          "title": "Çıktı sırası",
+          "body": "İki ifade de True sonucu üretir."
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.logical-prediction",
+        "title": "and ve or sonuçlarını seç",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "true-true"
+        }
+      }
+    },
+    {
+      "id": "beginner.conditionals.if-else",
+      "moduleId": "conditionals",
+      "order": 3,
+      "title": "if ve else yolları",
+      "summary": "else, if koşulu False olduğunda çalışacak alternatif kod yolunu tanımlar.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Bakiyeye göre satın alma sonucu yazdır",
+        "instructions": [
+          "bakiye ile fiyat değerlerini karşılaştır.",
+          "Bakiye yeterliyse Satın alma başarılı. yazdır.",
+          "Yetersizse Yetersiz bakiye. yazdır.",
+          "if ve else bloklarında doğru girintiyi kullan."
+        ],
+        "requirements": [
+          "Kodda bir if yapısı bulunmalı.",
+          "Başarılı ve başarısız yollar tanımlanmalı.",
+          "Mevcut değerlerle başarılı mesajı çıkmalı."
+        ],
+        "sampleOutput": "Satın alma başarılı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "bakiye = 150\nfiyat = 120\n\n# Buraya if / else yapını yaz\n"
+      },
+      "hints": [
+        {
+          "title": "Yeterlilik koşulu",
+          "body": "bakiye >= fiyat karşılaştırması satın almanın mümkün olup olmadığını söyler."
+        },
+        {
+          "title": "Alternatif yol",
+          "body": "else satırı koşul False olduğunda çalışır."
+        },
+        {
+          "title": "İskelet",
+          "body": "if bakiye >= fiyat:\n    print(...)\nelse:\n    print(...)"
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.if-else",
+        "title": "Bakiyeye göre satın alma sonucu yazdır",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-node", "kind": "node_count", "nodeName": "If", "min": 1, "label": "if / else yapısı kullanıldı", "visibility": "visible" },
+          { "id": "call-print", "kind": "call_count", "name": "print", "min": 2, "label": "İki sonuç mesajı tanımlandı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ASatın alma başarılı\\.\\s*\\Z", "flags": "i", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.conditionals.elif-completion",
+      "moduleId": "conditionals",
+      "order": 4,
+      "title": "elif ile birden fazla yol",
+      "summary": "elif, ilk koşul False olduğunda sıradaki koşulu kontrol ederek çok yollu kararlar kurar.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Not sınıflandırma koşullarını tamamla",
+        "instructions": [
+          "İlk yer tutucuya A sınırı olan 90 değerini yaz.",
+          "İkinci yer tutucuya B sınırı olan 80 değerini yaz.",
+          "if, elif ve else yapısını koru.",
+          "82 puan için B çıktısını doğrula."
+        ],
+        "requirements": [
+          "Kodda en az iki If AST düğümü bulunmalı.",
+          "İlk sınır 90, ikinci sınır 80 olmalı.",
+          "Mevcut puanın harf notu B olmalı."
+        ],
+        "sampleOutput": "B",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "puan = 82\n\nif puan >= __A_SINIRI__:\n    print(\"A\")\nelif puan >= __B_SINIRI__:\n    print(\"B\")\nelse:\n    print(\"C\")"
+      },
+      "hints": [
+        {
+          "title": "En yüksek sınır önce",
+          "body": "Koşullar yukarıdan aşağı kontrol edildiği için 90 sınırı önce gelmeli."
+        },
+        {
+          "title": "B aralığı",
+          "body": "82, 90’dan küçük ama 80’e eşit veya büyük."
+        },
+        {
+          "title": "Yer tutucular",
+          "body": "__A_SINIRI__ yerine 90, __B_SINIRI__ yerine 80 yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.elif-completion",
+        "title": "Not sınıflandırma koşullarını tamamla",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-count", "kind": "node_count", "nodeName": "If", "min": 2, "label": "if ve elif yapıları bulundu", "visibility": "visible" },
+          { "id": "call-print", "kind": "call_count", "name": "print", "min": 3, "label": "Üç sonuç yolu tanımlandı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AB\\s*\\Z", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.conditionals.compound-condition",
+      "moduleId": "conditionals",
+      "order": 5,
+      "title": "Bileşik koşullar",
+      "summary": "Bir karar birden fazla kurala bağlıysa karşılaştırmaları and veya or ile birleştirebilirsin.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Etkinlik giriş iznini belirle",
+        "instructions": [
+          "Kullanıcının yaşı 18 veya daha büyük olmalı.",
+          "Aynı zamanda bilet değişkeni True olmalı.",
+          "İki koşulu and ile birleştir.",
+          "Koşul sağlanıyorsa Giriş onaylandı. yazdır."
+        ],
+        "requirements": [
+          "Kodda bir if yapısı bulunmalı.",
+          "Yaş ve bilet tek bileşik koşulda değerlendirilmeli.",
+          "Mevcut değerlerle giriş onaylanmalı."
+        ],
+        "sampleOutput": "Giriş onaylandı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "yas = 21\nbilet_var = True\n\n# Bileşik koşulu buraya yaz\n"
+      },
+      "hints": [
+        {
+          "title": "İki koşul da gerekli",
+          "body": "Her iki kuralın da sağlanması gerektiği için and kullan."
+        },
+        {
+          "title": "Karşılaştırmalar",
+          "body": "İlk taraf yas >= 18, ikinci taraf bilet_var olabilir."
+        },
+        {
+          "title": "Tam koşul",
+          "body": "if yas >= 18 and bilet_var:"
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.compound-condition",
+        "title": "Etkinlik giriş iznini belirle",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-node", "kind": "node_count", "nodeName": "If", "min": 1, "label": "if yapısı kullanıldı", "visibility": "visible" },
+          { "id": "bool-op", "kind": "node_count", "nodeName": "BoolOp", "min": 1, "label": "Bileşik koşul kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AGiriş onaylandı\\.\\s*\\Z", "flags": "i", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.conditionals.syntax-debugging",
+      "moduleId": "conditionals",
+      "order": 6,
+      "title": "Hata Avcısı: eksik iki nokta",
+      "summary": "Bir traceback’in son satırı hata türünü, üstündeki satır ise sorunun bulunduğu kod konumunu gösterir.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "SyntaxError",
+        "symptom": "Program daha başlamadan duruyor. Python, if satırının sonunda koşul bloğunu başlatan işareti bulamıyor.",
+        "workflow": [
+          "Bozuk kodu çalıştır ve terminaldeki traceback’in son satırını oku.",
+          "Ok işaretinin gösterdiği if satırını editörde bul.",
+          "Koşul satırının sonuna eksik iki noktayı ekle.",
+          "Kodu yeniden çalıştır ve ardından düzeltmeyi kontrol et."
+        ]
+      },
+      "task": {
+        "title": "SyntaxError hatasını bul ve düzelt",
+        "instructions": [
+          "Önce başlangıç kodunu değiştirmeden çalıştır.",
+          "Terminalde SyntaxError mesajını ve satır numarasını bul.",
+          "Yalnızca sözdizimi hatasını düzelt.",
+          "Doğru çıktı alındığında düzeltmeyi kontrol et."
+        ],
+        "requirements": [
+          "Başlangıçta gerçek Python traceback’i görülmeli.",
+          "if yapısı korunmalı.",
+          "Düzeltilmiş kod Geçti. yazdırmalı."
+        ],
+        "sampleOutput": "Geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "puan = 72\n\nif puan >= 50\n    print(\"Geçti.\")\nelse:\n    print(\"Kaldı.\")"
+      },
+      "hints": [
+        {
+          "title": "Traceback’in son satırı",
+          "body": "SyntaxError, Python’ın kodu dilbilgisi kurallarına göre okuyamadığını söyler."
+        },
+        {
+          "title": "if satırını incele",
+          "body": "Python’da if koşulunun ardından blok başlayacağını belirten bir karakter gerekir."
+        },
+        {
+          "title": "Eksik işaret",
+          "body": "if puan >= 50: biçiminde satırın sonuna : ekle."
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.syntax-debugging",
+        "title": "SyntaxError hatasını bul ve düzelt",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-node", "kind": "node_count", "nodeName": "If", "min": 1, "label": "if yapısı sözdizimsel olarak geçerli", "visibility": "visible" },
+          { "id": "call-print", "kind": "call_count", "name": "print", "min": 2, "label": "İki karar yolu korunuyor", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AGeçti\\.\\s*\\Z", "flags": "i", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.conditionals.final-challenge",
+      "moduleId": "conditionals",
+      "order": 7,
+      "title": "Koşullar final görevi",
+      "summary": "if, elif, else ve bileşik koşulları tek bir fiyatlandırma kararında birleştir.",
+      "levelLabel": "Chapter Challenge",
+      "mode": "code",
+      "task": {
+        "title": "Üyelik indirimini hesapla",
+        "instructions": [
+          "Sepet en az 500 TL ve kullanıcı üyeyse yüzde 15 indirim uygula.",
+          "Sepet en az 500 TL ama kullanıcı üye değilse yüzde 10 indirim uygula.",
+          "Diğer durumlarda indirim uygulama.",
+          "Ödenecek tutarı hesaplayıp belirtilen biçimde yazdır."
+        ],
+        "requirements": [
+          "if, elif ve else yolları tanımlanmalı.",
+          "Üyelik kontrolü bileşik koşulda kullanılmalı.",
+          "Mevcut değerlerle sonuç 552.50 TL olmalı."
+        ],
+        "sampleOutput": "Ödenecek tutar: 552.50 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sepet = 650\nuye = True\n\nindirim_orani = 0\n\n# if / elif / else kararını buraya yaz\n\nodenecek_tutar = sepet * (1 - indirim_orani)\nprint(f\"Ödenecek tutar: {odenecek_tutar:.2f} TL\")"
+      },
+      "hints": [
+        {
+          "title": "En özel koşul önce",
+          "body": "Sepet sınırı ve üyelik şartını birlikte isteyen yüzde 15 yolu ilk sırada olmalı."
+        },
+        {
+          "title": "İkinci yol",
+          "body": "elif sepet >= 500: koşulu üye olmayan büyük sepetleri yakalayabilir."
+        },
+        {
+          "title": "İndirim oranları",
+          "body": "Yüzde 15 için 0.15, yüzde 10 için 0.10 değerini kullan."
+        }
+      ],
+      "validation": {
+        "id": "beginner.conditionals.final-challenge",
+        "title": "Üyelik indirimini hesapla",
+        "xpReward": 60,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "if-count", "kind": "node_count", "nodeName": "If", "min": 2, "label": "if ve elif yolları bulundu", "visibility": "visible" },
+          { "id": "bool-op", "kind": "node_count", "nodeName": "BoolOp", "min": 1, "label": "Bileşik üyelik koşulu kullanıldı", "visibility": "visible" },
+          { "id": "assign-rate", "kind": "assignment", "name": "indirim_orani", "label": "indirim_orani değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AÖdenecek tutar:\\s*552\\.50\\s*TL\\s*\\Z", "flags": "i", "label": "Gizli test 1", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}

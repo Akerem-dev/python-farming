@@ -1,10 +1,20 @@
 import type { TaskValidationSpec } from "../learning/taskValidationTypes";
 
-export type CurriculumLessonMode = "code" | "output-prediction" | "code-completion";
+export type CurriculumLessonMode =
+  | "code"
+  | "output-prediction"
+  | "code-completion"
+  | "debugging";
 
 export interface CurriculumChoiceOption {
   id: string;
   label: string;
+}
+
+export interface CurriculumDebuggingGuide {
+  errorType: string;
+  symptom: string;
+  workflow: string[];
 }
 
 export interface CurriculumCatalog {
@@ -48,6 +58,7 @@ export interface CurriculumLesson {
     prompt: string;
     options: CurriculumChoiceOption[];
   };
+  debugging?: CurriculumDebuggingGuide;
   task: {
     title: string;
     instructions: string[];
