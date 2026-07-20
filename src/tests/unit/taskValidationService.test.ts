@@ -2,8 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   parseTaskValidationOutput,
   splitStdinText,
+  validateChoiceAnswer,
 } from "../../features/learning/services/taskValidationService";
 import { variablesIntroductionTask } from "../../features/learning/taskSpecs";
+import type { TaskValidationSpec } from "../../features/learning/taskValidationTypes";
 
 const validResult = {
   taskId: "beginner.variables.introduction",
@@ -22,6 +24,18 @@ const validResult = {
   stderr: "",
   runtimeError: null,
   durationMs: 2,
+};
+
+const predictionSpec: TaskValidationSpec = {
+  id: "beginner.operators.precedence",
+  title: "İşlem önceliğini tahmin et",
+  xpReward: 35,
+  timeoutMs: 1000,
+  checks: [],
+  answer: {
+    kind: "choice",
+    correctOptionId: "answer-14",
+  },
 };
 
 describe("task validation service", () => {
@@ -50,5 +64,21 @@ describe("task validation service", () => {
 
     expect(visible).toHaveLength(3);
     expect(hidden).toHaveLength(5);
+  });
+
+  it("accepts the correct output prediction without running Python", () => {
+    const result = validateChoiceAnswer(predictionSpec, "answer-14");
+
+    expect(result.passed).toBe(true);
+    expect(result.score).toBe(100);
+    expect(result.checks).toHaveLength(2);
+  });
+
+  it("keeps a wrong prediction hidden behind the answer check", () => {
+    const result = validateChoiceAnswer(predictionSpec, "answer-20");
+
+    expect(result.passed).toBe(false);
+    expect(result.score).toBe(50);
+    expect(result.checks.find((check) => check.visibility === "hidden")?.passed).toBe(false);
   });
 });
