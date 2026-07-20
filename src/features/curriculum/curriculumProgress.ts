@@ -4,7 +4,12 @@ import type {
   CurriculumModule,
 } from "./types";
 
-export type ModuleAccessState = "completed" | "active" | "locked" | "coming-soon";
+export type ModuleAccessState =
+  | "completed"
+  | "active"
+  | "available"
+  | "locked"
+  | "coming-soon";
 export type LessonAccessState = "completed" | "current" | "available" | "locked";
 
 export function getOrderedModules(catalog: CurriculumCatalog | null): CurriculumModule[] {
@@ -102,7 +107,7 @@ export function getModuleAccessState(
     return "locked";
   }
 
-  return currentModuleId === module.id ? "active" : "active";
+  return currentModuleId === module.id ? "active" : "available";
 }
 
 export function isLessonUnlocked(
