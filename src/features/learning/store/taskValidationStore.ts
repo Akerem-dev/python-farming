@@ -85,10 +85,14 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
       }
 
       const orderedBlockIds = [...state.orderedBlockIds];
-      [orderedBlockIds[currentIndex], orderedBlockIds[targetIndex]] = [
-        orderedBlockIds[targetIndex],
-        orderedBlockIds[currentIndex],
-      ];
+      const currentBlockId = orderedBlockIds[currentIndex];
+      const targetBlockId = orderedBlockIds[targetIndex];
+      if (currentBlockId === undefined || targetBlockId === undefined) {
+        return state;
+      }
+
+      orderedBlockIds[currentIndex] = targetBlockId;
+      orderedBlockIds[targetIndex] = currentBlockId;
       return { orderedBlockIds, ...clearedValidationState() };
     }),
 
