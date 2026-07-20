@@ -42,17 +42,16 @@ jobs:
     name: Rust formatting
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: rustfmt
-
-      - name: Check formatting
-        working-directory: src-tauri
-        run: cargo fmt --all -- --check
+      - name: Fetch current commit and check rustfmt
+        shell: bash
+        run: |
+          git init -q .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+          rustup component add rustfmt >/dev/null
+          cd src-tauri
+          cargo fmt --all -- --check
 
   rust-runtime:
     name: Rust runtime tests
