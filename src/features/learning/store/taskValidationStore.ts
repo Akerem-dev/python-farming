@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import {
   splitStdinText,
+  validateChoiceAnswer,
   validateTaskSource,
 } from "../services/taskValidationService";
 import type {
@@ -13,11 +14,13 @@ export type TaskValidationStatus = "idle" | "checking" | "passed" | "failed" | "
 interface TaskValidationStore {
   status: TaskValidationStatus;
   stdinText: string;
+  selectedOptionId: string | null;
   result: TaskValidationResult | null;
   errorMessage: string | null;
   isCompletionOpen: boolean;
   startSession: (stdinText?: string) => void;
   setStdinText: (value: string) => void;
+  setSelectedOptionId: (value: string | null) => void;
   validateTask: (
     source: string,
     filename: string,
@@ -40,6 +43,7 @@ function sessionState(stdinText = "") {
   return {
     status: "idle" as const,
     stdinText,
+    selectedOptionId: null,
     result: null,
     errorMessage: null,
     isCompletionOpen: false,
@@ -51,6 +55,14 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
 
   startSession: (stdinText = "") => set(sessionState(stdinText)),
   setStdinText: (stdinText) => set({ stdinText }),
+  setSelectedOptionId: (selectedOptionId) =>
+    set({
+      selectedOptionId,
+      status: "idle",
+      result: null,
+      errorMessage: null,
+      isCompletionOpen: false,
+    }),
 
   validateTask: async (source, filename, spec) => {
     if (get().status === "checking") {
@@ -65,12 +77,14 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
     });
 
     try {
-      const result = await validateTaskSource({
-        source,
-        filename,
-        stdin: splitStdinText(get().stdinText),
-        spec,
-      });
+      const result = spec.answer
+        ? validateChoiceAnswer(spec, get().selectedOptionId)
+        : await validateTaskSource({
+            source,
+            filename,
+            stdin: splitStdinText(get().stdinText),
+            spec,
+          });
 
       set({
         status: result.passed ? "passed" : "failed",
