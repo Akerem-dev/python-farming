@@ -1,5 +1,12 @@
 import type { TaskValidationSpec } from "../learning/taskValidationTypes";
 
+export type CurriculumLessonMode = "code" | "output-prediction" | "code-completion";
+
+export interface CurriculumChoiceOption {
+  id: string;
+  label: string;
+}
+
 export interface CurriculumCatalog {
   version: number;
   levels: CurriculumLevel[];
@@ -36,6 +43,11 @@ export interface CurriculumLesson {
   title: string;
   summary: string;
   levelLabel: string;
+  mode?: CurriculumLessonMode;
+  choice?: {
+    prompt: string;
+    options: CurriculumChoiceOption[];
+  };
   task: {
     title: string;
     instructions: string[];
