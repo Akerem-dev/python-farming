@@ -59,19 +59,30 @@ def collect_call(name, data):
     data["call_counts"][name] = data["call_counts"].get(name, 0) + 1
 
 
+def read_text_file(path):
+    try:
+        with open(path, "r", encoding="utf-8") as file:
+            return file.read(), None
+    except (OSError, UnicodeError) as error:
+        return None, error
+
+
 for path in file_paths:
     if path == ${JSON.stringify(PROJECT_VALIDATOR_PATH)}:
         continue
-    try:
-        with open(path, "r", encoding="utf-8") as source_file:
-            source = source_file.read()
-    except OSError as error:
-        syntax_errors[path] = f"Dosya okunamadı: {error}"
+
+    source, read_error = read_text_file(path)
+    if read_error is not None:
+        syntax_errors[path] = f"Dosya okunamadı: {read_error}"
         continue
 
     sources[path] = source
     data = empty_data()
     file_data[path] = data
+
+    if not path.endswith(".py"):
+        continue
+
     try:
         tree = ast.parse(source, filename=path, mode="exec")
         trees[path] = tree
@@ -182,6 +193,17 @@ def count_message(label, count, minimum, maximum):
     return f"{label} en az {minimum} kez bulunmalı; bulunan: {count}."
 
 
+def regex_flags(flags_text):
+    flags = 0
+    if "i" in flags_text:
+        flags |= re.IGNORECASE
+    if "m" in flags_text:
+        flags |= re.MULTILINE
+    if "s" in flags_text:
+        flags |= re.DOTALL
+    return flags
+
+
 for check in spec.get("checks", []):
     kind = check.get("kind")
     data = selected_data(check)
@@ -193,14 +215,50 @@ for check in spec.get("checks", []):
 
     if kind == "file_exists":
         path = check["path"]
-        passed = path in sources
+        passed = os.path.isfile(path)
         message = f"{path} proje içinde bulundu." if passed else f"{path} dosyası bulunamadı."
+    elif kind == "file_content_regex":
+        path = check["path"]
+        content, error = read_text_file(path)
+        passed = error is None and re.search(
+            check["pattern"], content or "", regex_flags(check.get("flags", ""))
+        ) is not None
+        message = (
+            f"{path} beklenen metin içeriğini taşıyor."
+            if passed
+            else f"{path} içeriği beklenen biçimle eşleşmedi."
+        )
+    elif kind == "json_file_equals":
+        path = check["path"]
+        try:
+            with open(path, "r", encoding="utf-8") as file:
+                actual = json.load(file)
+            expected = check.get("expected")
+            passed = actual == expected
+            message = (
+                f"{path} beklenen JSON verisini içeriyor."
+                if passed
+                else f"{path} JSON yapısı beklenen veriyle eşleşmedi."
+            )
+        except (OSError, UnicodeError, json.JSONDecodeError) as error:
+            passed = False
+            message = f"{path} geçerli JSON olarak okunamadı: {type(error).__name__}."
+    elif kind == "file_unchanged":
+        path = check["path"]
+        content, error = read_text_file(path)
+        passed = error is None and path in sources and content == sources[path]
+        message = (
+            f"{path} kaynak dosyası değiştirilmedi."
+            if passed
+            else f"{path} kaynak dosyası değiştirilmemelidir."
+        )
     elif kind == "import_statement":
         module = check["module"]
         name = check.get("name")
-        passed = (module, name) in data["imports"] or (name is None and any(
-            imported_module == module for imported_module, _ in data["imports"]
-        ))
+        passed = (module, name) in data["imports"] or (
+            name is None
+            and any(imported_module == module for imported_module, _ in data["imports"])
+        )
         target = f"{module}.{name}" if name else module
         message = f"{target} import edildi." if passed else f"{target} import ifadesi bulunamadı."
     elif kind == "assignment":
@@ -218,8 +276,10 @@ for check in spec.get("checks", []):
         maximum = int(maximum) if maximum is not None else None
         count = data["call_counts"].get(name, 0)
         passed = count >= minimum and (maximum is None or count <= maximum)
-        message = f"{name}() çağrı sayısı doğru: {count}." if passed else count_message(
-            f"{name}()", count, minimum, maximum
+        message = (
+            f"{name}() çağrı sayısı doğru: {count}."
+            if passed
+            else count_message(f"{name}()", count, minimum, maximum)
         )
     elif kind == "node_count":
         node_name = check["nodeName"]
@@ -228,8 +288,10 @@ for check in spec.get("checks", []):
         maximum = int(maximum) if maximum is not None else None
         count = data["node_counts"].get(node_name, 0)
         passed = count >= minimum and (maximum is None or count <= maximum)
-        message = f"{node_name} yapısı bulundu: {count}." if passed else count_message(
-            node_name, count, minimum, maximum
+        message = (
+            f"{node_name} yapısı bulundu: {count}."
+            if passed
+            else count_message(node_name, count, minimum, maximum)
         )
     elif kind == "function_definition":
         name = check["name"]
@@ -258,9 +320,13 @@ for check in spec.get("checks", []):
             passed = parameter_ok and default_ok and return_ok
             message = f"{name}() imzası doğru."
             if not parameter_ok:
-                message = count_message(f"{name}() parametre sayısı", parameter_count, minimum_params, maximum_params)
+                message = count_message(
+                    f"{name}() parametre sayısı", parameter_count, minimum_params, maximum_params
+                )
             elif not default_ok:
-                message = count_message(f"{name}() varsayılan parametre sayısı", default_count, minimum_defaults, maximum_defaults)
+                message = count_message(
+                    f"{name}() varsayılan parametre sayısı", default_count, minimum_defaults, maximum_defaults
+                )
             elif not return_ok:
                 message = f"{name}() fonksiyonu bir değer return etmelidir."
     elif runtime_error is not None:
@@ -326,16 +392,14 @@ for check in spec.get("checks", []):
         )
         message = "Sayısal değer pozitif." if passed else "Değer sıfırdan büyük olmalı."
     elif kind == "stdout_regex":
-        flags_text = check.get("flags", "")
-        flags = 0
-        if "i" in flags_text:
-            flags |= re.IGNORECASE
-        if "m" in flags_text:
-            flags |= re.MULTILINE
-        if "s" in flags_text:
-            flags |= re.DOTALL
-        passed = re.search(check["pattern"], stdout, flags) is not None
-        message = "Program çıktısı beklenen biçimde." if passed else "Program çıktısı beklenen biçimle eşleşmedi."
+        passed = re.search(
+            check["pattern"], stdout, regex_flags(check.get("flags", ""))
+        ) is not None
+        message = (
+            "Program çıktısı beklenen biçimde."
+            if passed
+            else "Program çıktısı beklenen biçimle eşleşmedi."
+        )
     else:
         passed = False
         message = f"Desteklenmeyen kontrol türü: {kind}"
