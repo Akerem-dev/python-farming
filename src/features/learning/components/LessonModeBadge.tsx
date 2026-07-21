@@ -9,7 +9,6 @@ const labels: Record<CurriculumLessonMode, string> = {
   "code-ordering": "Kod sıralama",
   refactoring: "Refactoring",
   "data-transformation": "Veri dönüşümü",
-  graduation: "Mezuniyet sınavı",
 };
 
 interface LessonModeBadgeProps {
