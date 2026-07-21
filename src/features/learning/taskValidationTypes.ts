@@ -59,6 +59,39 @@ export type TaskCheck =
       }>;
     })
   | (TaskCheckBase & {
+      kind: "function_raises";
+      name: string;
+      module?: string;
+      cases: Array<{
+        args: TaskCaseValue[];
+        exception: string;
+        messagePattern?: string;
+      }>;
+    })
+  | (TaskCheckBase & {
+      kind: "exception_handling";
+      requiredTypes: string[];
+      minHandlers: number;
+      maxHandlers?: number;
+      requireElse?: boolean;
+      requireFinally?: boolean;
+      disallowBareExcept?: boolean;
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "exception_class";
+      name: string;
+      base: string;
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "raise_exception";
+      name: string;
+      min: number;
+      max?: number;
+      file?: string;
+    })
+  | (TaskCheckBase & {
       kind: "file_exists";
       path: string;
     })

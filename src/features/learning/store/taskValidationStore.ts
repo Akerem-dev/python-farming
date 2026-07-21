@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
+import { validateExceptionTask } from "../services/exceptionTaskValidationService";
 import { validateOrderAnswer } from "../services/orderValidationService";
 import { validateProjectTask } from "../services/projectTaskValidationService";
 import {
@@ -66,6 +67,16 @@ function clearedValidationState() {
   };
 }
 
+function requiresExceptionValidation(spec: TaskValidationSpec) {
+  const exceptionChecks = new Set([
+    "exception_handling",
+    "exception_class",
+    "raise_exception",
+    "function_raises",
+  ]);
+  return spec.checks.some((check) => exceptionChecks.has(check.kind));
+}
+
 function requiresProjectValidation(files: RuntimeSourceFile[], spec: TaskValidationSpec) {
   const projectOnlyChecks = new Set([
     "file_exists",
@@ -81,7 +92,8 @@ function requiresProjectValidation(files: RuntimeSourceFile[], spec: TaskValidat
       (check) =>
         projectOnlyChecks.has(check.kind) ||
         ("file" in check && Boolean(check.file)) ||
-        (check.kind === "function_cases" && Boolean(check.module)),
+        ((check.kind === "function_cases" || check.kind === "function_raises") &&
+          Boolean(check.module)),
     )
   );
 }
@@ -136,24 +148,22 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
         throw new Error("Kontrol edilecek Python dosyası bulunamadı.");
       }
 
+      const stdin = splitStdinText(get().stdinText);
       const result =
         spec.answer?.kind === "choice"
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : requiresProjectValidation(files, spec)
-              ? await validateProjectTask({
-                  files,
-                  entrypoint,
-                  stdin: splitStdinText(get().stdinText),
-                  spec,
-                })
-              : await validateTaskSource({
-                  source: entrypointFile.content,
-                  filename: entrypointFile.path,
-                  stdin: splitStdinText(get().stdinText),
-                  spec,
-                });
+            : requiresExceptionValidation(spec)
+              ? await validateExceptionTask({ files, entrypoint, stdin, spec })
+              : requiresProjectValidation(files, spec)
+                ? await validateProjectTask({ files, entrypoint, stdin, spec })
+                : await validateTaskSource({
+                    source: entrypointFile.content,
+                    filename: entrypointFile.path,
+                    stdin,
+                    spec,
+                  });
 
       set({
         status: result.passed ? "passed" : "failed",

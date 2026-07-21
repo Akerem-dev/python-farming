@@ -1,0 +1,834 @@
+{
+  "moduleId": "exceptions",
+  "lessons": [
+    {
+      "id": "intermediate.exceptions.try-except",
+      "moduleId": "exceptions",
+      "order": 1,
+      "title": "İlk try ve except bloğun",
+      "summary": "try bloğu riskli işlemi çalıştırır; except ise yalnız beklediğin hata türünü kontrollü bir sonuca dönüştürür.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Metni güvenli biçimde sayıya dönüştür",
+        "instructions": [
+          "__HATA_TURU__ yer tutucusunu doğru exception adıyla değiştir.",
+          "Geçerli metinlerde tam sayı döndür.",
+          "Geçersiz sayı metinlerinde programı durdurmak yerine None döndür."
+        ],
+        "requirements": [
+          "ValueError açıkça yakalanmalı.",
+          "Çıplak except: kullanılmamalı.",
+          "Fonksiyon farklı metinlerle yeniden çalışabilmeli."
+        ],
+        "sampleOutput": "42\nNone",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def sayiya_cevir(metin):\n    try:\n        return int(metin)\n    except __HATA_TURU__:\n        return None\n\nprint(sayiya_cevir(\"42\"))\nprint(sayiya_cevir(\"merhaba\"))"
+      },
+      "hints": [
+        {
+          "title": "int() hangi hatayı üretir?",
+          "body": "Sayıya çevrilemeyen bir metin int() içinde ValueError oluşturur."
+        },
+        {
+          "title": "Hata türünü dar tut",
+          "body": "Yalnız beklenen ValueError türünü yakalamak diğer programlama hatalarını gizlemez."
+        },
+        {
+          "title": "Yer tutucuyu tamamen değiştir",
+          "body": "except __HATA_TURU__: satırını except ValueError: hâline getir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.try-except",
+        "title": "Metni güvenli biçimde sayıya dönüştür",
+        "xpReward": 60,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "safe-convert-definition",
+            "kind": "function_definition",
+            "name": "sayiya_cevir",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "sayiya_cevir() fonksiyonu doğru tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "value-error-handler",
+            "kind": "exception_handling",
+            "requiredTypes": ["ValueError"],
+            "minHandlers": 1,
+            "maxHandlers": 1,
+            "disallowBareExcept": true,
+            "file": "main.py",
+            "label": "ValueError kontrollü biçimde yakalandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "safe-convert-cases",
+            "kind": "function_cases",
+            "name": "sayiya_cevir",
+            "cases": [
+              { "args": ["42"], "expected": 42 },
+              { "args": [" 7 "], "expected": 7 },
+              { "args": ["merhaba"], "expected": null }
+            ],
+            "label": "Gizli dönüşüm senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "safe-convert-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A42\\s*\\nNone\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.exceptions.flow-prediction",
+      "moduleId": "exceptions",
+      "order": 2,
+      "title": "Exception akışını tahmin et",
+      "summary": "Bir hata yakalandığında try bloğunun kalanı atlanır; uygun except çalışır ve finally her durumda devreye girer.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi iki satır görünür?",
+        "options": [
+          { "id": "answer-invalid-finished", "label": "Geçersiz değer\nİşlem bitti" },
+          { "id": "answer-twelve-finished", "label": "12\nİşlem bitti" },
+          { "id": "answer-only-invalid", "label": "Geçersiz değer" },
+          { "id": "answer-traceback", "label": "ValueError traceback'i" }
+        ]
+      },
+      "task": {
+        "title": "except ve finally çalışma sırasını seç",
+        "instructions": [
+          "int(\"12a\") işleminin oluşturduğu hata türünü belirle.",
+          "Uygun except bloğunun çalışacağını düşün.",
+          "finally bloğunun hata olsa da çalıştığını hesaba kat."
+        ],
+        "requirements": [
+          "Kod çalıştırılmadan önce tahmin yapılmalı.",
+          "except ve finally satırlarının sırası korunmalı.",
+          "Yalnız bir seçenek işaretlenmeli."
+        ],
+        "sampleOutput": "İki satırlık terminal çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "try:\n    sayi = int(\"12a\")\n    print(sayi)\nexcept ValueError:\n    print(\"Geçersiz değer\")\nfinally:\n    print(\"İşlem bitti\")"
+      },
+      "hints": [
+        {
+          "title": "Dönüşüm başarısız olur",
+          "body": "12a metni yalnız rakamlardan oluşmadığı için int() ValueError üretir."
+        },
+        {
+          "title": "try içindeki print atlanır",
+          "body": "Hata oluştuğu anda try bloğunun kalan satırları çalışmaz."
+        },
+        {
+          "title": "finally daima çalışır",
+          "body": "Önce except mesajı, sonra finally mesajı görünür."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.flow-prediction",
+        "title": "except ve finally çalışma sırasını seç",
+        "xpReward": 50,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-invalid-finished"
+        }
+      }
+    },
+    {
+      "id": "intermediate.exceptions.else-finally",
+      "moduleId": "exceptions",
+      "order": 3,
+      "title": "else ve finally ile akışı tamamla",
+      "summary": "else yalnız hata oluşmadığında, finally ise sonuç ne olursa olsun çalışır.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "Bölme işlemini dört parçalı try yapısıyla yönet",
+        "instructions": [
+          "bolme_raporu(a, b) fonksiyonunu oluştur.",
+          "ZeroDivisionError durumunda kontrollü hata metni döndür.",
+          "Başarılı sonucu else bloğunda döndür.",
+          "finally bloğunda İşlem kapatıldı. mesajını yazdır."
+        ],
+        "requirements": [
+          "try, except ZeroDivisionError, else ve finally birlikte kullanılmalı.",
+          "Fonksiyon iki parametre almalı ve metin döndürmeli.",
+          "Sıfıra bölme programı durdurmamalı."
+        ],
+        "sampleOutput": "İşlem kapatıldı.\nSonuç: 5.0\nİşlem kapatıldı.\nSıfıra bölme yapılamaz.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# try / except / else / finally akışını kur\n\n# bolme_raporu fonksiyonunu buraya yaz\n\nprint(bolme_raporu(10, 2))\nprint(bolme_raporu(10, 0))"
+      },
+      "hints": [
+        {
+          "title": "Riskli işlem try içinde",
+          "body": "sonuc = a / b ifadesini try bloğuna yerleştir."
+        },
+        {
+          "title": "Başarılı yol else içinde",
+          "body": "else bloğunda return f\"Sonuç: {sonuc}\" kullanabilirsin."
+        },
+        {
+          "title": "finally dönüşten önce de çalışır",
+          "body": "finally içinde print(\"İşlem kapatıldı.\") yaz; return olsa bile çalışacaktır."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.else-finally",
+        "title": "Bölme işlemini dört parçalı try yapısıyla yönet",
+        "xpReward": 70,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "division-report-definition",
+            "kind": "function_definition",
+            "name": "bolme_raporu",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "bolme_raporu() fonksiyonu tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "division-flow",
+            "kind": "exception_handling",
+            "requiredTypes": ["ZeroDivisionError"],
+            "minHandlers": 1,
+            "maxHandlers": 1,
+            "requireElse": true,
+            "requireFinally": true,
+            "disallowBareExcept": true,
+            "file": "main.py",
+            "label": "except, else ve finally akışı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "division-report-cases",
+            "kind": "function_cases",
+            "name": "bolme_raporu",
+            "cases": [
+              { "args": [10, 2], "expected": "Sonuç: 5.0" },
+              { "args": [9, 3], "expected": "Sonuç: 3.0" },
+              { "args": [10, 0], "expected": "Sıfıra bölme yapılamaz." }
+            ],
+            "label": "Gizli bölme senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "division-report-output",
+            "kind": "stdout_regex",
+            "pattern": "\\Aİşlem kapatıldı\\.\\s*\\nSonuç:\\s*5\\.0\\s*\\nİşlem kapatıldı\\.\\s*\\nSıfıra bölme yapılamaz\\.\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.exceptions.controlled-raise",
+      "moduleId": "exceptions",
+      "order": 4,
+      "title": "Kontrollü hata fırlat",
+      "summary": "raise, geçersiz bir durumu sessizce kabul etmek yerine çağıran koda açık ve anlamlı bir hata bildirir.",
+      "levelLabel": "Exception Lab",
+      "mode": "code",
+      "task": {
+        "title": "Geçersiz fiyatlar için doğru exception türünü üret",
+        "instructions": [
+          "fiyat_dogrula(fiyat) fonksiyonunu yaz.",
+          "Sayısal olmayan değerlerde TypeError fırlat.",
+          "Sıfır veya negatif değerlerde ValueError fırlat.",
+          "Geçerli fiyatı değiştirmeden döndür."
+        ],
+        "requirements": [
+          "TypeError ve ValueError ayrı koşullarda raise edilmeli.",
+          "Hata mesajları kullanıcıya neyin yanlış olduğunu açıklamalı.",
+          "Örnek döngü iki hata türünü kontrollü biçimde yakalamalı."
+        ],
+        "sampleOutput": "Geçerli fiyat: 120\nHata: Fiyat sıfırdan büyük olmalı.\nHata: Fiyat sayısal olmalı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# fiyat_dogrula fonksiyonunu yaz\n\nfor fiyat in [120, -5, \"on\"]:\n    try:\n        sonuc = fiyat_dogrula(fiyat)\n    except (ValueError, TypeError) as hata:\n        print(f\"Hata: {hata}\")\n    else:\n        print(f\"Geçerli fiyat: {sonuc}\")"
+      },
+      "hints": [
+        {
+          "title": "Önce türü kontrol et",
+          "body": "isinstance(fiyat, (int, float)) ile sayısal değerleri kabul edebilirsin."
+        },
+        {
+          "title": "İki farklı raise kullan",
+          "body": "Tür sorunu TypeError, değer aralığı sorunu ValueError olmalıdır."
+        },
+        {
+          "title": "Geçerli yol",
+          "body": "İki kontrol de geçilirse return fiyat kullan."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.controlled-raise",
+        "title": "Geçersiz fiyatlar için doğru exception türünü üret",
+        "xpReward": 75,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "price-validation-definition",
+            "kind": "function_definition",
+            "name": "fiyat_dogrula",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "fiyat_dogrula() fonksiyonu doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "price-raises-value",
+            "kind": "raise_exception",
+            "name": "ValueError",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "ValueError kontrollü biçimde fırlatıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "price-raises-type",
+            "kind": "raise_exception",
+            "name": "TypeError",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "TypeError kontrollü biçimde fırlatıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "price-handler-types",
+            "kind": "exception_handling",
+            "requiredTypes": ["ValueError", "TypeError"],
+            "minHandlers": 2,
+            "disallowBareExcept": true,
+            "file": "main.py",
+            "label": "Örnek akış iki hata türünü yakalıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "price-valid-cases",
+            "kind": "function_cases",
+            "name": "fiyat_dogrula",
+            "cases": [
+              { "args": [120], "expected": 120 },
+              { "args": [12.5], "expected": 12.5 }
+            ],
+            "label": "Gizli geçerli fiyat testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "price-error-cases",
+            "kind": "function_raises",
+            "name": "fiyat_dogrula",
+            "cases": [
+              { "args": [0], "exception": "ValueError", "messagePattern": "sıfırdan büyük" },
+              { "args": [-10], "exception": "ValueError", "messagePattern": "sıfırdan büyük" },
+              { "args": ["on"], "exception": "TypeError", "messagePattern": "sayısal" }
+            ],
+            "label": "Gizli exception senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "price-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AGeçerli fiyat:\\s*120\\s*\\nHata:\\s*Fiyat sıfırdan büyük olmalı\\.\\s*\\nHata:\\s*Fiyat sayısal olmalı\\.\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.exceptions.bare-except-debugging",
+      "moduleId": "exceptions",
+      "order": 5,
+      "title": "Hata Avcısı: çıplak except",
+      "summary": "Çıplak except, beklemediğin programlama hatalarını da gizler ve hatanın gerçek kaynağını bulmayı zorlaştırır.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "Gizlenen TypeError",
+        "symptom": "Fonksiyon, yalnız eksik ürün anahtarını yönetmek isterken veri türü hatalarını da Ürün bulunamadı mesajına dönüştürüyor.",
+        "workflow": [
+          "Başlangıç kodunda except satırının hangi hata türlerini yakaladığını incele.",
+          "Yalnız eksik sözlük anahtarı için oluşan KeyError türünü hedefle.",
+          "Liste gibi yanlış veri türlerinde TypeError'ın gizlenmeden yükselmesine izin ver.",
+          "Geçerli, eksik ve yanlış tür senaryolarını yeniden kontrol et."
+        ]
+      },
+      "task": {
+        "title": "Çıplak except bloğunu daralt",
+        "instructions": [
+          "except: satırını belirli bir hata türüyle değiştir.",
+          "Eksik ürün adında Ürün bulunamadı metnini döndürmeye devam et.",
+          "Yanlış veri türlerindeki TypeError hatasını gizleme."
+        ],
+        "requirements": [
+          "Yalnız KeyError yakalanmalı.",
+          "Çıplak except: veya except Exception kullanılmamalı.",
+          "Fonksiyon mevcut sözlük davranışını korumalı."
+        ],
+        "sampleOutput": "Ürün bulunamadı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def urun_fiyati(veri, ad):\n    try:\n        return veri[ad]\n    except:\n        return \"Ürün bulunamadı.\"\n\nprint(urun_fiyati({\"Defter\": 45}, \"Kalem\"))"
+      },
+      "hints": [
+        {
+          "title": "Sözlükte eksik anahtar",
+          "body": "Olmayan bir sözlük anahtarına erişmek KeyError üretir."
+        },
+        {
+          "title": "TypeError gizlenmemeli",
+          "body": "Listeye metin anahtarla erişmek farklı bir programlama hatasıdır ve yakalanmamalıdır."
+        },
+        {
+          "title": "En küçük düzeltme",
+          "body": "except: satırını except KeyError: olarak değiştir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.bare-except-debugging",
+        "title": "Çıplak except bloğunu daralt",
+        "xpReward": 80,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "product-price-definition",
+            "kind": "function_definition",
+            "name": "urun_fiyati",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "urun_fiyati() fonksiyonu korundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "key-error-only",
+            "kind": "exception_handling",
+            "requiredTypes": ["KeyError"],
+            "minHandlers": 1,
+            "maxHandlers": 1,
+            "disallowBareExcept": true,
+            "file": "main.py",
+            "label": "Yalnız KeyError yakalanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-price-cases",
+            "kind": "function_cases",
+            "name": "urun_fiyati",
+            "cases": [
+              { "args": [{ "Defter": 45 }, "Defter"], "expected": 45 },
+              { "args": [{ "Defter": 45 }, "Kalem"], "expected": "Ürün bulunamadı." }
+            ],
+            "label": "Gizli sözlük senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "wrong-type-stays-visible",
+            "kind": "function_raises",
+            "name": "urun_fiyati",
+            "cases": [
+              { "args": [[], "Defter"], "exception": "TypeError" }
+            ],
+            "label": "Yanlış veri türü hatası gizlenmiyor",
+            "visibility": "hidden"
+          },
+          {
+            "id": "product-price-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AÜrün bulunamadı\\.\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.exceptions.custom-exception",
+      "moduleId": "exceptions",
+      "order": 6,
+      "title": "Özel exception sınıfı oluştur",
+      "summary": "Alanına özgü exception sınıfları, çağıran kodun iş kurallarındaki hataları diğer teknik hatalardan ayırmasını sağlar.",
+      "levelLabel": "Multi-file Exception Lab",
+      "mode": "code",
+      "task": {
+        "title": "Stok kurallarını StokHatasi ile koru",
+        "instructions": [
+          "errors.py içinde Exception tabanından StokHatasi sınıfını oluştur.",
+          "stok.py içinde adet sıfır veya negatifse StokHatasi fırlat.",
+          "Adet mevcut stoktan büyükse farklı mesajla StokHatasi fırlat.",
+          "Geçerli işlemde kalan stok değerini döndür."
+        ],
+        "requirements": [
+          "StokHatasi doğrudan Exception sınıfından türemeli.",
+          "İki farklı iş kuralı iki raise ifadesiyle korunmalı.",
+          "main.py özel hata türünü açıkça yakalamalı."
+        ],
+        "sampleOutput": "Kalan stok: 7\nStok hatası: Yetersiz stok.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from errors import StokHatasi\nfrom stok import stok_azalt\n\nfor stok, adet in [(10, 3), (4, 7)]:\n    try:\n        print(f\"Kalan stok: {stok_azalt(stok, adet)}\")\n    except StokHatasi as hata:\n        print(f\"Stok hatası: {hata}\")",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from errors import StokHatasi\nfrom stok import stok_azalt\n\nfor stok, adet in [(10, 3), (4, 7)]:\n    try:\n        print(f\"Kalan stok: {stok_azalt(stok, adet)}\")\n    except StokHatasi as hata:\n        print(f\"Stok hatası: {hata}\")"
+          },
+          {
+            "path": "errors.py",
+            "starterCode": "# StokHatasi sınıfını burada oluştur\n"
+          },
+          {
+            "path": "stok.py",
+            "starterCode": "from errors import StokHatasi\n\ndef stok_azalt(stok, adet):\n    # İş kurallarını raise ile koru\n    return stok - adet\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Özel sınıf kısa olabilir",
+          "body": "class StokHatasi(Exception): altında pass yazmak yeterlidir."
+        },
+        {
+          "title": "İki ayrı iş kuralı",
+          "body": "adet <= 0 ve adet > stok koşullarında ayrı StokHatasi mesajları fırlat."
+        },
+        {
+          "title": "Geçerli sonuç",
+          "body": "Kontroller geçildikten sonra return stok - adet kullan."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.custom-exception",
+        "title": "Stok kurallarını StokHatasi ile koru",
+        "xpReward": 90,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "stock-error-class",
+            "kind": "exception_class",
+            "name": "StokHatasi",
+            "base": "Exception",
+            "file": "errors.py",
+            "label": "StokHatasi özel exception sınıfı oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "stock-function-definition",
+            "kind": "function_definition",
+            "name": "stok_azalt",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "stok.py",
+            "label": "stok_azalt() fonksiyonu doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "stock-error-raises",
+            "kind": "raise_exception",
+            "name": "StokHatasi",
+            "min": 2,
+            "max": 2,
+            "file": "stok.py",
+            "label": "İki stok kuralı raise ile korunuyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "stock-error-import",
+            "kind": "import_statement",
+            "module": "errors",
+            "name": "StokHatasi",
+            "file": "stok.py",
+            "label": "StokHatasi stok modülüne import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "stock-valid-cases",
+            "kind": "function_cases",
+            "name": "stok_azalt",
+            "module": "stok",
+            "cases": [
+              { "args": [10, 3], "expected": 7 },
+              { "args": [5, 5], "expected": 0 }
+            ],
+            "label": "Gizli geçerli stok testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "stock-error-cases",
+            "kind": "function_raises",
+            "name": "stok_azalt",
+            "module": "stok",
+            "cases": [
+              { "args": [10, 0], "exception": "StokHatasi", "messagePattern": "pozitif" },
+              { "args": [4, 7], "exception": "StokHatasi", "messagePattern": "Yetersiz stok" }
+            ],
+            "label": "Gizli stok exception testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "stock-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AKalan stok:\\s*7\\s*\\nStok hatası:\\s*Yetersiz stok\\.\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.exceptions.resilient-transfer",
+      "moduleId": "exceptions",
+      "order": 7,
+      "title": "Final proje: Dayanıklı JSON aktarımı",
+      "summary": "Gerçek veri akışlarında eksik dosya, bozuk JSON ve geçersiz veri yapısı birbirinden ayrılmalı; başarılı aktarım ise kalıcı bir çıktı üretmelidir.",
+      "levelLabel": "Chapter Project",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "Dayanıklı Sipariş Aktarımı",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/siparisler.json", "description": "Geçerli sipariş kaynağı" },
+          { "path": "data/bozuk.json", "description": "JSON sözdizimi bozuk test kaynağı" },
+          { "path": "data/gecersiz.json", "description": "Yapısı geçersiz test kaynağı" }
+        ],
+        "outputFiles": [
+          { "path": "output/rapor.json", "description": "Başarılı aktarım özeti" }
+        ],
+        "rules": [
+          "FileNotFoundError, JSONDecodeError ve VeriHatasi ayrı except bloklarında yönetilmeli.",
+          "Başarılı çıktı yalnız else bloğunda yazılmalı.",
+          "finally bloğu her aktarım denemesinin kapanışını garanti etmeli.",
+          "Kaynak JSON dosyaları değiştirilmemeli."
+        ],
+        "workflow": [
+          "errors.py içinde VeriHatasi özel exception sınıfını oluştur.",
+          "aktarim.py içinde veriyi doğrula ve geçersiz yapıda VeriHatasi fırlat.",
+          "Üç hata türünü ayrı mesajlarla kontrollü sonuçlara dönüştür.",
+          "Başarılı özeti output/rapor.json dosyasına yazıp terminalde bildir."
+        ]
+      },
+      "task": {
+        "title": "Hatalara dayanıklı sipariş aktarım hattı kur",
+        "instructions": [
+          "VeriHatasi sınıfını ve aktar(kaynak, hedef) fonksiyonunu tamamla.",
+          "Eksik dosya, bozuk JSON ve yanlış veri yapısını birbirinden ayır.",
+          "Geçerli siparişlerden sipariş_sayisi ve toplam_ciro özeti üret.",
+          "Başarılı özeti output/rapor.json dosyasına UTF-8 JSON olarak yaz."
+        ],
+        "requirements": [
+          "Üç belirli exception türü açıkça yakalanmalı.",
+          "try yapısında else ve finally bulunmalı.",
+          "VeriHatasi en az bir doğrulama kuralında raise edilmeli.",
+          "Geçerli kaynak dosyası değiştirilmemeli."
+        ],
+        "sampleOutput": "Aktarım denemesi tamamlandı.\nAktarım tamamlandı: 3 sipariş, 455 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from aktarim import aktar\n\nsonuc = aktar(\"data/siparisler.json\", \"output/rapor.json\")\nif sonuc[\"durum\"] == \"ok\":\n    print(\n        f\"Aktarım tamamlandı: {sonuc['siparis_sayisi']} sipariş, \"\n        f\"{sonuc['toplam_ciro']} TL\"\n    )",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from aktarim import aktar\n\nsonuc = aktar(\"data/siparisler.json\", \"output/rapor.json\")\nif sonuc[\"durum\"] == \"ok\":\n    print(\n        f\"Aktarım tamamlandı: {sonuc['siparis_sayisi']} sipariş, \"\n        f\"{sonuc['toplam_ciro']} TL\"\n    )"
+          },
+          {
+            "path": "errors.py",
+            "starterCode": "# VeriHatasi sınıfını burada oluştur\n"
+          },
+          {
+            "path": "aktarim.py",
+            "starterCode": "import json\nfrom pathlib import Path\nfrom errors import VeriHatasi\n\ndef siparisleri_ozetle(veri):\n    # siparisler alanını doğrula ve özeti döndür\n    pass\n\ndef aktar(kaynak, hedef):\n    # try / except / else / finally aktarım hattını kur\n    pass\n"
+          },
+          {
+            "path": "data/siparisler.json",
+            "starterCode": "{\n  \"siparisler\": [\n    {\"id\": 1, \"tutar\": 90},\n    {\"id\": 2, \"tutar\": 45},\n    {\"id\": 3, \"tutar\": 320}\n  ]\n}",
+            "readOnly": true
+          },
+          {
+            "path": "data/bozuk.json",
+            "starterCode": "{\"siparisler\": [1, 2,}",
+            "readOnly": true
+          },
+          {
+            "path": "data/gecersiz.json",
+            "starterCode": "{\"siparisler\": \"liste değil\"}",
+            "readOnly": true
+          },
+          {
+            "path": "output/rapor.json",
+            "starterCode": "{}"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Önce veri yapısını doğrula",
+          "body": "veri.get(\"siparisler\") sonucu liste değilse VeriHatasi fırlat."
+        },
+        {
+          "title": "Hataları ayrı yakala",
+          "body": "FileNotFoundError, json.JSONDecodeError ve VeriHatasi için üç ayrı except bloğu oluştur."
+        },
+        {
+          "title": "Yazma işlemi else içinde",
+          "body": "Özeti json.dumps ile hedefe yaz ve {\"durum\": \"ok\", **ozet} döndür."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.exceptions.resilient-transfer",
+        "title": "Hatalara dayanıklı sipariş aktarım hattı kur",
+        "xpReward": 130,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "data-error-class",
+            "kind": "exception_class",
+            "name": "VeriHatasi",
+            "base": "Exception",
+            "file": "errors.py",
+            "label": "VeriHatasi özel exception sınıfı oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "transfer-definition",
+            "kind": "function_definition",
+            "name": "aktar",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "aktarim.py",
+            "label": "aktar() fonksiyonu doğru tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "transfer-exception-flow",
+            "kind": "exception_handling",
+            "requiredTypes": ["FileNotFoundError", "json.JSONDecodeError", "VeriHatasi"],
+            "minHandlers": 3,
+            "maxHandlers": 3,
+            "requireElse": true,
+            "requireFinally": true,
+            "disallowBareExcept": true,
+            "file": "aktarim.py",
+            "label": "Üç hata türü, else ve finally akışı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "data-error-raise",
+            "kind": "raise_exception",
+            "name": "VeriHatasi",
+            "min": 1,
+            "file": "aktarim.py",
+            "label": "Geçersiz veri yapısı VeriHatasi üretiyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "transfer-cases",
+            "kind": "function_cases",
+            "name": "aktar",
+            "module": "aktarim",
+            "cases": [
+              {
+                "args": ["data/siparisler.json", "output/test-gecerli.json"],
+                "expected": { "durum": "ok", "siparis_sayisi": 3, "toplam_ciro": 455 }
+              },
+              {
+                "args": ["data/bozuk.json", "output/test-bozuk.json"],
+                "expected": { "durum": "hata", "hata": "JSONDecodeError" }
+              },
+              {
+                "args": ["data/yok.json", "output/test-yok.json"],
+                "expected": { "durum": "hata", "hata": "FileNotFoundError" }
+              },
+              {
+                "args": ["data/gecersiz.json", "output/test-gecersiz.json"],
+                "expected": { "durum": "hata", "hata": "VeriHatasi" }
+              }
+            ],
+            "label": "Gizli aktarım senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "transfer-output-file",
+            "kind": "json_file_equals",
+            "path": "output/rapor.json",
+            "expected": { "siparis_sayisi": 3, "toplam_ciro": 455 },
+            "label": "Kalıcı JSON raporu doğru üretildi",
+            "visibility": "hidden"
+          },
+          {
+            "id": "transfer-source-preserved",
+            "kind": "file_unchanged",
+            "path": "data/siparisler.json",
+            "label": "Kaynak sipariş dosyası korunuyor",
+            "visibility": "hidden"
+          },
+          {
+            "id": "transfer-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A(?:Aktarım denemesi tamamlandı\\.\\s*\\n)+Aktarım tamamlandı:\\s*3 sipariş,\\s*455 TL\\s*\\Z",
+            "label": "Gizli terminal çıktısı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
