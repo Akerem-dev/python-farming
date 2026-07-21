@@ -5,12 +5,7 @@
       "id": "beginner",
       "title": "Başlangıç seviyesi",
       "modules": [
-        {
-          "id": "python-introduction",
-          "number": "01",
-          "title": "Python’a Giriş",
-          "lessonIds": []
-        },
+        { "id": "python-introduction", "number": "01", "title": "Python’a Giriş", "lessonIds": [] },
         {
           "id": "variables-data-types",
           "number": "02",
@@ -21,48 +16,29 @@
             "beginner.variables.input"
           ]
         },
-        {
-          "id": "operators",
-          "number": "03",
-          "title": "Operatörler",
-          "lessonIds": []
-        },
-        {
-          "id": "conditionals",
-          "number": "04",
-          "title": "Koşullar",
-          "lessonIds": []
-        },
-        {
-          "id": "loops",
-          "number": "05",
-          "title": "Döngüler",
-          "lessonIds": []
-        },
-        {
-          "id": "functions",
-          "number": "06",
-          "title": "Fonksiyonlar",
-          "lessonIds": []
-        },
-        {
-          "id": "lists-tuples",
-          "number": "07",
-          "title": "Listeler ve Tuple",
-          "lessonIds": []
-        },
-        {
-          "id": "dictionaries-sets",
-          "number": "08",
-          "title": "Sözlükler ve Kümeler",
-          "lessonIds": []
-        },
-        {
-          "id": "beginner-graduation",
-          "number": "EX",
-          "title": "Başlangıç Mezuniyeti",
-          "lessonIds": []
-        }
+        { "id": "operators", "number": "03", "title": "Operatörler", "lessonIds": [] },
+        { "id": "conditionals", "number": "04", "title": "Koşullar", "lessonIds": [] },
+        { "id": "loops", "number": "05", "title": "Döngüler", "lessonIds": [] },
+        { "id": "functions", "number": "06", "title": "Fonksiyonlar", "lessonIds": [] },
+        { "id": "lists-tuples", "number": "07", "title": "Listeler ve Tuple", "lessonIds": [] },
+        { "id": "dictionaries-sets", "number": "08", "title": "Sözlükler ve Kümeler", "lessonIds": [] },
+        { "id": "beginner-graduation", "number": "EX", "title": "Başlangıç Mezuniyeti", "lessonIds": [] }
+      ]
+    },
+    {
+      "id": "intermediate",
+      "title": "Orta Seviye",
+      "modules": [
+        { "id": "modules-packages", "number": "01", "title": "Modüller ve Paketler", "lessonIds": [] },
+        { "id": "files-paths", "number": "02", "title": "Dosyalar ve Path", "lessonIds": [] },
+        { "id": "exceptions", "number": "03", "title": "Hata Yönetimi", "lessonIds": [] },
+        { "id": "comprehensions-iterators", "number": "04", "title": "Comprehension ve Iterator", "lessonIds": [] },
+        { "id": "oop-basics", "number": "05", "title": "Nesne Yönelimli Temeller", "lessonIds": [] },
+        { "id": "classes-inheritance", "number": "06", "title": "Sınıflar ve Kalıtım", "lessonIds": [] },
+        { "id": "testing", "number": "07", "title": "Test Yazma", "lessonIds": [] },
+        { "id": "typing-dataclasses", "number": "08", "title": "Typing ve Dataclass", "lessonIds": [] },
+        { "id": "standard-library", "number": "09", "title": "Standart Kütüphane", "lessonIds": [] },
+        { "id": "intermediate-project", "number": "10", "title": "Orta Seviye Projesi", "lessonIds": [] }
       ]
     }
   ],
@@ -96,18 +72,9 @@
         "starterCode": "# Kendini tanıtan iki değişken oluştur\n\nad = \"\"\nyas = 0\n\nprint(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\")"
       },
       "hints": [
-        {
-          "title": "Metin değerleri tırnak içine yazılır",
-          "body": "ad değişkenine değer verirken çift veya tek tırnak kullan."
-        },
-        {
-          "title": "Yaş sayısal olmalı",
-          "body": "yas değişkenine tırnaksız, sıfırdan büyük bir tam sayı ata."
-        },
-        {
-          "title": "f-string kullanabilirsin",
-          "body": "print(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\") biçimi değişkenleri metne yerleştirir."
-        }
+        { "title": "Metin değerleri tırnak içine yazılır", "body": "ad değişkenine değer verirken çift veya tek tırnak kullan." },
+        { "title": "Yaş sayısal olmalı", "body": "yas değişkenine tırnaksız, sıfırdan büyük bir tam sayı ata." },
+        { "title": "f-string kullanabilirsin", "body": "print(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\") biçimi değişkenleri metne yerleştirir." }
       ],
       "validation": {
         "id": "beginner.variables.introduction",
