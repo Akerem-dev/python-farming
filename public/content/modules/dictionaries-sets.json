@@ -1,0 +1,467 @@
+{
+  "moduleId": "dictionaries-sets",
+  "lessons": [
+    {
+      "id": "beginner.dictionaries-sets.dictionary-basics",
+      "moduleId": "dictionaries-sets",
+      "order": 1,
+      "title": "Sözlüklerle anahtar-değer sakla",
+      "summary": "Sözlükler, verileri sıralı konumlar yerine anlamlı anahtarlarla saklamanı sağlar.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Bir ürün sözlüğü oluştur",
+        "instructions": [
+          "urun adlı bir sözlük oluştur.",
+          "ad, fiyat ve stok anahtarlarını sırasıyla Defter, 45 ve 12 değerleriyle doldur.",
+          "Değerleri anahtarları üzerinden okuyup örnek biçimde yazdır."
+        ],
+        "requirements": [
+          "urun değişkeni dict türünde olmalı.",
+          "En az üç anahtar-değer çifti bulunmalı.",
+          "Değerler sözlük indekslemesiyle okunmalı."
+        ],
+        "sampleOutput": "Defter: 45 TL · stok 12",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# İlk ürün sözlüğünü oluştur\n\nurun = {}\n\nprint(f\"{urun['ad']}: {urun['fiyat']} TL · stok {urun['stok']}\")"
+      },
+      "hints": [
+        {
+          "title": "Sözlük süslü parantezle yazılır",
+          "body": "Anahtar ve değer arasında iki nokta kullan: {\"ad\": \"Defter\"}."
+        },
+        {
+          "title": "Çiftleri virgülle ayır",
+          "body": "fiyat ve stok anahtarlarını aynı sözlüğe virgülle ekle."
+        },
+        {
+          "title": "Tam sözlük",
+          "body": "urun = {\"ad\": \"Defter\", \"fiyat\": 45, \"stok\": 12}"
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.dictionary-basics",
+        "title": "Bir ürün sözlüğü oluştur",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "assign-product", "kind": "assignment", "name": "urun", "label": "urun değişkeni tanımlandı", "visibility": "visible" },
+          { "id": "dict-node", "kind": "node_count", "nodeName": "Dict", "min": 1, "label": "Sözlük yapısı kullanıldı", "visibility": "visible" },
+          { "id": "dict-type", "kind": "variable_type", "name": "urun", "expectedType": "dict", "label": "Gizli tür testi", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ADefter:\\s*45\\s*TL\\s*·\\s*stok\\s*12\\s*\\Z", "flags": "i", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.safe-get-prediction",
+      "moduleId": "dictionaries-sets",
+      "order": 2,
+      "title": "get() sonucunu tahmin et",
+      "summary": "get(), eksik bir anahtarda KeyError üretmek yerine belirlediğin varsayılan değeri döndürebilir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "İki print() satırı terminale hangi değerleri sırayla yazar?",
+        "options": [
+          { "id": "answer-tr-dark", "label": "tr\ndark" },
+          { "id": "answer-none-dark", "label": "None\ndark" },
+          { "id": "answer-tr-light", "label": "tr\nlight" },
+          { "id": "answer-keyerror", "label": "KeyError" }
+        ]
+      },
+      "task": {
+        "title": "Eksik ve mevcut anahtarların sonucunu seç",
+        "instructions": [
+          "ayarlar sözlüğünde dil anahtarının bulunmadığını fark et.",
+          "İlk get() çağrısındaki varsayılan değeri takip et.",
+          "İkinci get() çağrısında mevcut tema değerinin döneceğini düşün."
+        ],
+        "requirements": [
+          "get() eksik anahtarda hata üretmez.",
+          "Mevcut anahtar varsa varsayılan değer kullanılmaz.",
+          "Çıktı sırası print() satırlarıyla aynı olmalı."
+        ],
+        "sampleOutput": "İki satırda metin",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "ayarlar = {\"tema\": \"dark\"}\n\nprint(ayarlar.get(\"dil\", \"tr\"))\nprint(ayarlar.get(\"tema\", \"light\"))"
+      },
+      "hints": [
+        {
+          "title": "dil anahtarı eksik",
+          "body": "Eksik anahtarda get() ikinci argümanı döndürür."
+        },
+        {
+          "title": "tema anahtarı mevcut",
+          "body": "Mevcut değer dark olduğu için light kullanılmaz."
+        },
+        {
+          "title": "Çıktı sırası",
+          "body": "Önce varsayılan dil, sonra mevcut tema yazılır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.safe-get-prediction",
+        "title": "get() sonucunu tahmin et",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-tr-dark"
+        }
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.dictionary-methods",
+      "moduleId": "dictionaries-sets",
+      "order": 3,
+      "title": "Sözlük metotlarını tamamla",
+      "summary": "update() bir veya daha fazla alanı günceller; pop() ise anahtarı silerken eski değerini döndürür.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Profili güncelle ve yaşı kaldır",
+        "instructions": [
+          "update() içine sehri İstanbul yapan sözlüğü yaz.",
+          "pop() içine yas anahtarını yaz.",
+          "Silinen yaş değerini koruyup örnek biçimde yazdır."
+        ],
+        "requirements": [
+          "update() ve pop() metotları korunmalı.",
+          "profil sözlük olarak kalmalı.",
+          "Silinen yaş değeri 23 olmalı."
+        ],
+        "sampleOutput": "Kerem - İstanbul - silinen yaş: 23",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "profil = {\"ad\": \"Kerem\", \"sehir\": \"Ankara\", \"yas\": 23}\n\nprofil.update(__GUNCELLEME_SOZLUGU__)\nsilinen_yas = profil.pop(__SILINECEK_ANAHTAR__)\n\nprint(f\"{profil['ad']} - {profil['sehir']} - silinen yaş: {silinen_yas}\")"
+      },
+      "hints": [
+        {
+          "title": "update() sözlük alabilir",
+          "body": "{\"sehir\": \"İstanbul\"} sözlüğünü update() içine ver."
+        },
+        {
+          "title": "pop() anahtar bekler",
+          "body": "Silinecek anahtar metin olduğu için \"yas\" yaz."
+        },
+        {
+          "title": "Yer tutucuları tamamen sil",
+          "body": "Kodda __GUNCELLEME_SOZLUGU__ veya __SILINECEK_ANAHTAR__ kalmamalı."
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.dictionary-methods",
+        "title": "Profili güncelle ve yaşı kaldır",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "call-update", "kind": "call", "name": "update", "label": "update() kullanıldı", "visibility": "visible" },
+          { "id": "call-pop", "kind": "call", "name": "pop", "label": "pop() kullanıldı", "visibility": "visible" },
+          { "id": "profile-type", "kind": "variable_type", "name": "profil", "expectedType": "dict", "label": "Gizli sözlük testi", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AKerem\\s*-\\s*İstanbul\\s*-\\s*silinen yaş:\\s*23\\s*\\Z", "flags": "i", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.items-iteration",
+      "moduleId": "dictionaries-sets",
+      "order": 4,
+      "title": "items() ile sözlükte gezin",
+      "summary": "items(), bir sözlüğün anahtar ve değerlerini döngü içinde birlikte kullanmanı sağlar.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Stok sözlüğünü satırlara dönüştür",
+        "instructions": [
+          "stok_satirlari adlı tek parametreli fonksiyon oluştur.",
+          "Sözlük üzerinde items() ile dolaş.",
+          "Her ürün için ürün: adet metnini yeni listeye ekle.",
+          "Oluşturulan listeyi return et."
+        ],
+        "requirements": [
+          "Gerçek bir for döngüsü kullanılmalı.",
+          "items() ve append() çağrıları bulunmalı.",
+          "Fonksiyon farklı stok sözlüklerinde çalışmalı."
+        ],
+        "sampleOutput": "Defter: 8\nKalem: 15",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "stoklar = {\"Defter\": 8, \"Kalem\": 15}\n\n# stok_satirlari fonksiyonunu buraya yaz\n\nprint(\"\\n\".join(stok_satirlari(stoklar)))"
+      },
+      "hints": [
+        {
+          "title": "Boş sonuç listesi oluştur",
+          "body": "Fonksiyonun başında satirlar = [] yaz."
+        },
+        {
+          "title": "İki değişkenle dolaş",
+          "body": "for urun, adet in stoklar.items(): biçimini kullan."
+        },
+        {
+          "title": "Metni listeye ekle",
+          "body": "satirlar.append(f\"{urun}: {adet}\") ardından return satirlar yaz."
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.items-iteration",
+        "title": "Stok sözlüğünü satırlara dönüştür",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "define-lines", "kind": "function_definition", "name": "stok_satirlari", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "stok_satirlari() imzası doğru", "visibility": "visible" },
+          { "id": "for-loop", "kind": "node_count", "nodeName": "For", "min": 1, "label": "for döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "call-items", "kind": "call", "name": "items", "label": "items() kullanıldı", "visibility": "visible" },
+          { "id": "line-cases", "kind": "function_cases", "name": "stok_satirlari", "cases": [
+            { "args": [{ "Defter": 8, "Kalem": 15 }], "expected": ["Defter: 8", "Kalem: 15"] },
+            { "args": [{ "Çanta": 2 }], "expected": ["Çanta: 2"] },
+            { "args": [{}], "expected": [] }
+          ], "label": "Gizli sözlük senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ADefter:\\s*8\\s*\\nKalem:\\s*15\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.set-prediction",
+      "moduleId": "dictionaries-sets",
+      "order": 5,
+      "title": "Küme işlemlerini tahmin et",
+      "summary": "Kümeler tekrarları kaldırır; kesişim ortak, fark ise yalnız bir tarafta bulunan elemanları verir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "sorted() çağrıları nedeniyle sıralı gösterilen iki küme işleminin çıktısı nedir?",
+        "options": [
+          { "id": "answer-common-only", "label": "['Ece', 'Mert']\n['Ali']" },
+          { "id": "answer-all-zeynep", "label": "['Ali', 'Ece', 'Mert', 'Zeynep']\n['Zeynep']" },
+          { "id": "answer-common-zeynep", "label": "['Ece', 'Mert']\n['Zeynep']" },
+          { "id": "answer-ali-common", "label": "['Ali']\n['Ece', 'Mert']" }
+        ]
+      },
+      "task": {
+        "title": "Kesişim ve fark sonucunu seç",
+        "instructions": [
+          "& operatörünün iki kümedeki ortak isimleri bulduğunu hatırla.",
+          "python - web işleminin yalnız python kümesinde kalanları verdiğini düşün.",
+          "sorted() nedeniyle alfabetik sıralamayı koru."
+        ],
+        "requirements": [
+          "Kümede tekrar eden eleman bulunmaz.",
+          "Kesişim ve fark birbirinden ayrılmalı.",
+          "İki satırlık doğru seçenek seçilmeli."
+        ],
+        "sampleOutput": "İki satırda sıralı liste",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "python = {\"Ali\", \"Ece\", \"Mert\"}\nweb = {\"Ece\", \"Mert\", \"Zeynep\"}\n\nprint(sorted(python & web))\nprint(sorted(python - web))"
+      },
+      "hints": [
+        {
+          "title": "Ortak isimleri bul",
+          "body": "Ece ve Mert iki kümede de bulunuyor."
+        },
+        {
+          "title": "Yalnız Python tarafı",
+          "body": "Ali, web kümesinde bulunmayan tek Python öğrencisi."
+        },
+        {
+          "title": "Sıralı listeler",
+          "body": "sorted() küme sonucunu alfabetik bir listeye dönüştürür."
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.set-prediction",
+        "title": "Küme işlemlerini tahmin et",
+        "xpReward": 45,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-common-only"
+        }
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.inventory-mini-project",
+      "moduleId": "dictionaries-sets",
+      "order": 6,
+      "title": "Mini Proje: Stok Analizörü",
+      "summary": "Liste, sözlük, küme, döngü ve fonksiyon bilgilerini birleştirerek küçük fakat gerçek bir stok raporlama aracı oluştur.",
+      "levelLabel": "Mini Project Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Stok Analizörü v1",
+        "sourceShape": "[{ad, kategori, stok}, ...]",
+        "targetShape": "{toplam_adet, dusuk_stok, kategoriler}",
+        "deliverables": [
+          "stok_raporu(urunler) adlı yeniden kullanılabilir fonksiyon",
+          "Toplam adet, düşük stok listesi ve benzersiz kategori raporu",
+          "Farklı gizli ürün listelerinde aynı veri sözleşmesi"
+        ],
+        "rules": [
+          "stok değeri 5'ten küçük ürünler düşük stok kabul edilir.",
+          "Kategori tekrarları set ile kaldırılmalıdır.",
+          "Düşük stok ve kategori listeleri alfabetik sıralanmalıdır.",
+          "Fonksiyon sonucu yeni bir sözlük olarak return edilmelidir."
+        ],
+        "workflow": [
+          "Boş toplam, düşük stok listesi ve kategori kümesini hazırla.",
+          "Her ürün sözlüğünü dolaşıp toplam stoku artır.",
+          "Düşük stok ürünlerini listeye, kategorileri kümeye ekle.",
+          "Sıralı koleksiyonları rapor sözlüğüne yerleştirip return et."
+        ]
+      },
+      "task": {
+        "title": "Ürün listesinden stok raporu üret",
+        "instructions": [
+          "stok_raporu adlı tek parametreli fonksiyon oluştur.",
+          "Toplam stok miktarını hesapla.",
+          "Stoku 5'ten küçük ürün adlarını düşük stok listesine ekle.",
+          "Benzersiz kategorileri set ile topla.",
+          "Raporu belirtilen üç anahtarla sözlük olarak döndür."
+        ],
+        "requirements": [
+          "for döngüsü, append() ve add() kullanılmalı.",
+          "Fonksiyon dict döndürmeli.",
+          "Düşük stok ve kategoriler sorted() ile sıralanmalı.",
+          "Farklı ve boş ürün listeleri güvenle işlenmeli."
+        ],
+        "sampleOutput": "Toplam adet: 25\nDüşük stok: Çanta, Defter\nKategoriler: Aksesuar, Kırtasiye",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu mini proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "urunler = [\n    {\"ad\": \"Defter\", \"kategori\": \"Kırtasiye\", \"stok\": 3},\n    {\"ad\": \"Kalem\", \"kategori\": \"Kırtasiye\", \"stok\": 12},\n    {\"ad\": \"Çanta\", \"kategori\": \"Aksesuar\", \"stok\": 2},\n    {\"ad\": \"Suluk\", \"kategori\": \"Aksesuar\", \"stok\": 8},\n]\n\n# stok_raporu fonksiyonunu buraya yaz\n\nrapor = stok_raporu(urunler)\nprint(f\"Toplam adet: {rapor['toplam_adet']}\")\nprint(f\"Düşük stok: {', '.join(rapor['dusuk_stok'])}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")"
+      },
+      "hints": [
+        {
+          "title": "Üç çalışma değişkeni",
+          "body": "toplam_adet = 0, dusuk_stok = [] ve kategoriler = set() ile başla."
+        },
+        {
+          "title": "Her ürün bir sözlük",
+          "body": "Döngü içinde urun['stok'], urun['ad'] ve urun['kategori'] değerlerini kullan."
+        },
+        {
+          "title": "Rapor sözlüğü",
+          "body": "return {\"toplam_adet\": toplam_adet, \"dusuk_stok\": sorted(dusuk_stok), \"kategoriler\": sorted(kategoriler)}"
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.inventory-mini-project",
+        "title": "Ürün listesinden stok raporu üret",
+        "xpReward": 85,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "define-report", "kind": "function_definition", "name": "stok_raporu", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "stok_raporu() imzası doğru", "visibility": "visible" },
+          { "id": "for-loop", "kind": "node_count", "nodeName": "For", "min": 1, "label": "Ürünler for döngüsüyle işlendi", "visibility": "visible" },
+          { "id": "call-append", "kind": "call", "name": "append", "label": "Düşük stok listesine append() yapıldı", "visibility": "visible" },
+          { "id": "call-add", "kind": "call", "name": "add", "label": "Kategori kümesine add() yapıldı", "visibility": "visible" },
+          { "id": "report-cases", "kind": "function_cases", "name": "stok_raporu", "cases": [
+            { "args": [[
+              { "ad": "Defter", "kategori": "Kırtasiye", "stok": 3 },
+              { "ad": "Kalem", "kategori": "Kırtasiye", "stok": 12 },
+              { "ad": "Çanta", "kategori": "Aksesuar", "stok": 2 },
+              { "ad": "Suluk", "kategori": "Aksesuar", "stok": 8 }
+            ]], "expected": { "toplam_adet": 25, "dusuk_stok": ["Çanta", "Defter"], "kategoriler": ["Aksesuar", "Kırtasiye"] } },
+            { "args": [[
+              { "ad": "Mouse", "kategori": "Teknoloji", "stok": 1 },
+              { "ad": "Klavye", "kategori": "Teknoloji", "stok": 6 }
+            ]], "expected": { "toplam_adet": 7, "dusuk_stok": ["Mouse"], "kategoriler": ["Teknoloji"] } },
+            { "args": [[]], "expected": { "toplam_adet": 0, "dusuk_stok": [], "kategoriler": [] } }
+          ], "label": "Gizli stok verileri", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AToplam adet:\\s*25\\s*\\nDüşük stok:\\s*Çanta,\\s*Defter\\s*\\nKategoriler:\\s*Aksesuar,\\s*Kırtasiye\\s*\\Z", "flags": "i", "label": "Gizli proje çıktısı", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.dictionaries-sets.final-challenge",
+      "moduleId": "dictionaries-sets",
+      "order": 7,
+      "title": "Başlangıç seviyesi final raporu",
+      "summary": "Sözlük, küme, fonksiyon, koşul ve koleksiyon metotlarını bir sınıf başarı raporunda birleştir.",
+      "levelLabel": "Beginner Capstone",
+      "mode": "code",
+      "task": {
+        "title": "Not sözlüğünden sınıf özeti üret",
+        "instructions": [
+          "sinif_ozeti adlı tek parametreli fonksiyon oluştur.",
+          "Not ortalamasını bir ondalık basamağa yuvarla.",
+          "En yüksek notlu öğrencinin adını bul.",
+          "Notu 50 veya daha yüksek öğrencileri set ile toplayıp sırala.",
+          "Üç değeri bir rapor sözlüğünde return et."
+        ],
+        "requirements": [
+          "values() ve items() kullanılmalı.",
+          "Başarılı öğrenciler için gerçek set veya set comprehension kullanılmalı.",
+          "Boş sözlükte ortalama 0, en_yuksek None ve basarili [] dönmeli.",
+          "Fonksiyon farklı not sözlüklerinde çalışmalı."
+        ],
+        "sampleOutput": "Ortalama: 68.3\nEn yüksek: Ece\nBaşarılı: Ali, Ece",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu final görevi dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "notlar = {\"Ali\": 70, \"Ece\": 90, \"Mert\": 45}\n\n# sinif_ozeti fonksiyonunu buraya yaz\n\nozet = sinif_ozeti(notlar)\nprint(f\"Ortalama: {ozet['ortalama']}\")\nprint(f\"En yüksek: {ozet['en_yuksek']}\")\nprint(f\"Başarılı: {', '.join(ozet['basarili'])}\")"
+      },
+      "hints": [
+        {
+          "title": "Boş sözlüğü önce ele al",
+          "body": "if not notlar: return {\"ortalama\": 0, \"en_yuksek\": None, \"basarili\": []} yazabilirsin."
+        },
+        {
+          "title": "Ortalama ve en yüksek",
+          "body": "puanlar = list(notlar.values()) ve max(notlar, key=notlar.get) ifadelerini kullan."
+        },
+        {
+          "title": "Başarılı kümesi",
+          "body": "{ad for ad, puan in notlar.items() if puan >= 50} kümesini sorted() ile listeye dönüştür."
+        }
+      ],
+      "validation": {
+        "id": "beginner.dictionaries-sets.final-challenge",
+        "title": "Not sözlüğünden sınıf özeti üret",
+        "xpReward": 100,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "define-summary", "kind": "function_definition", "name": "sinif_ozeti", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "sinif_ozeti() imzası doğru", "visibility": "visible" },
+          { "id": "dict-node", "kind": "node_count", "nodeName": "Dict", "min": 1, "label": "Rapor sözlüğü oluşturuldu", "visibility": "visible" },
+          { "id": "set-comp", "kind": "node_count", "nodeName": "SetComp", "min": 1, "label": "Başarılı öğrenciler set comprehension ile toplandı", "visibility": "visible" },
+          { "id": "call-items", "kind": "call", "name": "items", "label": "items() kullanıldı", "visibility": "visible" },
+          { "id": "summary-cases", "kind": "function_cases", "name": "sinif_ozeti", "cases": [
+            { "args": [{ "Ali": 70, "Ece": 90, "Mert": 45 }], "expected": { "ortalama": 68.3, "en_yuksek": "Ece", "basarili": ["Ali", "Ece"] } },
+            { "args": [{ "Ada": 100, "Bora": 50 }], "expected": { "ortalama": 75.0, "en_yuksek": "Ada", "basarili": ["Ada", "Bora"] } },
+            { "args": [{}], "expected": { "ortalama": 0, "en_yuksek": null, "basarili": [] } }
+          ], "label": "Gizli sınıf verileri", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AOrtalama:\\s*68\\.3\\s*\\nEn yüksek:\\s*Ece\\s*\\nBaşarılı:\\s*Ali,\\s*Ece\\s*\\Z", "flags": "i", "label": "Gizli final çıktısı", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
