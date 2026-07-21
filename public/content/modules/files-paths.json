@@ -1,0 +1,591 @@
+{
+  "moduleId": "files-paths",
+  "lessons": [
+    {
+      "id": "intermediate.files-paths.read-text",
+      "moduleId": "files-paths",
+      "order": 1,
+      "title": "Path ile metin dosyası oku",
+      "summary": "pathlib.Path, platformdan bağımsız dosya yolları oluşturmayı ve UTF-8 metin dosyalarını okunabilir yöntemlerle işlemeyi sağlar.",
+      "levelLabel": "Intermediate File Lab",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "Not Dosyası Okuyucu",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/notlar.txt", "description": "Her satırında bir çalışma konusu bulunan salt okunur UTF-8 metin dosyası." }
+        ],
+        "outputFiles": [],
+        "rules": [
+          "Dosya yolu pathlib.Path ile temsil edilmeli.",
+          "Kaynak dosya değiştirilmeden satırlar temiz bir liste olarak döndürülmeli."
+        ],
+        "workflow": [
+          "data/notlar.txt dosyasını proje ağacından incele.",
+          "Path.read_text() ile UTF-8 metni oku.",
+          "splitlines() ile satırları listeye ayır.",
+          "Not sayısını ve ilk notu terminale yazdır."
+        ]
+      },
+      "task": {
+        "title": "Metin satırlarını yeniden kullanılabilir bir fonksiyonla oku",
+        "instructions": [
+          "notlari_oku(dosya_yolu) fonksiyonunu tamamla.",
+          "Path(dosya_yolu).read_text(encoding=\"utf-8\") ile metni oku.",
+          "Boş olmayan satırları temizlenmiş bir liste olarak return et.",
+          "Hazır terminal çıktısını değiştirme."
+        ],
+        "requirements": [
+          "pathlib.Path kullanılmalı.",
+          "Fonksiyon bir liste return etmeli.",
+          "data/notlar.txt dosyası değiştirilmemeli."
+        ],
+        "sampleOutput": "Not sayısı: 3\nİlk not: Python",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from pathlib import Path\n\ndef notlari_oku(dosya_yolu):\n    # Dosyayı UTF-8 olarak oku ve satır listesini döndür\n    return []\n\nnotlar = notlari_oku(\"data/notlar.txt\")\nprint(f\"Not sayısı: {len(notlar)}\")\nprint(f\"İlk not: {notlar[0]}\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from pathlib import Path\n\ndef notlari_oku(dosya_yolu):\n    # Dosyayı UTF-8 olarak oku ve satır listesini döndür\n    return []\n\nnotlar = notlari_oku(\"data/notlar.txt\")\nprint(f\"Not sayısı: {len(notlar)}\")\nprint(f\"İlk not: {notlar[0]}\")"
+          },
+          {
+            "path": "data/notlar.txt",
+            "starterCode": "Python\nPathlib\nJSON\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Metni oku", "body": "metin = Path(dosya_yolu).read_text(encoding=\"utf-8\") satırı bütün dosyayı metin olarak verir." },
+        { "title": "Satırlara ayır", "body": "splitlines() satır sonlarını kaldırarak bir liste üretir." },
+        { "title": "Boş satırları ele", "body": "[satir.strip() for satir in metin.splitlines() if satir.strip()] biçimini kullanabilirsin." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.read-text",
+        "title": "Metin satırlarını yeniden kullanılabilir bir fonksiyonla oku",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "import-path", "kind": "import_statement", "module": "pathlib", "name": "Path", "file": "main.py", "label": "Path import edildi", "visibility": "visible" },
+          { "id": "define-reader", "kind": "function_definition", "name": "notlari_oku", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "main.py", "label": "notlari_oku() imzası doğru", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "main.py", "label": "read_text() kullanıldı", "visibility": "visible" },
+          { "id": "call-splitlines", "kind": "call", "name": "splitlines", "file": "main.py", "label": "splitlines() kullanıldı", "visibility": "visible" },
+          { "id": "reader-case", "kind": "function_cases", "name": "notlari_oku", "cases": [{ "args": ["data/notlar.txt"], "expected": ["Python", "Pathlib", "JSON"] }], "label": "Gizli metin okuma testi", "visibility": "hidden" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/notlar.txt", "label": "Kaynak dosya korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ANot sayısı:\\s*3\\s*\\nİlk not:\\s*Python\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.files-paths.path-prediction",
+      "moduleId": "files-paths",
+      "order": 2,
+      "title": "Path parçalarını tahmin et",
+      "summary": "parent, stem ve suffix özellikleri bir dosya yolunun klasörünü, uzantısız adını ve uzantısını işletim sisteminden bağımsız biçimde verir.",
+      "levelLabel": "Intermediate Practice",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi üç satır görünür?",
+        "options": [
+          { "id": "correct", "label": "2026\ntemmuz\n.json" },
+          { "id": "with-folder", "label": "raporlar\ntemmuz.json\njson" },
+          { "id": "wrong-parent", "label": "raporlar\ntemmuz\n.json" },
+          { "id": "full-path", "label": "raporlar/2026\ntemmuz.json\n.json" }
+        ]
+      },
+      "task": {
+        "title": "parent, stem ve suffix sonuçlarını takip et",
+        "instructions": [
+          "Path nesnesinin parent klasörünü belirle.",
+          "stem özelliğinin uzantıyı kaldırdığını hatırla.",
+          "suffix değerinin noktayla başladığını dikkate al."
+        ],
+        "requirements": [
+          "Kodu çalıştırmadan önce tahmin yapılmalı.",
+          "Üç satırın sırası korunmalı.",
+          "Yalnız bir seçenek işaretlenmeli."
+        ],
+        "sampleOutput": "Üç satırlık path bilgisi",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from pathlib import Path\n\ndosya = Path(\"raporlar/2026/temmuz.json\")\nprint(dosya.parent.name)\nprint(dosya.stem)\nprint(dosya.suffix)"
+      },
+      "hints": [
+        { "title": "parent bir Path döndürür", "body": "dosya.parent, raporlar/2026 yoludur; bunun name değeri son klasör adıdır." },
+        { "title": "stem", "body": "temmuz.json dosyasının stem değeri temmuz olur." },
+        { "title": "suffix", "body": "Uzantı .json biçiminde, başındaki noktayla döner." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.path-prediction",
+        "title": "parent, stem ve suffix sonuçlarını takip et",
+        "xpReward": 45,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": { "kind": "choice", "correctOptionId": "correct" }
+      }
+    },
+    {
+      "id": "intermediate.files-paths.load-json",
+      "moduleId": "files-paths",
+      "order": 3,
+      "title": "JSON dosyasını güvenli yükle",
+      "summary": "JSON metni önce UTF-8 olarak okunur, ardından json.loads() ile Python listesi ve sözlüklerine dönüştürülir.",
+      "levelLabel": "Intermediate File Lab",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "Ürün Verisi Yükleyici",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/urunler.json", "description": "Ürün adları ve stok değerlerini içeren salt okunur JSON listesi." }
+        ],
+        "outputFiles": [],
+        "rules": [
+          "Dosya UTF-8 kodlamasıyla okunmalı.",
+          "Kaynak JSON dosyası değiştirilmeden Python listesine dönüştürülmeli."
+        ],
+        "workflow": [
+          "JSON dosyasının liste ve sözlük yapısını incele.",
+          "Path.read_text() ile JSON metnini oku.",
+          "json.loads() ile Python verisine dönüştür.",
+          "Stok değerlerini toplayıp terminale yazdır."
+        ]
+      },
+      "task": {
+        "title": "Ürün JSON verisini Python listesine dönüştür",
+        "instructions": [
+          "urunleri_yukle(dosya_yolu) fonksiyonunu tamamla.",
+          "Dosya metnini Path.read_text() ile oku.",
+          "json.loads() sonucunu return et.",
+          "Hazır toplam stok hesabını çalıştır."
+        ],
+        "requirements": [
+          "json ve pathlib kullanılmalı.",
+          "Fonksiyon ürün listesini return etmeli.",
+          "Kaynak JSON dosyası değişmemeli."
+        ],
+        "sampleOutput": "Toplam stok: 23",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import json\nfrom pathlib import Path\n\ndef urunleri_yukle(dosya_yolu):\n    # JSON metnini oku ve Python verisine dönüştür\n    return []\n\nurunler = urunleri_yukle(\"data/urunler.json\")\ntoplam_stok = sum(urun[\"stok\"] for urun in urunler)\nprint(f\"Toplam stok: {toplam_stok}\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "import json\nfrom pathlib import Path\n\ndef urunleri_yukle(dosya_yolu):\n    # JSON metnini oku ve Python verisine dönüştür\n    return []\n\nurunler = urunleri_yukle(\"data/urunler.json\")\ntoplam_stok = sum(urun[\"stok\"] for urun in urunler)\nprint(f\"Toplam stok: {toplam_stok}\")"
+          },
+          {
+            "path": "data/urunler.json",
+            "starterCode": "[\n  {\"ad\": \"Defter\", \"stok\": 3},\n  {\"ad\": \"Kalem\", \"stok\": 12},\n  {\"ad\": \"Suluk\", \"stok\": 8}\n]\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Metni al", "body": "metin = Path(dosya_yolu).read_text(encoding=\"utf-8\") kullan." },
+        { "title": "JSON çözümle", "body": "json.loads(metin), JSON metnini Python listesine dönüştürür." },
+        { "title": "Sonucu döndür", "body": "Fonksiyondan doğrudan json.loads(metin) sonucunu return edebilirsin." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.load-json",
+        "title": "Ürün JSON verisini Python listesine dönüştür",
+        "xpReward": 65,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "import-json", "kind": "import_statement", "module": "json", "file": "main.py", "label": "json import edildi", "visibility": "visible" },
+          { "id": "import-path", "kind": "import_statement", "module": "pathlib", "name": "Path", "file": "main.py", "label": "Path import edildi", "visibility": "visible" },
+          { "id": "define-loader", "kind": "function_definition", "name": "urunleri_yukle", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "main.py", "label": "urunleri_yukle() imzası doğru", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "main.py", "label": "read_text() kullanıldı", "visibility": "visible" },
+          { "id": "call-loads", "kind": "call", "name": "loads", "file": "main.py", "label": "json.loads() kullanıldı", "visibility": "visible" },
+          { "id": "loader-case", "kind": "function_cases", "name": "urunleri_yukle", "cases": [{ "args": ["data/urunler.json"], "expected": [{ "ad": "Defter", "stok": 3 }, { "ad": "Kalem", "stok": 12 }, { "ad": "Suluk", "stok": 8 }] }], "label": "Gizli JSON yükleme testi", "visibility": "hidden" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/urunler.json", "label": "Kaynak JSON korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AToplam stok:\\s*23\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.files-paths.debug-working-directory",
+      "moduleId": "files-paths",
+      "order": 4,
+      "title": "Hata Avcısı: yanlış çalışma dizini",
+      "summary": "Göreli dosya yolları çalıştırılan dosyanın konumuna değil çalışma dizinine göre çözülür; __file__ tabanlı Path yapısı bu belirsizliği kaldırır.",
+      "levelLabel": "File System Debugging",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "FileNotFoundError",
+        "symptom": "Program urunler.json dosyasını main.py ile aynı klasörde arıyor, fakat gerçek veri data klasöründe bulunuyor.",
+        "workflow": [
+          "Kodu çalıştırıp traceback içinde aranan yanlış yolu gör.",
+          "Path(__file__).parent ile main.py klasörünü temel al.",
+          "data ve urunler.json parçalarını / operatörüyle ekle.",
+          "Programı yeniden çalıştırıp ürün sayısını doğrula."
+        ]
+      },
+      "fileSystem": {
+        "projectTitle": "Çalışma Dizini Hata Avcısı",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/urunler.json", "description": "Programın yanlış klasörde aradığı gerçek veri dosyası." }
+        ],
+        "outputFiles": [],
+        "rules": [
+          "Mutlak ve kullanıcıya özel dosya yolu yazılmamalı.",
+          "Çözüm __file__ tabanlı ve platformdan bağımsız olmalı."
+        ],
+        "workflow": [
+          "Traceback içindeki yolu incele.",
+          "main.py konumunu Path(__file__).parent ile bul.",
+          "data/urunler.json yolunu Path parçalarıyla birleştir.",
+          "Kaynak dosyayı değiştirmeden tekrar çalıştır."
+        ]
+      },
+      "task": {
+        "title": "Veri dosyasının gerçek konumunu güvenli biçimde çöz",
+        "instructions": [
+          "Başlangıç kodunu çalıştır ve FileNotFoundError mesajını gör.",
+          "veri_yolu değişkenini __file__ tabanlı olarak düzelt.",
+          "data/urunler.json dosyasını json.loads() ile yükle.",
+          "Ürün sayısını terminalde doğrula."
+        ],
+        "requirements": [
+          "Path(__file__).parent kullanılmalı.",
+          "Yol / operatörüyle birleştirilmeli.",
+          "Kaynak dosya değiştirilmemeli."
+        ],
+        "sampleOutput": "Ürün sayısı: 2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import json\nfrom pathlib import Path\n\n# HATA: urunler.json aslında data klasöründe\nveri_yolu = Path(__file__).parent / \"urunler.json\"\nurunler = json.loads(veri_yolu.read_text(encoding=\"utf-8\"))\nprint(f\"Ürün sayısı: {len(urunler)}\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "import json\nfrom pathlib import Path\n\n# HATA: urunler.json aslında data klasöründe\nveri_yolu = Path(__file__).parent / \"urunler.json\"\nurunler = json.loads(veri_yolu.read_text(encoding=\"utf-8\"))\nprint(f\"Ürün sayısı: {len(urunler)}\")"
+          },
+          {
+            "path": "data/urunler.json",
+            "starterCode": "[{\"ad\": \"Defter\"}, {\"ad\": \"Kalem\"}]\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "main.py klasörü", "body": "Path(__file__).parent, çalışan Python dosyasının bulunduğu klasörü verir." },
+        { "title": "Path birleştirme", "body": "Path(__file__).parent / \"data\" / \"urunler.json\" yazabilirsin." },
+        { "title": "Mutlak yol kullanma", "body": "C:\\ veya /home gibi bilgisayara özel yollar gizli testlerde geçmez." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.debug-working-directory",
+        "title": "Veri dosyasının gerçek konumunu güvenli biçimde çöz",
+        "xpReward": 70,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "call-path", "kind": "call", "name": "Path", "file": "main.py", "label": "Path() kullanıldı", "visibility": "visible" },
+          { "id": "path-parts", "kind": "node_count", "nodeName": "BinOp", "min": 2, "file": "main.py", "label": "Path parçaları / ile birleştirildi", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "main.py", "label": "read_text() kullanıldı", "visibility": "visible" },
+          { "id": "call-loads", "kind": "call", "name": "loads", "file": "main.py", "label": "JSON çözümlendi", "visibility": "visible" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/urunler.json", "label": "Kaynak dosya korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AÜrün sayısı:\\s*2\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.files-paths.write-text-report",
+      "moduleId": "files-paths",
+      "order": 5,
+      "title": "Metin raporu yaz",
+      "summary": "Path.write_text(), hesaplanan sonucu açık bir kodlama ve kontrollü bir hedef yoluyla kalıcı metin dosyasına yazar.",
+      "levelLabel": "Intermediate File Lab",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "Satış Özeti Üreticisi",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/satislar.txt", "description": "Her satırda bir satış tutarı bulunan salt okunur kaynak dosya." }
+        ],
+        "outputFiles": [
+          { "path": "output/ozet.txt", "description": "Toplam ve ortalama bilgisinin yazılacağı metin raporu." }
+        ],
+        "rules": [
+          "Kaynak satış dosyası değiştirilmemeli.",
+          "Rapor UTF-8 ile output/ozet.txt dosyasına yazılmalı."
+        ],
+        "workflow": [
+          "Satış satırlarını okuyup sayılara dönüştür.",
+          "Toplam ve ortalamayı hesapla.",
+          "İki satırlık rapor metnini oluştur.",
+          "write_text() ile hedef dosyaya yaz ve özeti return et."
+        ]
+      },
+      "task": {
+        "title": "Satış verisinden kalıcı metin özeti üret",
+        "instructions": [
+          "rapor_yaz(kaynak_yolu, hedef_yolu) fonksiyonunu tamamla.",
+          "Satırları float değerlerine dönüştür.",
+          "Toplam ve ortalama değerlerini rapor metnine yerleştir.",
+          "Raporu write_text() ile yazıp özet sözlüğünü return et."
+        ],
+        "requirements": [
+          "read_text() ve write_text() kullanılmalı.",
+          "output/ozet.txt oluşturulmalı.",
+          "data/satislar.txt korunmalı."
+        ],
+        "sampleOutput": "Rapor hazır: output/ozet.txt\n\nDosya içeriği:\nToplam: 500\nOrtalama: 125.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from pathlib import Path\n\ndef rapor_yaz(kaynak_yolu, hedef_yolu):\n    # Satışları oku, raporu yaz ve özet sözlüğünü döndür\n    return {}\n\nrapor_yaz(\"data/satislar.txt\", \"output/ozet.txt\")\nprint(\"Rapor hazır: output/ozet.txt\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from pathlib import Path\n\ndef rapor_yaz(kaynak_yolu, hedef_yolu):\n    # Satışları oku, raporu yaz ve özet sözlüğünü döndür\n    return {}\n\nrapor_yaz(\"data/satislar.txt\", \"output/ozet.txt\")\nprint(\"Rapor hazır: output/ozet.txt\")"
+          },
+          {
+            "path": "data/satislar.txt",
+            "starterCode": "120\n80\n200\n100\n",
+            "readOnly": true
+          },
+          {
+            "path": "output/ozet.txt",
+            "starterCode": "",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Sayı listesi", "body": "[float(satir) for satir in metin.splitlines() if satir.strip()] kullanabilirsin." },
+        { "title": "Özet sözlüğü", "body": "{\"toplam\": toplam, \"ortalama\": ortalama} sözlüğünü return et." },
+        { "title": "Rapor metni", "body": "f\"Toplam: {toplam:g}\\nOrtalama: {ortalama:.1f}\\n\" biçimi beklenen içeriği üretir." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.write-text-report",
+        "title": "Satış verisinden kalıcı metin özeti üret",
+        "xpReward": 75,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "define-writer", "kind": "function_definition", "name": "rapor_yaz", "minParams": 2, "maxParams": 2, "requireReturn": true, "file": "main.py", "label": "rapor_yaz() imzası doğru", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "main.py", "label": "read_text() kullanıldı", "visibility": "visible" },
+          { "id": "call-write-text", "kind": "call", "name": "write_text", "file": "main.py", "label": "write_text() kullanıldı", "visibility": "visible" },
+          { "id": "writer-case", "kind": "function_cases", "name": "rapor_yaz", "cases": [{ "args": ["data/satislar.txt", "output/gizli.txt"], "expected": { "toplam": 500.0, "ortalama": 125.0 } }], "label": "Gizli rapor fonksiyonu testi", "visibility": "hidden" },
+          { "id": "output-exists", "kind": "file_exists", "path": "output/ozet.txt", "label": "Özet dosyası oluşturuldu", "visibility": "hidden" },
+          { "id": "output-content", "kind": "file_content_regex", "path": "output/ozet.txt", "pattern": "\\AToplam:\\s*500(?:\\.0)?\\s*\\nOrtalama:\\s*125\\.0\\s*\\Z", "label": "Metin raporu içeriği doğru", "visibility": "hidden" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/satislar.txt", "label": "Kaynak satış dosyası korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ARapor hazır:\\s*output/ozet\\.txt\\s*\\Z", "label": "Gizli terminal testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.files-paths.write-json-summary",
+      "moduleId": "files-paths",
+      "order": 6,
+      "title": "JSON özet dosyası üret",
+      "summary": "Bir JSON kaynağı okunup dönüştürüldükten sonra json.dumps() ve write_text() ile yeni, biçimlendirilmiş bir veri dosyasına yazılabilir.",
+      "levelLabel": "Persistent Data Lab",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "İlerleme Özeti Dönüştürücüsü",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/ilerleme.json", "description": "Kullanıcı ve tamamlanan ders XP bilgilerini içeren kaynak JSON." }
+        ],
+        "outputFiles": [
+          { "path": "output/ozet.json", "description": "Toplam XP ve tamamlanan ders sayısını içeren yeni JSON özeti." }
+        ],
+        "rules": [
+          "Kaynak JSON hiçbir aşamada değiştirilmemeli.",
+          "Çıktı geçerli JSON olmalı ve Türkçe karakterler korunmalı."
+        ],
+        "workflow": [
+          "Kaynak JSON metnini UTF-8 olarak oku.",
+          "Ders sayısını ve toplam XP değerini hesapla.",
+          "Yeni özet sözlüğünü oluştur.",
+          "ensure_ascii=False ve indent=2 ile hedef JSON dosyasına yaz."
+        ]
+      },
+      "task": {
+        "title": "İlerleme verisini ayrı bir JSON özetine dönüştür",
+        "instructions": [
+          "ozet_uret(kaynak_yolu, hedef_yolu) fonksiyonunu tamamla.",
+          "Kaynak veriyi json.loads() ile yükle.",
+          "kullanici, tamamlanan_ders ve toplam_xp alanlarını oluştur.",
+          "Özeti json.dumps() ve write_text() ile kaydedip return et."
+        ],
+        "requirements": [
+          "Kaynak ve hedef dosyalar farklı olmalı.",
+          "Geçerli JSON çıktısı üretilmeli.",
+          "Türkçe karakterler kaçış dizisine dönüştürülmemeli."
+        ],
+        "sampleOutput": "Özet kaydedildi: Kerem · 565 XP\n\noutput/ozet.json geçerli JSON olmalı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import json\nfrom pathlib import Path\n\ndef ozet_uret(kaynak_yolu, hedef_yolu):\n    # Kaynağı oku, özeti oluştur ve hedefe yaz\n    return {}\n\nozet = ozet_uret(\"data/ilerleme.json\", \"output/ozet.json\")\nprint(f\"Özet kaydedildi: {ozet['kullanici']} · {ozet['toplam_xp']} XP\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "import json\nfrom pathlib import Path\n\ndef ozet_uret(kaynak_yolu, hedef_yolu):\n    # Kaynağı oku, özeti oluştur ve hedefe yaz\n    return {}\n\nozet = ozet_uret(\"data/ilerleme.json\", \"output/ozet.json\")\nprint(f\"Özet kaydedildi: {ozet['kullanici']} · {ozet['toplam_xp']} XP\")"
+          },
+          {
+            "path": "data/ilerleme.json",
+            "starterCode": "{\n  \"kullanici\": \"Kerem\",\n  \"dersler\": [\n    {\"ad\": \"Python'a Giriş\", \"xp\": 305},\n    {\"ad\": \"Operatörler\", \"xp\": 260}\n  ]\n}\n",
+            "readOnly": true
+          },
+          {
+            "path": "output/ozet.json",
+            "starterCode": "{}\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Kaynağı yükle", "body": "veri = json.loads(Path(kaynak_yolu).read_text(encoding=\"utf-8\")) kullan." },
+        { "title": "XP toplamı", "body": "sum(ders[\"xp\"] for ders in veri[\"dersler\"]) toplam XP'yi verir." },
+        { "title": "JSON yaz", "body": "Path(hedef_yolu).write_text(json.dumps(ozet, ensure_ascii=False, indent=2), encoding=\"utf-8\") kullan." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.write-json-summary",
+        "title": "İlerleme verisini ayrı bir JSON özetine dönüştür",
+        "xpReward": 85,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "define-summary", "kind": "function_definition", "name": "ozet_uret", "minParams": 2, "maxParams": 2, "requireReturn": true, "file": "main.py", "label": "ozet_uret() imzası doğru", "visibility": "visible" },
+          { "id": "call-loads", "kind": "call", "name": "loads", "file": "main.py", "label": "json.loads() kullanıldı", "visibility": "visible" },
+          { "id": "call-dumps", "kind": "call", "name": "dumps", "file": "main.py", "label": "json.dumps() kullanıldı", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "main.py", "label": "Kaynak dosya okundu", "visibility": "visible" },
+          { "id": "call-write-text", "kind": "call", "name": "write_text", "file": "main.py", "label": "Hedef dosya yazıldı", "visibility": "visible" },
+          { "id": "summary-case", "kind": "function_cases", "name": "ozet_uret", "cases": [{ "args": ["data/ilerleme.json", "output/gizli.json"], "expected": { "kullanici": "Kerem", "tamamlanan_ders": 2, "toplam_xp": 565 } }], "label": "Gizli dönüşüm testi", "visibility": "hidden" },
+          { "id": "output-json", "kind": "json_file_equals", "path": "output/ozet.json", "expected": { "kullanici": "Kerem", "tamamlanan_ders": 2, "toplam_xp": 565 }, "label": "JSON özet içeriği doğru", "visibility": "hidden" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/ilerleme.json", "label": "Kaynak JSON korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AÖzet kaydedildi:\\s*Kerem\\s*·\\s*565\\s*XP\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.files-paths.final-project",
+      "moduleId": "files-paths",
+      "order": 7,
+      "title": "Final proje: Sipariş Arşivi",
+      "summary": "Gerçek bir veri işleme katmanında dosya yükleme, özetleme ve JSON kaydetme sorumluluklarını ayrı fonksiyonlara bölerek kalıcı bir arşiv raporu üret.",
+      "levelLabel": "Intermediate Project Lab",
+      "mode": "file-processing",
+      "fileSystem": {
+        "projectTitle": "Sipariş Arşivi v1",
+        "workingDirectory": ".",
+        "inputFiles": [
+          { "path": "data/siparisler.json", "description": "Sipariş kimliği, kategori ve tutar alanlarını içeren salt okunur arşiv." }
+        ],
+        "outputFiles": [
+          { "path": "output/rapor.json", "description": "Sipariş sayısı, toplam ciro ve benzersiz kategorileri içeren kalıcı rapor." }
+        ],
+        "rules": [
+          "Dosya okuma, özetleme ve yazma üç ayrı fonksiyonda tutulmalı.",
+          "Kaynak arşiv değişmemeli; çıktı ayrı bir JSON dosyasına yazılmalı.",
+          "Kategori listesi benzersiz ve alfabetik sıralı olmalı."
+        ],
+        "workflow": [
+          "siparisleri_yukle() ile kaynak JSON listesini oku.",
+          "siparis_ozeti() ile saf bir özet sözlüğü üret.",
+          "ozeti_kaydet() ile sözlüğü UTF-8 JSON dosyasına yaz.",
+          "main.py üzerinden bütün akışı çalıştırıp terminal ve dosya testlerini geçir."
+        ]
+      },
+      "task": {
+        "title": "Yeniden kullanılabilir sipariş arşivi katmanı geliştir",
+        "instructions": [
+          "arsiv.py içindeki üç fonksiyonu tamamla.",
+          "siparisleri_yukle dosya yolundan liste döndürmeli.",
+          "siparis_ozeti sayıyı, ciroyu ve sıralı kategorileri hesaplamalı.",
+          "ozeti_kaydet geçerli JSON üretip hedef yolu return etmeli."
+        ],
+        "requirements": [
+          "pathlib ve json kullanılmalı.",
+          "main.py değiştirilmeden çalışmalı.",
+          "output/rapor.json tam beklenen yapıda oluşmalı.",
+          "data/siparisler.json korunmalı."
+        ],
+        "sampleOutput": "3 sipariş · 455 TL\nKategoriler: Aksesuar, Kırtasiye",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from arsiv import ozeti_kaydet, siparis_ozeti, siparisleri_yukle\n\nsiparisler = siparisleri_yukle(\"data/siparisler.json\")\nozet = siparis_ozeti(siparisler)\nozeti_kaydet(ozet, \"output/rapor.json\")\n\nprint(f\"{ozet['siparis_sayisi']} sipariş · {ozet['toplam_ciro']} TL\")\nprint(f\"Kategoriler: {', '.join(ozet['kategoriler'])}\")",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from arsiv import ozeti_kaydet, siparis_ozeti, siparisleri_yukle\n\nsiparisler = siparisleri_yukle(\"data/siparisler.json\")\nozet = siparis_ozeti(siparisler)\nozeti_kaydet(ozet, \"output/rapor.json\")\n\nprint(f\"{ozet['siparis_sayisi']} sipariş · {ozet['toplam_ciro']} TL\")\nprint(f\"Kategoriler: {', '.join(ozet['kategoriler'])}\")",
+            "readOnly": true
+          },
+          {
+            "path": "arsiv.py",
+            "starterCode": "import json\nfrom pathlib import Path\n\ndef siparisleri_yukle(dosya_yolu):\n    # JSON sipariş listesini yükle\n    return []\n\ndef siparis_ozeti(siparisler):\n    # Sipariş sayısı, toplam ciro ve sıralı kategorileri döndür\n    return {}\n\ndef ozeti_kaydet(ozet, hedef_yolu):\n    # Özeti UTF-8 JSON olarak yaz ve hedef yolunu döndür\n    return hedef_yolu"
+          },
+          {
+            "path": "data/siparisler.json",
+            "starterCode": "[\n  {\"id\": 1, \"kategori\": \"Kırtasiye\", \"tutar\": 90},\n  {\"id\": 2, \"kategori\": \"Aksesuar\", \"tutar\": 320},\n  {\"id\": 3, \"kategori\": \"Kırtasiye\", \"tutar\": 45}\n]\n",
+            "readOnly": true
+          },
+          {
+            "path": "output/rapor.json",
+            "starterCode": "{}\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Yükleme fonksiyonu", "body": "json.loads(Path(dosya_yolu).read_text(encoding=\"utf-8\")) sonucunu return et." },
+        { "title": "Saf özet", "body": "Kategori listesi için sorted({siparis[\"kategori\"] for siparis in siparisler}) kullanabilirsin." },
+        { "title": "Kalıcı çıktı", "body": "Path(hedef_yolu).write_text(json.dumps(ozet, ensure_ascii=False, indent=2), encoding=\"utf-8\") sonrasında hedef_yolu return et." }
+      ],
+      "validation": {
+        "id": "intermediate.files-paths.final-project",
+        "title": "Yeniden kullanılabilir sipariş arşivi katmanı geliştir",
+        "xpReward": 125,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "archive-file", "kind": "file_exists", "path": "arsiv.py", "label": "arsiv.py proje içinde", "visibility": "visible" },
+          { "id": "import-loader", "kind": "import_statement", "module": "arsiv", "name": "siparisleri_yukle", "file": "main.py", "label": "Arşiv fonksiyonları import edildi", "visibility": "visible" },
+          { "id": "define-loader", "kind": "function_definition", "name": "siparisleri_yukle", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "arsiv.py", "label": "siparisleri_yukle() hazır", "visibility": "visible" },
+          { "id": "define-summary", "kind": "function_definition", "name": "siparis_ozeti", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "arsiv.py", "label": "siparis_ozeti() hazır", "visibility": "visible" },
+          { "id": "define-save", "kind": "function_definition", "name": "ozeti_kaydet", "minParams": 2, "maxParams": 2, "requireReturn": true, "file": "arsiv.py", "label": "ozeti_kaydet() hazır", "visibility": "visible" },
+          { "id": "call-read-text", "kind": "call", "name": "read_text", "file": "arsiv.py", "label": "Arşiv dosyası okunuyor", "visibility": "visible" },
+          { "id": "call-write-text", "kind": "call", "name": "write_text", "file": "arsiv.py", "label": "Rapor dosyası yazılıyor", "visibility": "visible" },
+          { "id": "summary-cases", "kind": "function_cases", "name": "siparis_ozeti", "module": "arsiv", "cases": [
+            { "args": [[{ "id": 1, "kategori": "Kitap", "tutar": 100 }, { "id": 2, "kategori": "Kitap", "tutar": 50 }, { "id": 3, "kategori": "Oyun", "tutar": 200 }]], "expected": { "siparis_sayisi": 3, "toplam_ciro": 350, "kategoriler": ["Kitap", "Oyun"] } },
+            { "args": [[]], "expected": { "siparis_sayisi": 0, "toplam_ciro": 0, "kategoriler": [] } }
+          ], "label": "Gizli sipariş özet testleri", "visibility": "hidden" },
+          { "id": "output-json", "kind": "json_file_equals", "path": "output/rapor.json", "expected": { "siparis_sayisi": 3, "toplam_ciro": 455, "kategoriler": ["Aksesuar", "Kırtasiye"] }, "label": "Kalıcı arşiv raporu doğru", "visibility": "hidden" },
+          { "id": "source-preserved", "kind": "file_unchanged", "path": "data/siparisler.json", "label": "Kaynak sipariş arşivi korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A3 sipariş\\s*·\\s*455\\s*TL\\s*\\nKategoriler:\\s*Aksesuar,\\s*Kırtasiye\\s*\\Z", "label": "Gizli terminal testi", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
