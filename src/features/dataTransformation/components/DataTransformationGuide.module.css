@@ -1,0 +1,122 @@
+.panel {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid rgba(86, 182, 194, 0.34);
+  border-radius: var(--radius-md);
+  background: rgba(86, 182, 194, 0.06);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.header span,
+.rules > span {
+  color: #78c8d2;
+  font-size: 9px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.header strong {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.shapes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.shapes > div {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-code-background);
+}
+
+.shapes span {
+  color: var(--color-text-dim);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.shapes code {
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.shapes i {
+  align-self: center;
+  color: #78c8d2;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.rules {
+  display: grid;
+  gap: 8px;
+}
+
+.rules ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.workflow {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workflow li {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.workflow li > span {
+  color: #78c8d2;
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.workflow p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+@media (max-width: 620px) {
+  .shapes {
+    grid-template-columns: 1fr;
+  }
+
+  .shapes i {
+    justify-self: center;
+    transform: rotate(90deg);
+  }
+}
