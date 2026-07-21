@@ -1,0 +1,110 @@
+.root {
+  min-width: 164px;
+  overflow: auto;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface-raised);
+}
+
+.root header {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-text-dim);
+  font-size: 9px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.root header strong {
+  color: var(--color-text-muted);
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.rows {
+  padding: 8px 0;
+}
+
+.folder {
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.folder span {
+  color: var(--color-text-dim);
+  font-family: var(--font-mono);
+}
+
+.file,
+.activeFile {
+  width: 100%;
+  min-height: 32px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 5px;
+  padding-right: 9px;
+  border: 0;
+  border-left: 2px solid transparent;
+  background: transparent;
+  color: var(--color-text-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.file:hover {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.activeFile {
+  border-left-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-text-primary);
+}
+
+.fileIcon {
+  color: #78bdf2;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 750;
+}
+
+.file b,
+.activeFile b {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 520;
+  white-space: nowrap;
+}
+
+.file small,
+.activeFile small {
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: rgba(85, 197, 138, 0.1);
+  color: var(--color-success);
+  font-size: 7px;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.file i,
+.activeFile i {
+  color: var(--color-text-dim);
+  font-size: 9px;
+  font-style: normal;
+}
