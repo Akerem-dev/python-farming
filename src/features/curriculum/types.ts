@@ -5,7 +5,8 @@ export type CurriculumLessonMode =
   | "output-prediction"
   | "code-completion"
   | "debugging"
-  | "code-ordering";
+  | "code-ordering"
+  | "refactoring";
 
 export interface CurriculumChoiceOption {
   id: string;
@@ -20,6 +21,12 @@ export interface CurriculumCodeBlock {
 export interface CurriculumDebuggingGuide {
   errorType: string;
   symptom: string;
+  workflow: string[];
+}
+
+export interface CurriculumRefactoringGuide {
+  problem: string;
+  goal: string;
   workflow: string[];
 }
 
@@ -69,6 +76,7 @@ export interface CurriculumLesson {
     blocks: CurriculumCodeBlock[];
   };
   debugging?: CurriculumDebuggingGuide;
+  refactoring?: CurriculumRefactoringGuide;
   task: {
     title: string;
     instructions: string[];
