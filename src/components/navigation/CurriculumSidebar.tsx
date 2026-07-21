@@ -37,6 +37,8 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
 
   const currentLesson = catalog?.lessons.find((lesson) => lesson.id === currentLessonId) ?? null;
   const modules = catalog?.levels.flatMap((level) => level.modules) ?? [];
+  const coreModuleCount = modules.filter((module) => module.id !== "beginner-graduation").length;
+  const hasGraduationAssessment = modules.some((module) => module.id === "beginner-graduation");
   const totalLessons = catalog?.lessons.length ?? 0;
   const completedCount = completedLessonIds.filter((lessonId) =>
     catalog?.lessons.some((lesson) => lesson.id === lessonId),
@@ -77,7 +79,9 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
     <aside className={`${styles.root} ${compact ? styles.compact : ""}`.trim()}>
       <div className={styles.headingRow}>
         <span>Müfredat</span>
-        <span className={styles.count}>{modules.length || 8} bölüm</span>
+        <span className={styles.count}>
+          {coreModuleCount || 8} modül{hasGraduationAssessment ? " + sınav" : ""}
+        </span>
       </div>
 
       <div className={styles.levelLabel}>{catalog?.levels[0]?.title ?? "Başlangıç seviyesi"}</div>
