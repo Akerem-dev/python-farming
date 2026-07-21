@@ -36,6 +36,8 @@ export interface CurriculumDataTransformationGuide {
   targetShape: string;
   rules: string[];
   workflow: string[];
+  projectTitle?: string;
+  deliverables?: string[];
 }
 
 export interface CurriculumCatalog {
