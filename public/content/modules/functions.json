@@ -1,0 +1,622 @@
+{
+  "moduleId": "functions",
+  "lessons": [
+    {
+      "id": "beginner.functions.first-function",
+      "moduleId": "functions",
+      "order": 1,
+      "title": "İlk fonksiyonunu yaz",
+      "summary": "Fonksiyonlar, tekrar kullanmak istediğin komutları isimlendirilmiş bir kod bloğunda toplar.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "selamla adlı ilk fonksiyonunu oluştur",
+        "instructions": [
+          "selamla adlı parametresiz bir fonksiyon tanımla.",
+          "Fonksiyonun içinde Merhaba, Python Farming! metnini yazdır.",
+          "Fonksiyonu tanımdan sonra tam bir kez çağır."
+        ],
+        "requirements": [
+          "def anahtar kelimesi kullanılmalı.",
+          "Fonksiyonun adı selamla olmalı.",
+          "selamla() tam bir kez çağrılmalı."
+        ],
+        "sampleOutput": "Merhaba, Python Farming!",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# İlk fonksiyonunu tanımla\n\n# def selamla():\n#     ...\n"
+      },
+      "hints": [
+        {
+          "title": "Fonksiyon başlığı",
+          "body": "Fonksiyon tanımı def selamla(): biçiminde başlar."
+        },
+        {
+          "title": "Gövde girintili olmalı",
+          "body": "print() satırını fonksiyon başlığının altında dört boşluk içeriden yaz."
+        },
+        {
+          "title": "Tanımlamak çalıştırmak değildir",
+          "body": "Fonksiyon tanımından sonra ayrı bir satırda selamla() çağrısını yap."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.first-function",
+        "title": "selamla adlı ilk fonksiyonunu oluştur",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-greet",
+            "kind": "function_definition",
+            "name": "selamla",
+            "minParams": 0,
+            "maxParams": 0,
+            "label": "selamla() fonksiyonu tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-greet",
+            "kind": "call_count",
+            "name": "selamla",
+            "min": 1,
+            "max": 1,
+            "label": "selamla() bir kez çağrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AMerhaba, Python Farming!\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.functions.parameters",
+      "moduleId": "functions",
+      "order": 2,
+      "title": "Parametrelerle veri taşı",
+      "summary": "Parametreler, bir fonksiyona her çağrıda farklı veriler göndermeni sağlar.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Ürün etiketi oluşturan fonksiyonu tamamla",
+        "instructions": [
+          "İlk yer tutucuya urun ve fiyat parametrelerini yaz.",
+          "İkinci yer tutucuya f-string ile döndürülecek etiketi yaz.",
+          "Fonksiyon çağrısını koruyup kodu çalıştır."
+        ],
+        "requirements": [
+          "etiket_olustur iki parametre almalı.",
+          "Fonksiyon print() yerine return kullanmalı.",
+          "Farklı ürün ve fiyatlarla yeniden çalışabilmeli."
+        ],
+        "sampleOutput": "Defter: 45 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def etiket_olustur(__PARAMETRELER__):\n    return __ETIKET_IFADESI__\n\nprint(etiket_olustur(\"Defter\", 45))"
+      },
+      "hints": [
+        {
+          "title": "İki parametreyi virgülle ayır",
+          "body": "Fonksiyon başlığında urun, fiyat yazabilirsin."
+        },
+        {
+          "title": "Metni döndür",
+          "body": "return f\"{urun}: {fiyat} TL\" ifadesi çağırana bir metin verir."
+        },
+        {
+          "title": "Yer tutucuları tamamen sil",
+          "body": "__PARAMETRELER__ ve __ETIKET_IFADESI__ metinlerinin kodda kalmadığından emin ol."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.parameters",
+        "title": "Ürün etiketi oluşturan fonksiyonu tamamla",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-label",
+            "kind": "function_definition",
+            "name": "etiket_olustur",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "label": "etiket_olustur() imzası doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-label",
+            "kind": "call_count",
+            "name": "etiket_olustur",
+            "min": 1,
+            "label": "Fonksiyon çağrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "label-cases",
+            "kind": "function_cases",
+            "name": "etiket_olustur",
+            "cases": [
+              { "args": ["Defter", 45], "expected": "Defter: 45 TL" },
+              { "args": ["Kalem", 15], "expected": "Kalem: 15 TL" },
+              { "args": ["Çanta", 320], "expected": "Çanta: 320 TL" }
+            ],
+            "label": "Gizli parametre testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ADefter:\\s*45\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.functions.return-prediction",
+      "moduleId": "functions",
+      "order": 3,
+      "title": "return sonucunu tahmin et",
+      "summary": "return, fonksiyonun ürettiği değeri çağrıldığı yere gönderir ve bu değer başka işlemlerde kullanılabilir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi sayı görünür?",
+        "options": [
+          { "id": "answer-12", "label": "12" },
+          { "id": "answer-13", "label": "13" },
+          { "id": "answer-7", "label": "7" },
+          { "id": "answer-none", "label": "None" }
+        ]
+      },
+      "task": {
+        "title": "Fonksiyonun döndürdüğü değeri takip et",
+        "instructions": [
+          "iki_kat(6) çağrısının döndürdüğü değeri hesapla.",
+          "Dönen değerin sonuc değişkenine atandığını unutma.",
+          "print() içindeki son toplama işlemini uygula."
+        ],
+        "requirements": [
+          "Kod çalıştırılmadan önce tahmin yapılmalı.",
+          "return ile print arasındaki fark dikkate alınmalı.",
+          "Yalnız bir seçenek işaretlenmeli."
+        ],
+        "sampleOutput": "Tek satırda bir tam sayı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def iki_kat(sayi):\n    return sayi * 2\n\nsonuc = iki_kat(6)\nprint(sonuc + 1)"
+      },
+      "hints": [
+        {
+          "title": "Önce fonksiyon çağrısı",
+          "body": "iki_kat(6), 6 * 2 işleminin sonucunu döndürür."
+        },
+        {
+          "title": "Dönen değer saklanır",
+          "body": "12 değeri sonuc değişkenine atanır."
+        },
+        {
+          "title": "Son işlem",
+          "body": "print() çalışmadan önce sonuc + 1 hesaplanır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.return-prediction",
+        "title": "Fonksiyonun döndürdüğü değeri takip et",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-13"
+        }
+      }
+    },
+    {
+      "id": "beginner.functions.default-arguments",
+      "moduleId": "functions",
+      "order": 4,
+      "title": "Varsayılan argümanlar",
+      "summary": "Varsayılan parametre değeri, çağrı sırasında o argüman verilmediğinde otomatik olarak kullanılır.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Ücretsiz kargo hesaplayan fonksiyon yaz",
+        "instructions": [
+          "kargo_ucreti adlı, tutar ve esik parametrelerini alan bir fonksiyon oluştur.",
+          "esik parametresinin varsayılan değerini 500 yap.",
+          "Tutar eşiğe eşit veya büyükse 0, değilse 35 döndür.",
+          "650 ve 200 değerleri için sonuçları ayrı satırlarda yazdır."
+        ],
+        "requirements": [
+          "Fonksiyon iki parametre almalı.",
+          "Tam bir varsayılan parametre bulunmalı.",
+          "Fonksiyon her iki yolda da sayısal değer return etmeli."
+        ],
+        "sampleOutput": "0\n35",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Varsayılan eşik: 500 TL\n\n# Fonksiyonunu buraya yaz\n\nprint(kargo_ucreti(650))\nprint(kargo_ucreti(200))"
+      },
+      "hints": [
+        {
+          "title": "Varsayılan değer başlıkta yazılır",
+          "body": "Fonksiyon başlığı def kargo_ucreti(tutar, esik=500): olabilir."
+        },
+        {
+          "title": "Koşullu dönüş",
+          "body": "if tutar >= esik olduğunda return 0 kullan."
+        },
+        {
+          "title": "Diğer yol",
+          "body": "Koşul sağlanmazsa return 35 ile kargo ücretini döndür."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.default-arguments",
+        "title": "Ücretsiz kargo hesaplayan fonksiyon yaz",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-shipping",
+            "kind": "function_definition",
+            "name": "kargo_ucreti",
+            "minParams": 2,
+            "maxParams": 2,
+            "minDefaults": 1,
+            "maxDefaults": 1,
+            "requireReturn": true,
+            "label": "kargo_ucreti() imzası doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "shipping-calls",
+            "kind": "call_count",
+            "name": "kargo_ucreti",
+            "min": 2,
+            "label": "Fonksiyon farklı değerlerle çağrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "shipping-cases",
+            "kind": "function_cases",
+            "name": "kargo_ucreti",
+            "cases": [
+              { "args": [650], "expected": 0 },
+              { "args": [200], "expected": 35 },
+              { "args": [400, 300], "expected": 0 },
+              { "args": [250, 300], "expected": 35 }
+            ],
+            "label": "Gizli kargo testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A0\\s*\\n35\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.functions.scope-debugging",
+      "moduleId": "functions",
+      "order": 5,
+      "title": "Hata Avcısı: yerel değişken",
+      "summary": "Bir fonksiyon içinde aynı isme atama yapılması, Python'ın o ismi yerel değişken olarak değerlendirmesine neden olabilir.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "UnboundLocalError",
+        "symptom": "Fonksiyon, global indirim değerini okumaya çalışırken henüz oluşturulmamış yerel indirim değişkenine takılıyor.",
+        "workflow": [
+          "Kodu çalıştır ve traceback'in son satırındaki hata türünü oku.",
+          "Fonksiyon gövdesinde indirim adına hangi satırın atama yaptığını bul.",
+          "Gereksiz yerel atamayı kaldır ve global sabit değerin okunmasına izin ver.",
+          "Çıktıyı ve gizli fonksiyon çağrılarını yeniden kontrol et."
+        ]
+      },
+      "task": {
+        "title": "Scope hatasını davranışı bozmadan düzelt",
+        "instructions": [
+          "Başlangıç kodunu önce çalıştır ve gerçek hatayı gör.",
+          "Fonksiyon içindeki gereksiz indirim = 15 satırını kaldır.",
+          "indirimli_fiyat fonksiyonunun global indirim değerini kullanmasını sağla.",
+          "Düzeltmeden sonra sonucu yeniden çalıştır ve kontrol et."
+        ],
+        "requirements": [
+          "indirimli_fiyat bir parametre almalı.",
+          "Fonksiyon bir sayı return etmeli.",
+          "100 için sonuç 90 olmalı."
+        ],
+        "sampleOutput": "90",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "indirim = 10\n\ndef indirimli_fiyat(fiyat):\n    sonuc = fiyat - indirim\n    indirim = 15\n    return sonuc\n\nprint(indirimli_fiyat(100))"
+      },
+      "hints": [
+        {
+          "title": "Atama ismi yerelleştirir",
+          "body": "Fonksiyon içinde indirim adına atama yapılması, Python'ın bu ismi yerel kabul etmesine yol açar."
+        },
+        {
+          "title": "Atama kullanılmıyor",
+          "body": "indirim = 15 satırı hesaplanan sonuc değerini etkilemiyor."
+        },
+        {
+          "title": "En küçük düzeltme",
+          "body": "Gereksiz yerel atama satırını tamamen kaldır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.scope-debugging",
+        "title": "Scope hatasını davranışı bozmadan düzelt",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-discount",
+            "kind": "function_definition",
+            "name": "indirimli_fiyat",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "label": "indirimli_fiyat() yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-discount",
+            "kind": "call_count",
+            "name": "indirimli_fiyat",
+            "min": 1,
+            "label": "Fonksiyon çağrısı korundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "discount-cases",
+            "kind": "function_cases",
+            "name": "indirimli_fiyat",
+            "cases": [
+              { "args": [100], "expected": 90 },
+              { "args": [50], "expected": 40 },
+              { "args": [10], "expected": 0 }
+            ],
+            "label": "Gizli scope testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A90\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.functions.refactor-repetition",
+      "moduleId": "functions",
+      "order": 6,
+      "title": "Tekrarlanan hesabı refactor et",
+      "summary": "Refactoring, programın dışarıdan görünen davranışını korurken kodun yapısını daha okunabilir ve tekrar kullanılabilir hale getirir.",
+      "levelLabel": "Refactoring Lab",
+      "mode": "refactoring",
+      "refactoring": {
+        "problem": "Aynı fiyat * adet hesabı üç farklı satırda tekrar ediliyor ve değişiklik yapmak zorlaşıyor.",
+        "goal": "Hesabı urun_toplami(fiyat, adet) adlı tek bir fonksiyona taşı ve üç ürün için bu fonksiyonu kullan.",
+        "workflow": [
+          "Başlangıç kodunu çalıştırıp mevcut üç satırlık çıktıyı kaydet.",
+          "urun_toplami adlı iki parametreli ve değer döndüren fonksiyonu oluştur.",
+          "Üç tekrar eden çarpma ifadesini fonksiyon çağrılarıyla değiştir.",
+          "Çıktının değişmediğini ve gizli çağrıların geçtiğini doğrula."
+        ]
+      },
+      "task": {
+        "title": "Üç tekrarı tek fonksiyonda birleştir",
+        "instructions": [
+          "urun_toplami(fiyat, adet) fonksiyonunu tanımla.",
+          "Fonksiyondan fiyat * adet sonucunu return et.",
+          "defter_toplam, kalem_toplam ve canta_toplam atamalarında fonksiyonu kullan.",
+          "Mevcut çıktı metinlerini ve sırasını aynen koru."
+        ],
+        "requirements": [
+          "Fonksiyon tam iki parametre almalı.",
+          "urun_toplami() kod içinde tam üç kez çağrılmalı.",
+          "Refactor öncesi çıktı değişmemeli."
+        ],
+        "sampleOutput": "Defter toplamı: 90 TL\nKalem toplamı: 45 TL\nÇanta toplamı: 320 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Aynı hesap üç kez tekrar ediyor\n\ndefter_toplam = 45 * 2\nkalem_toplam = 15 * 3\ncanta_toplam = 320 * 1\n\nprint(f\"Defter toplamı: {defter_toplam} TL\")\nprint(f\"Kalem toplamı: {kalem_toplam} TL\")\nprint(f\"Çanta toplamı: {canta_toplam} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Önce ortak davranışı isimlendir",
+          "body": "Tekrarlanan işlem fiyat * adet olduğuna göre fonksiyon iki parametre almalı."
+        },
+        {
+          "title": "Fonksiyon değer döndürmeli",
+          "body": "def urun_toplami(fiyat, adet): altında return fiyat * adet kullan."
+        },
+        {
+          "title": "Atamaları değiştir",
+          "body": "Örneğin defter_toplam = urun_toplami(45, 2) biçiminde çağrı yap."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.refactor-repetition",
+        "title": "Üç tekrarı tek fonksiyonda birleştir",
+        "xpReward": 65,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-product-total",
+            "kind": "function_definition",
+            "name": "urun_toplami",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "label": "urun_toplami() fonksiyonu oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-product-total",
+            "kind": "call_count",
+            "name": "urun_toplami",
+            "min": 3,
+            "max": 3,
+            "label": "Tekrarlanan hesaplar fonksiyonla değiştirildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-total-cases",
+            "kind": "function_cases",
+            "name": "urun_toplami",
+            "cases": [
+              { "args": [45, 2], "expected": 90 },
+              { "args": [15, 3], "expected": 45 },
+              { "args": [99, 4], "expected": 396 }
+            ],
+            "label": "Gizli fonksiyon testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ADefter toplamı:\\s*90\\s*TL\\s*\\nKalem toplamı:\\s*45\\s*TL\\s*\\nÇanta toplamı:\\s*320\\s*TL\\s*\\Z",
+            "label": "Davranış koruma testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "beginner.functions.final-challenge",
+      "moduleId": "functions",
+      "order": 7,
+      "title": "Fonksiyonlar final görevi",
+      "summary": "Parametre, varsayılan değer, return ve yeniden kullanım bilgilerini tek bir sipariş hesaplayıcısında birleştir.",
+      "levelLabel": "Chapter Challenge",
+      "mode": "code",
+      "task": {
+        "title": "Yeniden kullanılabilir sipariş toplamı yaz",
+        "instructions": [
+          "siparis_toplami adlı fiyat, adet ve indirim parametrelerini alan bir fonksiyon oluştur.",
+          "indirim parametresinin varsayılan değerini 0 yap.",
+          "fiyat * adet - indirim sonucunu return et.",
+          "Defter ve kalem siparişlerini örnek biçimde yazdır."
+        ],
+        "requirements": [
+          "Fonksiyon üç parametre almalı ve bir varsayılan değer içermeli.",
+          "Fonksiyon iki farklı çağrıda kullanılmalı.",
+          "Sonuçlar sırasıyla 90 TL ve 40 TL olmalı."
+        ],
+        "sampleOutput": "Defter siparişi: 90 TL\nKalem siparişi: 40 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Fonksiyonlar bölüm finali\n\n# siparis_toplami fonksiyonunu buraya yaz\n\nprint(f\"Defter siparişi: {siparis_toplami(45, 2)} TL\")\nprint(f\"Kalem siparişi: {siparis_toplami(15, 3, 5)} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Fonksiyon imzası",
+          "body": "def siparis_toplami(fiyat, adet, indirim=0): biçimini kullanabilirsin."
+        },
+        {
+          "title": "Tek return yeterli",
+          "body": "return fiyat * adet - indirim bütün senaryoları kapsar."
+        },
+        {
+          "title": "Çağrıları değiştirme",
+          "body": "Hazır verilen iki print() satırı gizli testlerle aynı fonksiyonu kullanır."
+        }
+      ],
+      "validation": {
+        "id": "beginner.functions.final-challenge",
+        "title": "Yeniden kullanılabilir sipariş toplamı yaz",
+        "xpReward": 75,
+        "timeoutMs": 4000,
+        "checks": [
+          {
+            "id": "define-order-total",
+            "kind": "function_definition",
+            "name": "siparis_toplami",
+            "minParams": 3,
+            "maxParams": 3,
+            "minDefaults": 1,
+            "maxDefaults": 1,
+            "requireReturn": true,
+            "label": "siparis_toplami() imzası doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-order-total",
+            "kind": "call_count",
+            "name": "siparis_toplami",
+            "min": 2,
+            "max": 2,
+            "label": "Fonksiyon iki siparişte kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "order-total-cases",
+            "kind": "function_cases",
+            "name": "siparis_toplami",
+            "cases": [
+              { "args": [45, 2], "expected": 90 },
+              { "args": [15, 3, 5], "expected": 40 },
+              { "args": [100, 4, 50], "expected": 350 }
+            ],
+            "label": "Gizli sipariş testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ADefter siparişi:\\s*90\\s*TL\\s*\\nKalem siparişi:\\s*40\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}

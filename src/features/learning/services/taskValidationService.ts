@@ -37,6 +37,7 @@ assigned_names = set()
 called_names = set()
 called_counts = {}
 node_counts = {}
+function_definitions = {}
 
 
 def collect_target(target):
@@ -69,6 +70,22 @@ if tree is not None:
                 collect_call(node.func.id)
             elif isinstance(node.func, ast.Attribute):
                 collect_call(node.func.attr)
+        elif isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            positional_count = len(node.args.posonlyargs) + len(node.args.args)
+            keyword_only_count = len(node.args.kwonlyargs)
+            variadic_count = int(node.args.vararg is not None) + int(node.args.kwarg is not None)
+            default_count = len(node.args.defaults) + sum(
+                1 for default in node.args.kw_defaults if default is not None
+            )
+            returns_value = any(
+                isinstance(child, ast.Return) and child.value is not None
+                for child in ast.walk(node)
+            )
+            function_definitions[node.name] = {
+                "parameterCount": positional_count + keyword_only_count + variadic_count,
+                "defaultCount": default_count,
+                "returnsValue": returns_value,
+            }
 
 namespace = {"__name__": "__main__"}
 stdout_buffer = io.StringIO()
@@ -152,9 +169,89 @@ for check in spec.get("checks", []):
             if passed
             else count_message(node_name, count, minimum, maximum)
         )
+    elif kind == "function_definition":
+        name = check["name"]
+        definition = function_definitions.get(name)
+        minimum_params = int(check.get("minParams", 0))
+        maximum_params = check.get("maxParams")
+        maximum_params = int(maximum_params) if maximum_params is not None else None
+        minimum_defaults = int(check.get("minDefaults", 0))
+        maximum_defaults = check.get("maxDefaults")
+        maximum_defaults = int(maximum_defaults) if maximum_defaults is not None else None
+        require_return = bool(check.get("requireReturn", False))
+
+        if definition is None:
+            passed = False
+            message = f"{name} adlı fonksiyon tanımlanmadı."
+        else:
+            parameter_count = definition["parameterCount"]
+            default_count = definition["defaultCount"]
+            parameter_ok = parameter_count >= minimum_params and (
+                maximum_params is None or parameter_count <= maximum_params
+            )
+            default_ok = default_count >= minimum_defaults and (
+                maximum_defaults is None or default_count <= maximum_defaults
+            )
+            return_ok = not require_return or definition["returnsValue"]
+            passed = parameter_ok and default_ok and return_ok
+
+            if not parameter_ok:
+                message = count_message(
+                    f"{name}() parametre sayısı",
+                    parameter_count,
+                    minimum_params,
+                    maximum_params,
+                )
+            elif not default_ok:
+                message = count_message(
+                    f"{name}() varsayılan parametre sayısı",
+                    default_count,
+                    minimum_defaults,
+                    maximum_defaults,
+                )
+            elif not return_ok:
+                message = f"{name}() fonksiyonu bir değer return etmelidir."
+            else:
+                message = (
+                    f"{name}() imzası doğru: {parameter_count} parametre, "
+                    f"{default_count} varsayılan değer."
+                )
     elif runtime_error is not None:
         passed = False
         message = "Kod çalışırken bir Python hatası oluştu."
+    elif kind == "function_cases":
+        name = check["name"]
+        function = namespace.get(name)
+        cases = check.get("cases", [])
+        passed = callable(function) and len(cases) > 0
+        message = f"{name}() gizli çağrı testleri geçti."
+
+        if not callable(function):
+            passed = False
+            message = f"{name} çalıştırılabilir bir fonksiyon değil."
+        elif not cases:
+            passed = False
+            message = "Fonksiyon için gizli çağrı senaryosu tanımlanmamış."
+        else:
+            for index, case in enumerate(cases, start=1):
+                try:
+                    case_stdout = io.StringIO()
+                    case_stderr = io.StringIO()
+                    with contextlib.redirect_stdout(case_stdout), contextlib.redirect_stderr(case_stderr):
+                        actual = function(*case.get("args", []))
+                except BaseException as error:
+                    passed = False
+                    message = f"Gizli senaryo {index} hata verdi: {type(error).__name__}."
+                    break
+
+                expected = case.get("expected")
+                if actual != expected:
+                    passed = False
+                    message = (
+                        f"Gizli senaryo {index} beklenen değeri döndürmedi "
+                        f"(beklenen: {expected!r}, dönen: {actual!r})."
+                    )
+                    break
     elif kind == "variable_type":
         name = check["name"]
         expected_type = check["expectedType"]

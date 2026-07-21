@@ -1,0 +1,89 @@
+.guide {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid rgba(198, 120, 221, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(198, 120, 221, 0.055);
+}
+
+.guide header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.guide header > div {
+  display: grid;
+  gap: 5px;
+}
+
+.guide header span,
+.summaryGrid span {
+  color: #d39bea;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide header strong {
+  color: var(--color-text-primary);
+  font-size: 12px;
+}
+
+.guide header em {
+  padding: 4px 7px;
+  border: 1px solid rgba(198, 120, 221, 0.32);
+  border-radius: 999px;
+  color: #d39bea;
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: 0.08em;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.summaryGrid article {
+  min-width: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-code-background);
+}
+
+.summaryGrid p {
+  margin: 7px 0 0;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.guide ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.55;
+}
+
+.guide li::marker {
+  color: #d39bea;
+  font-family: var(--font-mono);
+  font-weight: 800;
+}
+
+@media (max-width: 560px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}
