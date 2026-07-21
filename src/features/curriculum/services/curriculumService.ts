@@ -73,6 +73,44 @@ function assertCodeBlock(value: unknown): asserts value is CurriculumCodeBlock {
   }
 }
 
+function assertEditorWorkspace(lesson: CurriculumLesson) {
+  const editor = lesson.editor;
+  if (typeof editor.filename !== "string" || typeof editor.starterCode !== "string") {
+    throw new Error(`${lesson.id} dersinin editör başlangıç dosyası geçersiz.`);
+  }
+
+  if (editor.files === undefined) {
+    return;
+  }
+  if (!Array.isArray(editor.files) || editor.files.length === 0) {
+    throw new Error(`${lesson.id} çok dosyalı çalışma alanında dosya bulunmuyor.`);
+  }
+
+  const paths = editor.files.map((file) => file.path);
+  if (
+    editor.files.some(
+      (file) =>
+        typeof file.path !== "string" ||
+        !file.path.endsWith(".py") ||
+        file.path.startsWith("/") ||
+        file.path.includes("\\") ||
+        file.path.split("/").includes("..") ||
+        typeof file.starterCode !== "string" ||
+        (file.readOnly !== undefined && typeof file.readOnly !== "boolean"),
+    )
+  ) {
+    throw new Error(`${lesson.id} çok dosyalı çalışma alanında geçersiz Python dosyası var.`);
+  }
+  if (new Set(paths).size !== paths.length) {
+    throw new Error(`${lesson.id} çalışma alanında tekrar eden dosya yolu var.`);
+  }
+
+  const entrypoint = editor.entrypoint ?? editor.filename;
+  if (!paths.includes(entrypoint)) {
+    throw new Error(`${lesson.id} giriş dosyası çalışma alanında bulunmuyor: ${entrypoint}`);
+  }
+}
+
 function assertLesson(value: unknown): asserts value is CurriculumLesson {
   if (!value || typeof value !== "object") {
     throw new Error("Modül paketinde geçersiz bir ders bulundu.");
@@ -91,26 +129,29 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     throw new Error("Modül paketindeki ders yapısı beklenen biçimde değil.");
   }
 
-  const validation = candidate.validation;
-  const mode = candidate.mode ?? "code";
+  const lesson = candidate as CurriculumLesson;
+  const validation = lesson.validation;
+  const mode = lesson.mode ?? "code";
+  assertEditorWorkspace(lesson);
+
   if (!lessonModes.has(mode)) {
-    throw new Error(`${candidate.id} dersinde desteklenmeyen görev modu bulundu: ${mode}`);
+    throw new Error(`${lesson.id} dersinde desteklenmeyen görev modu bulundu: ${mode}`);
   }
 
   if (mode === "output-prediction") {
     if (
-      !candidate.choice ||
-      typeof candidate.choice.prompt !== "string" ||
-      !Array.isArray(candidate.choice.options) ||
-      candidate.choice.options.length < 2
+      !lesson.choice ||
+      typeof lesson.choice.prompt !== "string" ||
+      !Array.isArray(lesson.choice.options) ||
+      lesson.choice.options.length < 2
     ) {
-      throw new Error(`${candidate.id} tahmin görevinin seçenekleri eksik.`);
+      throw new Error(`${lesson.id} tahmin görevinin seçenekleri eksik.`);
     }
 
-    candidate.choice.options.forEach(assertChoiceOption);
-    const optionIds = candidate.choice.options.map((option) => option.id);
+    lesson.choice.options.forEach(assertChoiceOption);
+    const optionIds = lesson.choice.options.map((option) => option.id);
     if (new Set(optionIds).size !== optionIds.length) {
-      throw new Error(`${candidate.id} tahmin görevinde tekrar eden seçenek kimliği var.`);
+      throw new Error(`${lesson.id} tahmin görevinde tekrar eden seçenek kimliği var.`);
     }
 
     const correctOptionId =
@@ -118,24 +159,24 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
         ? validation.answer.correctOptionId
         : null;
     if (!correctOptionId || !optionIds.includes(correctOptionId)) {
-      throw new Error(`${candidate.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
+      throw new Error(`${lesson.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
     }
   }
 
   if (mode === "code-ordering") {
     if (
-      !candidate.ordering ||
-      typeof candidate.ordering.prompt !== "string" ||
-      !Array.isArray(candidate.ordering.blocks) ||
-      candidate.ordering.blocks.length < 2
+      !lesson.ordering ||
+      typeof lesson.ordering.prompt !== "string" ||
+      !Array.isArray(lesson.ordering.blocks) ||
+      lesson.ordering.blocks.length < 2
     ) {
-      throw new Error(`${candidate.id} kod sıralama blokları eksik.`);
+      throw new Error(`${lesson.id} kod sıralama blokları eksik.`);
     }
 
-    candidate.ordering.blocks.forEach(assertCodeBlock);
-    const blockIds = candidate.ordering.blocks.map((block) => block.id);
+    lesson.ordering.blocks.forEach(assertCodeBlock);
+    const blockIds = lesson.ordering.blocks.map((block) => block.id);
     if (new Set(blockIds).size !== blockIds.length) {
-      throw new Error(`${candidate.id} kod sıralama görevinde tekrar eden blok kimliği var.`);
+      throw new Error(`${lesson.id} kod sıralama görevinde tekrar eden blok kimliği var.`);
     }
 
     const correctBlockIds =
@@ -148,33 +189,33 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       new Set(correctBlockIds).size !== blockIds.length ||
       correctBlockIds.some((blockId) => !blockIds.includes(blockId))
     ) {
-      throw new Error(`${candidate.id} kod sıralama görevinin doğru sıra verisi geçersiz.`);
+      throw new Error(`${lesson.id} kod sıralama görevinin doğru sıra verisi geçersiz.`);
     }
   }
 
   if (mode === "debugging") {
     if (
-      !candidate.debugging ||
-      typeof candidate.debugging.errorType !== "string" ||
-      typeof candidate.debugging.symptom !== "string" ||
-      !Array.isArray(candidate.debugging.workflow) ||
-      candidate.debugging.workflow.length < 2 ||
-      candidate.debugging.workflow.some((step) => typeof step !== "string")
+      !lesson.debugging ||
+      typeof lesson.debugging.errorType !== "string" ||
+      typeof lesson.debugging.symptom !== "string" ||
+      !Array.isArray(lesson.debugging.workflow) ||
+      lesson.debugging.workflow.length < 2 ||
+      lesson.debugging.workflow.some((step) => typeof step !== "string")
     ) {
-      throw new Error(`${candidate.id} hata ayıklama rehberi eksik.`);
+      throw new Error(`${lesson.id} hata ayıklama rehberi eksik.`);
     }
   }
 
   if (mode === "refactoring") {
     if (
-      !candidate.refactoring ||
-      typeof candidate.refactoring.problem !== "string" ||
-      typeof candidate.refactoring.goal !== "string" ||
-      !Array.isArray(candidate.refactoring.workflow) ||
-      candidate.refactoring.workflow.length < 2 ||
-      candidate.refactoring.workflow.some((step) => typeof step !== "string")
+      !lesson.refactoring ||
+      typeof lesson.refactoring.problem !== "string" ||
+      typeof lesson.refactoring.goal !== "string" ||
+      !Array.isArray(lesson.refactoring.workflow) ||
+      lesson.refactoring.workflow.length < 2 ||
+      lesson.refactoring.workflow.some((step) => typeof step !== "string")
     ) {
-      throw new Error(`${candidate.id} refactoring rehberi eksik.`);
+      throw new Error(`${lesson.id} refactoring rehberi eksik.`);
     }
 
     const hasFunctionDefinitionCheck = validation.checks.some(
@@ -184,23 +225,23 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       (check) => check.kind === "function_cases",
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck) {
-      throw new Error(`${candidate.id} refactoring görevi fonksiyon kontrolleri içermiyor.`);
+      throw new Error(`${lesson.id} refactoring görevi fonksiyon kontrolleri içermiyor.`);
     }
   }
 
   if (mode === "data-transformation") {
     if (
-      !candidate.dataTransformation ||
-      typeof candidate.dataTransformation.sourceShape !== "string" ||
-      typeof candidate.dataTransformation.targetShape !== "string" ||
-      !Array.isArray(candidate.dataTransformation.rules) ||
-      candidate.dataTransformation.rules.length < 2 ||
-      candidate.dataTransformation.rules.some((rule) => typeof rule !== "string") ||
-      !Array.isArray(candidate.dataTransformation.workflow) ||
-      candidate.dataTransformation.workflow.length < 2 ||
-      candidate.dataTransformation.workflow.some((step) => typeof step !== "string")
+      !lesson.dataTransformation ||
+      typeof lesson.dataTransformation.sourceShape !== "string" ||
+      typeof lesson.dataTransformation.targetShape !== "string" ||
+      !Array.isArray(lesson.dataTransformation.rules) ||
+      lesson.dataTransformation.rules.length < 2 ||
+      lesson.dataTransformation.rules.some((rule) => typeof rule !== "string") ||
+      !Array.isArray(lesson.dataTransformation.workflow) ||
+      lesson.dataTransformation.workflow.length < 2 ||
+      lesson.dataTransformation.workflow.some((step) => typeof step !== "string")
     ) {
-      throw new Error(`${candidate.id} veri dönüştürme rehberi eksik.`);
+      throw new Error(`${lesson.id} veri dönüştürme rehberi eksik.`);
     }
 
     const hasFunctionDefinitionCheck = validation.checks.some(
@@ -212,26 +253,26 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     const hasSequenceStructureCheck = validation.checks.some(
       (check) =>
         check.kind === "node_count" &&
-        ["For", "ListComp"].includes(check.nodeName),
+        ["For", "ListComp", "GeneratorExp", "comprehension"].includes(check.nodeName),
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasSequenceStructureCheck) {
-      throw new Error(`${candidate.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
+      throw new Error(`${lesson.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
     }
   }
 
-  if (candidate.graduation) {
+  if (lesson.graduation) {
     if (
       mode !== "data-transformation" ||
-      typeof candidate.graduation.badgeName !== "string" ||
-      typeof candidate.graduation.nextLevel !== "string" ||
-      !Array.isArray(candidate.graduation.topics) ||
-      candidate.graduation.topics.length < 6 ||
-      candidate.graduation.topics.some((topic) => typeof topic !== "string") ||
-      !Array.isArray(candidate.graduation.criteria) ||
-      candidate.graduation.criteria.length < 3 ||
-      candidate.graduation.criteria.some((criterion) => typeof criterion !== "string")
+      typeof lesson.graduation.badgeName !== "string" ||
+      typeof lesson.graduation.nextLevel !== "string" ||
+      !Array.isArray(lesson.graduation.topics) ||
+      lesson.graduation.topics.length < 6 ||
+      lesson.graduation.topics.some((topic) => typeof topic !== "string") ||
+      !Array.isArray(lesson.graduation.criteria) ||
+      lesson.graduation.criteria.length < 3 ||
+      lesson.graduation.criteria.some((criterion) => typeof criterion !== "string")
     ) {
-      throw new Error(`${candidate.id} mezuniyet sınavı rehberi eksik.`);
+      throw new Error(`${lesson.id} mezuniyet sınavı rehberi eksik.`);
     }
 
     const hasFunctionDefinitionCheck = validation.checks.some(
@@ -253,7 +294,7 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     );
 
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasRequiredNodes || !hasSetCheck) {
-      throw new Error(`${candidate.id} mezuniyet sınavı kapsamlı yapısal testleri içermiyor.`);
+      throw new Error(`${lesson.id} mezuniyet sınavı kapsamlı yapısal testleri içermiyor.`);
     }
   }
 }
