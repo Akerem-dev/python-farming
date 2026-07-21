@@ -1,0 +1,436 @@
+{
+  "moduleId": "modules-packages",
+  "lessons": [
+    {
+      "id": "intermediate.modules-packages.standard-library",
+      "moduleId": "modules-packages",
+      "order": 1,
+      "title": "Standart kütüphaneden import et",
+      "summary": "Python modülleri ilgili fonksiyonları tek bir ad alanında toplar; import ile bu ad alanına erişirsin.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "math modülüyle daire alanı hesapla",
+        "instructions": [
+          "math modülünü import et.",
+          "yaricap değişkenini 5 yap.",
+          "math.pi kullanarak alanı hesapla ve iki ondalık basamakla yazdır."
+        ],
+        "requirements": [
+          "import math ifadesi bulunmalı.",
+          "Alan math.pi ile hesaplanmalı.",
+          "Çıktı Daire alanı: 78.54 olmalı."
+        ],
+        "sampleOutput": "Daire alanı: 78.54",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# math modülünü içe aktar\n\nyaricap = 5\nalan = 0\n\nprint(f\"Daire alanı: {alan:.2f}\")"
+      },
+      "hints": [
+        { "title": "Modülü içe aktar", "body": "Dosyanın başına import math yaz." },
+        { "title": "Pi sabiti", "body": "Daire alanı math.pi * yaricap ** 2 ile hesaplanır." },
+        { "title": "Ondalık biçim", "body": "f-string içinde {alan:.2f} iki basamak gösterir." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.standard-library",
+        "title": "math modülüyle daire alanı hesapla",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "import-math", "kind": "import_statement", "module": "math", "file": "main.py", "label": "math modülü import edildi", "visibility": "visible" },
+          { "id": "power-node", "kind": "node_count", "nodeName": "Pow", "min": 1, "file": "main.py", "label": "Üs alma kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ADaire alanı:\\s*78\\.54\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.from-import-prediction",
+      "moduleId": "modules-packages",
+      "order": 2,
+      "title": "from import çıktısını tahmin et",
+      "summary": "from module import name, modül adını yazmadan seçili bir ismi doğrudan kullanmana izin verir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod terminale hangi değeri yazar?",
+        "options": [
+          { "id": "answer-4", "label": "4" },
+          { "id": "answer-4-0", "label": "4.0" },
+          { "id": "answer-16", "label": "16" },
+          { "id": "answer-name-error", "label": "NameError" }
+        ]
+      },
+      "task": {
+        "title": "İçe aktarılan sqrt fonksiyonunu takip et",
+        "instructions": [
+          "sqrt isminin math ad alanından doğrudan içe aktarıldığını fark et.",
+          "sqrt(16) çağrısının dönüş türünü düşün.",
+          "Kodu çalıştırmadan doğru seçeneği işaretle."
+        ],
+        "requirements": [
+          "from math import sqrt ifadesi okunmalı.",
+          "Fonksiyonun float döndürdüğü dikkate alınmalı.",
+          "Yalnız bir seçenek seçilmeli."
+        ],
+        "sampleOutput": "Tek satırda bir sayı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from math import sqrt\n\nsonuc = sqrt(16)\nprint(sonuc)"
+      },
+      "hints": [
+        { "title": "Fonksiyon doğrudan kullanılabilir", "body": "sqrt çağrısından önce math. yazman gerekmez." },
+        { "title": "Karekök", "body": "16 sayısının karekökü 4'tür." },
+        { "title": "Dönüş türü", "body": "math.sqrt her zaman float değer döndürür." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.from-import-prediction",
+        "title": "İçe aktarılan sqrt fonksiyonunu takip et",
+        "xpReward": 45,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": { "kind": "choice", "correctOptionId": "answer-4-0" }
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.custom-module",
+      "moduleId": "modules-packages",
+      "order": 3,
+      "title": "Kendi modülünü oluştur",
+      "summary": "Aynı klasördeki Python dosyası bir modüldür; içindeki fonksiyon başka bir dosyadan import edilebilir.",
+      "levelLabel": "Multi-file Lab",
+      "mode": "code",
+      "task": {
+        "title": "hesaplama.py modülünü main.py içinde kullan",
+        "instructions": [
+          "Proje ağacından hesaplama.py dosyasını aç.",
+          "kdvli_fiyat(fiyat, oran=0.20) fonksiyonunu yaz ve sonucu return et.",
+          "main.py dosyasında fonksiyonu hesaplama modülünden import et.",
+          "100 TL için sonucu örnek biçimde yazdır."
+        ],
+        "requirements": [
+          "İki proje dosyası korunmalı.",
+          "Fonksiyon hesaplama.py içinde tanımlanmalı.",
+          "main.py, from hesaplama import kdvli_fiyat kullanmalı."
+        ],
+        "sampleOutput": "KDV dahil: 120.0 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# hesaplama modülünden fonksiyonu import et\n\nprint(f\"KDV dahil: {kdvli_fiyat(100)} TL\")",
+        "entrypoint": "main.py",
+        "files": [
+          { "path": "main.py", "starterCode": "# hesaplama modülünden fonksiyonu import et\n\nprint(f\"KDV dahil: {kdvli_fiyat(100)} TL\")" },
+          { "path": "hesaplama.py", "starterCode": "# Yeniden kullanılabilir KDV fonksiyonu\n\n# def kdvli_fiyat(...):\n#     ...\n" }
+        ]
+      },
+      "hints": [
+        { "title": "Fonksiyon dosyası", "body": "hesaplama.py içinde def kdvli_fiyat(fiyat, oran=0.20): yaz." },
+        { "title": "Dönüş değeri", "body": "return fiyat * (1 + oran) ifadesini kullan." },
+        { "title": "Seçili import", "body": "main.py başına from hesaplama import kdvli_fiyat ekle." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.custom-module",
+        "title": "hesaplama.py modülünü main.py içinde kullan",
+        "xpReward": 65,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "file-main", "kind": "file_exists", "path": "main.py", "label": "main.py proje içinde", "visibility": "visible" },
+          { "id": "file-module", "kind": "file_exists", "path": "hesaplama.py", "label": "hesaplama.py proje içinde", "visibility": "visible" },
+          { "id": "import-function", "kind": "import_statement", "module": "hesaplama", "name": "kdvli_fiyat", "file": "main.py", "label": "Fonksiyon modülden import edildi", "visibility": "visible" },
+          { "id": "define-function", "kind": "function_definition", "name": "kdvli_fiyat", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "file": "hesaplama.py", "label": "kdvli_fiyat() imzası doğru", "visibility": "visible" },
+          { "id": "function-cases", "kind": "function_cases", "module": "hesaplama", "name": "kdvli_fiyat", "cases": [
+            { "args": [100], "expected": 120.0 },
+            { "args": [200, 0.10], "expected": 220.00000000000003 },
+            { "args": [0], "expected": 0.0 }
+          ], "label": "Gizli modül çağrıları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AKDV dahil:\\s*120\\.0\\s*TL\\s*\\Z", "label": "Gizli proje çıktısı", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.aliases",
+      "moduleId": "modules-packages",
+      "order": 4,
+      "title": "Import alias ile ad alanını kısalt",
+      "summary": "as anahtar kelimesi uzun modül adlarına okunabilir ve çakışmasız kısa adlar verir.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "istatistik modülünü alias ile kullan",
+        "instructions": [
+          "main.py içindeki import yer tutucusunu istatistik as ist biçiminde tamamla.",
+          "ortalama çağrısını ist.ortalama(...) biçiminde tamamla.",
+          "istatistik.py dosyasındaki fonksiyonu değiştirme."
+        ],
+        "requirements": [
+          "import istatistik as ist kullanılmalı.",
+          "Fonksiyon modül ad alanı üzerinden çağrılmalı.",
+          "Destek modülü salt okunur kalmalı."
+        ],
+        "sampleOutput": "Ortalama: 20.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import __MODUL__ as __ALIAS__\n\nsayilar = [10, 20, 30]\nprint(f\"Ortalama: {__CAGRI__}\")",
+        "entrypoint": "main.py",
+        "files": [
+          { "path": "main.py", "starterCode": "import __MODUL__ as __ALIAS__\n\nsayilar = [10, 20, 30]\nprint(f\"Ortalama: {__CAGRI__}\")" },
+          { "path": "istatistik.py", "starterCode": "def ortalama(sayilar):\n    return sum(sayilar) / len(sayilar) if sayilar else 0\n", "readOnly": true }
+        ]
+      },
+      "hints": [
+        { "title": "Import satırı", "body": "import istatistik as ist yaz." },
+        { "title": "Alias üzerinden eriş", "body": "Fonksiyona ist.ortalama adıyla ulaş." },
+        { "title": "Tam çağrı", "body": "__CAGRI__ yerine ist.ortalama(sayilar) yaz." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.aliases",
+        "title": "istatistik modülünü alias ile kullan",
+        "xpReward": 60,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "import-stats", "kind": "import_statement", "module": "istatistik", "file": "main.py", "label": "istatistik modülü import edildi", "visibility": "visible" },
+          { "id": "call-average", "kind": "call", "name": "ortalama", "file": "main.py", "label": "ortalama() alias üzerinden çağrıldı", "visibility": "visible" },
+          { "id": "module-cases", "kind": "function_cases", "module": "istatistik", "name": "ortalama", "cases": [
+            { "args": [[10, 20, 30]], "expected": 20.0 },
+            { "args": [[]], "expected": 0 },
+            { "args": [[5, 15]], "expected": 10.0 }
+          ], "label": "Destek modülü sağlam", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AOrtalama:\\s*20\\.0\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.main-guard-debugging",
+      "moduleId": "modules-packages",
+      "order": 5,
+      "title": "Hata Avcısı: import yan etkisi",
+      "summary": "Bir modül import edildiğinde üst seviyedeki kod çalışır; main guard yalnız doğrudan çalıştırmada devreye girmesini sağlar.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "Import side effect",
+        "symptom": "yardimci.py import edildiğinde test mesajı da terminale yazılıyor.",
+        "workflow": [
+          "Projeyi çalıştır ve beklenmeyen ilk satırı gör.",
+          "yardimci.py içindeki doğrudan çalışan print satırını bul.",
+          "Satırı if __name__ == '__main__': koruması altına taşı.",
+          "Import sonrasında yalnız ana program çıktısının kaldığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "Modülün import yan etkisini main guard ile kaldır",
+        "instructions": [
+          "Başlangıç projesini çalıştır.",
+          "yardimci.py dosyasındaki test print'ini main guard içine al.",
+          "mesaj() fonksiyonunu ve main.py importunu koru.",
+          "Projeyi yeniden çalıştırıp tek satır çıktı al."
+        ],
+        "requirements": [
+          "yardimci.py içinde __name__ kontrolü bulunmalı.",
+          "main.py mesaj fonksiyonunu import etmeli.",
+          "Import sırasında ek çıktı oluşmamalı."
+        ],
+        "sampleOutput": "Ana program: Hazır",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from yardimci import mesaj\n\nprint(f\"Ana program: {mesaj()}\")",
+        "entrypoint": "main.py",
+        "files": [
+          { "path": "main.py", "starterCode": "from yardimci import mesaj\n\nprint(f\"Ana program: {mesaj()}\")", "readOnly": true },
+          { "path": "yardimci.py", "starterCode": "def mesaj():\n    return \"Hazır\"\n\nprint(\"yardimci.py doğrudan çalıştı\")\n" }
+        ]
+      },
+      "hints": [
+        { "title": "Özel değişken", "body": "Import edilen modülde __name__ değeri dosya adı olur." },
+        { "title": "Main guard", "body": "if __name__ == \"__main__\": satırını kullan." },
+        { "title": "Girinti", "body": "Test print satırını guard altında dört boşluk içeriden yaz." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.main-guard-debugging",
+        "title": "Modülün import yan etkisini main guard ile kaldır",
+        "xpReward": 65,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "guard-if", "kind": "node_count", "nodeName": "If", "min": 1, "file": "yardimci.py", "label": "main guard koşulu eklendi", "visibility": "visible" },
+          { "id": "import-message", "kind": "import_statement", "module": "yardimci", "name": "mesaj", "file": "main.py", "label": "mesaj fonksiyonu import edildi", "visibility": "visible" },
+          { "id": "message-cases", "kind": "function_cases", "module": "yardimci", "name": "mesaj", "cases": [
+            { "args": [], "expected": "Hazır" }
+          ], "label": "mesaj() davranışı korundu", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AAna program:\\s*Hazır\\s*\\Z", "label": "Import yan etkisi kaldırıldı", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.package-lab",
+      "moduleId": "modules-packages",
+      "order": 6,
+      "title": "Paket oluşturma laboratuvarı",
+      "summary": "__init__.py bir klasörü paket arayüzüne dönüştürür ve dışarı açılacak isimleri tek noktada toplayabilir.",
+      "levelLabel": "Package Lab",
+      "mode": "code",
+      "task": {
+        "title": "magaza paketinden indirimli_fiyat dışa aktar",
+        "instructions": [
+          "magaza/fiyat.py içinde indirimli_fiyat(fiyat, oran=0.10) fonksiyonunu yaz.",
+          "magaza/__init__.py içinde fonksiyonu .fiyat modülünden import ederek dışa aktar.",
+          "Salt okunur main.py dosyasının from magaza import indirimli_fiyat çağrısını çalıştırmasını sağla."
+        ],
+        "requirements": [
+          "magaza klasöründe __init__.py bulunmalı.",
+          "Paket içinde göreli import kullanılmalı.",
+          "Fonksiyon farklı oranlarla doğru değer döndürmeli."
+        ],
+        "sampleOutput": "İndirimli fiyat: 180.0 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from magaza import indirimli_fiyat\n\nprint(f\"İndirimli fiyat: {indirimli_fiyat(200)} TL\")",
+        "entrypoint": "main.py",
+        "files": [
+          { "path": "main.py", "starterCode": "from magaza import indirimli_fiyat\n\nprint(f\"İndirimli fiyat: {indirimli_fiyat(200)} TL\")", "readOnly": true },
+          { "path": "magaza/__init__.py", "starterCode": "# Paket arayüzünü burada oluştur\n" },
+          { "path": "magaza/fiyat.py", "starterCode": "# indirimli_fiyat fonksiyonunu burada yaz\n" }
+        ]
+      },
+      "hints": [
+        { "title": "Paket fonksiyonu", "body": "fiyat.py içinde return fiyat * (1 - oran) kullan." },
+        { "title": "Göreli import", "body": "__init__.py içine from .fiyat import indirimli_fiyat yaz." },
+        { "title": "Paket arayüzü", "body": "Bu import sayesinde main.py doğrudan magaza paketinden fonksiyona erişir." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.package-lab",
+        "title": "magaza paketinden indirimli_fiyat dışa aktar",
+        "xpReward": 90,
+        "timeoutMs": 6000,
+        "checks": [
+          { "id": "package-init", "kind": "file_exists", "path": "magaza/__init__.py", "label": "Paket başlangıç dosyası mevcut", "visibility": "visible" },
+          { "id": "package-module", "kind": "file_exists", "path": "magaza/fiyat.py", "label": "Paket modülü mevcut", "visibility": "visible" },
+          { "id": "relative-import", "kind": "import_statement", "module": ".fiyat", "name": "indirimli_fiyat", "file": "magaza/__init__.py", "label": "Fonksiyon paket arayüzüne aktarıldı", "visibility": "visible" },
+          { "id": "define-discount", "kind": "function_definition", "name": "indirimli_fiyat", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "file": "magaza/fiyat.py", "label": "indirimli_fiyat() imzası doğru", "visibility": "visible" },
+          { "id": "discount-cases", "kind": "function_cases", "module": "magaza.fiyat", "name": "indirimli_fiyat", "cases": [
+            { "args": [200], "expected": 180.0 },
+            { "args": [100, 0.25], "expected": 75.0 },
+            { "args": [0], "expected": 0.0 }
+          ], "label": "Gizli paket çağrıları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\Aİndirimli fiyat:\\s*180\\.0\\s*TL\\s*\\Z", "label": "Gizli paket çıktısı", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.modules-packages.final-project",
+      "moduleId": "modules-packages",
+      "order": 7,
+      "title": "Modüller ve Paketler final projesi",
+      "summary": "Birden fazla modülü paket arayüzünde birleştirerek okunabilir, test edilebilir ve yeniden kullanılabilir bir stok raporu oluştur.",
+      "levelLabel": "Chapter Project",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Stok Paketi v1",
+        "sourceShape": "Ürün sözlüklerinden oluşan liste",
+        "targetShape": "Toplam stok, kritik ürünler ve biçimlendirilmiş rapor",
+        "deliverables": [
+          "stok/rapor.py içinde iki veri fonksiyonu",
+          "stok/format.py içinde rapor metni fonksiyonu",
+          "stok/__init__.py içinde temiz paket arayüzü"
+        ],
+        "rules": [
+          "Kritik ürünler stok değeri eşikten küçük olan ürünlerdir.",
+          "kritik_urunler sonucu alfabetik sıralı liste olmalıdır.",
+          "toplam_stok bütün stok değerlerini toplamalıdır.",
+          "main.py değiştirilmeden çalışmalıdır."
+        ],
+        "workflow": [
+          "Önce rapor.py içindeki veri fonksiyonlarını tamamla.",
+          "format.py içinde iki sonucu tek metne dönüştür.",
+          "__init__.py üzerinden üç fonksiyonu dışa aktar.",
+          "Projeyi çalıştırıp gizli veri setlerini kontrol et."
+        ]
+      },
+      "task": {
+        "title": "Dört dosyalı stok raporu paketi geliştir",
+        "instructions": [
+          "stok/rapor.py içinde toplam_stok ve kritik_urunler fonksiyonlarını yaz.",
+          "stok/format.py içinde raporu_yazdir(toplam, kritikler) fonksiyonunu yaz.",
+          "stok/__init__.py içinde üç fonksiyonu paket dışına aktar.",
+          "Salt okunur main.py dosyasını başarıyla çalıştır."
+        ],
+        "requirements": [
+          "Paket en az üç Python dosyası içermeli.",
+          "kritik_urunler varsayılan esik=5 parametresi almalı.",
+          "Gizli ürün listelerinde sonuçlar doğru olmalı."
+        ],
+        "sampleOutput": "Toplam stok: 23\nKritik ürünler: Çanta, Defter",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from stok import kritik_urunler, raporu_yazdir, toplam_stok\n\nurunler = [\n    {\"ad\": \"Defter\", \"stok\": 3},\n    {\"ad\": \"Kalem\", \"stok\": 12},\n    {\"ad\": \"Çanta\", \"stok\": 2},\n    {\"ad\": \"Suluk\", \"stok\": 6},\n]\n\ntoplam = toplam_stok(urunler)\nkritikler = kritik_urunler(urunler)\nprint(raporu_yazdir(toplam, kritikler))",
+        "entrypoint": "main.py",
+        "files": [
+          { "path": "main.py", "starterCode": "from stok import kritik_urunler, raporu_yazdir, toplam_stok\n\nurunler = [\n    {\"ad\": \"Defter\", \"stok\": 3},\n    {\"ad\": \"Kalem\", \"stok\": 12},\n    {\"ad\": \"Çanta\", \"stok\": 2},\n    {\"ad\": \"Suluk\", \"stok\": 6},\n]\n\ntoplam = toplam_stok(urunler)\nkritikler = kritik_urunler(urunler)\nprint(raporu_yazdir(toplam, kritikler))", "readOnly": true },
+          { "path": "stok/__init__.py", "starterCode": "# Paket arayüzünü oluştur\n" },
+          { "path": "stok/rapor.py", "starterCode": "def toplam_stok(urunler):\n    # bütün stokları topla\n    pass\n\n\ndef kritik_urunler(urunler, esik=5):\n    # alfabetik sıralı ürün adları döndür\n    pass\n" },
+          { "path": "stok/format.py", "starterCode": "def raporu_yazdir(toplam, kritikler):\n    # iki satırlık rapor metni döndür\n    pass\n" }
+        ]
+      },
+      "hints": [
+        { "title": "Toplam stok", "body": "sum(urun[\"stok\"] for urun in urunler) kullanabilirsin." },
+        { "title": "Kritik ürünler", "body": "sorted(urun[\"ad\"] for urun in urunler if urun[\"stok\"] < esik) üret." },
+        { "title": "Paket arayüzü", "body": "__init__.py içinde .rapor ve .format modüllerinden fonksiyonları import et." }
+      ],
+      "validation": {
+        "id": "intermediate.modules-packages.final-project",
+        "title": "Dört dosyalı stok raporu paketi geliştir",
+        "xpReward": 120,
+        "timeoutMs": 7000,
+        "checks": [
+          { "id": "package-init", "kind": "file_exists", "path": "stok/__init__.py", "label": "stok paketi oluşturuldu", "visibility": "visible" },
+          { "id": "report-module", "kind": "file_exists", "path": "stok/rapor.py", "label": "rapor modülü oluşturuldu", "visibility": "visible" },
+          { "id": "format-module", "kind": "file_exists", "path": "stok/format.py", "label": "format modülü oluşturuldu", "visibility": "visible" },
+          { "id": "define-total", "kind": "function_definition", "name": "toplam_stok", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "stok/rapor.py", "label": "toplam_stok() doğru tanımlandı", "visibility": "visible" },
+          { "id": "define-critical", "kind": "function_definition", "name": "kritik_urunler", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "file": "stok/rapor.py", "label": "kritik_urunler() doğru tanımlandı", "visibility": "visible" },
+          { "id": "define-format", "kind": "function_definition", "name": "raporu_yazdir", "minParams": 2, "maxParams": 2, "requireReturn": true, "file": "stok/format.py", "label": "raporu_yazdir() doğru tanımlandı", "visibility": "visible" },
+          { "id": "iteration", "kind": "node_count", "nodeName": "comprehension", "min": 2, "file": "stok/rapor.py", "label": "Veri ifadelerle dönüştürüldü", "visibility": "visible" },
+          { "id": "total-cases", "kind": "function_cases", "module": "stok.rapor", "name": "toplam_stok", "cases": [
+            { "args": [[{ "ad": "A", "stok": 2 }, { "ad": "B", "stok": 7 }]], "expected": 9 },
+            { "args": [[]], "expected": 0 }
+          ], "label": "Gizli toplam stok testleri", "visibility": "hidden" },
+          { "id": "critical-cases", "kind": "function_cases", "module": "stok.rapor", "name": "kritik_urunler", "cases": [
+            { "args": [[{ "ad": "Defter", "stok": 3 }, { "ad": "Kalem", "stok": 12 }, { "ad": "Çanta", "stok": 2 }]], "expected": ["Çanta", "Defter"] },
+            { "args": [[{ "ad": "A", "stok": 5 }, { "ad": "B", "stok": 6 }], 7], "expected": ["A", "B"] },
+            { "args": [[], 5], "expected": [] }
+          ], "label": "Gizli kritik stok testleri", "visibility": "hidden" },
+          { "id": "format-cases", "kind": "function_cases", "module": "stok.format", "name": "raporu_yazdir", "cases": [
+            { "args": [23, ["Çanta", "Defter"]], "expected": "Toplam stok: 23\nKritik ürünler: Çanta, Defter" },
+            { "args": [0, []], "expected": "Toplam stok: 0\nKritik ürünler: Yok" }
+          ], "label": "Gizli rapor biçimi testleri", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AToplam stok:\\s*23\\s*\\nKritik ürünler:\\s*Çanta,\\s*Defter\\s*\\Z", "label": "Gizli final proje çıktısı", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
