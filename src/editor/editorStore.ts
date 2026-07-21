@@ -1,6 +1,11 @@
 import { create } from "zustand";
 import type { CurriculumEditorWorkspace } from "../features/curriculum/types";
-import type { EditorCursorPosition, EditorDocument, EditorSessionSnapshot } from "./editorModels";
+import type {
+  EditorCursorPosition,
+  EditorDocument,
+  EditorLanguage,
+  EditorSessionSnapshot,
+} from "./editorModels";
 
 export const beginnerStarterCode = `# Kendini tanıtan iki değişken oluştur
 
@@ -43,13 +48,24 @@ function updateDocument(
   return documents.map((document) => (document.id === documentId ? updater(document) : document));
 }
 
+export function inferEditorLanguage(path: string): EditorLanguage {
+  const extension = path.split(".").at(-1)?.toLowerCase();
+  if (extension === "py") {
+    return "python";
+  }
+  if (extension === "json") {
+    return "json";
+  }
+  return "text";
+}
+
 function createDocument(lessonId: string, path: string, starterCode: string, readOnly = false) {
   const normalizedPath = path.replace(/\\/g, "/");
   return {
     id: `lesson:${lessonId}:${normalizedPath}`,
     name: normalizedPath.split("/").at(-1) ?? normalizedPath,
     path: normalizedPath,
-    language: "python" as const,
+    language: inferEditorLanguage(normalizedPath),
     content: starterCode,
     initialContent: starterCode,
     readOnly,

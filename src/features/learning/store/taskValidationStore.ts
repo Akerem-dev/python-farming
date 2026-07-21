@@ -67,13 +67,21 @@ function clearedValidationState() {
 }
 
 function requiresProjectValidation(files: RuntimeSourceFile[], spec: TaskValidationSpec) {
+  const projectOnlyChecks = new Set([
+    "file_exists",
+    "file_content_regex",
+    "json_file_equals",
+    "file_unchanged",
+    "import_statement",
+  ]);
+
   return (
     files.length > 1 ||
-    spec.checks.some((check) =>
-      check.kind === "file_exists" ||
-      check.kind === "import_statement" ||
-      ("file" in check && Boolean(check.file)) ||
-      (check.kind === "function_cases" && Boolean(check.module)),
+    spec.checks.some(
+      (check) =>
+        projectOnlyChecks.has(check.kind) ||
+        ("file" in check && Boolean(check.file)) ||
+        (check.kind === "function_cases" && Boolean(check.module)),
     )
   );
 }

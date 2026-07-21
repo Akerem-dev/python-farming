@@ -63,6 +63,21 @@ export type TaskCheck =
       path: string;
     })
   | (TaskCheckBase & {
+      kind: "file_content_regex";
+      path: string;
+      pattern: string;
+      flags?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "json_file_equals";
+      path: string;
+      expected: TaskCaseValue;
+    })
+  | (TaskCheckBase & {
+      kind: "file_unchanged";
+      path: string;
+    })
+  | (TaskCheckBase & {
       kind: "import_statement";
       module: string;
       name?: string;

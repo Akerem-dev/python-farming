@@ -17,6 +17,7 @@ import {
 } from "../../features/curriculum/store/curriculumStore";
 import { DataTransformationGuide } from "../../features/dataTransformation/components/DataTransformationGuide";
 import { DebugGuide } from "../../features/debugging/components/DebugGuide";
+import { FileSystemGuide } from "../../features/fileSystem/components/FileSystemGuide";
 import { CodeOrderingPanel } from "../../features/learning/components/CodeOrderingPanel";
 import { PracticeAnswerPanel } from "../../features/learning/components/PracticeAnswerPanel";
 import { StdinPanel } from "../../features/learning/components/StdinPanel";
@@ -54,6 +55,13 @@ const lessonModeLabels = {
   "code-ordering": "Kod sıralama",
   refactoring: "Refactoring",
   "data-transformation": "Veri dönüşümü",
+  "file-processing": "Dosya laboratuvarı",
+} as const;
+
+const languageLabels = {
+  python: "Python",
+  json: "JSON",
+  text: "Metin",
 } as const;
 
 type TerminalView = "output" | "tests";
@@ -74,6 +82,7 @@ export function WorkspacePage() {
   const isCodeOrdering = lessonMode === "code-ordering";
   const isRefactoring = lessonMode === "refactoring";
   const isDataTransformation = lessonMode === "data-transformation";
+  const isFileProcessing = lessonMode === "file-processing";
   const usesLocalAnswer = isOutputPrediction || isCodeOrdering;
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
@@ -188,6 +197,8 @@ export function WorkspacePage() {
     ">>> Refactoring laboratuvarı hazır.\n>>> Önce mevcut davranışı çalıştır; sonra tekrarı fonksiyona taşı ve aynı çıktıyı koru.";
   const dataTransformationIntro =
     ">>> Veri Dönüştürme Laboratuvarı hazır.\n>>> Kaynak listeyi değiştirmeden kurallara göre yeni hedef listeyi üret.";
+  const fileProcessingIntro =
+    `>>> Dosya Sistemi Laboratuvarı hazır.\n>>> Giriş dosyası: ${entrypoint}\n>>> Bütün okuma ve yazma işlemleri geçici proje klasörüyle sınırlandırılır.`;
   const projectIntro =
     `>>> Çok dosyalı proje hazır.\n>>> Giriş dosyası: ${entrypoint}\n>>> Sol proje ağacından modül ve paket dosyaları arasında geçiş yap.`;
   const displayedTerminalText =
@@ -195,15 +206,17 @@ export function WorkspacePage() {
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
       : isCodeOrdering && !runtimeOutput && !runtimeError
         ? orderingIntro
-        : isMultiFileWorkspace && !runtimeOutput && !runtimeError
-          ? projectIntro
-          : isDataTransformation && !runtimeOutput && !runtimeError
-            ? dataTransformationIntro
-            : isRefactoring && !runtimeOutput && !runtimeError
-              ? refactoringIntro
-              : isDebugging && !runtimeOutput && !runtimeError
-                ? debuggingIntro
-                : terminalText;
+        : isFileProcessing && !runtimeOutput && !runtimeError
+          ? fileProcessingIntro
+          : isMultiFileWorkspace && !runtimeOutput && !runtimeError
+            ? projectIntro
+            : isDataTransformation && !runtimeOutput && !runtimeError
+              ? dataTransformationIntro
+              : isRefactoring && !runtimeOutput && !runtimeError
+                ? refactoringIntro
+                : isDebugging && !runtimeOutput && !runtimeError
+                  ? debuggingIntro
+                  : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
@@ -377,41 +390,47 @@ export function WorkspacePage() {
         ? "Tahmini Kontrol Et"
         : isCodeOrdering
           ? "Sıralamayı Kontrol Et"
-          : isMultiFileWorkspace
-            ? "Projeyi Kontrol Et"
-            : isDataTransformation
-              ? "Dönüşümü Kontrol Et"
-              : isRefactoring
-                ? "Refactor'ı Kontrol Et"
-                : isDebugging
-                  ? "Düzeltmeyi Kontrol Et"
-                  : isCodeCompletion
-                    ? "Eksikleri Kontrol Et"
-                    : "Görevi Kontrol Et";
+          : isFileProcessing
+            ? "Dosyaları Kontrol Et"
+            : isMultiFileWorkspace
+              ? "Projeyi Kontrol Et"
+              : isDataTransformation
+                ? "Dönüşümü Kontrol Et"
+                : isRefactoring
+                  ? "Refactor'ı Kontrol Et"
+                  : isDebugging
+                    ? "Düzeltmeyi Kontrol Et"
+                    : isCodeCompletion
+                      ? "Eksikleri Kontrol Et"
+                      : "Görevi Kontrol Et";
   const resetLabel = isOutputPrediction
     ? "Tahmini temizle"
     : isCodeOrdering
       ? "İlk sıralamaya dön"
-      : isMultiFileWorkspace
-        ? "Proje dosyalarını sıfırla"
-        : isDataTransformation
-          ? "Başlangıç verisine dön"
-          : isRefactoring
-            ? "Eski koda dön"
-            : isDebugging
-              ? "Hatalı koda dön"
-              : "Başlangıç koduna dön";
+      : isFileProcessing
+        ? "Dosya projesini sıfırla"
+        : isMultiFileWorkspace
+          ? "Proje dosyalarını sıfırla"
+          : isDataTransformation
+            ? "Başlangıç verisine dön"
+            : isRefactoring
+              ? "Eski koda dön"
+              : isDebugging
+                ? "Hatalı koda dön"
+                : "Başlangıç koduna dön";
   const runLabel = runtimeStatus === "running"
     ? "Çalıştırılıyor…"
-    : isMultiFileWorkspace
-      ? "Projeyi Çalıştır"
-      : isDataTransformation
-        ? "Dönüşümü Çalıştır"
-        : isRefactoring
-          ? "Refactor'ı Çalıştır"
-          : isDebugging
-            ? "Kodu / Hatayı Çalıştır"
-            : "Çalıştır";
+    : isFileProcessing
+      ? "Dosya işlemini çalıştır"
+      : isMultiFileWorkspace
+        ? "Projeyi Çalıştır"
+        : isDataTransformation
+          ? "Dönüşümü Çalıştır"
+          : isRefactoring
+            ? "Refactor'ı Çalıştır"
+            : isDebugging
+              ? "Kodu / Hatayı Çalıştır"
+              : "Çalıştır";
   const editorReadOnly = isOutputPrediction || isCodeOrdering || activeDocument.readOnly;
   const context = `${currentLevel?.title ?? "Müfredat"} / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
@@ -453,11 +472,13 @@ export function WorkspacePage() {
                     ? "Düzeltme sonrası çıktı"
                     : isCodeOrdering
                       ? "Doğru program çıktısı"
-                      : isDataTransformation
-                        ? "Hedef veri çıktısı"
-                        : isRefactoring
-                          ? "Refactor sonrası çıktı"
-                          : "Örnek çıktı"}
+                      : isFileProcessing
+                        ? "Dosya / terminal çıktısı"
+                        : isDataTransformation
+                          ? "Hedef veri çıktısı"
+                          : isRefactoring
+                            ? "Refactor sonrası çıktı"
+                            : "Örnek çıktı"}
               </span>
               <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
@@ -497,6 +518,10 @@ export function WorkspacePage() {
 
           {isDataTransformation && currentLesson.dataTransformation ? (
             <DataTransformationGuide guide={currentLesson.dataTransformation} />
+          ) : null}
+
+          {currentLesson.fileSystem ? (
+            <FileSystemGuide guide={currentLesson.fileSystem} />
           ) : null}
 
           <StdinPanel
@@ -566,7 +591,7 @@ export function WorkspacePage() {
             <CodeEditor
               documentId={activeDocumentId}
               className={styles.editorHost}
-              ariaLabel={editorReadOnly ? "Salt okunur Python kodu" : "Python kod editörü"}
+              ariaLabel={`${editorReadOnly ? "Salt okunur" : "Düzenlenebilir"} ${languageLabels[activeDocument.language]} dosyası`}
               readOnly={editorReadOnly}
             />
           </div>
@@ -575,7 +600,7 @@ export function WorkspacePage() {
             <span>Satır {activeDocument.cursor.line}, Sütun {activeDocument.cursor.column}</span>
             <span>
               {entrypoint === activeDocument.path ? "Giriş dosyası · " : ""}
-              UTF-8 · {editorReadOnly ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
+              {languageLabels[activeDocument.language]} · UTF-8 · {editorReadOnly ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
             </span>
           </footer>
         </section>

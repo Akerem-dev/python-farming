@@ -18,7 +18,9 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "code-ordering",
   "refactoring",
   "data-transformation",
+  "file-processing",
 ]);
+const allowedWorkspaceExtensions = new Set(["py", "txt", "json", "csv"]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
   if (!value || typeof value !== "object") {
@@ -73,6 +75,26 @@ function assertCodeBlock(value: unknown): asserts value is CurriculumCodeBlock {
   }
 }
 
+function isSafeWorkspacePath(path: string) {
+  if (!path || path.startsWith("/") || path.includes("\\")) {
+    return false;
+  }
+  const parts = path.split("/");
+  if (
+    parts.some(
+      (part) =>
+        !part ||
+        part === "." ||
+        part === ".." ||
+        !/^[A-Za-z0-9_.-]+$/.test(part),
+    )
+  ) {
+    return false;
+  }
+  const extension = parts.at(-1)?.split(".").at(-1)?.toLowerCase();
+  return Boolean(extension && allowedWorkspaceExtensions.has(extension));
+}
+
 function assertEditorWorkspace(lesson: CurriculumLesson) {
   const editor = lesson.editor;
   if (typeof editor.filename !== "string" || typeof editor.starterCode !== "string") {
@@ -80,6 +102,9 @@ function assertEditorWorkspace(lesson: CurriculumLesson) {
   }
 
   if (editor.files === undefined) {
+    if (!editor.filename.endsWith(".py")) {
+      throw new Error(`${lesson.id} tek dosyalı dersinin giriş dosyası .py olmalıdır.`);
+    }
     return;
   }
   if (!Array.isArray(editor.files) || editor.files.length === 0) {
@@ -91,23 +116,20 @@ function assertEditorWorkspace(lesson: CurriculumLesson) {
     editor.files.some(
       (file) =>
         typeof file.path !== "string" ||
-        !file.path.endsWith(".py") ||
-        file.path.startsWith("/") ||
-        file.path.includes("\\") ||
-        file.path.split("/").includes("..") ||
+        !isSafeWorkspacePath(file.path) ||
         typeof file.starterCode !== "string" ||
         (file.readOnly !== undefined && typeof file.readOnly !== "boolean"),
     )
   ) {
-    throw new Error(`${lesson.id} çok dosyalı çalışma alanında geçersiz Python dosyası var.`);
+    throw new Error(`${lesson.id} çalışma alanında geçersiz proje dosyası var.`);
   }
   if (new Set(paths).size !== paths.length) {
     throw new Error(`${lesson.id} çalışma alanında tekrar eden dosya yolu var.`);
   }
 
   const entrypoint = editor.entrypoint ?? editor.filename;
-  if (!paths.includes(entrypoint)) {
-    throw new Error(`${lesson.id} giriş dosyası çalışma alanında bulunmuyor: ${entrypoint}`);
+  if (!entrypoint.endsWith(".py") || !paths.includes(entrypoint)) {
+    throw new Error(`${lesson.id} .py giriş dosyası çalışma alanında bulunmuyor: ${entrypoint}`);
   }
 }
 
@@ -257,6 +279,48 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasSequenceStructureCheck) {
       throw new Error(`${lesson.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
+    }
+  }
+
+  if (mode === "file-processing") {
+    const guide = lesson.fileSystem;
+    if (
+      !guide ||
+      typeof guide.projectTitle !== "string" ||
+      typeof guide.workingDirectory !== "string" ||
+      !Array.isArray(guide.inputFiles) ||
+      !Array.isArray(guide.outputFiles) ||
+      guide.inputFiles.length + guide.outputFiles.length === 0 ||
+      [...guide.inputFiles, ...guide.outputFiles].some(
+        (file) =>
+          typeof file.path !== "string" ||
+          !isSafeWorkspacePath(file.path) ||
+          typeof file.description !== "string",
+      ) ||
+      !Array.isArray(guide.rules) ||
+      guide.rules.length < 2 ||
+      guide.rules.some((rule) => typeof rule !== "string") ||
+      !Array.isArray(guide.workflow) ||
+      guide.workflow.length < 2 ||
+      guide.workflow.some((step) => typeof step !== "string")
+    ) {
+      throw new Error(`${lesson.id} dosya sistemi laboratuvarı rehberi eksik.`);
+    }
+
+    const workspacePaths = new Set(lesson.editor.files?.map((file) => file.path) ?? []);
+    const referencedPaths = [...guide.inputFiles, ...guide.outputFiles].map((file) => file.path);
+    if (referencedPaths.some((path) => !workspacePaths.has(path))) {
+      throw new Error(`${lesson.id} dosya laboratuvarı çalışma alanında eksik dosya içeriyor.`);
+    }
+
+    const hasDataFile = [...workspacePaths].some((path) => !path.endsWith(".py"));
+    const hasFileCheck = validation.checks.some((check) =>
+      ["file_exists", "file_content_regex", "json_file_equals", "file_unchanged"].includes(
+        check.kind,
+      ),
+    );
+    if (!hasDataFile || !hasFileCheck) {
+      throw new Error(`${lesson.id} dosya laboratuvarı veri dosyası ve dosya testleri içermiyor.`);
     }
   }
 

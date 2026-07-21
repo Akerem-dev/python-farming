@@ -9,6 +9,7 @@
     "/content/modules/lists-tuples.json",
     "/content/modules/dictionaries-sets.json",
     "/content/modules/beginner-graduation.json",
-    "/content/modules/modules-packages.json"
+    "/content/modules/modules-packages.json",
+    "/content/modules/files-paths.json"
   ]
 }

@@ -3,22 +3,27 @@ import { python } from "@codemirror/lang-python";
 import { EditorState, type Extension } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { basicSetup } from "codemirror";
+import type { EditorLanguage } from "./editorModels";
 import { pythonFarmingEditorTheme } from "./editorTheme";
 
 interface CreateEditorExtensionsOptions {
+  language: EditorLanguage;
   onContentChange: (content: string) => void;
   onCursorChange: (line: number, column: number) => void;
   readOnly?: boolean;
 }
 
 export function createEditorExtensions({
+  language,
   onContentChange,
   onCursorChange,
   readOnly = false,
 }: CreateEditorExtensionsOptions): Extension[] {
+  const languageExtensions: Extension[] = language === "python" ? [python()] : [];
+
   return [
     basicSetup,
-    python(),
+    ...languageExtensions,
     pythonFarmingEditorTheme,
     keymap.of([indentWithTab]),
     EditorState.tabSize.of(4),
