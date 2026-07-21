@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { CurriculumEditorWorkspace } from "../features/curriculum/types";
 import type { EditorCursorPosition, EditorDocument, EditorSessionSnapshot } from "./editorModels";
 
 export const beginnerStarterCode = `# Kendini tanıtan iki değişken oluştur
@@ -11,9 +12,11 @@ print(f"Merhaba, ben {ad} ve {yas} yaşındayım.")`;
 const initialDocument: EditorDocument = {
   id: "main-python",
   name: "main.py",
+  path: "main.py",
   language: "python",
   content: beginnerStarterCode,
   initialContent: beginnerStarterCode,
+  readOnly: false,
   saveStatus: "saved",
   cursor: { line: 1, column: 1 },
   revision: 0,
@@ -22,11 +25,13 @@ const initialDocument: EditorDocument = {
 interface EditorState extends EditorSessionSnapshot {
   setActiveDocument: (documentId: string) => void;
   loadLessonDocument: (lessonId: string, filename: string, starterCode: string) => void;
+  loadLessonWorkspace: (lessonId: string, workspace: CurriculumEditorWorkspace) => void;
   updateDocumentContent: (documentId: string, content: string) => void;
   updateCursor: (documentId: string, cursor: EditorCursorPosition) => void;
   markDocumentSaving: (documentId: string) => void;
   markDocumentSaved: (documentId: string) => void;
   resetDocument: (documentId: string) => void;
+  resetWorkspace: () => void;
   restoreSnapshot: (snapshot: EditorSessionSnapshot) => void;
 }
 
@@ -38,8 +43,32 @@ function updateDocument(
   return documents.map((document) => (document.id === documentId ? updater(document) : document));
 }
 
+function createDocument(lessonId: string, path: string, starterCode: string, readOnly = false) {
+  const normalizedPath = path.replace(/\\/g, "/");
+  return {
+    id: `lesson:${lessonId}:${normalizedPath}`,
+    name: normalizedPath.split("/").at(-1) ?? normalizedPath,
+    path: normalizedPath,
+    language: "python" as const,
+    content: starterCode,
+    initialContent: starterCode,
+    readOnly,
+    saveStatus: "saved" as const,
+    cursor: { line: 1, column: 1 },
+    revision: 0,
+  };
+}
+
+function workspaceDocuments(lessonId: string, workspace: CurriculumEditorWorkspace) {
+  const files = workspace.files?.length
+    ? workspace.files
+    : [{ path: workspace.filename, starterCode: workspace.starterCode, readOnly: false }];
+  return files.map((file) => createDocument(lessonId, file.path, file.starterCode, file.readOnly));
+}
+
 export const useEditorStore = create<EditorState>((set) => ({
   activeDocumentId: initialDocument.id,
+  entrypoint: initialDocument.path,
   documents: [initialDocument],
 
   setActiveDocument: (documentId) =>
@@ -50,28 +79,35 @@ export const useEditorStore = create<EditorState>((set) => ({
     ),
 
   loadLessonDocument: (lessonId, filename, starterCode) => {
-    const documentId = `lesson:${lessonId}`;
+    const document = createDocument(lessonId, filename, starterCode);
     set({
-      activeDocumentId: documentId,
-      documents: [
-        {
-          id: documentId,
-          name: filename,
-          language: "python",
-          content: starterCode,
-          initialContent: starterCode,
-          saveStatus: "saved",
-          cursor: { line: 1, column: 1 },
-          revision: 0,
-        },
-      ],
+      activeDocumentId: document.id,
+      entrypoint: document.path,
+      documents: [document],
+    });
+  },
+
+  loadLessonWorkspace: (lessonId, workspace) => {
+    const documents = workspaceDocuments(lessonId, workspace);
+    const requestedEntrypoint = (workspace.entrypoint ?? workspace.filename).replace(/\\/g, "/");
+    const entrypointDocument =
+      documents.find((document) => document.path === requestedEntrypoint) ?? documents[0];
+
+    if (!entrypointDocument) {
+      return;
+    }
+
+    set({
+      activeDocumentId: entrypointDocument.id,
+      entrypoint: entrypointDocument.path,
+      documents,
     });
   },
 
   updateDocumentContent: (documentId, content) =>
     set((state) => ({
       documents: updateDocument(state.documents, documentId, (document) => {
-        if (document.content === content) {
+        if (document.readOnly || document.content === content) {
           return document;
         }
 
@@ -96,7 +132,7 @@ export const useEditorStore = create<EditorState>((set) => ({
     set((state) => ({
       documents: updateDocument(state.documents, documentId, (document) => ({
         ...document,
-        saveStatus: "saving",
+        saveStatus: document.readOnly ? "saved" : "saving",
       })),
     })),
 
@@ -113,7 +149,24 @@ export const useEditorStore = create<EditorState>((set) => ({
       documents: updateDocument(state.documents, documentId, (document) => ({
         ...document,
         content: document.initialContent,
-        saveStatus: document.content === document.initialContent ? document.saveStatus : "dirty",
+        saveStatus:
+          document.readOnly || document.content === document.initialContent
+            ? document.saveStatus
+            : "dirty",
+        cursor: { line: 1, column: 1 },
+        revision: document.revision + 1,
+      })),
+    })),
+
+  resetWorkspace: () =>
+    set((state) => ({
+      documents: state.documents.map((document) => ({
+        ...document,
+        content: document.initialContent,
+        saveStatus:
+          document.readOnly || document.content === document.initialContent
+            ? document.saveStatus
+            : "dirty",
         cursor: { line: 1, column: 1 },
         revision: document.revision + 1,
       })),
@@ -122,6 +175,7 @@ export const useEditorStore = create<EditorState>((set) => ({
   restoreSnapshot: (snapshot) =>
     set({
       activeDocumentId: snapshot.activeDocumentId,
+      entrypoint: snapshot.entrypoint,
       documents: snapshot.documents,
     }),
 }));
