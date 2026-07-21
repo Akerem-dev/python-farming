@@ -53,7 +53,8 @@
 
 .continuePanel p,
 .stagePanel p,
-.moduleCompletePanel p {
+.moduleCompletePanel p,
+.graduationPanel p {
   max-width: 620px;
   margin: var(--space-2) 0 0;
   color: var(--color-text-muted);
@@ -129,6 +130,16 @@
   opacity: 0.52;
 }
 
+.levelUnlocked {
+  border-color: rgba(85, 197, 138, 0.34);
+  background: rgba(85, 197, 138, 0.06);
+}
+
+.levelUnlocked .levelIndex,
+.levelUnlocked > span {
+  color: var(--color-success);
+}
+
 .levelCard strong {
   color: var(--color-text-primary);
   font-size: var(--font-size-sm);
@@ -144,6 +155,140 @@
   color: var(--color-accent);
   font-family: var(--font-mono);
   font-size: 12px;
+}
+
+.graduationPanel {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr) minmax(170px, auto);
+  gap: var(--space-5);
+  align-items: center;
+  border-color: rgba(241, 174, 47, 0.32);
+  background:
+    linear-gradient(120deg, rgba(241, 174, 47, 0.08), transparent 52%),
+    var(--color-surface);
+}
+
+.graduationPanel[data-graduated] {
+  border-color: rgba(85, 197, 138, 0.34);
+  background:
+    linear-gradient(120deg, rgba(85, 197, 138, 0.09), transparent 52%),
+    var(--color-surface);
+}
+
+.graduationScore {
+  width: 112px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  border: 1px solid rgba(241, 174, 47, 0.28);
+  border-radius: 50%;
+  background: var(--color-surface-raised);
+  text-align: center;
+}
+
+.graduationScore span,
+.graduationScore small {
+  color: var(--color-text-dim);
+  font-size: 8px;
+  text-transform: uppercase;
+}
+
+.graduationScore strong {
+  color: var(--color-text-primary);
+  font-size: 30px;
+  line-height: 1;
+}
+
+.graduationBody {
+  min-width: 0;
+}
+
+.weakTopics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: var(--space-4);
+}
+
+.weakTopics > div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto;
+  gap: 7px;
+  align-items: center;
+  padding: 9px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+}
+
+.weakTopics span,
+.weakTopics small {
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.weakTopics b {
+  overflow: hidden;
+  color: var(--color-text-muted);
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.graduationAction {
+  min-width: 170px;
+  display: grid;
+  justify-items: stretch;
+}
+
+.graduationAction > div:not(.graduationBadge) {
+  display: grid;
+  gap: 5px;
+  padding: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-raised);
+}
+
+.graduationAction span {
+  color: var(--color-text-dim);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.graduationAction strong {
+  color: var(--color-text-primary);
+  font-size: 12px;
+}
+
+.graduationBadge {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  gap: 3px 10px;
+  align-items: center;
+  padding: var(--space-4);
+  border: 1px solid rgba(85, 197, 138, 0.3);
+  border-radius: var(--radius-md);
+  background: rgba(85, 197, 138, 0.08);
+}
+
+.graduationBadge i {
+  grid-row: 1 / 3;
+  width: 38px;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(85, 197, 138, 0.14);
+  color: var(--color-success);
+  font-style: normal;
+}
+
+.graduationBadge strong {
+  color: var(--color-success);
 }
 
 .twoColumns {
@@ -405,11 +550,42 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .graduationPanel {
+    grid-template-columns: 100px 1fr;
+  }
+
+  .graduationAction {
+    grid-column: 1 / -1;
+  }
+
   .moduleCompletePanel {
     grid-template-columns: auto 1fr;
   }
 
   .nextModuleState {
     grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 620px) {
+  .continuePanel,
+  .graduationPanel {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .continuePanel {
+    flex-direction: column;
+  }
+
+  .levelGrid,
+  .twoColumns,
+  .sideColumn,
+  .weakTopics {
+    grid-template-columns: 1fr;
+  }
+
+  .graduationScore {
+    width: 92px;
   }
 }
