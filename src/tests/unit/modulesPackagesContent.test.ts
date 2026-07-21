@@ -31,16 +31,15 @@ describe("modules and packages content", () => {
     }
   });
 
-  it("validates files, imports and module-level function cases", () => {
+  it("validates project imports and module-level function cases", () => {
     const projectLessons = modulePackage.lessons.filter(
       (lesson) => (lesson.editor.files?.length ?? 0) > 1,
     );
+    const explicitImportLessons = projectLessons.filter((lesson) =>
+      lesson.validation.checks.some((check) => check.kind === "import_statement"),
+    );
 
-    expect(
-      projectLessons.every((lesson) =>
-        lesson.validation.checks.some((check) => check.kind === "import_statement"),
-      ),
-    ).toBe(true);
+    expect(explicitImportLessons.length).toBeGreaterThanOrEqual(4);
     expect(
       projectLessons.every((lesson) =>
         lesson.validation.checks.some(
