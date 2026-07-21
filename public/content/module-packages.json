@@ -5,6 +5,7 @@
     "/content/modules/operators.json",
     "/content/modules/conditionals.json",
     "/content/modules/loops.json",
-    "/content/modules/functions.json"
+    "/content/modules/functions.json",
+    "/content/modules/lists-tuples.json"
   ]
 }

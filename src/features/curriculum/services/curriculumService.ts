@@ -17,6 +17,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "debugging",
   "code-ordering",
   "refactoring",
+  "data-transformation",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -183,6 +184,37 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck) {
       throw new Error(`${candidate.id} refactoring görevi fonksiyon kontrolleri içermiyor.`);
+    }
+  }
+
+  if (mode === "data-transformation") {
+    if (
+      !candidate.dataTransformation ||
+      typeof candidate.dataTransformation.sourceShape !== "string" ||
+      typeof candidate.dataTransformation.targetShape !== "string" ||
+      !Array.isArray(candidate.dataTransformation.rules) ||
+      candidate.dataTransformation.rules.length < 2 ||
+      candidate.dataTransformation.rules.some((rule) => typeof rule !== "string") ||
+      !Array.isArray(candidate.dataTransformation.workflow) ||
+      candidate.dataTransformation.workflow.length < 2 ||
+      candidate.dataTransformation.workflow.some((step) => typeof step !== "string")
+    ) {
+      throw new Error(`${candidate.id} veri dönüştürme rehberi eksik.`);
+    }
+
+    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_definition",
+    );
+    const hasFunctionCasesCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_cases",
+    );
+    const hasSequenceStructureCheck = candidate.validation.checks.some(
+      (check) =>
+        check.kind === "node_count" &&
+        ["For", "ListComp"].includes(check.nodeName),
+    );
+    if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasSequenceStructureCheck) {
+      throw new Error(`${candidate.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
     }
   }
 }

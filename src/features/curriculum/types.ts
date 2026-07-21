@@ -6,7 +6,8 @@ export type CurriculumLessonMode =
   | "code-completion"
   | "debugging"
   | "code-ordering"
-  | "refactoring";
+  | "refactoring"
+  | "data-transformation";
 
 export interface CurriculumChoiceOption {
   id: string;
@@ -27,6 +28,13 @@ export interface CurriculumDebuggingGuide {
 export interface CurriculumRefactoringGuide {
   problem: string;
   goal: string;
+  workflow: string[];
+}
+
+export interface CurriculumDataTransformationGuide {
+  sourceShape: string;
+  targetShape: string;
+  rules: string[];
   workflow: string[];
 }
 
@@ -77,6 +85,7 @@ export interface CurriculumLesson {
   };
   debugging?: CurriculumDebuggingGuide;
   refactoring?: CurriculumRefactoringGuide;
+  dataTransformation?: CurriculumDataTransformationGuide;
   task: {
     title: string;
     instructions: string[];
