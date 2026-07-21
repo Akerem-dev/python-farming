@@ -3,6 +3,7 @@ import { navigate } from "../../app/AppRouter";
 import { routes } from "../../app/routes";
 import { Button } from "../../components/common/Button";
 import { CodeEditor } from "../../editor/CodeEditor";
+import { ProjectTree } from "../../editor/ProjectTree";
 import { useEditorStore } from "../../editor/editorStore";
 import {
   getNextLesson,
@@ -84,19 +85,26 @@ export function WorkspacePage() {
   const previousLesson = getPreviousLesson(catalog, currentLessonId);
   const currentModule =
     getOrderedModules(catalog).find((module) => module.id === currentLesson?.moduleId) ?? null;
+  const currentLevel =
+    catalog?.levels.find((level) =>
+      level.modules.some((module) => module.id === currentModule?.id),
+    ) ?? null;
   const moduleCompleted = currentModule
     ? isModuleCompleted(currentModule, completedLessonIds)
     : false;
 
   const activeDocumentId = useEditorStore((state) => state.activeDocumentId);
+  const entrypoint = useEditorStore((state) => state.entrypoint);
+  const documents = useEditorStore((state) => state.documents);
   const activeDocument = useEditorStore((state) =>
     state.documents.find((document) => document.id === state.activeDocumentId),
   );
-  const loadLessonDocument = useEditorStore((state) => state.loadLessonDocument);
+  const setActiveDocument = useEditorStore((state) => state.setActiveDocument);
+  const loadLessonWorkspace = useEditorStore((state) => state.loadLessonWorkspace);
   const updateDocumentContent = useEditorStore((state) => state.updateDocumentContent);
   const markDocumentSaving = useEditorStore((state) => state.markDocumentSaving);
   const markDocumentSaved = useEditorStore((state) => state.markDocumentSaved);
-  const resetDocument = useEditorStore((state) => state.resetDocument);
+  const resetWorkspace = useEditorStore((state) => state.resetWorkspace);
 
   const usedHintCount = useLearningStore((state) => state.usedHintCount);
   const maxHintCount = useLearningStore((state) => state.maxHintCount);
@@ -110,7 +118,7 @@ export function WorkspacePage() {
   const runtimeOutput = useRuntimeStore((state) => state.output);
   const runtimeError = useRuntimeStore((state) => state.errorMessage);
   const checkRuntime = useRuntimeStore((state) => state.checkRuntime);
-  const executeCode = useRuntimeStore((state) => state.executeCode);
+  const executeProject = useRuntimeStore((state) => state.executeProject);
   const clearOutput = useRuntimeStore((state) => state.clearOutput);
 
   const validationStatus = useTaskValidationStore((state) => state.status);
@@ -133,6 +141,15 @@ export function WorkspacePage() {
   const [terminalView, setTerminalView] = useState<TerminalView>("output");
   const [completionXpReward, setCompletionXpReward] = useState(0);
 
+  const runtimeFiles = useMemo(
+    () => documents.map((document) => ({ path: document.path, content: document.content })),
+    [documents],
+  );
+  const workspaceRevision = useMemo(
+    () => documents.map((document) => `${document.id}:${document.revision}`).join("|"),
+    [documents],
+  );
+  const isMultiFileWorkspace = documents.length > 1;
   const initialOrderedBlockIds = useMemo(
     () => currentLesson?.ordering?.blocks.map((block) => block.id) ?? [],
     [currentLesson?.ordering],
@@ -171,18 +188,22 @@ export function WorkspacePage() {
     ">>> Refactoring laboratuvarı hazır.\n>>> Önce mevcut davranışı çalıştır; sonra tekrarı fonksiyona taşı ve aynı çıktıyı koru.";
   const dataTransformationIntro =
     ">>> Veri Dönüştürme Laboratuvarı hazır.\n>>> Kaynak listeyi değiştirmeden kurallara göre yeni hedef listeyi üret.";
+  const projectIntro =
+    `>>> Çok dosyalı proje hazır.\n>>> Giriş dosyası: ${entrypoint}\n>>> Sol proje ağacından modül ve paket dosyaları arasında geçiş yap.`;
   const displayedTerminalText =
     isOutputPrediction && !runtimeOutput && !runtimeError
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
       : isCodeOrdering && !runtimeOutput && !runtimeError
         ? orderingIntro
-        : isDataTransformation && !runtimeOutput && !runtimeError
-          ? dataTransformationIntro
-          : isRefactoring && !runtimeOutput && !runtimeError
-            ? refactoringIntro
-            : isDebugging && !runtimeOutput && !runtimeError
-              ? debuggingIntro
-              : terminalText;
+        : isMultiFileWorkspace && !runtimeOutput && !runtimeError
+          ? projectIntro
+          : isDataTransformation && !runtimeOutput && !runtimeError
+            ? dataTransformationIntro
+            : isRefactoring && !runtimeOutput && !runtimeError
+              ? refactoringIntro
+              : isDebugging && !runtimeOutput && !runtimeError
+                ? debuggingIntro
+                : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
@@ -209,11 +230,7 @@ export function WorkspacePage() {
       return;
     }
 
-    loadLessonDocument(
-      currentLesson.id,
-      currentLesson.editor.filename,
-      currentLesson.editor.starterCode,
-    );
+    loadLessonWorkspace(currentLesson.id, currentLesson.editor);
     startLesson(
       currentLesson.id,
       currentLesson.task.instructions.length,
@@ -229,7 +246,7 @@ export function WorkspacePage() {
     clearOutput,
     currentLesson,
     initialOrderedBlockIds,
-    loadLessonDocument,
+    loadLessonWorkspace,
     rememberLesson,
     startLesson,
     startValidationSession,
@@ -240,7 +257,7 @@ export function WorkspacePage() {
       !isCodeOrdering ||
       !currentLesson ||
       !activeDocument ||
-      activeDocument.id !== `lesson:${currentLesson.id}` ||
+      activeDocument.path !== entrypoint ||
       orderedSource === null ||
       activeDocument.content === orderedSource
     ) {
@@ -251,6 +268,7 @@ export function WorkspacePage() {
   }, [
     activeDocument,
     currentLesson,
+    entrypoint,
     isCodeOrdering,
     orderedSource,
     updateDocumentContent,
@@ -274,7 +292,7 @@ export function WorkspacePage() {
 
   useEffect(() => {
     clearValidationResult();
-  }, [activeDocument?.content, clearValidationResult]);
+  }, [clearValidationResult, workspaceRevision]);
 
   if (!currentLesson || !activeDocument) {
     const message = curriculumStatus === "error" ? curriculumError : "Ders içeriği yükleniyor…";
@@ -299,22 +317,14 @@ export function WorkspacePage() {
     }
 
     setTerminalView("output");
-    void executeCode(
-      activeDocument.content,
-      activeDocument.name,
-      splitStdinText(stdinText),
-    );
+    void executeProject(runtimeFiles, entrypoint, splitStdinText(stdinText));
   };
 
   const handleValidate = async () => {
     const alreadyCompleted = completedLessonIds.includes(currentLesson.id);
     setCompletionXpReward(alreadyCompleted ? 0 : currentLesson.validation.xpReward);
 
-    const result = await validateTask(
-      activeDocument.content,
-      activeDocument.name,
-      currentLesson.validation,
-    );
+    const result = await validateTask(runtimeFiles, entrypoint, currentLesson.validation);
 
     if (result) {
       setTerminalView("tests");
@@ -325,7 +335,7 @@ export function WorkspacePage() {
   };
 
   const handleReset = () => {
-    resetDocument(activeDocument.id);
+    resetWorkspace();
     clearOutput();
     resetValidationSession(currentLesson.task.defaultStdin, initialOrderedBlockIds);
     setTerminalView("output");
@@ -367,37 +377,43 @@ export function WorkspacePage() {
         ? "Tahmini Kontrol Et"
         : isCodeOrdering
           ? "Sıralamayı Kontrol Et"
-          : isDataTransformation
-            ? "Dönüşümü Kontrol Et"
-            : isRefactoring
-              ? "Refactor'ı Kontrol Et"
-              : isDebugging
-                ? "Düzeltmeyi Kontrol Et"
-                : isCodeCompletion
-                  ? "Eksikleri Kontrol Et"
-                  : "Görevi Kontrol Et";
+          : isMultiFileWorkspace
+            ? "Projeyi Kontrol Et"
+            : isDataTransformation
+              ? "Dönüşümü Kontrol Et"
+              : isRefactoring
+                ? "Refactor'ı Kontrol Et"
+                : isDebugging
+                  ? "Düzeltmeyi Kontrol Et"
+                  : isCodeCompletion
+                    ? "Eksikleri Kontrol Et"
+                    : "Görevi Kontrol Et";
   const resetLabel = isOutputPrediction
     ? "Tahmini temizle"
     : isCodeOrdering
       ? "İlk sıralamaya dön"
-      : isDataTransformation
-        ? "Başlangıç verisine dön"
-        : isRefactoring
-          ? "Eski koda dön"
-          : isDebugging
-            ? "Hatalı koda dön"
-            : "Başlangıç koduna dön";
+      : isMultiFileWorkspace
+        ? "Proje dosyalarını sıfırla"
+        : isDataTransformation
+          ? "Başlangıç verisine dön"
+          : isRefactoring
+            ? "Eski koda dön"
+            : isDebugging
+              ? "Hatalı koda dön"
+              : "Başlangıç koduna dön";
   const runLabel = runtimeStatus === "running"
     ? "Çalıştırılıyor…"
-    : isDataTransformation
-      ? "Dönüşümü Çalıştır"
-      : isRefactoring
-        ? "Refactor'ı Çalıştır"
-        : isDebugging
-          ? "Kodu / Hatayı Çalıştır"
-          : "Çalıştır";
-  const editorReadOnly = isOutputPrediction || isCodeOrdering;
-  const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
+    : isMultiFileWorkspace
+      ? "Projeyi Çalıştır"
+      : isDataTransformation
+        ? "Dönüşümü Çalıştır"
+        : isRefactoring
+          ? "Refactor'ı Çalıştır"
+          : isDebugging
+            ? "Kodu / Hatayı Çalıştır"
+            : "Çalıştır";
+  const editorReadOnly = isOutputPrediction || isCodeOrdering || activeDocument.readOnly;
+  const context = `${currentLevel?.title ?? "Müfredat"} / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
   return (
     <AppShell activeRoute={routes.workspace} compactCurriculum context={context}>
@@ -525,8 +541,8 @@ export function WorkspacePage() {
         <section className={styles.editorPanel}>
           <header className={styles.editorHeader}>
             <div>
-              <span className={styles.activeTab}>
-                {activeDocument.name}
+              <span className={styles.activeTab} title={activeDocument.path}>
+                {activeDocument.path}
                 {activeDocument.saveStatus === "dirty" ? <i aria-label="Kaydedilmemiş değişiklik" /> : null}
               </span>
               <span className={styles.modeBadge} data-mode={lessonMode}>{lessonModeLabels[lessonMode]}</span>
@@ -538,16 +554,27 @@ export function WorkspacePage() {
             </span>
           </header>
 
-          <CodeEditor
-            documentId={activeDocumentId}
-            className={styles.editorHost}
-            ariaLabel={editorReadOnly ? "Salt okunur Python kodu" : "Python kod editörü"}
-            readOnly={editorReadOnly}
-          />
+          <div className={styles.editorBody} data-multi-file={isMultiFileWorkspace || undefined}>
+            {isMultiFileWorkspace ? (
+              <ProjectTree
+                documents={documents}
+                activeDocumentId={activeDocumentId}
+                entrypoint={entrypoint}
+                onSelect={setActiveDocument}
+              />
+            ) : null}
+            <CodeEditor
+              documentId={activeDocumentId}
+              className={styles.editorHost}
+              ariaLabel={editorReadOnly ? "Salt okunur Python kodu" : "Python kod editörü"}
+              readOnly={editorReadOnly}
+            />
+          </div>
 
           <footer className={styles.editorStatus}>
             <span>Satır {activeDocument.cursor.line}, Sütun {activeDocument.cursor.column}</span>
             <span>
+              {entrypoint === activeDocument.path ? "Giriş dosyası · " : ""}
               UTF-8 · {editorReadOnly ? "Salt okunur" : saveStatusLabels[activeDocument.saveStatus]}
             </span>
           </footer>
