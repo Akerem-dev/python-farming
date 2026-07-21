@@ -1,0 +1,785 @@
+{
+  "moduleId": "oop-basics",
+  "lessons": [
+    {
+      "id": "intermediate.oop.first-class",
+      "moduleId": "oop-basics",
+      "order": 1,
+      "title": "İlk sınıfını ve nesneni oluştur",
+      "summary": "Sınıf bir veri ve davranış şablonudur; nesne ise bu şablondan oluşturulan bağımsız bir örnektir.",
+      "levelLabel": "Intermediate OOP",
+      "mode": "code",
+      "task": {
+        "title": "Urun sınıfıyla yeniden kullanılabilir ürün nesneleri oluştur",
+        "instructions": [
+          "Urun adlı bir sınıf tanımla.",
+          "__init__ içinde ad ve fiyat değerlerini instance attribute olarak sakla.",
+          "etiket() metodu ürün adını ve fiyatını metin olarak return etsin.",
+          "Bir Defter nesnesi oluşturup etiketini yazdır."
+        ],
+        "requirements": [
+          "Urun sınıfı __init__(ad, fiyat) imzasına sahip olmalı.",
+          "self.ad ve self.fiyat attribute alanları oluşturulmalı.",
+          "etiket() farklı ürün nesnelerinde doğru çalışmalı."
+        ],
+        "sampleOutput": "Defter: 45 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# İlk ürün sınıfını oluştur\n\n# class Urun:\n#     ...\n\nurun = Urun(\"Defter\", 45)\nprint(urun.etiket())"
+      },
+      "hints": [
+        {
+          "title": "Constructor başlığı",
+          "body": "class Urun: altında def __init__(self, ad, fiyat): başlığını kullan."
+        },
+        {
+          "title": "Veri nesnenin üzerinde saklanır",
+          "body": "self.ad = ad ve self.fiyat = fiyat atamalarını yap."
+        },
+        {
+          "title": "Metot self alır",
+          "body": "def etiket(self): return f\"{self.ad}: {self.fiyat} TL\" yazabilirsin."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.first-class",
+        "title": "Urun sınıfıyla yeniden kullanılabilir ürün nesneleri oluştur",
+        "xpReward": 65,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "product-class",
+            "kind": "class_definition",
+            "name": "Urun",
+            "minInitParams": 2,
+            "maxInitParams": 2,
+            "requiredMethods": ["__init__", "etiket"],
+            "requiredAttributes": ["ad", "fiyat"],
+            "label": "Urun sınıf yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-cases",
+            "kind": "class_cases",
+            "name": "Urun",
+            "cases": [
+              {
+                "initArgs": ["Defter", 45],
+                "observe": { "kind": "method", "name": "etiket", "args": [] },
+                "expected": "Defter: 45 TL"
+              },
+              {
+                "initArgs": ["Kalem", 15],
+                "observe": { "kind": "method", "name": "etiket", "args": [] },
+                "expected": "Kalem: 15 TL"
+              }
+            ],
+            "label": "Gizli ürün nesnesi senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ADefter:\\s*45\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.oop.method-prediction",
+      "moduleId": "oop-basics",
+      "order": 2,
+      "title": "Nesne durumunu tahmin et",
+      "summary": "Instance metotları self üzerinden yalnız çağrıldıkları nesnenin durumunu okuyabilir ve değiştirebilir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi değer görünür?",
+        "options": [
+          { "id": "answer-100", "label": "100" },
+          { "id": "answer-120", "label": "120" },
+          { "id": "answer-20", "label": "20" },
+          { "id": "answer-error", "label": "TypeError" }
+        ]
+      },
+      "task": {
+        "title": "Metot çağrısından sonra nesne durumunu takip et",
+        "instructions": [
+          "Urun nesnesinin başlangıç fiyatını belirle.",
+          "fiyat_artir() metodunun self.fiyat alanını nasıl değiştirdiğini incele.",
+          "print() çalıştığında nesnenin güncel fiyatını seç."
+        ],
+        "requirements": [
+          "Yüzde 20 artış hesaplanmalı.",
+          "Metodun aynı nesneyi değiştirdiği unutulmamalı.",
+          "Kod çalıştırılmadan tahmin yapılmalı."
+        ],
+        "sampleOutput": "Tek satırda bir sayı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Urun:\n    def __init__(self, fiyat):\n        self.fiyat = fiyat\n\n    def fiyat_artir(self, oran):\n        self.fiyat *= 1 + oran\n\nurun = Urun(100)\nurun.fiyat_artir(0.20)\nprint(urun.fiyat)"
+      },
+      "hints": [
+        {
+          "title": "Başlangıç değeri",
+          "body": "Nesne oluşturulduğunda self.fiyat değeri 100 olur."
+        },
+        {
+          "title": "Çarpan",
+          "body": "1 + 0.20 işlemi 1.20 sonucunu verir."
+        },
+        {
+          "title": "Aynı attribute güncellenir",
+          "body": "100 * 1.20 işleminin sonucunu seç."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.method-prediction",
+        "title": "Metot çağrısından sonra nesne durumunu takip et",
+        "xpReward": 50,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-120"
+        }
+      }
+    },
+    {
+      "id": "intermediate.oop.cart-completion",
+      "moduleId": "oop-basics",
+      "order": 3,
+      "title": "Instance metotlarını tamamla",
+      "summary": "Bir nesne kendi iç durumunu attribute alanlarında saklar ve metotlarıyla kontrollü biçimde günceller.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Sepet sınıfının ekleme ve toplam metotlarını tamamla",
+        "instructions": [
+          "__init__ içindeki yer tutucuyu boş listeyle değiştir.",
+          "ekle() metodunda fiyat * adet sonucunu listeye ekle.",
+          "toplam() metodunda kalemlerin toplamını return et.",
+          "Hazır verilen iki ürün ekleme çağrısını çalıştır."
+        ],
+        "requirements": [
+          "Her Sepet nesnesinin kendi _kalemler listesi olmalı.",
+          "ekle(fiyat, adet) metodu farklı değerlerle çalışmalı.",
+          "toplam() sayısal toplam döndürmeli."
+        ],
+        "sampleOutput": "Sepet toplamı: 120 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Sepet:\n    def __init__(self):\n        self._kalemler = __BOS_LISTE__\n\n    def ekle(self, fiyat, adet=1):\n        __LISTEYE_EKLE__\n\n    def toplam(self):\n        return __TOPLAM_IFADESI__\n\nsepet = Sepet()\nsepet.ekle(45, 2)\nsepet.ekle(15, 2)\nprint(f\"Sepet toplamı: {sepet.toplam()} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Instance listesi",
+          "body": "self._kalemler = [] ataması her nesne için ayrı liste oluşturur."
+        },
+        {
+          "title": "Satır toplamını ekle",
+          "body": "self._kalemler.append(fiyat * adet) kullan."
+        },
+        {
+          "title": "Listeyi topla",
+          "body": "return sum(self._kalemler) bütün kalem toplamlarını birleştirir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.cart-completion",
+        "title": "Sepet sınıfının ekleme ve toplam metotlarını tamamla",
+        "xpReward": 75,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "cart-class",
+            "kind": "class_definition",
+            "name": "Sepet",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "ekle", "toplam"],
+            "requiredAttributes": ["_kalemler"],
+            "label": "Sepet sınıf yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "append-call",
+            "kind": "call",
+            "name": "append",
+            "label": "Kalemler append() ile eklendi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cart-cases",
+            "kind": "class_cases",
+            "name": "Sepet",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "ekle", "args": [45, 2] },
+                  { "kind": "call", "name": "ekle", "args": [15, 2] }
+                ],
+                "observe": { "kind": "method", "name": "toplam", "args": [] },
+                "expected": 120
+              },
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "ekle", "args": [99] }
+                ],
+                "observe": { "kind": "method", "name": "toplam", "args": [] },
+                "expected": 99
+              }
+            ],
+            "label": "Gizli sepet senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ASepet toplamı:\\s*120\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.oop.missing-self-debugging",
+      "moduleId": "oop-basics",
+      "order": 4,
+      "title": "Hata Avcısı: eksik self",
+      "summary": "Instance metotları nesnenin kendisine erişebilmek için ilk parametre olarak self almalıdır.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "TypeError",
+        "symptom": "artir() çağrısında Python metoda nesneyi otomatik gönderiyor, fakat metot bu argümanı kabul etmiyor.",
+        "workflow": [
+          "Başlangıç kodunu çalıştır ve TypeError mesajını oku.",
+          "artir metodunun parametre listesini __init__ ile karşılaştır.",
+          "Eksik self parametresini ekle.",
+          "Aynı nesnenin iki çağrıdan sonra 2 değerine ulaştığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "Eksik self parametresini bul ve düzelt",
+        "instructions": [
+          "Kodu önce çalıştırıp gerçek hatayı gör.",
+          "artir metodunun başlığına self parametresini ekle.",
+          "Metot gövdesindeki self.deger güncellemesini koru.",
+          "İki çağrı sonunda değerin 2 olduğunu doğrula."
+        ],
+        "requirements": [
+          "Sayac sınıfı __init__ ve artir metotlarını içermeli.",
+          "deger instance attribute olarak saklanmalı.",
+          "İki farklı Sayac nesnesi bağımsız çalışmalı."
+        ],
+        "sampleOutput": "2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Sayac:\n    def __init__(self):\n        self.deger = 0\n\n    def artir():\n        self.deger += 1\n\nsayac = Sayac()\nsayac.artir()\nsayac.artir()\nprint(sayac.deger)"
+      },
+      "hints": [
+        {
+          "title": "Python nesneyi otomatik gönderir",
+          "body": "sayac.artir() çağrısı arka planda Sayac.artir(sayac) gibi davranır."
+        },
+        {
+          "title": "İlk parametre",
+          "body": "Instance metodunun başlığı def artir(self): olmalı."
+        },
+        {
+          "title": "Gövde doğru",
+          "body": "Yalnız metot başlığını düzelt; self.deger += 1 satırını değiştirme."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.missing-self-debugging",
+        "title": "Eksik self parametresini bul ve düzelt",
+        "xpReward": 80,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "counter-class",
+            "kind": "class_definition",
+            "name": "Sayac",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "artir"],
+            "requiredAttributes": ["deger"],
+            "label": "Sayac sınıf yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "counter-cases",
+            "kind": "class_cases",
+            "name": "Sayac",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "artir", "args": [] },
+                  { "kind": "call", "name": "artir", "args": [] }
+                ],
+                "observe": { "kind": "attribute", "name": "deger" },
+                "expected": 2
+              },
+              {
+                "initArgs": [],
+                "observe": { "kind": "attribute", "name": "deger" },
+                "expected": 0
+              }
+            ],
+            "label": "Gizli sayaç nesnesi senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A2\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.oop.property-encapsulation",
+      "moduleId": "oop-basics",
+      "order": 5,
+      "title": "Property ile kapsülleme",
+      "summary": "Property, dışarıdan normal attribute gibi görünen bir değerin okuma ve yazma kurallarını metotlarla kontrol eder.",
+      "levelLabel": "Encapsulation Lab",
+      "mode": "code",
+      "task": {
+        "title": "Fiyat değerini property ve setter ile koru",
+        "instructions": [
+          "Urun sınıfında gerçek değeri _fiyat attribute alanında sakla.",
+          "fiyat adlı bir @property oluştur.",
+          "@fiyat.setter ile sıfır veya negatif değerleri ValueError ile reddet.",
+          "Geçerli bir fiyat güncellemesini çalıştırıp sonucu yazdır."
+        ],
+        "requirements": [
+          "__init__ ilk fiyatı setter üzerinden atamalı.",
+          "fiyat property alanı _fiyat değerini return etmeli.",
+          "Geçersiz değerler ValueError üretmeli."
+        ],
+        "sampleOutput": "Güncel fiyat: 120 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Urun:\n    def __init__(self, fiyat):\n        self.fiyat = fiyat\n\n    # fiyat property ve setter alanlarını buraya yaz\n\nurun = Urun(100)\nurun.fiyat = 120\nprint(f\"Güncel fiyat: {urun.fiyat} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Getter",
+          "body": "@property altında def fiyat(self): return self._fiyat yaz."
+        },
+        {
+          "title": "Setter dekoratörü",
+          "body": "@fiyat.setter altında def fiyat(self, deger): başlığını kullan."
+        },
+        {
+          "title": "Doğrulama",
+          "body": "deger <= 0 ise raise ValueError(\"Fiyat pozitif olmalı.\") yap; değilse self._fiyat = deger."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.property-encapsulation",
+        "title": "Fiyat değerini property ve setter ile koru",
+        "xpReward": 90,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "encapsulated-product",
+            "kind": "class_definition",
+            "name": "Urun",
+            "minInitParams": 1,
+            "maxInitParams": 1,
+            "requiredMethods": ["__init__"],
+            "requiredProperties": ["fiyat"],
+            "requiredSetters": ["fiyat"],
+            "requiredAttributes": ["_fiyat"],
+            "label": "Property ve setter yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "property-cases",
+            "kind": "class_cases",
+            "name": "Urun",
+            "cases": [
+              {
+                "initArgs": [100],
+                "actions": [{ "kind": "setattr", "name": "fiyat", "value": 120 }],
+                "observe": { "kind": "attribute", "name": "fiyat" },
+                "expected": 120
+              },
+              {
+                "initArgs": [100],
+                "actions": [{ "kind": "setattr", "name": "fiyat", "value": -5 }],
+                "observe": { "kind": "attribute", "name": "fiyat" },
+                "exception": "ValueError",
+                "messagePattern": "pozitif"
+              },
+              {
+                "initArgs": [0],
+                "observe": { "kind": "attribute", "name": "fiyat" },
+                "exception": "ValueError",
+                "messagePattern": "pozitif"
+              }
+            ],
+            "label": "Gizli property senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AGüncel fiyat:\\s*120\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.oop.object-collaboration",
+      "moduleId": "oop-basics",
+      "order": 6,
+      "title": "Nesneleri birlikte çalıştır",
+      "summary": "Bir sınıf başka sınıflardan nesneler oluşturarak daha büyük bir domain davranışını küçük sorumluluklara ayırabilir.",
+      "levelLabel": "Object Modeling Lab",
+      "mode": "code",
+      "task": {
+        "title": "Urun nesnelerini yöneten bir Sepet modeli oluştur",
+        "instructions": [
+          "Urun sınıfını ad, fiyat ve adet bilgileriyle oluştur.",
+          "Urun.toplam() metodunda fiyat * adet sonucunu return et.",
+          "Sepet.urun_ekle() içinde yeni bir Urun nesnesi oluşturup listeye ekle.",
+          "Sepet.toplam() içinde bütün Urun nesnelerinin toplamını hesapla."
+        ],
+        "requirements": [
+          "Sepet içinde _urunler adlı instance listesi bulunmalı.",
+          "urun_ekle(ad, fiyat, adet) gerçek Urun nesnesi oluşturmalı.",
+          "İki Sepet nesnesi birbirinden bağımsız çalışmalı."
+        ],
+        "sampleOutput": "Nesne sepeti: 135 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Urun:\n    # Urun modelini buraya yaz\n    pass\n\nclass Sepet:\n    # Sepet modelini buraya yaz\n    pass\n\nsepet = Sepet()\nsepet.urun_ekle(\"Defter\", 45, 2)\nsepet.urun_ekle(\"Kalem\", 15, 3)\nprint(f\"Nesne sepeti: {sepet.toplam()} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Urun sorumluluğu",
+          "body": "Urun yalnız kendi ad, fiyat ve adet verisini ve toplam() hesabını yönetmeli."
+        },
+        {
+          "title": "Sepet composition kullanır",
+          "body": "urun_ekle içinde self._urunler.append(Urun(ad, fiyat, adet)) yap."
+        },
+        {
+          "title": "Nesneleri topla",
+          "body": "return sum(urun.toplam() for urun in self._urunler) ifadesi kullanılabilir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.object-collaboration",
+        "title": "Urun nesnelerini yöneten bir Sepet modeli oluştur",
+        "xpReward": 110,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "product-model",
+            "kind": "class_definition",
+            "name": "Urun",
+            "minInitParams": 3,
+            "maxInitParams": 3,
+            "requiredMethods": ["__init__", "toplam"],
+            "requiredAttributes": ["ad", "fiyat", "adet"],
+            "label": "Urun modeli doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "cart-model",
+            "kind": "class_definition",
+            "name": "Sepet",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "urun_ekle", "toplam"],
+            "requiredAttributes": ["_urunler"],
+            "label": "Sepet modeli doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "cart-object-cases",
+            "kind": "class_cases",
+            "name": "Sepet",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "urun_ekle", "args": ["Defter", 45, 2] },
+                  { "kind": "call", "name": "urun_ekle", "args": ["Kalem", 15, 3] }
+                ],
+                "observe": { "kind": "method", "name": "toplam", "args": [] },
+                "expected": 135
+              },
+              {
+                "initArgs": [],
+                "observe": { "kind": "method", "name": "toplam", "args": [] },
+                "expected": 0
+              }
+            ],
+            "label": "Gizli nesne işbirliği senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ANesne sepeti:\\s*135\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.oop.store-domain-project",
+      "moduleId": "oop-basics",
+      "order": 7,
+      "title": "Final proje: Mağaza domain modeli",
+      "summary": "Sorumlulukları ayrı dosyalardaki sınıflara bölerek ürün, stok ve satış davranışlarını gerçek bir domain modeli olarak kur.",
+      "levelLabel": "Object Modeling Project",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Mağaza Domain Modeli v1",
+        "sourceShape": "urun_ekle(ad, fiyat, stok) + satis_yap(ad, adet)",
+        "targetShape": "{urun_sayisi, toplam_stok, toplam_ciro, kritik_urunler}",
+        "deliverables": [
+          "models.py içinde kapsüllenmiş Urun sınıfı",
+          "magaza.py içinde Urun nesnelerini yöneten Magaza sınıfı",
+          "main.py içinde gerçek domain akışı ve rapor çıktısı"
+        ],
+        "rules": [
+          "Fiyat property setter ile pozitif tutulmalıdır.",
+          "Stok azaltma yetersiz stokta ValueError üretmelidir.",
+          "Magaza ürünleri adlarına göre nesne olarak saklamalıdır.",
+          "Rapor kritik ürünleri alfabetik sırayla döndürmelidir."
+        ],
+        "workflow": [
+          "Önce Urun sınıfının veri ve stok davranışını tamamla.",
+          "Magaza sınıfında ürün ekleme ve satış akışını kur.",
+          "Satışlarda toplam ciroyu güncelle.",
+          "Domain nesnelerinden özet rapor üretip main.py içinde yazdır."
+        ]
+      },
+      "task": {
+        "title": "Çok dosyalı mağaza nesne modelini tamamla",
+        "instructions": [
+          "models.py içindeki Urun sınıfını property ve stok davranışıyla tamamla.",
+          "magaza.py içindeki Magaza sınıfını Urun nesnelerini yönetecek şekilde tamamla.",
+          "urun_ekle, satis_yap ve rapor metotlarını yeniden kullanılabilir kur.",
+          "main.py akışını çalıştırıp raporu belirtilen biçimde üret."
+        ],
+        "requirements": [
+          "Urun ve Magaza farklı dosyalarda tanımlanmalı.",
+          "Magaza, models.Urun sınıfını import edip gerçek nesneler oluşturmalı.",
+          "Geçersiz fiyat ve yetersiz stok ValueError üretmeli.",
+          "Gizli mağaza senaryolarında aynı domain sözleşmesi korunmalı."
+        ],
+        "sampleOutput": "Ürün sayısı: 3\nToplam stok: 14\nToplam ciro: 150\nKritik ürünler: Çanta, Defter",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from magaza import Magaza\n\nmagaza = Magaza()\nmagaza.urun_ekle(\"Defter\", 45, 5)\nmagaza.urun_ekle(\"Kalem\", 15, 12)\nmagaza.urun_ekle(\"Çanta\", 320, 2)\nmagaza.satis_yap(\"Defter\", 2)\nmagaza.satis_yap(\"Kalem\", 4)\n\nrapor = magaza.rapor(kritik_esik=4)\nprint(f\"Ürün sayısı: {rapor['urun_sayisi']}\")\nprint(f\"Toplam stok: {rapor['toplam_stok']}\")\nprint(f\"Toplam ciro: {rapor['toplam_ciro']}\")\nprint(f\"Kritik ürünler: {', '.join(rapor['kritik_urunler'])}\")",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from magaza import Magaza\n\nmagaza = Magaza()\nmagaza.urun_ekle(\"Defter\", 45, 5)\nmagaza.urun_ekle(\"Kalem\", 15, 12)\nmagaza.urun_ekle(\"Çanta\", 320, 2)\nmagaza.satis_yap(\"Defter\", 2)\nmagaza.satis_yap(\"Kalem\", 4)\n\nrapor = magaza.rapor(kritik_esik=4)\nprint(f\"Ürün sayısı: {rapor['urun_sayisi']}\")\nprint(f\"Toplam stok: {rapor['toplam_stok']}\")\nprint(f\"Toplam ciro: {rapor['toplam_ciro']}\")\nprint(f\"Kritik ürünler: {', '.join(rapor['kritik_urunler'])}\")"
+          },
+          {
+            "path": "models.py",
+            "starterCode": "class Urun:\n    # __init__, fiyat property/setter ve stok_azalt metotlarını tamamla\n    pass"
+          },
+          {
+            "path": "magaza.py",
+            "starterCode": "from models import Urun\n\nclass Magaza:\n    # __init__, urun_ekle, satis_yap ve rapor metotlarını tamamla\n    pass"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Urun sorumluluğu",
+          "body": "Urun ad, fiyat, stok verisini saklamalı; stok_azalt(adet) başarılıysa stok değerini azaltıp satış tutarını return etmelidir."
+        },
+        {
+          "title": "Magaza koleksiyonu",
+          "body": "self._urunler = {} ve self._toplam_ciro = 0 ile başla; ürünleri ad anahtarıyla sakla."
+        },
+        {
+          "title": "Rapor",
+          "body": "Toplam stok için Urun nesnelerinin stoklarını topla; kritik ürünleri stok < kritik_esik koşuluyla sorted() et."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.oop.store-domain-project",
+        "title": "Çok dosyalı mağaza nesne modelini tamamla",
+        "xpReward": 180,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "models-file",
+            "kind": "file_exists",
+            "path": "models.py",
+            "label": "models.py proje içinde",
+            "visibility": "visible"
+          },
+          {
+            "id": "store-file",
+            "kind": "file_exists",
+            "path": "magaza.py",
+            "label": "magaza.py proje içinde",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-domain-class",
+            "kind": "class_definition",
+            "name": "Urun",
+            "file": "models.py",
+            "minInitParams": 3,
+            "maxInitParams": 3,
+            "requiredMethods": ["__init__", "stok_azalt"],
+            "requiredProperties": ["fiyat"],
+            "requiredSetters": ["fiyat"],
+            "requiredAttributes": ["ad", "_fiyat", "stok"],
+            "label": "Urun domain modeli doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "store-domain-class",
+            "kind": "class_definition",
+            "name": "Magaza",
+            "file": "magaza.py",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "urun_ekle", "satis_yap", "rapor"],
+            "requiredAttributes": ["_urunler", "_toplam_ciro"],
+            "label": "Magaza domain modeli doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-import",
+            "kind": "import_statement",
+            "module": "models",
+            "name": "Urun",
+            "file": "magaza.py",
+            "label": "Magaza Urun modelini import ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "product-domain-cases",
+            "kind": "class_cases",
+            "name": "Urun",
+            "module": "models",
+            "cases": [
+              {
+                "initArgs": ["Defter", 45, 5],
+                "actions": [{ "kind": "call", "name": "stok_azalt", "args": [2] }],
+                "observe": { "kind": "attribute", "name": "stok" },
+                "expected": 3
+              },
+              {
+                "initArgs": ["Defter", 45, 1],
+                "actions": [{ "kind": "call", "name": "stok_azalt", "args": [2] }],
+                "observe": { "kind": "attribute", "name": "stok" },
+                "exception": "ValueError",
+                "messagePattern": "stok"
+              },
+              {
+                "initArgs": ["Defter", -5, 3],
+                "observe": { "kind": "attribute", "name": "fiyat" },
+                "exception": "ValueError",
+                "messagePattern": "fiyat"
+              }
+            ],
+            "label": "Gizli Urun domain senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "store-domain-cases",
+            "kind": "class_cases",
+            "name": "Magaza",
+            "module": "magaza",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "urun_ekle", "args": ["Defter", 45, 5] },
+                  { "kind": "call", "name": "urun_ekle", "args": ["Kalem", 15, 12] },
+                  { "kind": "call", "name": "satis_yap", "args": ["Defter", 2] }
+                ],
+                "observe": { "kind": "method", "name": "rapor", "args": [4] },
+                "expected": {
+                  "urun_sayisi": 2,
+                  "toplam_stok": 15,
+                  "toplam_ciro": 90,
+                  "kritik_urunler": ["Defter"]
+                }
+              },
+              {
+                "initArgs": [],
+                "observe": { "kind": "method", "name": "rapor", "args": [5] },
+                "expected": {
+                  "urun_sayisi": 0,
+                  "toplam_stok": 0,
+                  "toplam_ciro": 0,
+                  "kritik_urunler": []
+                }
+              }
+            ],
+            "label": "Gizli mağaza domain senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AÜrün sayısı:\\s*3\\s*\\nToplam stok:\\s*13\\s*\\nToplam ciro:\\s*150\\s*\\nKritik ürünler:\\s*Çanta,\\s*Defter\\s*\\Z",
+            "flags": "i",
+            "label": "Gizli final proje çıktısı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
