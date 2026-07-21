@@ -16,6 +16,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "code-completion",
   "debugging",
   "code-ordering",
+  "refactoring",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -159,6 +160,29 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       candidate.debugging.workflow.some((step) => typeof step !== "string")
     ) {
       throw new Error(`${candidate.id} hata ayıklama rehberi eksik.`);
+    }
+  }
+
+  if (mode === "refactoring") {
+    if (
+      !candidate.refactoring ||
+      typeof candidate.refactoring.problem !== "string" ||
+      typeof candidate.refactoring.goal !== "string" ||
+      !Array.isArray(candidate.refactoring.workflow) ||
+      candidate.refactoring.workflow.length < 2 ||
+      candidate.refactoring.workflow.some((step) => typeof step !== "string")
+    ) {
+      throw new Error(`${candidate.id} refactoring rehberi eksik.`);
+    }
+
+    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_definition",
+    );
+    const hasFunctionCasesCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_cases",
+    );
+    if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck) {
+      throw new Error(`${candidate.id} refactoring görevi fonksiyon kontrolleri içermiyor.`);
     }
   }
 }
