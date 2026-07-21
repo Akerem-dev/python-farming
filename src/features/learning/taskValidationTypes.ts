@@ -47,6 +47,7 @@ export type TaskCheck =
   | (TaskCheckBase & {
       kind: "function_cases";
       name: string;
+      preserveArgs?: boolean;
       cases: Array<{
         args: TaskCaseValue[];
         expected: TaskCaseValue;
