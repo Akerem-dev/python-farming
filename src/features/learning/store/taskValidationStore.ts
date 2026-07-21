@@ -1,5 +1,7 @@
 import { create } from "zustand";
+import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
 import { validateOrderAnswer } from "../services/orderValidationService";
+import { validateProjectTask } from "../services/projectTaskValidationService";
 import {
   splitStdinText,
   validateChoiceAnswer,
@@ -26,8 +28,8 @@ interface TaskValidationStore {
   setSelectedOptionId: (value: string | null) => void;
   moveOrderedBlock: (blockId: string, direction: OrderMoveDirection) => void;
   validateTask: (
-    source: string,
-    filename: string,
+    files: RuntimeSourceFile[],
+    entrypoint: string,
     spec: TaskValidationSpec,
   ) => Promise<TaskValidationResult | null>;
   clearResult: () => void;
@@ -64,6 +66,18 @@ function clearedValidationState() {
   };
 }
 
+function requiresProjectValidation(files: RuntimeSourceFile[], spec: TaskValidationSpec) {
+  return (
+    files.length > 1 ||
+    spec.checks.some((check) =>
+      check.kind === "file_exists" ||
+      check.kind === "import_statement" ||
+      ("file" in check && Boolean(check.file)) ||
+      (check.kind === "function_cases" && Boolean(check.module)),
+    )
+  );
+}
+
 export const useTaskValidationStore = create<TaskValidationStore>((set, get) => ({
   ...sessionState(),
 
@@ -96,7 +110,7 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
       return { orderedBlockIds, ...clearedValidationState() };
     }),
 
-  validateTask: async (source, filename, spec) => {
+  validateTask: async (files, entrypoint, spec) => {
     if (get().status === "checking") {
       return null;
     }
@@ -109,17 +123,29 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
     });
 
     try {
+      const entrypointFile = files.find((file) => file.path === entrypoint) ?? files[0];
+      if (!entrypointFile) {
+        throw new Error("Kontrol edilecek Python dosyası bulunamadı.");
+      }
+
       const result =
         spec.answer?.kind === "choice"
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : await validateTaskSource({
-                source,
-                filename,
-                stdin: splitStdinText(get().stdinText),
-                spec,
-              });
+            : requiresProjectValidation(files, spec)
+              ? await validateProjectTask({
+                  files,
+                  entrypoint,
+                  stdin: splitStdinText(get().stdinText),
+                  spec,
+                })
+              : await validateTaskSource({
+                  source: entrypointFile.content,
+                  filename: entrypointFile.path,
+                  stdin: splitStdinText(get().stdinText),
+                  spec,
+                });
 
       set({
         status: result.passed ? "passed" : "failed",
@@ -127,7 +153,6 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
         errorMessage: null,
         isCompletionOpen: result.passed,
       });
-
       return result;
     } catch (error) {
       set({
