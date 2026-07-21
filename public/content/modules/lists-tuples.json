@@ -1,0 +1,375 @@
+{
+  "moduleId": "lists-tuples",
+  "lessons": [
+    {
+      "id": "beginner.lists-tuples.indexing",
+      "moduleId": "lists-tuples",
+      "order": 1,
+      "title": "Listeler ve indeksler",
+      "summary": "Listeler birden fazla değeri sıralı biçimde saklar; her elemana sıfırdan başlayan indekslerle erişilir.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "İlk ve son ürünü seç",
+        "instructions": [
+          "urunler adlı üç elemanlı bir liste oluştur.",
+          "ilk_urun değişkenine ilk elemanı indeksle.",
+          "son_urun değişkenine negatif indeksle son elemanı al.",
+          "İki ürünü belirtilen biçimde yazdır."
+        ],
+        "requirements": [
+          "urunler gerçek bir list olmalı.",
+          "En az iki Subscript yapısı kullanılmalı.",
+          "Son elemana -1 indeksiyle erişilmeli."
+        ],
+        "sampleOutput": "İlk: Defter\nSon: Çanta",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "urunler = [\"Defter\", \"Kalem\", \"Çanta\"]\n\nilk_urun = \"\"\nson_urun = \"\"\n\nprint(f\"İlk: {ilk_urun}\")\nprint(f\"Son: {son_urun}\")"
+      },
+      "hints": [
+        { "title": "İlk indeks sıfırdır", "body": "İlk eleman urunler[0] ile alınır." },
+        { "title": "Negatif indeksler sondan başlar", "body": "Son eleman için urunler[-1] kullan." },
+        { "title": "Atamaları tamamla", "body": "ilk_urun = urunler[0] ve son_urun = urunler[-1] yaz." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.indexing",
+        "title": "İlk ve son ürünü seç",
+        "xpReward": 45,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "products-list", "kind": "variable_type", "name": "urunler", "expectedType": "list", "label": "urunler bir liste", "visibility": "visible" },
+          { "id": "subscript-count", "kind": "node_count", "nodeName": "Subscript", "min": 2, "label": "İndeksleme kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\Aİlk:\\s*Defter\\s*\\nSon:\\s*Çanta\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.slicing-prediction",
+      "moduleId": "lists-tuples",
+      "order": 2,
+      "title": "Slicing sonucunu tahmin et",
+      "summary": "Slicing, bir listenin başlangıç ve bitiş indeksleri arasındaki bölümünden yeni bir liste üretir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında hangi liste yazdırılır?",
+        "options": [
+          { "id": "answer-bc", "label": "['B', 'C']" },
+          { "id": "answer-bcd", "label": "['B', 'C', 'D']" },
+          { "id": "answer-abc", "label": "['A', 'B', 'C']" },
+          { "id": "answer-cd", "label": "['C', 'D']" }
+        ]
+      },
+      "task": {
+        "title": "Başlangıç dahil, bitiş hariç kuralını uygula",
+        "instructions": [
+          "1 başlangıç indeksinin dahil olduğunu düşün.",
+          "3 bitiş indeksinin listeye dahil edilmediğini unutma.",
+          "Doğru iki elemanlı listeyi seç."
+        ],
+        "requirements": [
+          "Kod çalıştırılmadan tahmin yapılmalı.",
+          "Slicing sınırları doğru yorumlanmalı.",
+          "Yalnız bir seçenek işaretlenmeli."
+        ],
+        "sampleOutput": "İki elemanlı bir Python listesi",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "harfler = [\"A\", \"B\", \"C\", \"D\"]\nprint(harfler[1:3])"
+      },
+      "hints": [
+        { "title": "Başlangıç dahil", "body": "1 indeksindeki B sonucu dahil edilir." },
+        { "title": "Bitiş hariç", "body": "3 indeksindeki D sonucu dahil edilmez." },
+        { "title": "Aradaki elemanlar", "body": "1 ve 2 indekslerindeki B ile C kalır." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.slicing-prediction",
+        "title": "Slicing sonucunu tahmin et",
+        "xpReward": 40,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": { "kind": "choice", "correctOptionId": "answer-bc" }
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.methods",
+      "moduleId": "lists-tuples",
+      "order": 3,
+      "title": "Liste metotlarını tamamla",
+      "summary": "append(), remove() ve sort() gibi metotlar listenin içeriğini doğrudan değiştirebilir.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Görev listesini güncelle ve sırala",
+        "instructions": [
+          "İlk yer tutucuda listeye Test yazısını ekle.",
+          "İkinci yer tutucuda Tasarım elemanını kaldır.",
+          "Üçüncü yer tutucuda listeyi alfabetik sırala.",
+          "Son listeyi ekrana yazdır."
+        ],
+        "requirements": [
+          "append(), remove() ve sort() kullanılmalı.",
+          "Liste üç eleman içermeli.",
+          "Çıktı alfabetik sırada olmalı."
+        ],
+        "sampleOutput": "['Kod', 'Test', 'Yayınla']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "gorevler = [\"Kod\", \"Tasarım\", \"Yayınla\"]\n\ngorevler.__EKLE__(\"Test\")\ngorevler.__KALDIR__(\"Tasarım\")\ngorevler.__SIRALA__()\n\nprint(gorevler)"
+      },
+      "hints": [
+        { "title": "Listeye ekleme", "body": "Listenin sonuna eleman eklemek için append kullan." },
+        { "title": "Değere göre silme", "body": "Belirli bir değeri kaldırmak için remove kullan." },
+        { "title": "Yerinde sıralama", "body": "Listeyi değiştiren sort() metodunu çağır." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.methods",
+        "title": "Görev listesini güncelle ve sırala",
+        "xpReward": 50,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "append-call", "kind": "call", "name": "append", "label": "append() kullanıldı", "visibility": "visible" },
+          { "id": "remove-call", "kind": "call", "name": "remove", "label": "remove() kullanıldı", "visibility": "visible" },
+          { "id": "sort-call", "kind": "call", "name": "sort", "label": "sort() kullanıldı", "visibility": "visible" },
+          { "id": "tasks-type", "kind": "variable_type", "name": "gorevler", "expectedType": "list", "label": "Gizli liste testi", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A\\['Kod', 'Test', 'Yayınla'\\]\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.tuple-debugging",
+      "moduleId": "lists-tuples",
+      "order": 4,
+      "title": "Hata Avcısı: tuple değişmezliği",
+      "summary": "Tuple elemanları oluşturulduktan sonra doğrudan değiştirilemez; yeni bir tuple üretmek gerekir.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "TypeError",
+        "symptom": "Program bir tuple elemanına indeksle yeni değer atamaya çalışıyor.",
+        "workflow": [
+          "Kodu çalıştır ve traceback'in son satırındaki hata mesajını oku.",
+          "ayarlar[1] atamasının tuple üzerinde neden çalışmadığını belirle.",
+          "Slicing ve tuple birleştirme ile yeni ayarlar tuple'ı oluştur.",
+          "Türün tuple kaldığını ve çıktının doğru olduğunu kontrol et."
+        ]
+      },
+      "task": {
+        "title": "Tuple'ı değiştirmek yerine yenisini üret",
+        "instructions": [
+          "Başlangıç kodunu çalıştırıp TypeError hatasını gör.",
+          "Doğrudan indeks atamasını kaldır.",
+          "İlk elemanı, yeni dil değerini ve son kısmı birleştirerek yeni tuple oluştur.",
+          "Sonucu yazdırıp gizli tür testini geçir."
+        ],
+        "requirements": [
+          "ayarlar değişkeni tuple olarak kalmalı.",
+          "En az bir Slice yapısı kullanılmalı.",
+          "Sonuç ('dark', 'en', True) olmalı."
+        ],
+        "sampleOutput": "('dark', 'en', True)",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "ayarlar = (\"dark\", \"tr\", True)\n\nayarlar[1] = \"en\"\n\nprint(ayarlar)"
+      },
+      "hints": [
+        { "title": "Tuple değiştirilemez", "body": "Bir tuple elemanına doğrudan yeni değer atanamaz." },
+        { "title": "Tek elemanlı tuple virgül ister", "body": "Yeni dil parçasını (\"en\",) biçiminde yaz." },
+        { "title": "Parçaları birleştir", "body": "ayarlar = ayarlar[:1] + (\"en\",) + ayarlar[2:] kullanabilirsin." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.tuple-debugging",
+        "title": "Tuple'ı değiştirmek yerine yenisini üret",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "settings-tuple", "kind": "variable_type", "name": "ayarlar", "expectedType": "tuple", "label": "ayarlar tuple olarak korundu", "visibility": "visible" },
+          { "id": "slice-used", "kind": "node_count", "nodeName": "Slice", "min": 1, "label": "Slicing kullanıldı", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A\\('dark', 'en', True\\)\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.nested-lists",
+      "moduleId": "lists-tuples",
+      "order": 5,
+      "title": "İç içe listelerde gezin",
+      "summary": "Bir listenin elemanları başka listeler olabilir; içteki değere ulaşmak için indeksleme zincirlenir.",
+      "levelLabel": "Beginner Learning",
+      "mode": "code",
+      "task": {
+        "title": "Tablodan Kerem'in Python puanını bul",
+        "instructions": [
+          "veriler içindeki Kerem satırını indeksle.",
+          "Aynı satırdaki Python puanına ikinci indeksle eriş.",
+          "Puanı kerem_python değişkeninde sakla.",
+          "Belirtilen cümleyi yazdır."
+        ],
+        "requirements": [
+          "İç içe indeksleme kullanılmalı.",
+          "kerem_python sayısal olmalı.",
+          "Sonuç 92 olmalı."
+        ],
+        "sampleOutput": "Kerem Python: 92",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "veriler = [\n    [\"Ayşe\", 88, 95],\n    [\"Kerem\", 92, 84],\n    [\"Deniz\", 76, 90],\n]\n\nkerem_python = 0\n\nprint(f\"Kerem Python: {kerem_python}\")"
+      },
+      "hints": [
+        { "title": "Kerem ikinci satırda", "body": "Kerem satırı veriler[1] ile alınır." },
+        { "title": "Python puanı ikinci sütunda", "body": "Satır içindeki 92 değeri 1 indeksindedir." },
+        { "title": "İndeksleri zincirle", "body": "kerem_python = veriler[1][1] yaz." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.nested-lists",
+        "title": "Tablodan Kerem'in Python puanını bul",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "nested-subscript", "kind": "node_count", "nodeName": "Subscript", "min": 2, "label": "İç içe indeksleme kullanıldı", "visibility": "visible" },
+          { "id": "score-type", "kind": "variable_type", "name": "kerem_python", "expectedType": "int", "label": "Puan sayısal", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AKerem Python:\\s*92\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.data-transformation",
+      "moduleId": "lists-tuples",
+      "order": 6,
+      "title": "Fiyat listesini dönüştür",
+      "summary": "Gerçek veri işlerinde kaynak koleksiyon okunur, kurallar uygulanır ve yeni bir hedef koleksiyon üretilir.",
+      "levelLabel": "Data Transformation Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "sourceShape": "[100, 250, 400]  # vergisiz fiyatlar",
+        "targetShape": "[120, 300, 480]  # %20 vergi eklenmiş yeni liste",
+        "rules": [
+          "Kaynak fiyatlar listesi değiştirilmemeli.",
+          "Her fiyat 1.20 ile çarpılıp int değere dönüştürülmeli.",
+          "Sonuçlar yeni bir listede aynı sırayla tutulmalı."
+        ],
+        "workflow": [
+          "bos bir sonuc listesi oluştur ve kaynak liste üzerinde for döngüsü kur.",
+          "Her fiyat için int(fiyat * 1.20) değerini hesapla.",
+          "Dönüştürülen değeri append() ile yeni listeye ekle.",
+          "Yeni listeyi return et ve farklı gizli girdilerde sonucu doğrula."
+        ]
+      },
+      "task": {
+        "title": "Vergi ekleyen veri dönüşüm fonksiyonu yaz",
+        "instructions": [
+          "vergi_ekle(fiyatlar) adlı bir fonksiyon tanımla.",
+          "Fonksiyon içinde yeni bir sonuc listesi oluştur.",
+          "Her fiyatı %20 artırıp tam sayıya dönüştürerek sonuc listesine ekle.",
+          "Yeni listeyi return et; kaynak listeyi değiştirme."
+        ],
+        "requirements": [
+          "Fonksiyon bir parametre almalı ve list return etmeli.",
+          "Gerçek bir for döngüsü kullanılmalı.",
+          "append() ile yeni liste oluşturulmalı."
+        ],
+        "sampleOutput": "Kaynak: [100, 250, 400]\nHedef: [120, 300, 480]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def vergi_ekle(fiyatlar):\n    # Kaynak listeyi değiştirmeden yeni bir liste üret\n    pass\n\nkaynak = [100, 250, 400]\nhedef = vergi_ekle(kaynak)\n\nprint(f\"Kaynak: {kaynak}\")\nprint(f\"Hedef: {hedef}\")"
+      },
+      "hints": [
+        { "title": "Yeni liste oluştur", "body": "Fonksiyonun başında sonuc = [] yaz." },
+        { "title": "Her elemanı dönüştür", "body": "for fiyat in fiyatlar: altında int(fiyat * 1.20) hesapla." },
+        { "title": "Sonucu ekle ve döndür", "body": "sonuc.append(...) kullandıktan sonra döngü dışında return sonuc yaz." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.data-transformation",
+        "title": "Vergi ekleyen veri dönüşüm fonksiyonu yaz",
+        "xpReward": 70,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "define-transform", "kind": "function_definition", "name": "vergi_ekle", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "vergi_ekle() fonksiyonu doğru", "visibility": "visible" },
+          { "id": "for-loop", "kind": "node_count", "nodeName": "For", "min": 1, "label": "for döngüsü kullanıldı", "visibility": "visible" },
+          { "id": "append-call", "kind": "call", "name": "append", "label": "append() kullanıldı", "visibility": "visible" },
+          { "id": "transform-cases", "kind": "function_cases", "name": "vergi_ekle", "cases": [
+            { "args": [[100, 250, 400]], "expected": [120, 300, 480] },
+            { "args": [[50, 75]], "expected": [60, 90] },
+            { "args": [[]], "expected": [] }
+          ], "label": "Gizli dönüşüm testleri", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AKaynak:\\s*\\[100, 250, 400\\]\\s*\\nHedef:\\s*\\[120, 300, 480\\]\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "beginner.lists-tuples.final-challenge",
+      "moduleId": "lists-tuples",
+      "order": 7,
+      "title": "Listeler ve Tuple final görevi",
+      "summary": "İndeksleme, slicing, liste metotları ve tuple sonuçlarını tek bir koleksiyon özetleyicisinde birleştir.",
+      "levelLabel": "Chapter Challenge",
+      "mode": "code",
+      "task": {
+        "title": "Puan listesinden özet tuple üret",
+        "instructions": [
+          "puan_ozeti(puanlar) adlı bir fonksiyon yaz.",
+          "Fonksiyon en düşük, en yüksek ve eleman sayısını hesaplasın.",
+          "Bu üç değeri bir tuple olarak return et.",
+          "Hazır verilen liste için sonucu yazdır."
+        ],
+        "requirements": [
+          "Fonksiyon bir liste parametresi almalı.",
+          "min(), max() ve len() kullanılmalı.",
+          "Fonksiyon üç elemanlı bir tuple döndürmeli."
+        ],
+        "sampleOutput": "Özet: (72, 95, 4)",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Listeler ve Tuple bölüm finali\n\n# puan_ozeti fonksiyonunu buraya yaz\n\npuanlar = [88, 72, 95, 84]\nozet = puan_ozeti(puanlar)\n\nprint(f\"Özet: {ozet}\")"
+      },
+      "hints": [
+        { "title": "Üç hazır fonksiyon", "body": "min(puanlar), max(puanlar) ve len(puanlar) gereken değerleri verir." },
+        { "title": "Tuple parantezle oluşturulur", "body": "return (en_dusuk, en_yuksek, adet) yazabilirsin." },
+        { "title": "Tek ifadede de dönebilir", "body": "return (min(puanlar), max(puanlar), len(puanlar)) yeterlidir." }
+      ],
+      "validation": {
+        "id": "beginner.lists-tuples.final-challenge",
+        "title": "Puan listesinden özet tuple üret",
+        "xpReward": 80,
+        "timeoutMs": 4000,
+        "checks": [
+          { "id": "define-summary", "kind": "function_definition", "name": "puan_ozeti", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "puan_ozeti() fonksiyonu doğru", "visibility": "visible" },
+          { "id": "min-call", "kind": "call", "name": "min", "label": "min() kullanıldı", "visibility": "visible" },
+          { "id": "max-call", "kind": "call", "name": "max", "label": "max() kullanıldı", "visibility": "visible" },
+          { "id": "len-call", "kind": "call", "name": "len", "label": "len() kullanıldı", "visibility": "visible" },
+          { "id": "tuple-node", "kind": "node_count", "nodeName": "Tuple", "min": 1, "label": "Gizli tuple yapı testi", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AÖzet:\\s*\\(72, 95, 4\\)\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
