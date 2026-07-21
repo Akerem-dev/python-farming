@@ -47,6 +47,19 @@ export interface CurriculumGraduationGuide {
   criteria: string[];
 }
 
+export interface CurriculumEditorFile {
+  path: string;
+  starterCode: string;
+  readOnly?: boolean;
+}
+
+export interface CurriculumEditorWorkspace {
+  filename: string;
+  starterCode: string;
+  entrypoint?: string;
+  files?: CurriculumEditorFile[];
+}
+
 export interface CurriculumCatalog {
   version: number;
   levels: CurriculumLevel[];
@@ -105,10 +118,7 @@ export interface CurriculumLesson {
     stdinPlaceholder: string;
     defaultStdin: string;
   };
-  editor: {
-    filename: string;
-    starterCode: string;
-  };
+  editor: CurriculumEditorWorkspace;
   hints: Array<{
     title: string;
     body: string;
