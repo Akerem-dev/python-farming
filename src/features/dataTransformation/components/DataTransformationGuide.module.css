@@ -8,6 +8,11 @@
   background: rgba(86, 182, 194, 0.06);
 }
 
+.panel[data-project] {
+  border-color: rgba(198, 120, 221, 0.38);
+  background: linear-gradient(145deg, rgba(198, 120, 221, 0.08), rgba(86, 182, 194, 0.045));
+}
+
 .header {
   display: flex;
   align-items: center;
@@ -16,7 +21,8 @@
 }
 
 .header span,
-.rules > span {
+.rules > span,
+.deliverables > span {
   color: #78c8d2;
   font-size: 9px;
   font-weight: 760;
@@ -24,10 +30,16 @@
   text-transform: uppercase;
 }
 
+.panel[data-project] .header span,
+.panel[data-project] .deliverables > span {
+  color: #d7a1ec;
+}
+
 .header strong {
   color: var(--color-text-primary);
   font-family: var(--font-mono);
   font-size: 10px;
+  text-align: right;
 }
 
 .shapes {
@@ -69,17 +81,26 @@
   font-weight: 800;
 }
 
-.rules {
+.rules,
+.deliverables {
   display: grid;
   gap: 8px;
 }
 
-.rules ul {
+.rules ul,
+.deliverables ul {
   margin: 0;
   padding-left: 18px;
   color: var(--color-text-muted);
   font-size: 10px;
   line-height: 1.65;
+}
+
+.deliverables {
+  padding: var(--space-3);
+  border: 1px solid rgba(198, 120, 221, 0.25);
+  border-radius: var(--radius-sm);
+  background: rgba(198, 120, 221, 0.055);
 }
 
 .workflow {
@@ -103,6 +124,10 @@
   font-size: 9px;
 }
 
+.panel[data-project] .workflow li > span {
+  color: #d7a1ec;
+}
+
 .workflow p {
   margin: 0;
   color: var(--color-text-muted);
@@ -118,5 +143,14 @@
   .shapes i {
     justify-self: center;
     transform: rotate(90deg);
+  }
+
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .header strong {
+    text-align: left;
   }
 }
