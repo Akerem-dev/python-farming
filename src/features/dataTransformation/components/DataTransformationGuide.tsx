@@ -6,11 +6,17 @@ interface DataTransformationGuideProps {
 }
 
 export function DataTransformationGuide({ guide }: DataTransformationGuideProps) {
+  const isMiniProject = Boolean(guide.projectTitle);
+
   return (
-    <aside className={styles.panel} aria-label="Veri dönüştürme rehberi">
+    <aside
+      className={styles.panel}
+      data-project={isMiniProject || undefined}
+      aria-label={isMiniProject ? "Mini proje rehberi" : "Veri dönüştürme rehberi"}
+    >
       <div className={styles.header}>
-        <span>Veri Dönüştürme Laboratuvarı</span>
-        <strong>Kaynak → Hedef</strong>
+        <span>{isMiniProject ? "Mini Proje Laboratuvarı" : "Veri Dönüştürme Laboratuvarı"}</span>
+        <strong>{isMiniProject ? guide.projectTitle : "Kaynak → Hedef"}</strong>
       </div>
 
       <div className={styles.shapes}>
@@ -24,6 +30,17 @@ export function DataTransformationGuide({ guide }: DataTransformationGuideProps)
           <code>{guide.targetShape}</code>
         </div>
       </div>
+
+      {guide.deliverables?.length ? (
+        <div className={styles.deliverables}>
+          <span>Teslim çıktıları</span>
+          <ul>
+            {guide.deliverables.map((deliverable) => (
+              <li key={deliverable}>{deliverable}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
 
       <div className={styles.rules}>
         <span>Dönüşüm kuralları</span>
