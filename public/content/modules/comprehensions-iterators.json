@@ -1,0 +1,437 @@
+{
+  "moduleId": "comprehensions-iterators",
+  "lessons": [
+    {
+      "id": "intermediate.comprehensions.list-comprehension",
+      "moduleId": "comprehensions-iterators",
+      "order": 1,
+      "title": "Liste comprehension ile dönüştür",
+      "summary": "Liste comprehension, filtreleme ve dönüştürme işlemlerini okunabilir tek bir ifadede birleştirir.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "Çift sayıların karelerini üret",
+        "instructions": [
+          "cift_kareler adlı tek parametreli bir fonksiyon oluştur.",
+          "Yalnız çift sayıları seç.",
+          "Seçilen sayıların karelerini list comprehension ile üret.",
+          "Yeni listeyi return et."
+        ],
+        "requirements": [
+          "Gerçek ListComp AST yapısı kullanılmalı.",
+          "Fonksiyon kaynak listeyi değiştirmemeli.",
+          "Boş liste güvenle işlenmeli."
+        ],
+        "sampleOutput": "[4, 16, 36]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "sayilar = [1, 2, 3, 4, 5, 6]\n\n# cift_kareler fonksiyonunu buraya yaz\n\nprint(cift_kareler(sayilar))"
+      },
+      "hints": [
+        {
+          "title": "Comprehension sırası",
+          "body": "İfade önce, for bölümü sonra, filtre koşulu en sonda yazılır."
+        },
+        {
+          "title": "Çift sayı filtresi",
+          "body": "sayi % 2 == 0 koşulu yalnız çift değerleri seçer."
+        },
+        {
+          "title": "Tam ifade",
+          "body": "return [sayi ** 2 for sayi in sayilar if sayi % 2 == 0]"
+        }
+      ],
+      "validation": {
+        "id": "intermediate.comprehensions.list-comprehension",
+        "title": "Çift sayıların karelerini üret",
+        "xpReward": 60,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "define-even-squares", "kind": "function_definition", "name": "cift_kareler", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "cift_kareler() imzası doğru", "visibility": "visible" },
+          { "id": "list-comp", "kind": "node_count", "nodeName": "ListComp", "min": 1, "label": "Liste comprehension kullanıldı", "visibility": "visible" },
+          { "id": "even-square-cases", "kind": "function_cases", "name": "cift_kareler", "cases": [
+            { "args": [[1, 2, 3, 4, 5, 6]], "expected": [4, 16, 36] },
+            { "args": [[-4, -3, 0, 5]], "expected": [16, 0] },
+            { "args": [[]], "expected": [] }
+          ], "label": "Gizli liste senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A\\[4,\\s*16,\\s*36\\]\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.comprehensions.mapping-prediction",
+      "moduleId": "comprehensions-iterators",
+      "order": 2,
+      "title": "Dict comprehension çıktısını tahmin et",
+      "summary": "Sözlük comprehension, anahtar ve değerleri aynı dolaşım sırasında dönüştürüp filtreleyebilir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında hangi sözlük yazdırılır?",
+        "options": [
+          { "id": "answer-ada-ece", "label": "{'ADA': 80, 'ECE': 100}" },
+          { "id": "answer-all", "label": "{'ADA': 80, 'MERT': 45, 'ECE': 100}" },
+          { "id": "answer-values", "label": "{'Ada': 40, 'Ece': 50}" },
+          { "id": "answer-empty", "label": "{}" }
+        ]
+      },
+      "task": {
+        "title": "Filtre ve dönüşüm sırasını takip et",
+        "instructions": [
+          "items() ile gelen ad ve puan çiftlerini incele.",
+          "puan >= 40 filtresinin hangi öğrencileri tuttuğunu belirle.",
+          "Anahtarların upper(), değerlerin * 2 ile dönüştüğünü uygula."
+        ],
+        "requirements": [
+          "Kod çalıştırılmadan önce tahmin yapılmalı.",
+          "Filtre kaynak puana uygulanmalı.",
+          "Sözlük ekleme sırası korunmalı."
+        ],
+        "sampleOutput": "Tek satırda bir sözlük",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "notlar = {\"Ada\": 40, \"Mert\": 35, \"Ece\": 50}\n\nsonuc = {ad.upper(): puan * 2 for ad, puan in notlar.items() if puan >= 40}\nprint(sonuc)"
+      },
+      "hints": [
+        { "title": "Önce filtre", "body": "Mert'in puanı 40'ın altında olduğu için sözlüğe girmez." },
+        { "title": "Anahtar dönüşümü", "body": "Ada ve Ece isimleri upper() ile büyük harfe dönüşür." },
+        { "title": "Değer dönüşümü", "body": "40 iki katına 80, 50 iki katına 100 olur." }
+      ],
+      "validation": {
+        "id": "intermediate.comprehensions.mapping-prediction",
+        "title": "Dict comprehension çıktısını tahmin et",
+        "xpReward": 50,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": { "kind": "choice", "correctOptionId": "answer-ada-ece" }
+      }
+    },
+    {
+      "id": "intermediate.comprehensions.dict-set-completion",
+      "moduleId": "comprehensions-iterators",
+      "order": 3,
+      "title": "Dict ve set comprehension tamamla",
+      "summary": "Aynı veri kaynağından hem anahtar-değer haritası hem de benzersiz değer kümesi üretilebilir.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Stok haritası ve kategori kümesini tamamla",
+        "instructions": [
+          "stoklar değişkenindeki yer tutucuyu dict comprehension ile değiştir.",
+          "kategoriler değişkenindeki yer tutucuyu set comprehension ile değiştir.",
+          "Yalnız stoku sıfırdan büyük ürünleri stoklar sözlüğüne al.",
+          "Bütün benzersiz kategorileri kümeye alıp sorted() ile döndür."
+        ],
+        "requirements": [
+          "Bir DictComp ve bir SetComp bulunmalı.",
+          "stoklar ürün adı → stok sayısı yapısında olmalı.",
+          "Kategoriler alfabetik sıralı liste olmalı."
+        ],
+        "sampleOutput": "{'stoklar': {'Defter': 3, 'Çanta': 2}, 'kategoriler': ['Aksesuar', 'Kırtasiye']}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def envanter_ozeti(urunler):\n    stoklar = __DICT_COMPREHENSION__\n    kategoriler = __SET_COMPREHENSION__\n    return {\"stoklar\": stoklar, \"kategoriler\": sorted(kategoriler)}\n\nurunler = [\n    {\"ad\": \"Defter\", \"kategori\": \"Kırtasiye\", \"stok\": 3},\n    {\"ad\": \"Kalem\", \"kategori\": \"Kırtasiye\", \"stok\": 0},\n    {\"ad\": \"Çanta\", \"kategori\": \"Aksesuar\", \"stok\": 2},\n]\nprint(envanter_ozeti(urunler))"
+      },
+      "hints": [
+        { "title": "Sözlük comprehension", "body": "{urun['ad']: urun['stok'] for urun in urunler if urun['stok'] > 0}" },
+        { "title": "Küme comprehension", "body": "{urun['kategori'] for urun in urunler}" },
+        { "title": "Yer tutucuları sil", "body": "İki __...__ ifadesinin kodda kalmadığından emin ol." }
+      ],
+      "validation": {
+        "id": "intermediate.comprehensions.dict-set-completion",
+        "title": "Stok haritası ve kategori kümesini tamamla",
+        "xpReward": 65,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "define-inventory-summary", "kind": "function_definition", "name": "envanter_ozeti", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "envanter_ozeti() imzası doğru", "visibility": "visible" },
+          { "id": "dict-comp", "kind": "node_count", "nodeName": "DictComp", "min": 1, "label": "Dict comprehension kullanıldı", "visibility": "visible" },
+          { "id": "set-comp", "kind": "node_count", "nodeName": "SetComp", "min": 1, "label": "Set comprehension kullanıldı", "visibility": "visible" },
+          { "id": "inventory-cases", "kind": "function_cases", "name": "envanter_ozeti", "cases": [
+            { "args": [[{"ad":"Defter","kategori":"Kırtasiye","stok":3},{"ad":"Kalem","kategori":"Kırtasiye","stok":0},{"ad":"Çanta","kategori":"Aksesuar","stok":2}]], "expected": {"stoklar":{"Defter":3,"Çanta":2},"kategoriler":["Aksesuar","Kırtasiye"]} },
+            { "args": [[{"ad":"Mouse","kategori":"Teknoloji","stok":1}]], "expected": {"stoklar":{"Mouse":1},"kategoriler":["Teknoloji"]} },
+            { "args": [[]], "expected": {"stoklar":{},"kategoriler":[]} }
+          ], "label": "Gizli envanter senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "Defter.*3.*Çanta.*2.*Aksesuar.*Kırtasiye", "flags": "s", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.iterators.stop-iteration-debugging",
+      "moduleId": "comprehensions-iterators",
+      "order": 4,
+      "title": "Hata Avcısı: tükenen iterator",
+      "summary": "Bir iterator tükendiğinde sonraki next() çağrısı StopIteration üretir; bu durum açık ve dar bir exception ile yönetilmelidir.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "StopIteration",
+        "symptom": "İki elemanlı iterator üçüncü kez next() ile çağrıldığında program traceback ile duruyor.",
+        "workflow": [
+          "Kodu çalıştır ve traceback'in son satırındaki StopIteration türünü gör.",
+          "Üçüncü next() çağrısını try bloğuna al.",
+          "Yalnız StopIteration hatasını yakala ve Iterator tamamlandı. yazdır.",
+          "İlk iki çıktıyı değiştirmeden yeniden doğrula."
+        ]
+      },
+      "task": {
+        "title": "Iterator tükenmesini güvenli yönet",
+        "instructions": [
+          "Başlangıç kodunu önce çalıştır.",
+          "Üçüncü next() çağrısını try/except ile güvenli hâle getir.",
+          "except StopIteration: kullan.",
+          "Hata oluştuğunda Iterator tamamlandı. yazdır."
+        ],
+        "requirements": [
+          "iter() en az bir kez kullanılmalı.",
+          "next() üç kez bulunmalı.",
+          "Çıplak except kullanılmamalı.",
+          "StopIteration açıkça yakalanmalı."
+        ],
+        "sampleOutput": "Python\nFarming\nIterator tamamlandı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "kelimeler = iter([\"Python\", \"Farming\"])\n\nprint(next(kelimeler))\nprint(next(kelimeler))\nprint(next(kelimeler))"
+      },
+      "hints": [
+        { "title": "Tükenen iterator", "body": "İki eleman tüketildikten sonra üçüncü next() StopIteration üretir." },
+        { "title": "Dar hata türü", "body": "except StopIteration: yazarak yalnız beklenen iterator sonunu yakala." },
+        { "title": "En küçük düzeltme", "body": "Yalnız üçüncü print(next(...)) satırını try bloğuna taşı." }
+      ],
+      "validation": {
+        "id": "intermediate.iterators.stop-iteration-debugging",
+        "title": "Iterator tükenmesini güvenli yönet",
+        "xpReward": 75,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "iter-call", "kind": "call_count", "name": "iter", "min": 1, "label": "iter() kullanıldı", "visibility": "visible" },
+          { "id": "next-calls", "kind": "call_count", "name": "next", "min": 3, "max": 3, "label": "next() üç kez kullanıldı", "visibility": "visible" },
+          { "id": "stop-iteration-handler", "kind": "exception_handling", "requiredTypes": ["StopIteration"], "disallowBareExcept": true, "label": "StopIteration açıkça yönetildi", "visibility": "visible" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\APython\\s*\\nFarming\\s*\\nIterator tamamlandı\\.\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.iterators.generator-expression",
+      "moduleId": "comprehensions-iterators",
+      "order": 5,
+      "title": "Generator expression ile lazy hesapla",
+      "summary": "Generator expression değerleri topluca listeye yüklemek yerine ihtiyaç oldukça üretir.",
+      "levelLabel": "Lazy Data Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Lazy Ciro Filtresi",
+        "sourceShape": "[{tutar}, {tutar}, ...]",
+        "targetShape": "Filtrelenmiş tutarların toplamı",
+        "deliverables": [
+          "toplam_ciro(satislar, min_tutar=0) fonksiyonu",
+          "Liste oluşturmadan GeneratorExp ile filtreleme",
+          "Farklı eşik değerlerinde doğru toplam"
+        ],
+        "rules": [
+          "min_tutar altındaki satışlar akışa girmemelidir.",
+          "Ara sonuç listesi oluşturulmamalıdır.",
+          "Boş satış listesi 0 döndürmelidir."
+        ],
+        "workflow": [
+          "Her satıştan tutar değerini üreten generator expression yaz.",
+          "if filtresiyle yalnız eşik üstü tutarları akışta bırak.",
+          "Generator'ı sum() ile tüket.",
+          "Farklı eşikler ve boş veriyle sonucu doğrula."
+        ]
+      },
+      "task": {
+        "title": "Liste oluşturmadan satış toplamı hesapla",
+        "instructions": [
+          "toplam_ciro adlı, satislar ve min_tutar=0 parametreli fonksiyon oluştur.",
+          "Generator expression içinde satış tutarlarını filtrele.",
+          "sum() ile akışı tüketip sonucu return et."
+        ],
+        "requirements": [
+          "Gerçek GeneratorExp kullanılmalı.",
+          "Fonksiyon bir varsayılan parametre içermeli.",
+          "ListComp kullanılmamalı."
+        ],
+        "sampleOutput": "Toplam ciro: 570 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "satislar = [{\"tutar\": 120}, {\"tutar\": 80}, {\"tutar\": 450}]\n\n# toplam_ciro fonksiyonunu generator expression ile yaz\n\nprint(f\"Toplam ciro: {toplam_ciro(satislar, 100)} TL\")"
+      },
+      "hints": [
+        { "title": "Köşeli parantez kullanma", "body": "Generator expression normal parantezle yazılır: (... for ...)." },
+        { "title": "Filtre", "body": "if satis['tutar'] >= min_tutar koşulunu expression sonuna ekle." },
+        { "title": "Doğrudan tüket", "body": "return sum(satis['tutar'] for satis in satislar if satis['tutar'] >= min_tutar)" }
+      ],
+      "validation": {
+        "id": "intermediate.iterators.generator-expression",
+        "title": "Liste oluşturmadan satış toplamı hesapla",
+        "xpReward": 80,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "define-revenue", "kind": "function_definition", "name": "toplam_ciro", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "label": "toplam_ciro() imzası doğru", "visibility": "visible" },
+          { "id": "generator-exp", "kind": "node_count", "nodeName": "GeneratorExp", "min": 1, "label": "Generator expression kullanıldı", "visibility": "visible" },
+          { "id": "no-list-comp", "kind": "node_count", "nodeName": "ListComp", "min": 0, "max": 0, "label": "Ara liste comprehension oluşturulmadı", "visibility": "visible" },
+          { "id": "revenue-cases", "kind": "function_cases", "name": "toplam_ciro", "cases": [
+            { "args": [[{"tutar":120},{"tutar":80},{"tutar":450}],100], "expected": 570 },
+            { "args": [[{"tutar":50},{"tutar":75}]], "expected": 125 },
+            { "args": [[],100], "expected": 0 }
+          ], "label": "Gizli satış akışları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AToplam ciro:\\s*570\\s*TL\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.iterators.custom-iterator",
+      "moduleId": "comprehensions-iterators",
+      "order": 6,
+      "title": "Özel iterator sınıfı oluştur",
+      "summary": "Iterator protokolü __iter__ ve __next__ metotlarıyla tanımlanır; akış bittiğinde StopIteration fırlatılır.",
+      "levelLabel": "Iterator Protocol Lab",
+      "mode": "code",
+      "task": {
+        "title": "GeriSayim iterator sınıfını yaz",
+        "instructions": [
+          "GeriSayim adlı bir sınıf oluştur ve başlangıç sayısını sakla.",
+          "__iter__ metodundan self döndür.",
+          "__next__ içinde mevcut değeri döndürüp sayacı azalt.",
+          "Sayaç sıfırın altına indiğinde StopIteration fırlat.",
+          "geri_say(limit) fonksiyonundan iterator sonucunu liste olarak döndür."
+        ],
+        "requirements": [
+          "ClassDef, __iter__, __next__ ve raise bulunmalı.",
+          "StopIteration doğru noktada fırlatılmalı.",
+          "Farklı başlangıç değerlerinde yeniden çalışmalı."
+        ],
+        "sampleOutput": "[3, 2, 1, 0]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# GeriSayim sınıfını ve geri_say fonksiyonunu yaz\n\nprint(geri_say(3))"
+      },
+      "hints": [
+        { "title": "Iterator kendisini döndürür", "body": "def __iter__(self): return self" },
+        { "title": "Önce bitiş kontrolü", "body": "if self.mevcut < 0: raise StopIteration yaz." },
+        { "title": "Değeri sakla ve azalt", "body": "deger = self.mevcut; self.mevcut -= 1; return deger sırasını kullan." }
+      ],
+      "validation": {
+        "id": "intermediate.iterators.custom-iterator",
+        "title": "GeriSayim iterator sınıfını yaz",
+        "xpReward": 105,
+        "timeoutMs": 5000,
+        "checks": [
+          { "id": "class-definition", "kind": "node_count", "nodeName": "ClassDef", "min": 1, "label": "Iterator sınıfı oluşturuldu", "visibility": "visible" },
+          { "id": "iter-method", "kind": "function_definition", "name": "__iter__", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "__iter__() tanımlandı", "visibility": "visible" },
+          { "id": "next-method", "kind": "function_definition", "name": "__next__", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "__next__() tanımlandı", "visibility": "visible" },
+          { "id": "raise-stop", "kind": "node_count", "nodeName": "Raise", "min": 1, "label": "Iterator bitişi raise ile bildirildi", "visibility": "visible" },
+          { "id": "define-countdown", "kind": "function_definition", "name": "geri_say", "minParams": 1, "maxParams": 1, "requireReturn": true, "label": "geri_say() tanımlandı", "visibility": "visible" },
+          { "id": "countdown-cases", "kind": "function_cases", "name": "geri_say", "cases": [
+            { "args": [3], "expected": [3,2,1,0] },
+            { "args": [1], "expected": [1,0] },
+            { "args": [0], "expected": [0] }
+          ], "label": "Gizli iterator senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A\\[3,\\s*2,\\s*1,\\s*0\\]\\s*\\Z", "label": "Gizli çıktı testi", "visibility": "hidden" }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.iterators.lazy-stream-final",
+      "moduleId": "comprehensions-iterators",
+      "order": 7,
+      "title": "Final proje: Lazy satış akışı",
+      "summary": "yield ile satışları ihtiyaç oldukça üreten bir akış kur ve bu akışı bellekte ikinci bir liste oluşturmadan raporla.",
+      "levelLabel": "Streaming Project Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Lazy Satış Akışı v1",
+        "sourceShape": "[{urun, kategori, tutar, aktif}, ...]",
+        "targetShape": "{satis_sayisi, toplam_ciro, kategoriler}",
+        "deliverables": [
+          "gecerli_satislar() generator fonksiyonu",
+          "satis_raporu() tüketici ve raporlama fonksiyonu",
+          "Aktiflik ve minimum tutar filtresi",
+          "Bellekte ara satış listesi oluşturmayan pipeline"
+        ],
+        "rules": [
+          "Yalnız aktif ve min_tutar eşiğine ulaşan satışlar yield edilmelidir.",
+          "Kategori tekrarları set ile kaldırılmalıdır.",
+          "Boş akış sıfır değerli rapor döndürmelidir.",
+          "Kaynak satış listesi değiştirilmemelidir."
+        ],
+        "workflow": [
+          "gecerli_satislar içinde kaynak veriyi tek tek dolaş.",
+          "Koşulu sağlayan satışları yield ile üret.",
+          "satis_raporu içinde generator akışını yalnız bir kez tüket.",
+          "Sayaç, ciro ve kategori kümesini güncelleyip sözlük döndür."
+        ]
+      },
+      "task": {
+        "title": "Yield tabanlı satış raporlama pipeline'ı kur",
+        "instructions": [
+          "gecerli_satislar(satislar, min_tutar=0) generator fonksiyonunu yaz.",
+          "Yalnız aktif ve eşik üstü satışları yield et.",
+          "satis_raporu(satislar, min_tutar=0) fonksiyonunda akışı tüket.",
+          "Satış sayısı, toplam ciro ve sıralı benzersiz kategorileri sözlük olarak döndür."
+        ],
+        "requirements": [
+          "Gerçek Yield AST yapısı bulunmalı.",
+          "İki fonksiyon da varsayılan min_tutar parametresine sahip olmalı.",
+          "Ara satış listesi veya ListComp kullanılmamalı.",
+          "Farklı ve boş satış verilerinde çalışmalı."
+        ],
+        "sampleOutput": "Satış sayısı: 2\nToplam ciro: 570 TL\nKategoriler: Aksesuar, Kırtasiye",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu final proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "satislar = [\n    {\"urun\": \"Defter\", \"kategori\": \"Kırtasiye\", \"tutar\": 120, \"aktif\": True},\n    {\"urun\": \"Kalem\", \"kategori\": \"Kırtasiye\", \"tutar\": 80, \"aktif\": False},\n    {\"urun\": \"Çanta\", \"kategori\": \"Aksesuar\", \"tutar\": 450, \"aktif\": True},\n]\n\n# gecerli_satislar ve satis_raporu fonksiyonlarını yaz\n\nrapor = satis_raporu(satislar, 100)\nprint(f\"Satış sayısı: {rapor['satis_sayisi']}\")\nprint(f\"Toplam ciro: {rapor['toplam_ciro']} TL\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")"
+      },
+      "hints": [
+        { "title": "Generator fonksiyonu", "body": "Döngü içinde koşul sağlandığında yield satis yaz." },
+        { "title": "Akışı tek kez tüket", "body": "for satis in gecerli_satislar(satislar, min_tutar): döngüsü kullan." },
+        { "title": "Rapor sözlüğü", "body": "Sayaç, toplam ve sorted(kategoriler) değerlerini tek sözlükte return et." }
+      ],
+      "validation": {
+        "id": "intermediate.iterators.lazy-stream-final",
+        "title": "Yield tabanlı satış raporlama pipeline'ı kur",
+        "xpReward": 145,
+        "timeoutMs": 6000,
+        "checks": [
+          { "id": "define-stream", "kind": "function_definition", "name": "gecerli_satislar", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "label": "gecerli_satislar() imzası doğru", "visibility": "visible" },
+          { "id": "define-report", "kind": "function_definition", "name": "satis_raporu", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "label": "satis_raporu() imzası doğru", "visibility": "visible" },
+          { "id": "yield-node", "kind": "node_count", "nodeName": "Yield", "min": 1, "label": "Satışlar yield ile üretildi", "visibility": "visible" },
+          { "id": "no-list-comp", "kind": "node_count", "nodeName": "ListComp", "min": 0, "max": 0, "label": "Ara satış listesi oluşturulmadı", "visibility": "visible" },
+          { "id": "report-cases", "kind": "function_cases", "name": "satis_raporu", "cases": [
+            { "args": [[{"urun":"Defter","kategori":"Kırtasiye","tutar":120,"aktif":true},{"urun":"Kalem","kategori":"Kırtasiye","tutar":80,"aktif":false},{"urun":"Çanta","kategori":"Aksesuar","tutar":450,"aktif":true}],100], "expected": {"satis_sayisi":2,"toplam_ciro":570,"kategoriler":["Aksesuar","Kırtasiye"]} },
+            { "args": [[{"urun":"Mouse","kategori":"Teknoloji","tutar":300,"aktif":true},{"urun":"Klavye","kategori":"Teknoloji","tutar":200,"aktif":true}],250], "expected": {"satis_sayisi":1,"toplam_ciro":300,"kategoriler":["Teknoloji"]} },
+            { "args": [[],100], "expected": {"satis_sayisi":0,"toplam_ciro":0,"kategoriler":[]} }
+          ], "label": "Gizli lazy akış senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\ASatış sayısı:\\s*2\\s*\\nToplam ciro:\\s*570\\s*TL\\s*\\nKategoriler:\\s*Aksesuar,\\s*Kırtasiye\\s*\\Z", "label": "Gizli final çıktısı", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
