@@ -15,7 +15,7 @@ interface CodeEditorProps {
 
 export function CodeEditor({
   documentId,
-  ariaLabel = "Python kod editörü",
+  ariaLabel = "Kod editörü",
   className = "",
   readOnly = false,
 }: CodeEditorProps) {
@@ -36,6 +36,7 @@ export function CodeEditor({
     const state = EditorState.create({
       doc: document.content,
       extensions: createEditorExtensions({
+        language: document.language,
         onContentChange: (content) => updateDocumentContent(document.id, content),
         onCursorChange: (line, column) => updateCursor(document.id, { line, column }),
         readOnly: effectiveReadOnly,
@@ -53,7 +54,7 @@ export function CodeEditor({
       view.destroy();
       viewRef.current = null;
     };
-  }, [document?.id, effectiveReadOnly, updateCursor, updateDocumentContent]);
+  }, [document?.id, document?.language, effectiveReadOnly, updateCursor, updateDocumentContent]);
 
   useEffect(() => {
     if (!document || !viewRef.current) {
@@ -68,6 +69,7 @@ export function CodeEditor({
       ref={hostRef}
       className={className}
       aria-label={ariaLabel}
+      data-language={document?.language}
       data-read-only={effectiveReadOnly || undefined}
     />
   );
