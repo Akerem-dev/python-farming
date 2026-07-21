@@ -1,0 +1,129 @@
+{
+  "moduleId": "beginner-graduation",
+  "lessons": [
+    {
+      "id": "beginner.graduation.final-exam",
+      "moduleId": "beginner-graduation",
+      "order": 1,
+      "title": "Başlangıç Mezuniyet Sınavı",
+      "summary": "Sekiz başlangıç modülünde öğrendiğin yapıları tek bir gerçek veri probleminde birleştir ve Orta Seviye yolunu aç.",
+      "levelLabel": "Graduation Assessment",
+      "mode": "data-transformation",
+      "graduation": {
+        "badgeName": "Python Farming Başlangıç Mezunu",
+        "nextLevel": "Orta Seviye",
+        "topics": [
+          "Değişkenler ve operatörler",
+          "Koşullar",
+          "Döngüler",
+          "Fonksiyonlar ve return",
+          "Listeler ve tuple",
+          "Sözlükler",
+          "Kümeler",
+          "Güvenli boş veri yönetimi"
+        ],
+        "criteria": [
+          "Sekiz başlangıç modülündeki bütün temel dersler tamamlanmış olmalı.",
+          "magaza_ozeti() farklı gizli veri setlerinde aynı sözleşmeye uymalı.",
+          "Çözüm gerçek döngü, koşul, sözlük ve küme yapıları içermeli.",
+          "Boş liste ve özel kritik stok eşiği güvenli biçimde işlenmeli."
+        ]
+      },
+      "dataTransformation": {
+        "projectTitle": "Başlangıç Mezuniyet Projesi · Mağaza Analizörü",
+        "sourceShape": "[{ad, kategori, fiyat, stok}, ...]",
+        "targetShape": "{envanter_degeri, kritik_urunler, kategoriler, en_degerli_urun}",
+        "deliverables": [
+          "Toplam envanter değerini hesapla",
+          "Kritik stoktaki ürünleri alfabetik listele",
+          "Benzersiz kategorileri alfabetik listele",
+          "En yüksek stok değerine sahip ürünü bul"
+        ],
+        "rules": [
+          "Envanter değeri her ürün için fiyat * stok toplamıdır.",
+          "Stoku kritik_stok değerinden küçük ürünler kritik kabul edilir.",
+          "Kategoriler set ile benzersizleştirilmeli ve sıralanmalıdır.",
+          "Boş ürün listesinde en_degerli_urun None olmalıdır.",
+          "Fonksiyon kaynak ürün listesini değiştirmemelidir."
+        ],
+        "workflow": [
+          "Önce boş rapor değişkenlerini ve set yapısını hazırla.",
+          "Tek bir for döngüsünde toplam değeri, kategorileri ve kritik ürünleri güncelle.",
+          "Her ürünün fiyat * stok değerini karşılaştırarak en değerli ürünü belirle.",
+          "Sonuçları belirtilen anahtarlara sahip yeni bir sözlükte return et.",
+          "Örnek çıktıyı çalıştır ve ardından kapsamlı gizli sınav testlerini gönder."
+        ]
+      },
+      "task": {
+        "title": "Mağaza verilerinden kapsamlı yönetim raporu üret",
+        "instructions": [
+          "magaza_ozeti(urunler, kritik_stok=5) fonksiyonunu tanımla.",
+          "Toplam envanter değerini fiyat * stok işlemleriyle hesapla.",
+          "Kritik ürün adlarını listeye, kategorileri kümeye ekle.",
+          "En yüksek stok değerine sahip ürünün adını belirle.",
+          "Dört sonucu yeni bir sözlük olarak return et ve hazır çıktı satırlarını koru."
+        ],
+        "requirements": [
+          "Fonksiyon iki parametre almalı ve kritik_stok varsayılan olarak 5 olmalı.",
+          "Gerçek for, if, dict ve set yapıları kullanılmalı.",
+          "Farklı ürün listeleri ve boş veri güvenli biçimde işlenmeli.",
+          "Kritik ürünler ve kategoriler alfabetik sıralanmalı."
+        ],
+        "sampleOutput": "Envanter değeri: 1515 TL\nKritik ürünler: Çanta, Defter\nKategoriler: Aksesuar, Kırtasiye\nEn değerli ürün: Çanta",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu sınav dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "graduation_exam.py",
+        "starterCode": "urunler = [\n    {\"ad\": \"Defter\", \"kategori\": \"Kırtasiye\", \"fiyat\": 45, \"stok\": 3},\n    {\"ad\": \"Kalem\", \"kategori\": \"Kırtasiye\", \"fiyat\": 15, \"stok\": 12},\n    {\"ad\": \"Çanta\", \"kategori\": \"Aksesuar\", \"fiyat\": 320, \"stok\": 2},\n    {\"ad\": \"Suluk\", \"kategori\": \"Aksesuar\", \"fiyat\": 70, \"stok\": 8},\n]\n\n# magaza_ozeti fonksiyonunu buraya yaz\n\nrapor = magaza_ozeti(urunler)\nprint(f\"Envanter değeri: {rapor['envanter_degeri']} TL\")\nprint(f\"Kritik ürünler: {', '.join(rapor['kritik_urunler'])}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")\nprint(f\"En değerli ürün: {rapor['en_degerli_urun']}\")"
+      },
+      "hints": [
+        {
+          "title": "Rapor değişkenlerini başlat",
+          "body": "toplam = 0, kritik = [], kategoriler = set(), en_degerli = None ve en_yuksek_deger = -1 ile başlayabilirsin."
+        },
+        {
+          "title": "Her üründe tek geçiş",
+          "body": "urun_degeri = urun['fiyat'] * urun['stok'] hesapla; toplamı, seti ve koşulları aynı döngüde güncelle."
+        },
+        {
+          "title": "Dönüş sözleşmesini koru",
+          "body": "return sözlüğünde envater_degeri değil tam olarak envanter_degeri anahtarını kullan; iki koleksiyonu sorted() ile listeye dönüştür."
+        }
+      ],
+      "validation": {
+        "id": "beginner.graduation.final-exam",
+        "title": "Mağaza verilerinden kapsamlı yönetim raporu üret",
+        "xpReward": 150,
+        "timeoutMs": 7000,
+        "checks": [
+          { "id": "define-report", "kind": "function_definition", "name": "magaza_ozeti", "minParams": 2, "maxParams": 2, "minDefaults": 1, "maxDefaults": 1, "requireReturn": true, "label": "magaza_ozeti() sınav imzası doğru", "visibility": "visible" },
+          { "id": "for-loop", "kind": "node_count", "nodeName": "For", "min": 1, "label": "Ürünler gerçek for döngüsüyle işlendi", "visibility": "visible" },
+          { "id": "if-logic", "kind": "node_count", "nodeName": "If", "min": 2, "label": "Kritik stok ve en değerli ürün koşulları kuruldu", "visibility": "visible" },
+          { "id": "dict-report", "kind": "node_count", "nodeName": "Dict", "min": 1, "label": "Sonuç raporu sözlük olarak üretildi", "visibility": "visible" },
+          { "id": "set-add", "kind": "call", "name": "add", "label": "Kategoriler set üzerinde benzersizleştirildi", "visibility": "visible" },
+          { "id": "append-critical", "kind": "call", "name": "append", "label": "Kritik ürünler listeye eklendi", "visibility": "visible" },
+          { "id": "graduation-cases", "kind": "function_cases", "name": "magaza_ozeti", "cases": [
+            { "args": [[
+              { "ad": "Defter", "kategori": "Kırtasiye", "fiyat": 45, "stok": 3 },
+              { "ad": "Kalem", "kategori": "Kırtasiye", "fiyat": 15, "stok": 12 },
+              { "ad": "Çanta", "kategori": "Aksesuar", "fiyat": 320, "stok": 2 },
+              { "ad": "Suluk", "kategori": "Aksesuar", "fiyat": 70, "stok": 8 }
+            ]], "expected": { "envanter_degeri": 1515, "kritik_urunler": ["Çanta", "Defter"], "kategoriler": ["Aksesuar", "Kırtasiye"], "en_degerli_urun": "Çanta" } },
+            { "args": [[
+              { "ad": "A", "kategori": "X", "fiyat": 100, "stok": 2 },
+              { "ad": "B", "kategori": "Y", "fiyat": 30, "stok": 10 }
+            ]], "expected": { "envanter_degeri": 500, "kritik_urunler": ["A"], "kategoriler": ["X", "Y"], "en_degerli_urun": "B" } },
+            { "args": [[
+              { "ad": "Kablo", "kategori": "Teknoloji", "fiyat": 25, "stok": 8 },
+              { "ad": "Mouse", "kategori": "Teknoloji", "fiyat": 200, "stok": 12 }
+            ], 10], "expected": { "envanter_degeri": 2600, "kritik_urunler": ["Kablo"], "kategoriler": ["Teknoloji"], "en_degerli_urun": "Mouse" } },
+            { "args": [[]], "expected": { "envanter_degeri": 0, "kritik_urunler": [], "kategoriler": [], "en_degerli_urun": null } }
+          ], "label": "Kapsamlı gizli mezuniyet senaryoları", "visibility": "hidden" },
+          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AEnvanter değeri:\\s*1515\\s*TL\\s*\\nKritik ürünler:\\s*Çanta,\\s*Defter\\s*\\nKategoriler:\\s*Aksesuar,\\s*Kırtasiye\\s*\\nEn değerli ürün:\\s*Çanta\\s*\\Z", "flags": "i", "label": "Gizli mezuniyet çıktısı", "visibility": "hidden" }
+        ]
+      }
+    }
+  ]
+}
