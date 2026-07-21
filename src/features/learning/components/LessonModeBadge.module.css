@@ -35,3 +35,9 @@
   background: rgba(198, 120, 221, 0.1);
   color: #cf8ee7;
 }
+
+.badge[data-mode="refactoring"] {
+  border-color: rgba(198, 120, 221, 0.38);
+  background: rgba(198, 120, 221, 0.12);
+  color: #d7a1ec;
+}
