@@ -8,6 +8,32 @@ export type TaskCaseValue =
   | TaskCaseValue[]
   | { [key: string]: TaskCaseValue };
 
+export type TaskObjectAction =
+  | {
+      kind: "call";
+      name: string;
+      args: TaskCaseValue[];
+    }
+  | {
+      kind: "setattr";
+      name: string;
+      value: TaskCaseValue;
+    };
+
+export type TaskObjectObservation =
+  | {
+      kind: "attribute";
+      name: string;
+    }
+  | {
+      kind: "method";
+      name: string;
+      args: TaskCaseValue[];
+    }
+  | {
+      kind: "repr";
+    };
+
 interface TaskCheckBase {
   id: string;
   label: string;
@@ -65,6 +91,30 @@ export type TaskCheck =
       cases: Array<{
         args: TaskCaseValue[];
         exception: string;
+        messagePattern?: string;
+      }>;
+    })
+  | (TaskCheckBase & {
+      kind: "class_definition";
+      name: string;
+      minInitParams: number;
+      maxInitParams?: number;
+      requiredMethods?: string[];
+      requiredProperties?: string[];
+      requiredSetters?: string[];
+      requiredAttributes?: string[];
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "class_cases";
+      name: string;
+      module?: string;
+      cases: Array<{
+        initArgs: TaskCaseValue[];
+        actions?: TaskObjectAction[];
+        observe: TaskObjectObservation;
+        expected?: TaskCaseValue;
+        exception?: string;
         messagePattern?: string;
       }>;
     })
