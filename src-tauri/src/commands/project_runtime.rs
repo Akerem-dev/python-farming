@@ -198,8 +198,7 @@ fn execute_python_project_sync(
         diagnostics.push(RuntimeDiagnostic {
             severity: "warning".to_string(),
             code: "OUTPUT_TRUNCATED".to_string(),
-            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı."
-                .to_string(),
+            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı.".to_string(),
         });
     }
 
@@ -228,7 +227,11 @@ fn validate_request(
         return Err(format!("Proje en fazla {MAX_FILE_COUNT} dosya içerebilir."));
     }
 
-    let total_size = request.files.iter().map(|file| file.content.len()).sum::<usize>();
+    let total_size = request
+        .files
+        .iter()
+        .map(|file| file.content.len())
+        .sum::<usize>();
     if total_size > MAX_PROJECT_BYTES {
         return Err(format!(
             "Proje kaynak kodu {} KB sınırını aşıyor.",
@@ -269,7 +272,9 @@ fn validate_relative_python_path(value: &str) -> Result<PathBuf, String> {
 
     let path = Path::new(value);
     if path.is_absolute() || path.extension().and_then(|value| value.to_str()) != Some("py") {
-        return Err(format!("Yalnız göreli .py dosya yollarına izin verilir: {value}"));
+        return Err(format!(
+            "Yalnız göreli .py dosya yollarına izin verilir: {value}"
+        ));
     }
 
     let mut safe_path = PathBuf::new();
@@ -282,8 +287,7 @@ fn validate_relative_python_path(value: &str) -> Result<PathBuf, String> {
                 if text.is_empty()
                     || text.len() > 80
                     || !text.chars().all(|character| {
-                        character.is_ascii_alphanumeric()
-                            || matches!(character, '-' | '_' | '.')
+                        character.is_ascii_alphanumeric() || matches!(character, '-' | '_' | '.')
                     })
                 {
                     return Err(format!("Güvenli olmayan dosya yolu bileşeni: {text}"));
