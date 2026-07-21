@@ -1,4 +1,4 @@
-export type EditorLanguage = "python";
+export type EditorLanguage = "python" | "json" | "text";
 
 export type EditorSaveStatus = "saved" | "dirty" | "saving";
 
