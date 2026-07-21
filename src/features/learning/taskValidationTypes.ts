@@ -1,5 +1,13 @@
 export type TaskCheckVisibility = "visible" | "hidden";
 
+export type TaskCaseValue =
+  | string
+  | number
+  | boolean
+  | null
+  | TaskCaseValue[]
+  | { [key: string]: TaskCaseValue };
+
 interface TaskCheckBase {
   id: string;
   label: string;
@@ -26,6 +34,23 @@ export type TaskCheck =
       nodeName: string;
       min: number;
       max?: number;
+    })
+  | (TaskCheckBase & {
+      kind: "function_definition";
+      name: string;
+      minParams: number;
+      maxParams?: number;
+      minDefaults?: number;
+      maxDefaults?: number;
+      requireReturn?: boolean;
+    })
+  | (TaskCheckBase & {
+      kind: "function_cases";
+      name: string;
+      cases: Array<{
+        args: TaskCaseValue[];
+        expected: TaskCaseValue;
+      }>;
     })
   | (TaskCheckBase & {
       kind: "variable_type";
