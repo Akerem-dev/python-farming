@@ -18,7 +18,6 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "code-ordering",
   "refactoring",
   "data-transformation",
-  "graduation",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -219,9 +218,9 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     }
   }
 
-  if (mode === "graduation") {
+  if (candidate.graduation) {
     if (
-      !candidate.graduation ||
+      mode !== "data-transformation" ||
       typeof candidate.graduation.badgeName !== "string" ||
       typeof candidate.graduation.nextLevel !== "string" ||
       !Array.isArray(candidate.graduation.topics) ||
