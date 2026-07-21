@@ -16,12 +16,43 @@ const MAX_OUTPUT_BYTES: usize = 256 * 1024;
 const MAX_FILE_COUNT: usize = 64;
 const MIN_TIMEOUT_MS: u64 = 250;
 const MAX_TIMEOUT_MS: u64 = 10_000;
+const ALLOWED_PROJECT_EXTENSIONS: [&str; 4] = ["py", "txt", "json", "csv"];
 const PROJECT_RUNNER: &str = r#"import os, runpy, sys
-root = sys.argv[1]
+root = os.path.realpath(sys.argv[1])
 entrypoint = sys.argv[2]
+os.chdir(root)
 sys.path.insert(0, root)
 sys.argv = [entrypoint]
-os.chdir(root)
+
+
+def inside_workspace(value):
+    try:
+        path = os.path.realpath(os.path.abspath(os.fspath(value)))
+    except TypeError:
+        return True
+    return path == root or path.startswith(root + os.sep)
+
+
+def audit(event, args):
+    if event == 'open' and args:
+        target = args[0]
+        mode = args[1] if len(args) > 1 and isinstance(args[1], str) else 'r'
+        flags = args[2] if len(args) > 2 and isinstance(args[2], int) else 0
+        write_flags = os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND
+        wants_write = any(marker in mode for marker in ('w', 'a', 'x', '+')) or bool(flags & write_flags)
+        if wants_write and not inside_workspace(target):
+            raise PermissionError('Proje klasörü dışına dosya yazılamaz.')
+    elif event in {'os.remove', 'os.rmdir', 'os.mkdir', 'os.chdir', 'os.chmod'} and args:
+        if not inside_workspace(args[0]):
+            raise PermissionError('Proje klasörü dışında dosya sistemi işlemi yapılamaz.')
+    elif event in {'os.rename', 'os.replace'} and len(args) >= 2:
+        if not inside_workspace(args[0]) or not inside_workspace(args[1]):
+            raise PermissionError('Proje klasörü dışına dosya taşınamaz.')
+    elif event in {'subprocess.Popen', 'os.system', 'socket.connect', 'socket.bind'}:
+        raise PermissionError('Ders çalışma alanında dış süreç ve ağ erişimi kapalıdır.')
+
+
+sys.addaudithook(audit)
 runpy.run_path(os.path.join(root, entrypoint), run_name='__main__')"#;
 
 #[derive(Debug, Deserialize)]
@@ -137,7 +168,8 @@ fn execute_python_project_sync(
         .env_remove("PYTHONHOME")
         .env("PYTHONIOENCODING", "utf-8")
         .env("PYTHONUTF8", "1")
-        .env("PYTHONDONTWRITEBYTECODE", "1");
+        .env("PYTHONDONTWRITEBYTECODE", "1")
+        .env("PYTHON_FARMING_WORKSPACE", workspace_text);
     hide_console_window(&mut command);
 
     let mut child = command
@@ -234,7 +266,7 @@ fn validate_request(
         .sum::<usize>();
     if total_size > MAX_PROJECT_BYTES {
         return Err(format!(
-            "Proje kaynak kodu {} KB sınırını aşıyor.",
+            "Proje dosyaları {} KB sınırını aşıyor.",
             MAX_PROJECT_BYTES / 1024
         ));
     }
@@ -250,7 +282,7 @@ fn validate_request(
     let mut paths = HashSet::new();
     let mut validated = Vec::with_capacity(request.files.len());
     for file in &request.files {
-        let path = validate_relative_python_path(&file.path)?;
+        let path = validate_relative_project_path(&file.path)?;
         if !paths.insert(path.clone()) {
             return Err(format!("Projede tekrar eden dosya yolu var: {}", file.path));
         }
@@ -266,14 +298,27 @@ fn validate_request(
 }
 
 fn validate_relative_python_path(value: &str) -> Result<PathBuf, String> {
+    let path = validate_relative_project_path(value)?;
+    if path.extension().and_then(|extension| extension.to_str()) != Some("py") {
+        return Err(format!("Giriş dosyası .py uzantılı olmalıdır: {value}"));
+    }
+    Ok(path)
+}
+
+fn validate_relative_project_path(value: &str) -> Result<PathBuf, String> {
     if value.trim().is_empty() || value.contains('\\') {
-        return Err("Python dosya yolu geçersiz.".to_string());
+        return Err("Proje dosya yolu geçersiz.".to_string());
     }
 
     let path = Path::new(value);
-    if path.is_absolute() || path.extension().and_then(|value| value.to_str()) != Some("py") {
+    let extension = path
+        .extension()
+        .and_then(|extension| extension.to_str())
+        .map(str::to_ascii_lowercase)
+        .ok_or_else(|| format!("Dosya uzantısı bulunamadı: {value}"))?;
+    if path.is_absolute() || !ALLOWED_PROJECT_EXTENSIONS.contains(&extension.as_str()) {
         return Err(format!(
-            "Yalnız göreli .py dosya yollarına izin verilir: {value}"
+            "Yalnız göreli .py, .txt, .json ve .csv dosyalarına izin verilir: {value}"
         ));
     }
 
@@ -299,7 +344,7 @@ fn validate_relative_python_path(value: &str) -> Result<PathBuf, String> {
     }
 
     if safe_path.as_os_str().is_empty() {
-        return Err("Python dosya yolu boş olamaz.".to_string());
+        return Err("Proje dosya yolu boş olamaz.".to_string());
     }
     Ok(safe_path)
 }
@@ -439,7 +484,7 @@ fn hide_console_window(_command: &mut Command) {}
 
 #[cfg(test)]
 mod tests {
-    use super::validate_relative_python_path;
+    use super::{validate_relative_project_path, validate_relative_python_path};
     use std::path::PathBuf;
 
     #[test]
@@ -451,13 +496,28 @@ mod tests {
     }
 
     #[test]
-    fn parent_directory_paths_are_rejected() {
-        assert!(validate_relative_python_path("../secret.py").is_err());
+    fn text_json_and_csv_files_are_allowed() {
+        assert_eq!(
+            validate_relative_project_path("data/urunler.json").unwrap(),
+            PathBuf::from("data/urunler.json")
+        );
+        assert!(validate_relative_project_path("notlar.txt").is_ok());
+        assert!(validate_relative_project_path("rapor.csv").is_ok());
     }
 
     #[test]
-    fn absolute_and_non_python_paths_are_rejected() {
-        assert!(validate_relative_python_path("/tmp/main.py").is_err());
-        assert!(validate_relative_python_path("notes.txt").is_err());
+    fn parent_directory_paths_are_rejected() {
+        assert!(validate_relative_project_path("../secret.json").is_err());
+    }
+
+    #[test]
+    fn absolute_and_unsupported_paths_are_rejected() {
+        assert!(validate_relative_project_path("/tmp/main.py").is_err());
+        assert!(validate_relative_project_path("program.exe").is_err());
+    }
+
+    #[test]
+    fn entrypoint_must_be_python() {
+        assert!(validate_relative_python_path("data.json").is_err());
     }
 }
