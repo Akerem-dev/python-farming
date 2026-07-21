@@ -6,6 +6,7 @@ import {
   type RuntimeDiagnostic,
   type RuntimeHealthResult,
   type RuntimeResponseStatus,
+  type RuntimeSourceFile,
 } from "./runtimeProtocol";
 
 export type RuntimeUiStatus = "checking" | "ready" | "offline" | "running" | "error";
@@ -23,6 +24,11 @@ interface RuntimeStore {
   errorMessage: string | null;
   checkRuntime: () => Promise<void>;
   executeCode: (source: string, filename: string, stdin?: string[]) => Promise<void>;
+  executeProject: (
+    files: RuntimeSourceFile[],
+    entrypoint: string,
+    stdin?: string[],
+  ) => Promise<void>;
   clearOutput: () => void;
 }
 
@@ -42,42 +48,19 @@ function getErrorMessage(error: unknown) {
   return typeof error === "string" ? error : "Python çalışma motorunda bilinmeyen bir hata oluştu.";
 }
 
-export const useRuntimeStore = create<RuntimeStore>((set, get) => ({
-  status: "checking",
-  health: null,
-  output: null,
-  errorMessage: null,
-
-  checkRuntime: async () => {
-    set({ status: "checking", errorMessage: null });
-
-    try {
-      const response = await runtimeClient.send<RuntimeHealthResult>({
-        requestId: createRequestId(),
-        protocolVersion: runtimeProtocolVersion,
-        kind: "health_check",
-      });
-      const health = response.payload ?? null;
-
-      set({
-        health,
-        status: response.status === "ok" && health?.status === "ready" ? "ready" : "offline",
-        errorMessage:
-          response.status === "ok"
-            ? null
-            : response.diagnostics[0]?.message ?? health?.message ?? "Python çalışma motoru çevrimdışı.",
-      });
-    } catch (error) {
-      set({
-        status: "offline",
-        health: null,
-        errorMessage: getErrorMessage(error),
-      });
-    }
-  },
-
-  executeCode: async (source, filename, stdin = []) => {
+export const useRuntimeStore = create<RuntimeStore>((set, get) => {
+  const runProject = async (
+    files: RuntimeSourceFile[],
+    entrypoint: string,
+    stdin: string[] = [],
+  ) => {
     if (get().status === "running") {
+      return;
+    }
+
+    const entrypointFile = files.find((file) => file.path === entrypoint) ?? files[0];
+    if (!entrypointFile) {
+      set({ status: "error", output: null, errorMessage: "Çalıştırılacak Python dosyası bulunamadı." });
       return;
     }
 
@@ -89,8 +72,10 @@ export const useRuntimeStore = create<RuntimeStore>((set, get) => ({
         protocolVersion: runtimeProtocolVersion,
         kind: "execute_code",
         payload: {
-          source,
-          filename,
+          source: entrypointFile.content,
+          filename: entrypointFile.path,
+          files,
+          entrypoint,
           stdin,
           timeoutMs: 4_000,
         },
@@ -116,7 +101,47 @@ export const useRuntimeStore = create<RuntimeStore>((set, get) => ({
         errorMessage: getErrorMessage(error),
       });
     }
-  },
+  };
 
-  clearOutput: () => set({ output: null, errorMessage: null }),
-}));
+  return {
+    status: "checking",
+    health: null,
+    output: null,
+    errorMessage: null,
+
+    checkRuntime: async () => {
+      set({ status: "checking", errorMessage: null });
+
+      try {
+        const response = await runtimeClient.send<RuntimeHealthResult>({
+          requestId: createRequestId(),
+          protocolVersion: runtimeProtocolVersion,
+          kind: "health_check",
+        });
+        const health = response.payload ?? null;
+
+        set({
+          health,
+          status: response.status === "ok" && health?.status === "ready" ? "ready" : "offline",
+          errorMessage:
+            response.status === "ok"
+              ? null
+              : response.diagnostics[0]?.message ?? health?.message ?? "Python çalışma motoru çevrimdışı.",
+        });
+      } catch (error) {
+        set({
+          status: "offline",
+          health: null,
+          errorMessage: getErrorMessage(error),
+        });
+      }
+    },
+
+    executeCode: async (source, filename, stdin = []) =>
+      runProject([{ path: filename, content: source }], filename, stdin),
+
+    executeProject: runProject,
+
+    clearOutput: () => set({ output: null, errorMessage: null }),
+  };
+});
