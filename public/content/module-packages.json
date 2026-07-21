@@ -7,6 +7,7 @@
     "/content/modules/loops.json",
     "/content/modules/functions.json",
     "/content/modules/lists-tuples.json",
-    "/content/modules/dictionaries-sets.json"
+    "/content/modules/dictionaries-sets.json",
+    "/content/modules/beginner-graduation.json"
   ]
 }

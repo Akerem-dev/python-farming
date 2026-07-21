@@ -40,6 +40,13 @@ export interface CurriculumDataTransformationGuide {
   deliverables?: string[];
 }
 
+export interface CurriculumGraduationGuide {
+  badgeName: string;
+  nextLevel: string;
+  topics: string[];
+  criteria: string[];
+}
+
 export interface CurriculumCatalog {
   version: number;
   levels: CurriculumLevel[];
@@ -88,6 +95,7 @@ export interface CurriculumLesson {
   debugging?: CurriculumDebuggingGuide;
   refactoring?: CurriculumRefactoringGuide;
   dataTransformation?: CurriculumDataTransformationGuide;
+  graduation?: CurriculumGraduationGuide;
   task: {
     title: string;
     instructions: string[];

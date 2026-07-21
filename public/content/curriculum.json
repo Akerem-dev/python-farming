@@ -56,6 +56,12 @@
           "number": "08",
           "title": "Sözlükler ve Kümeler",
           "lessonIds": []
+        },
+        {
+          "id": "beginner-graduation",
+          "number": "EX",
+          "title": "Başlangıç Mezuniyeti",
+          "lessonIds": []
         }
       ]
     }

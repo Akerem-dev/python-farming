@@ -13,6 +13,11 @@ import {
   isModuleCompleted,
 } from "../../features/curriculum/curriculumProgress";
 import { useCurriculumStore } from "../../features/curriculum/store/curriculumStore";
+import {
+  beginnerGraduationLessonId,
+  getBeginnerGraduationLesson,
+  getBeginnerGraduationSnapshot,
+} from "../../features/mastery/beginnerGraduation";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import { AppShell } from "../../layouts/AppShell";
 import styles from "./HomePage.module.css";
@@ -50,6 +55,11 @@ export function HomePage() {
   }, [loadCatalog, loadProgress]);
 
   const modules = useMemo(() => getOrderedModules(catalog), [catalog]);
+  const graduation = useMemo(
+    () => getBeginnerGraduationSnapshot(catalog, completedLessonIds),
+    [catalog, completedLessonIds],
+  );
+  const graduationLesson = getBeginnerGraduationLesson(catalog);
   const resumeLesson = useMemo(
     () => getResumeLesson(catalog, completedLessonIds, lastLessonId),
     [catalog, completedLessonIds, lastLessonId],
@@ -71,9 +81,7 @@ export function HomePage() {
     publishedLessonCount > 0
       ? Math.round((completedPublishedLessons / publishedLessonCount) * 100)
       : 0;
-  const completedModuleCount = modules.filter((module) =>
-    isModuleCompleted(module, completedLessonIds),
-  ).length;
+  const completedModuleCount = graduation.completedCoreModules;
   const beginnerRoadmapProgress = Math.round((completedModuleCount / 8) * 100);
   const resumeModuleIndex = resumeModule
     ? modules.findIndex((module) => module.id === resumeModule.id)
@@ -85,7 +93,13 @@ export function HomePage() {
     ...level,
     completedModules: level.id === "beginner" ? completedModuleCount : 0,
     progress: level.id === "beginner" ? beginnerRoadmapProgress : 0,
-    locked: level.id !== "beginner",
+    locked:
+      level.id === "beginner"
+        ? false
+        : level.id === "intermediate"
+          ? !graduation.intermediateUnlocked
+          : true,
+    unlocked: level.id === "intermediate" && graduation.intermediateUnlocked,
   }));
 
   const completedReviewLessons = [...(catalog?.lessons ?? [])]
@@ -161,18 +175,78 @@ export function HomePage() {
             <div className={styles.levelGrid}>
               {levelRows.map((level, index) => (
                 <div
-                  className={`${styles.levelCard} ${level.locked ? styles.levelLocked : ""}`.trim()}
+                  className={`${styles.levelCard} ${level.locked ? styles.levelLocked : ""} ${level.unlocked ? styles.levelUnlocked : ""}`.trim()}
                   key={level.name}
                 >
                   <div className={styles.levelIndex}>{String(index + 1).padStart(2, "0")}</div>
                   <strong>{level.name}</strong>
                   <span>
                     {level.completedModules} / {level.totalModules} modül
-                    {level.locked ? " · Kilitli" : ""}
+                    {level.locked ? " · Kilitli" : level.unlocked ? " · Yol açıldı" : ""}
                   </span>
                   <ProgressBar value={level.progress} />
                 </div>
               ))}
+            </div>
+          </article>
+
+          <article className={`${styles.panel} ${styles.graduationPanel}`} data-graduated={graduation.graduated || undefined}>
+            <div className={styles.graduationScore}>
+              <span>Ustalık puanı</span>
+              <strong>{graduation.masteryScore}</strong>
+              <small>/ 100</small>
+            </div>
+            <div className={styles.graduationBody}>
+              <span className={styles.eyebrow}>
+                {graduation.graduated
+                  ? "Başlangıç seviyesi mezuniyeti"
+                  : graduation.examUnlocked
+                    ? "Final sınavı hazır"
+                    : "Mezuniyete giden yol"}
+              </span>
+              <h2>
+                {graduation.graduated
+                  ? graduation.badgeName
+                  : graduation.examUnlocked
+                    ? "Sekiz modülü tek projede kanıtla"
+                    : `${graduation.completedCoreLessons} / ${graduation.totalCoreLessons} temel ders tamamlandı`}
+              </h2>
+              <p>
+                {graduation.graduated
+                  ? "Mezuniyet rozeti kazanıldı ve Orta Seviye öğrenim yolu açıldı."
+                  : graduation.examUnlocked
+                    ? "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır."
+                    : "En düşük tamamlanma oranına sahip modüller aşağıda gösteriliyor. Bu konular tamamlandıkça sınav otomatik açılır."}
+              </p>
+              {!graduation.graduated && !graduation.examUnlocked ? (
+                <div className={styles.weakTopics}>
+                  {graduation.weakTopics.map((topic) => (
+                    <div key={topic.id}>
+                      <span>{topic.number}</span>
+                      <b>{topic.title}</b>
+                      <small>%{topic.percent}</small>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+            <div className={styles.graduationAction}>
+              {graduation.graduated ? (
+                <div className={styles.graduationBadge}>
+                  <i>◆</i>
+                  <span>Orta Seviye</span>
+                  <strong>Açıldı</strong>
+                </div>
+              ) : graduation.examUnlocked && graduationLesson ? (
+                <Button variant="primary" onClick={() => openLesson(beginnerGraduationLessonId)}>
+                  Mezuniyet sınavına gir →
+                </Button>
+              ) : (
+                <div>
+                  <span>Hazırlık</span>
+                  <strong>{graduation.completedCoreModules} / {graduation.totalCoreModules} modül</strong>
+                </div>
+              )}
             </div>
           </article>
 
@@ -184,7 +258,7 @@ export function HomePage() {
                   <h2>{resumeModule.title}</h2>
                 </div>
                 <span className={moduleCompleted ? styles.completeBadge : styles.levelBadge}>
-                  {moduleCompleted ? "Tamamlandı" : "Başlangıç"}
+                  {moduleCompleted ? "Tamamlandı" : resumeModule.id === "beginner-graduation" ? "Sınav" : "Başlangıç"}
                 </span>
               </header>
               <div className={styles.lessonList}>
@@ -244,11 +318,13 @@ export function HomePage() {
               </div>
               <div className={styles.nextModuleState}>
                 <span>Sıradaki modül</span>
-                <strong>{nextRoadmapModule?.title ?? "Yeni içerik"}</strong>
+                <strong>{nextRoadmapModule?.title ?? (graduation.graduated ? "Orta Seviye" : "Yeni içerik")}</strong>
                 <small>
                   {nextRoadmapModule?.lessonIds.length
                     ? "Ön koşullar tamamlandı."
-                    : "Dersleri hazırlanıyor; yayımlandığında açılacak."}
+                    : graduation.graduated
+                      ? "Orta Seviye yolu mezuniyet rozetiyle açıldı."
+                      : "Dersleri hazırlanıyor; yayımlandığında açılacak."}
                 </small>
               </div>
             </article>
@@ -273,7 +349,7 @@ export function HomePage() {
             </div>
             <div className={styles.statRows}>
               <span><b>{completedPublishedLessons}</b> tamamlanan ders</span>
-              <span><b>{completedModuleCount}</b> tamamlanan modül</span>
+              <span><b>{completedModuleCount}</b> tamamlanan ana modül</span>
               <span><b>{totalXp}</b> toplam XP</span>
             </div>
           </article>
@@ -304,7 +380,7 @@ export function HomePage() {
             <span className={styles.eyebrow}>Gerçek ilerleme kaydı</span>
             <h2>{totalXp} XP güvende</h2>
             <p>
-              Tamamlanan dersler, son açık ders ve XP masaüstü uygulamasının yerel SQLite veritabanında saklanıyor.
+              Tamamlanan dersler, mezuniyet rozeti, son açık ders ve XP masaüstü uygulamasının yerel SQLite veritabanından türetiliyor.
             </p>
           </article>
         </aside>
