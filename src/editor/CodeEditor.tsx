@@ -1,6 +1,7 @@
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { useEffect, useRef } from "react";
+import "./EditorWorkspaceLayout.css";
 import { replaceEditorContent } from "./editorCommands";
 import { createEditorExtensions } from "./editorExtensions";
 import { useEditorStore } from "./editorStore";
@@ -25,6 +26,7 @@ export function CodeEditor({
   );
   const updateDocumentContent = useEditorStore((state) => state.updateDocumentContent);
   const updateCursor = useEditorStore((state) => state.updateCursor);
+  const effectiveReadOnly = readOnly || Boolean(document?.readOnly);
 
   useEffect(() => {
     if (!hostRef.current || !document) {
@@ -36,7 +38,7 @@ export function CodeEditor({
       extensions: createEditorExtensions({
         onContentChange: (content) => updateDocumentContent(document.id, content),
         onCursorChange: (line, column) => updateCursor(document.id, { line, column }),
-        readOnly,
+        readOnly: effectiveReadOnly,
       }),
     });
 
@@ -51,7 +53,7 @@ export function CodeEditor({
       view.destroy();
       viewRef.current = null;
     };
-  }, [document?.id, readOnly, updateCursor, updateDocumentContent]);
+  }, [document?.id, effectiveReadOnly, updateCursor, updateDocumentContent]);
 
   useEffect(() => {
     if (!document || !viewRef.current) {
@@ -66,7 +68,7 @@ export function CodeEditor({
       ref={hostRef}
       className={className}
       aria-label={ariaLabel}
-      data-read-only={readOnly || undefined}
+      data-read-only={effectiveReadOnly || undefined}
     />
   );
 }
