@@ -8,6 +8,11 @@ export interface RuntimeRequestBase {
   kind: RuntimeRequestKind;
 }
 
+export interface RuntimeSourceFile {
+  path: string;
+  content: string;
+}
+
 export interface RuntimeHealthCheckRequest extends RuntimeRequestBase {
   kind: "health_check";
 }
@@ -17,6 +22,8 @@ export interface ExecuteCodeRequest extends RuntimeRequestBase {
   payload: {
     source: string;
     filename: string;
+    files?: RuntimeSourceFile[];
+    entrypoint?: string;
     stdin: string[];
     timeoutMs: number;
   };
