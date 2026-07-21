@@ -50,7 +50,7 @@
   width: 100%;
   min-height: 32px;
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) auto auto;
+  grid-template-columns: 28px minmax(0, 1fr) auto auto;
   align-items: center;
   gap: 5px;
   padding-right: 9px;
@@ -79,6 +79,14 @@
   font-family: var(--font-mono);
   font-size: 8px;
   font-weight: 750;
+}
+
+.fileIcon[data-language="json"] {
+  color: #8cddc8;
+}
+
+.fileIcon[data-language="text"] {
+  color: #e9c46a;
 }
 
 .file b,
