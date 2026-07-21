@@ -12,7 +12,7 @@ export const beginnerStarterCode = `# Kendini tanıtan iki değişken oluştur
 ad = ""
 yas = 0
 
-print(f"Merhaba, ben ${ad} ve ${yas} yaşındayım.")`;
+print(f"Merhaba, ben {ad} ve {yas} yaşındayım.")`;
 
 const initialDocument: EditorDocument = {
   id: "main-python",
