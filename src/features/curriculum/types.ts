@@ -7,8 +7,7 @@ export type CurriculumLessonMode =
   | "debugging"
   | "code-ordering"
   | "refactoring"
-  | "data-transformation"
-  | "graduation";
+  | "data-transformation";
 
 export interface CurriculumChoiceOption {
   id: string;
