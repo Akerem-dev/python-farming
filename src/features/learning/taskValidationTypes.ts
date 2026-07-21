@@ -18,22 +18,26 @@ export type TaskCheck =
   | (TaskCheckBase & {
       kind: "assignment";
       name: string;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "call";
       name: string;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "call_count";
       name: string;
       min: number;
       max?: number;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "node_count";
       nodeName: string;
       min: number;
       max?: number;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "function_definition";
@@ -43,14 +47,26 @@ export type TaskCheck =
       minDefaults?: number;
       maxDefaults?: number;
       requireReturn?: boolean;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "function_cases";
       name: string;
+      module?: string;
       cases: Array<{
         args: TaskCaseValue[];
         expected: TaskCaseValue;
       }>;
+    })
+  | (TaskCheckBase & {
+      kind: "file_exists";
+      path: string;
+    })
+  | (TaskCheckBase & {
+      kind: "import_statement";
+      module: string;
+      name?: string;
+      file?: string;
     })
   | (TaskCheckBase & {
       kind: "variable_type";

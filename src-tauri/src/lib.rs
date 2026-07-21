@@ -12,6 +12,7 @@ pub fn run() {
             app_version,
             commands::runtime::runtime_health_check,
             commands::runtime::execute_python,
+            commands::project_runtime::execute_python_project,
             commands::progress::load_progress,
             commands::progress::complete_lesson_progress,
             commands::progress::set_last_lesson,

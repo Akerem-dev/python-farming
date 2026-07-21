@@ -1,0 +1,22 @@
+section > div:has(.cm-editor) {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+}
+
+section > div[data-multi-file="true"]:has(.cm-editor) {
+  grid-template-columns: 164px minmax(0, 1fr);
+}
+
+section > div:has(.cm-editor) > div:last-child {
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (max-width: 760px) {
+  section > div[data-multi-file="true"]:has(.cm-editor) {
+    grid-template-columns: 136px minmax(0, 1fr);
+  }
+}

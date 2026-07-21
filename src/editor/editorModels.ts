@@ -10,9 +10,11 @@ export interface EditorCursorPosition {
 export interface EditorDocument {
   id: string;
   name: string;
+  path: string;
   language: EditorLanguage;
   content: string;
   initialContent: string;
+  readOnly: boolean;
   saveStatus: EditorSaveStatus;
   cursor: EditorCursorPosition;
   revision: number;
@@ -20,5 +22,6 @@ export interface EditorDocument {
 
 export interface EditorSessionSnapshot {
   activeDocumentId: string;
+  entrypoint: string;
   documents: EditorDocument[];
 }

@@ -33,7 +33,7 @@ const upcomingSystems = [
   "Çıktıyı tahmin et",
   "Kod tamamlama",
   "Hata ayıklama",
-  "Mini projeler",
+  "Çok dosyalı projeler",
   "Expert Project Lab",
 ];
 
@@ -65,6 +65,10 @@ export function HomePage() {
     [catalog, completedLessonIds, lastLessonId],
   );
   const resumeModule = modules.find((module) => module.id === resumeLesson?.moduleId) ?? null;
+  const resumeLevel =
+    catalog?.levels.find((level) =>
+      level.modules.some((module) => module.id === resumeModule?.id),
+    ) ?? null;
   const moduleLessons = resumeModule ? getModuleLessons(catalog, resumeModule.id) : [];
   const moduleProgress = resumeModule
     ? getModuleProgress(resumeModule, completedLessonIds)
@@ -81,26 +85,42 @@ export function HomePage() {
     publishedLessonCount > 0
       ? Math.round((completedPublishedLessons / publishedLessonCount) * 100)
       : 0;
-  const completedModuleCount = graduation.completedCoreModules;
-  const beginnerRoadmapProgress = Math.round((completedModuleCount / 8) * 100);
+  const completedBeginnerModules = graduation.completedCoreModules;
+  const beginnerRoadmapProgress = Math.round((completedBeginnerModules / 8) * 100);
+  const intermediateModules =
+    catalog?.levels.find((level) => level.id === "intermediate")?.modules ?? [];
+  const completedIntermediateModules = intermediateModules.filter((module) =>
+    isModuleCompleted(module, completedLessonIds),
+  ).length;
+  const intermediateRoadmapProgress = Math.round((completedIntermediateModules / 10) * 100);
+  const completedPublishedModuleCount = modules.filter(
+    (module) => module.lessonIds.length > 0 && isModuleCompleted(module, completedLessonIds),
+  ).length;
   const resumeModuleIndex = resumeModule
     ? modules.findIndex((module) => module.id === resumeModule.id)
     : -1;
   const nextRoadmapModule =
     resumeModuleIndex >= 0 ? modules[resumeModuleIndex + 1] ?? null : modules[0] ?? null;
 
-  const levelRows = roadmapLevels.map((level) => ({
-    ...level,
-    completedModules: level.id === "beginner" ? completedModuleCount : 0,
-    progress: level.id === "beginner" ? beginnerRoadmapProgress : 0,
-    locked:
-      level.id === "beginner"
-        ? false
-        : level.id === "intermediate"
-          ? !graduation.intermediateUnlocked
-          : true,
-    unlocked: level.id === "intermediate" && graduation.intermediateUnlocked,
-  }));
+  const levelRows = roadmapLevels.map((level) => {
+    const isBeginner = level.id === "beginner";
+    const isIntermediate = level.id === "intermediate";
+    return {
+      ...level,
+      completedModules: isBeginner
+        ? completedBeginnerModules
+        : isIntermediate
+          ? completedIntermediateModules
+          : 0,
+      progress: isBeginner
+        ? beginnerRoadmapProgress
+        : isIntermediate
+          ? intermediateRoadmapProgress
+          : 0,
+      locked: isBeginner ? false : isIntermediate ? !graduation.intermediateUnlocked : true,
+      unlocked: isIntermediate && graduation.intermediateUnlocked,
+    };
+  });
 
   const completedReviewLessons = [...(catalog?.lessons ?? [])]
     .filter((lesson) => completedLessonIds.includes(lesson.id))
@@ -136,6 +156,13 @@ export function HomePage() {
       </AppShell>
     );
   }
+
+  const currentLevelLabel =
+    resumeModule.id === "beginner-graduation"
+      ? "Sınav"
+      : resumeLevel?.id === "intermediate"
+        ? "Orta Seviye"
+        : "Başlangıç";
 
   return (
     <AppShell activeRoute={routes.home} context="Ana Sayfa / Müfredat">
@@ -258,7 +285,7 @@ export function HomePage() {
                   <h2>{resumeModule.title}</h2>
                 </div>
                 <span className={moduleCompleted ? styles.completeBadge : styles.levelBadge}>
-                  {moduleCompleted ? "Tamamlandı" : resumeModule.id === "beginner-graduation" ? "Sınav" : "Başlangıç"}
+                  {moduleCompleted ? "Tamamlandı" : currentLevelLabel}
                 </span>
               </header>
               <div className={styles.lessonList}>
@@ -293,7 +320,7 @@ export function HomePage() {
             <article className={styles.panel}>
               <header className={styles.panelHeader}>
                 <div>
-                  <span className={styles.eyebrow}>Yaklaşan sistemler</span>
+                  <span className={styles.eyebrow}>Aktif sistemler</span>
                   <h2>Python Farming laboratuvarı</h2>
                 </div>
               </header>
@@ -318,13 +345,11 @@ export function HomePage() {
               </div>
               <div className={styles.nextModuleState}>
                 <span>Sıradaki modül</span>
-                <strong>{nextRoadmapModule?.title ?? (graduation.graduated ? "Orta Seviye" : "Yeni içerik")}</strong>
+                <strong>{nextRoadmapModule?.title ?? "Yeni içerik"}</strong>
                 <small>
                   {nextRoadmapModule?.lessonIds.length
                     ? "Ön koşullar tamamlandı."
-                    : graduation.graduated
-                      ? "Orta Seviye yolu mezuniyet rozetiyle açıldı."
-                      : "Dersleri hazırlanıyor; yayımlandığında açılacak."}
+                    : "Dersleri hazırlanıyor; yayımlandığında açılacak."}
                 </small>
               </div>
             </article>
@@ -349,7 +374,7 @@ export function HomePage() {
             </div>
             <div className={styles.statRows}>
               <span><b>{completedPublishedLessons}</b> tamamlanan ders</span>
-              <span><b>{completedModuleCount}</b> tamamlanan ana modül</span>
+              <span><b>{completedPublishedModuleCount}</b> tamamlanan modül</span>
               <span><b>{totalXp}</b> toplam XP</span>
             </div>
           </article>

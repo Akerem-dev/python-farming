@@ -56,15 +56,32 @@ class TauriRuntimeClient implements RuntimeClient {
     this.emit({ type: "runtime_status", status: "busy" });
 
     try {
-      const response = await invoke<RuntimeResponse<TPayload>>("execute_python", {
-        request: {
-          requestId: request.requestId,
-          source: request.payload.source,
-          filename: request.payload.filename,
-          stdin: request.payload.stdin,
-          timeoutMs: request.payload.timeoutMs,
-        },
-      });
+      const projectFiles = request.payload.files ?? [];
+      const isProjectExecution =
+        projectFiles.length > 1 ||
+        projectFiles.some((file) => file.path.includes("/")) ||
+        Boolean(request.payload.entrypoint && request.payload.entrypoint !== request.payload.filename);
+
+      const response = isProjectExecution
+        ? await invoke<RuntimeResponse<TPayload>>("execute_python_project", {
+            request: {
+              requestId: request.requestId,
+              files: projectFiles,
+              entrypoint: request.payload.entrypoint ?? request.payload.filename,
+              stdin: request.payload.stdin,
+              timeoutMs: request.payload.timeoutMs,
+            },
+          })
+        : await invoke<RuntimeResponse<TPayload>>("execute_python", {
+            request: {
+              requestId: request.requestId,
+              source: request.payload.source,
+              filename: request.payload.filename,
+              stdin: request.payload.stdin,
+              timeoutMs: request.payload.timeoutMs,
+            },
+          });
+
       this.emit({ type: "runtime_status", status: "ready" });
       return response;
     } catch (error) {
