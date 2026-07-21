@@ -18,6 +18,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "code-ordering",
   "refactoring",
   "data-transformation",
+  "graduation",
 ]);
 
 function assertCatalog(value: unknown): asserts value is CurriculumCatalog {
@@ -215,6 +216,44 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasSequenceStructureCheck) {
       throw new Error(`${candidate.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
+    }
+  }
+
+  if (mode === "graduation") {
+    if (
+      !candidate.graduation ||
+      typeof candidate.graduation.badgeName !== "string" ||
+      typeof candidate.graduation.nextLevel !== "string" ||
+      !Array.isArray(candidate.graduation.topics) ||
+      candidate.graduation.topics.length < 6 ||
+      candidate.graduation.topics.some((topic) => typeof topic !== "string") ||
+      !Array.isArray(candidate.graduation.criteria) ||
+      candidate.graduation.criteria.length < 3 ||
+      candidate.graduation.criteria.some((criterion) => typeof criterion !== "string")
+    ) {
+      throw new Error(`${candidate.id} mezuniyet sınavı rehberi eksik.`);
+    }
+
+    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_definition",
+    );
+    const hasFunctionCasesCheck = candidate.validation.checks.some(
+      (check) => check.kind === "function_cases",
+    );
+    const requiredNodeNames = ["For", "If", "Dict"];
+    const hasRequiredNodes = requiredNodeNames.every((nodeName) =>
+      candidate.validation.checks.some(
+        (check) => check.kind === "node_count" && check.nodeName === nodeName,
+      ),
+    );
+    const hasSetCheck = candidate.validation.checks.some(
+      (check) =>
+        (check.kind === "node_count" && ["Set", "SetComp"].includes(check.nodeName)) ||
+        (check.kind === "call" && ["set", "add"].includes(check.name)),
+    );
+
+    if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasRequiredNodes || !hasSetCheck) {
+      throw new Error(`${candidate.id} mezuniyet sınavı kapsamlı yapısal testleri içermiyor.`);
     }
   }
 }
