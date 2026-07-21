@@ -4,6 +4,7 @@
     "/content/modules/python-introduction.json",
     "/content/modules/operators.json",
     "/content/modules/conditionals.json",
-    "/content/modules/loops.json"
+    "/content/modules/loops.json",
+    "/content/modules/functions.json"
   ]
 }
