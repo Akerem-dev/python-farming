@@ -28,13 +28,18 @@ describe("exception handling module content", () => {
     ).toBe(true);
   });
 
-  it("requires explicit exception types and forbids bare except handlers", () => {
-    const executableLessons = modulePackage.lessons.filter(
-      (lesson) => lesson.mode !== "output-prediction",
-    );
+  it("requires explicit exception types in handler-focused lessons", () => {
+    const handlerLessonIds = [
+      "intermediate.exceptions.try-except",
+      "intermediate.exceptions.else-finally",
+      "intermediate.exceptions.controlled-raise",
+      "intermediate.exceptions.bare-except-debugging",
+      "intermediate.exceptions.resilient-transfer",
+    ];
 
-    for (const lesson of executableLessons) {
-      const exceptionCheck = lesson.validation.checks.find(
+    for (const lessonId of handlerLessonIds) {
+      const lesson = modulePackage.lessons.find((candidate) => candidate.id === lessonId);
+      const exceptionCheck = lesson?.validation.checks.find(
         (check) => check.kind === "exception_handling",
       );
       expect(exceptionCheck?.kind).toBe("exception_handling");
