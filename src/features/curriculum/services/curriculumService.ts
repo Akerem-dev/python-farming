@@ -91,6 +91,7 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     throw new Error("Modül paketindeki ders yapısı beklenen biçimde değil.");
   }
 
+  const validation = candidate.validation;
   const mode = candidate.mode ?? "code";
   if (!lessonModes.has(mode)) {
     throw new Error(`${candidate.id} dersinde desteklenmeyen görev modu bulundu: ${mode}`);
@@ -113,8 +114,8 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     }
 
     const correctOptionId =
-      candidate.validation.answer?.kind === "choice"
-        ? candidate.validation.answer.correctOptionId
+      validation.answer?.kind === "choice"
+        ? validation.answer.correctOptionId
         : null;
     if (!correctOptionId || !optionIds.includes(correctOptionId)) {
       throw new Error(`${candidate.id} tahmin görevinin doğru cevabı seçenekler içinde değil.`);
@@ -138,8 +139,8 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
     }
 
     const correctBlockIds =
-      candidate.validation.answer?.kind === "order"
-        ? candidate.validation.answer.correctBlockIds
+      validation.answer?.kind === "order"
+        ? validation.answer.correctBlockIds
         : null;
     if (
       !correctBlockIds ||
@@ -176,10 +177,10 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       throw new Error(`${candidate.id} refactoring rehberi eksik.`);
     }
 
-    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+    const hasFunctionDefinitionCheck = validation.checks.some(
       (check) => check.kind === "function_definition",
     );
-    const hasFunctionCasesCheck = candidate.validation.checks.some(
+    const hasFunctionCasesCheck = validation.checks.some(
       (check) => check.kind === "function_cases",
     );
     if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck) {
@@ -202,13 +203,13 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       throw new Error(`${candidate.id} veri dönüştürme rehberi eksik.`);
     }
 
-    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+    const hasFunctionDefinitionCheck = validation.checks.some(
       (check) => check.kind === "function_definition",
     );
-    const hasFunctionCasesCheck = candidate.validation.checks.some(
+    const hasFunctionCasesCheck = validation.checks.some(
       (check) => check.kind === "function_cases",
     );
-    const hasSequenceStructureCheck = candidate.validation.checks.some(
+    const hasSequenceStructureCheck = validation.checks.some(
       (check) =>
         check.kind === "node_count" &&
         ["For", "ListComp"].includes(check.nodeName),
@@ -233,19 +234,19 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       throw new Error(`${candidate.id} mezuniyet sınavı rehberi eksik.`);
     }
 
-    const hasFunctionDefinitionCheck = candidate.validation.checks.some(
+    const hasFunctionDefinitionCheck = validation.checks.some(
       (check) => check.kind === "function_definition",
     );
-    const hasFunctionCasesCheck = candidate.validation.checks.some(
+    const hasFunctionCasesCheck = validation.checks.some(
       (check) => check.kind === "function_cases",
     );
     const requiredNodeNames = ["For", "If", "Dict"];
     const hasRequiredNodes = requiredNodeNames.every((nodeName) =>
-      candidate.validation.checks.some(
+      validation.checks.some(
         (check) => check.kind === "node_count" && check.nodeName === nodeName,
       ),
     );
-    const hasSetCheck = candidate.validation.checks.some(
+    const hasSetCheck = validation.checks.some(
       (check) =>
         (check.kind === "node_count" && ["Set", "SetComp"].includes(check.nodeName)) ||
         (check.kind === "call" && ["set", "add"].includes(check.name)),
