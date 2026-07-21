@@ -11,6 +11,7 @@
     "/content/modules/beginner-graduation.json",
     "/content/modules/modules-packages.json",
     "/content/modules/files-paths.json",
-    "/content/modules/exceptions.json"
+    "/content/modules/exceptions.json",
+    "/content/modules/comprehensions-iterators.json"
   ]
 }
