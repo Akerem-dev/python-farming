@@ -14,6 +14,7 @@ import {
   getCurrentLesson,
   useCurriculumStore,
 } from "../../features/curriculum/store/curriculumStore";
+import { DataTransformationGuide } from "../../features/dataTransformation/components/DataTransformationGuide";
 import { DebugGuide } from "../../features/debugging/components/DebugGuide";
 import { CodeOrderingPanel } from "../../features/learning/components/CodeOrderingPanel";
 import { PracticeAnswerPanel } from "../../features/learning/components/PracticeAnswerPanel";
@@ -51,6 +52,7 @@ const lessonModeLabels = {
   debugging: "Hata Avcısı",
   "code-ordering": "Kod sıralama",
   refactoring: "Refactoring",
+  "data-transformation": "Veri dönüşümü",
 } as const;
 
 type TerminalView = "output" | "tests";
@@ -70,6 +72,7 @@ export function WorkspacePage() {
   const isDebugging = lessonMode === "debugging";
   const isCodeOrdering = lessonMode === "code-ordering";
   const isRefactoring = lessonMode === "refactoring";
+  const isDataTransformation = lessonMode === "data-transformation";
   const usesLocalAnswer = isOutputPrediction || isCodeOrdering;
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
@@ -166,16 +169,20 @@ export function WorkspacePage() {
     ">>> Kod sıralama görevi hazır.\n>>> Blokları çalışan program sırasına getir; sağdaki ön izleme otomatik güncellenir.";
   const refactoringIntro =
     ">>> Refactoring laboratuvarı hazır.\n>>> Önce mevcut davranışı çalıştır; sonra tekrarı fonksiyona taşı ve aynı çıktıyı koru.";
+  const dataTransformationIntro =
+    ">>> Veri Dönüştürme Laboratuvarı hazır.\n>>> Kaynak listeyi değiştirmeden kurallara göre yeni hedef listeyi üret.";
   const displayedTerminalText =
     isOutputPrediction && !runtimeOutput && !runtimeError
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
       : isCodeOrdering && !runtimeOutput && !runtimeError
         ? orderingIntro
-        : isRefactoring && !runtimeOutput && !runtimeError
-          ? refactoringIntro
-          : isDebugging && !runtimeOutput && !runtimeError
-            ? debuggingIntro
-            : terminalText;
+        : isDataTransformation && !runtimeOutput && !runtimeError
+          ? dataTransformationIntro
+          : isRefactoring && !runtimeOutput && !runtimeError
+            ? refactoringIntro
+            : isDebugging && !runtimeOutput && !runtimeError
+              ? debuggingIntro
+              : terminalText;
   const terminalHasError =
     runtimeStatus === "offline" ||
     runtimeStatus === "error" ||
@@ -360,29 +367,35 @@ export function WorkspacePage() {
         ? "Tahmini Kontrol Et"
         : isCodeOrdering
           ? "Sıralamayı Kontrol Et"
-          : isRefactoring
-            ? "Refactor'ı Kontrol Et"
-            : isDebugging
-              ? "Düzeltmeyi Kontrol Et"
-              : isCodeCompletion
-                ? "Eksikleri Kontrol Et"
-                : "Görevi Kontrol Et";
+          : isDataTransformation
+            ? "Dönüşümü Kontrol Et"
+            : isRefactoring
+              ? "Refactor'ı Kontrol Et"
+              : isDebugging
+                ? "Düzeltmeyi Kontrol Et"
+                : isCodeCompletion
+                  ? "Eksikleri Kontrol Et"
+                  : "Görevi Kontrol Et";
   const resetLabel = isOutputPrediction
     ? "Tahmini temizle"
     : isCodeOrdering
       ? "İlk sıralamaya dön"
-      : isRefactoring
-        ? "Eski koda dön"
-        : isDebugging
-          ? "Hatalı koda dön"
-          : "Başlangıç koduna dön";
+      : isDataTransformation
+        ? "Başlangıç verisine dön"
+        : isRefactoring
+          ? "Eski koda dön"
+          : isDebugging
+            ? "Hatalı koda dön"
+            : "Başlangıç koduna dön";
   const runLabel = runtimeStatus === "running"
     ? "Çalıştırılıyor…"
-    : isRefactoring
-      ? "Refactor'ı Çalıştır"
-      : isDebugging
-        ? "Kodu / Hatayı Çalıştır"
-        : "Çalıştır";
+    : isDataTransformation
+      ? "Dönüşümü Çalıştır"
+      : isRefactoring
+        ? "Refactor'ı Çalıştır"
+        : isDebugging
+          ? "Kodu / Hatayı Çalıştır"
+          : "Çalıştır";
   const editorReadOnly = isOutputPrediction || isCodeOrdering;
   const context = `Başlangıç / ${currentModule?.number ?? ""}.${currentLesson.order} ${currentLesson.title}`;
 
@@ -424,9 +437,11 @@ export function WorkspacePage() {
                     ? "Düzeltme sonrası çıktı"
                     : isCodeOrdering
                       ? "Doğru program çıktısı"
-                      : isRefactoring
-                        ? "Refactor sonrası çıktı"
-                        : "Örnek çıktı"}
+                      : isDataTransformation
+                        ? "Hedef veri çıktısı"
+                        : isRefactoring
+                          ? "Refactor sonrası çıktı"
+                          : "Örnek çıktı"}
               </span>
               <pre>{currentLesson.task.sampleOutput}</pre>
             </div>
@@ -462,6 +477,10 @@ export function WorkspacePage() {
 
           {isRefactoring && currentLesson.refactoring ? (
             <RefactoringGuide guide={currentLesson.refactoring} />
+          ) : null}
+
+          {isDataTransformation && currentLesson.dataTransformation ? (
+            <DataTransformationGuide guide={currentLesson.dataTransformation} />
           ) : null}
 
           <StdinPanel
