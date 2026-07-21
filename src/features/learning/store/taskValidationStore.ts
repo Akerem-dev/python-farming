@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
 import { validateExceptionTask } from "../services/exceptionTaskValidationService";
+import { validateOopTask } from "../services/oopTaskValidationService";
 import { validateOrderAnswer } from "../services/orderValidationService";
 import { validateProjectTask } from "../services/projectTaskValidationService";
 import {
@@ -65,6 +66,12 @@ function clearedValidationState() {
     errorMessage: null,
     isCompletionOpen: false,
   };
+}
+
+function requiresOopValidation(spec: TaskValidationSpec) {
+  return spec.checks.some(
+    (check) => check.kind === "class_definition" || check.kind === "class_cases",
+  );
 }
 
 function requiresExceptionValidation(spec: TaskValidationSpec) {
@@ -154,16 +161,18 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : requiresExceptionValidation(spec)
-              ? await validateExceptionTask({ files, entrypoint, stdin, spec })
-              : requiresProjectValidation(files, spec)
-                ? await validateProjectTask({ files, entrypoint, stdin, spec })
-                : await validateTaskSource({
-                    source: entrypointFile.content,
-                    filename: entrypointFile.path,
-                    stdin,
-                    spec,
-                  });
+            : requiresOopValidation(spec)
+              ? await validateOopTask({ files, entrypoint, stdin, spec })
+              : requiresExceptionValidation(spec)
+                ? await validateExceptionTask({ files, entrypoint, stdin, spec })
+                : requiresProjectValidation(files, spec)
+                  ? await validateProjectTask({ files, entrypoint, stdin, spec })
+                  : await validateTaskSource({
+                      source: entrypointFile.content,
+                      filename: entrypointFile.path,
+                      stdin,
+                      spec,
+                    });
 
       set({
         status: result.passed ? "passed" : "failed",
