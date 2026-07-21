@@ -42,6 +42,16 @@ function createRows(documents: EditorDocument[]): TreeRow[] {
   return rows;
 }
 
+function fileIcon(document: EditorDocument) {
+  if (document.language === "python") {
+    return "PY";
+  }
+  if (document.language === "json") {
+    return "{}";
+  }
+  return document.path.endsWith(".csv") ? "CSV" : "TXT";
+}
+
 export function ProjectTree({
   documents,
   activeDocumentId,
@@ -76,7 +86,9 @@ export function ProjectTree({
               style={{ paddingLeft: `${14 + row.depth * 14}px` }}
               title={row.document.path}
             >
-              <span className={styles.fileIcon}>PY</span>
+              <span className={styles.fileIcon} data-language={row.document.language}>
+                {fileIcon(row.document)}
+              </span>
               <b>{row.label}</b>
               {row.document.path === entrypoint ? <small>Giriş</small> : null}
               {row.document.readOnly ? <i aria-label="Salt okunur">◇</i> : null}
