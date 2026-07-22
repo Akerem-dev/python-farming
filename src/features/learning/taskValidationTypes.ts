@@ -103,6 +103,11 @@ export type TaskCheck =
       requiredProperties?: string[];
       requiredSetters?: string[];
       requiredAttributes?: string[];
+      requiredBases?: string[];
+      requiredClassMethods?: string[];
+      requiredStaticMethods?: string[];
+      requiredOverrides?: string[];
+      requiredSuperCalls?: string[];
       file?: string;
     })
   | (TaskCheckBase & {

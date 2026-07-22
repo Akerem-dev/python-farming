@@ -151,8 +151,16 @@ for path in file_paths:
             "properties": set(),
             "setters": set(),
             "attributes": set(),
+            "bases": set(),
+            "classMethods": set(),
+            "staticMethods": set(),
+            "superMethods": set(),
             "initParameterCount": 0,
         }
+        for base in node.bases:
+            base_name = dotted_name(base)
+            if base_name:
+                class_info["bases"].add(base_name)
 
         for child in node.body:
             if not isinstance(child, (ast.FunctionDef, ast.AsyncFunctionDef)):
@@ -165,12 +173,22 @@ for path in file_paths:
             decorators = [name for decorator in child.decorator_list if (name := decorator_name(decorator))]
             if "property" in decorators:
                 class_info["properties"].add(child.name)
+            if "classmethod" in decorators:
+                class_info["classMethods"].add(child.name)
+            if "staticmethod" in decorators:
+                class_info["staticMethods"].add(child.name)
             for decorator in decorators:
                 if decorator.endswith(".setter"):
                     class_info["setters"].add(decorator.rsplit(".", 1)[0])
 
             for method_node in ast.walk(child):
-                if isinstance(method_node, ast.Assign):
+                if (
+                    isinstance(method_node, ast.Call)
+                    and isinstance(method_node.func, ast.Name)
+                    and method_node.func.id == "super"
+                ):
+                    class_info["superMethods"].add(child.name)
+                elif isinstance(method_node, ast.Assign):
                     for target in method_node.targets:
                         collect_self_targets(target, class_info["attributes"])
                 elif isinstance(method_node, ast.AnnAssign):
@@ -298,6 +316,11 @@ for check in spec.get("checks", []):
         required_properties = set(check.get("requiredProperties", []))
         required_setters = set(check.get("requiredSetters", []))
         required_attributes = set(check.get("requiredAttributes", []))
+        required_bases = set(check.get("requiredBases", []))
+        required_class_methods = set(check.get("requiredClassMethods", []))
+        required_static_methods = set(check.get("requiredStaticMethods", []))
+        required_overrides = set(check.get("requiredOverrides", []))
+        required_super_calls = set(check.get("requiredSuperCalls", []))
 
         if info is None:
             passed = False
@@ -307,6 +330,11 @@ for check in spec.get("checks", []):
             missing_properties = sorted(required_properties - info["properties"])
             missing_setters = sorted(required_setters - info["setters"])
             missing_attributes = sorted(required_attributes - info["attributes"])
+            missing_bases = sorted(required_bases - info["bases"])
+            missing_class_methods = sorted(required_class_methods - info["classMethods"])
+            missing_static_methods = sorted(required_static_methods - info["staticMethods"])
+            missing_overrides = sorted(required_overrides - set(info["methods"]))
+            missing_super_calls = sorted(required_super_calls - info["superMethods"])
             init_ok = count_ok(info["initParameterCount"], minimum, maximum)
             passed = (
                 init_ok
@@ -314,6 +342,11 @@ for check in spec.get("checks", []):
                 and not missing_properties
                 and not missing_setters
                 and not missing_attributes
+                and not missing_bases
+                and not missing_class_methods
+                and not missing_static_methods
+                and not missing_overrides
+                and not missing_super_calls
             )
             if not init_ok:
                 message = (
@@ -328,6 +361,16 @@ for check in spec.get("checks", []):
                 message = f"Eksik property setter alanları: {', '.join(missing_setters)}."
             elif missing_attributes:
                 message = f"Eksik instance attribute alanları: {', '.join(missing_attributes)}."
+            elif missing_bases:
+                message = f"Eksik base sınıflar: {', '.join(missing_bases)}."
+            elif missing_class_methods:
+                message = f"Eksik classmethod alanları: {', '.join(missing_class_methods)}."
+            elif missing_static_methods:
+                message = f"Eksik staticmethod alanları: {', '.join(missing_static_methods)}."
+            elif missing_overrides:
+                message = f"Override edilmesi gereken metotlar eksik: {', '.join(missing_overrides)}."
+            elif missing_super_calls:
+                message = f"super() çağrısı eksik metotlar: {', '.join(missing_super_calls)}."
             else:
                 message = f"{check['name']} sınıf yapısı doğru."
     elif runtime_error is not None:
