@@ -28,6 +28,7 @@ import { useLearningStore } from "../../features/learning/store/learningStore";
 import { useTaskValidationStore } from "../../features/learning/store/taskValidationStore";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import { RefactoringGuide } from "../../features/refactoring/components/RefactoringGuide";
+import { TestingGuide } from "../../features/testing/components/TestingGuide";
 import { AppShell } from "../../layouts/AppShell";
 import { formatTerminalOutput } from "../../runtime/terminalFormatter";
 import { useRuntimeStore } from "../../runtime/runtimeStore";
@@ -56,6 +57,7 @@ const lessonModeLabels = {
   refactoring: "Refactoring",
   "data-transformation": "Veri dönüşümü",
   "file-processing": "Dosya laboratuvarı",
+  "test-lab": "Test laboratuvarı",
 } as const;
 
 const languageLabels = {
@@ -83,6 +85,7 @@ export function WorkspacePage() {
   const isRefactoring = lessonMode === "refactoring";
   const isDataTransformation = lessonMode === "data-transformation";
   const isFileProcessing = lessonMode === "file-processing";
+  const isTestingLab = lessonMode === "test-lab";
   const usesLocalAnswer = isOutputPrediction || isCodeOrdering;
 
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
@@ -199,6 +202,8 @@ export function WorkspacePage() {
     ">>> Veri Dönüştürme Laboratuvarı hazır.\n>>> Kaynak listeyi değiştirmeden kurallara göre yeni hedef listeyi üret.";
   const fileProcessingIntro =
     `>>> Dosya Sistemi Laboratuvarı hazır.\n>>> Giriş dosyası: ${entrypoint}\n>>> Bütün okuma ve yazma işlemleri geçici proje klasörüyle sınırlandırılır.`;
+  const testingIntro =
+    ">>> Test Laboratuvarı hazır.\n>>> Test paketi doğru uygulamada çalıştırılır ve gizli hatalı uygulamalara karşı yeniden sınanır.";
   const projectIntro =
     `>>> Çok dosyalı proje hazır.\n>>> Giriş dosyası: ${entrypoint}\n>>> Sol proje ağacından modül ve paket dosyaları arasında geçiş yap.`;
   const displayedTerminalText =
@@ -206,8 +211,10 @@ export function WorkspacePage() {
       ? ">>> Kodu çalıştırmadan önce çıktıyı tahmin et.\n>>> Seçimini yaptıktan sonra ‘Tahmini Kontrol Et’ düğmesini kullan."
       : isCodeOrdering && !runtimeOutput && !runtimeError
         ? orderingIntro
-        : isFileProcessing && !runtimeOutput && !runtimeError
-          ? fileProcessingIntro
+        : isTestingLab && !runtimeOutput && !runtimeError
+          ? testingIntro
+          : isFileProcessing && !runtimeOutput && !runtimeError
+            ? fileProcessingIntro
           : isMultiFileWorkspace && !runtimeOutput && !runtimeError
             ? projectIntro
             : isDataTransformation && !runtimeOutput && !runtimeError
@@ -390,8 +397,10 @@ export function WorkspacePage() {
         ? "Tahmini Kontrol Et"
         : isCodeOrdering
           ? "Sıralamayı Kontrol Et"
-          : isFileProcessing
-            ? "Dosyaları Kontrol Et"
+          : isTestingLab
+            ? "Testleri Çalıştır"
+            : isFileProcessing
+              ? "Dosyaları Kontrol Et"
             : isMultiFileWorkspace
               ? "Projeyi Kontrol Et"
               : isDataTransformation
@@ -407,8 +416,10 @@ export function WorkspacePage() {
     ? "Tahmini temizle"
     : isCodeOrdering
       ? "İlk sıralamaya dön"
-      : isFileProcessing
-        ? "Dosya projesini sıfırla"
+      : isTestingLab
+        ? "Test dosyalarını sıfırla"
+        : isFileProcessing
+          ? "Dosya projesini sıfırla"
         : isMultiFileWorkspace
           ? "Proje dosyalarını sıfırla"
           : isDataTransformation
@@ -420,8 +431,10 @@ export function WorkspacePage() {
                 : "Başlangıç koduna dön";
   const runLabel = runtimeStatus === "running"
     ? "Çalıştırılıyor…"
-    : isFileProcessing
-      ? "Dosya işlemini çalıştır"
+    : isTestingLab
+      ? "Testleri Çalıştır"
+      : isFileProcessing
+        ? "Dosya işlemini çalıştır"
       : isMultiFileWorkspace
         ? "Projeyi Çalıştır"
         : isDataTransformation
@@ -472,8 +485,10 @@ export function WorkspacePage() {
                     ? "Düzeltme sonrası çıktı"
                     : isCodeOrdering
                       ? "Doğru program çıktısı"
-                      : isFileProcessing
-                        ? "Dosya / terminal çıktısı"
+                      : isTestingLab
+                        ? "Beklenen test sonucu"
+                        : isFileProcessing
+                          ? "Dosya / terminal çıktısı"
                         : isDataTransformation
                           ? "Hedef veri çıktısı"
                           : isRefactoring
@@ -522,6 +537,10 @@ export function WorkspacePage() {
 
           {currentLesson.fileSystem ? (
             <FileSystemGuide guide={currentLesson.fileSystem} />
+          ) : null}
+
+          {isTestingLab && currentLesson.testing ? (
+            <TestingGuide guide={currentLesson.testing} />
           ) : null}
 
           <StdinPanel
@@ -654,13 +673,13 @@ export function WorkspacePage() {
           <div className={styles.runActions}>
             <Button onClick={handleReset}>{resetLabel}</Button>
             <Button
-              variant={usesLocalAnswer ? "primary" : undefined}
+              variant={usesLocalAnswer || isTestingLab ? "primary" : undefined}
               onClick={() => void handleValidate()}
               disabled={validationDisabled}
             >
               {validationLabel}
             </Button>
-            {!usesLocalAnswer ? (
+            {!usesLocalAnswer && !isTestingLab ? (
               <Button
                 variant="primary"
                 onClick={handleRun}

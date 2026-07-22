@@ -19,6 +19,7 @@ const lessonModes = new Set<CurriculumLessonMode>([
   "refactoring",
   "data-transformation",
   "file-processing",
+  "test-lab",
 ]);
 const allowedWorkspaceExtensions = new Set(["py", "txt", "json", "csv"]);
 
@@ -332,6 +333,68 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
       throw new Error(`${lesson.id} dosya laboratuvarı veri dosyası ve dosya testleri içermiyor.`);
     }
   }
+
+
+if (mode === "test-lab") {
+  const guide = lesson.testing;
+  if (
+    !guide ||
+    typeof guide.labTitle !== "string" ||
+    typeof guide.objective !== "string" ||
+    !Array.isArray(guide.sourceFiles) ||
+    guide.sourceFiles.length === 0 ||
+    guide.sourceFiles.some((path) => typeof path !== "string" || !isSafeWorkspacePath(path)) ||
+    !Array.isArray(guide.testFiles) ||
+    guide.testFiles.length === 0 ||
+    guide.testFiles.some(
+      (path) =>
+        typeof path !== "string" ||
+        !isSafeWorkspacePath(path) ||
+        !path.endsWith(".py") ||
+        !path.split("/").at(-1)?.startsWith("test_"),
+    ) ||
+    !Array.isArray(guide.principles) ||
+    guide.principles.length < 2 ||
+    guide.principles.some((principle) => typeof principle !== "string") ||
+    !Array.isArray(guide.workflow) ||
+    guide.workflow.length < 2 ||
+    guide.workflow.some((step) => typeof step !== "string")
+  ) {
+    throw new Error(`${lesson.id} test laboratuvarı rehberi eksik.`);
+  }
+
+  const workspacePaths = new Set(lesson.editor.files?.map((file) => file.path) ?? []);
+  const referencedPaths = [...guide.sourceFiles, ...guide.testFiles];
+  if (referencedPaths.some((path) => !workspacePaths.has(path))) {
+    throw new Error(`${lesson.id} test laboratuvarı çalışma alanında eksik dosya içeriyor.`);
+  }
+
+  const suiteChecks = validation.checks.filter((check) => check.kind === "test_suite");
+  if (suiteChecks.length === 0) {
+    throw new Error(`${lesson.id} test laboratuvarı test_suite kontrolü içermiyor.`);
+  }
+  for (const check of suiteChecks) {
+    if (
+      check.testFiles.length === 0 ||
+      check.testFiles.some((path) => !guide.testFiles.includes(path)) ||
+      check.minTests < 1 ||
+      check.minAssertions < 0 ||
+      (check.minParametrizeCases !== undefined && check.minParametrizeCases < 0) ||
+      check.mutants.length === 0 ||
+      check.mutants.some(
+        (mutant) =>
+          typeof mutant.id !== "string" ||
+          typeof mutant.label !== "string" ||
+          typeof mutant.file !== "string" ||
+          !workspacePaths.has(mutant.file) ||
+          typeof mutant.source !== "string" ||
+          mutant.source.length === 0,
+      )
+    ) {
+      throw new Error(`${lesson.id} test paketi doğrulama verisi geçersiz.`);
+    }
+  }
+}
 
   if (lesson.graduation) {
     if (
