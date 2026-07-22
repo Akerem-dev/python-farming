@@ -106,24 +106,24 @@ replacements = [
         '  const testingIntro =\n    ">>> Test Laboratuvarı hazır.\\n>>> Test paketi doğru uygulamada çalıştırılır ve gizli hatalı uygulamalara karşı yeniden sınanır.";\n  const projectIntro =\n',
     ),
     (
-        "       : isFileProcessing && !runtimeOutput && !runtimeError\n           ? fileProcessingIntro",
-        "       : isTestingLab && !runtimeOutput && !runtimeError\n         ? testingIntro\n         : isFileProcessing && !runtimeOutput && !runtimeError\n           ? fileProcessingIntro",
+        ": isFileProcessing && !runtimeOutput && !runtimeError\n          ? fileProcessingIntro",
+        ": isTestingLab && !runtimeOutput && !runtimeError\n          ? testingIntro\n          : isFileProcessing && !runtimeOutput && !runtimeError\n            ? fileProcessingIntro",
     ),
     (
-        '           : isFileProcessing\n             ? "Dosyaları Kontrol Et"',
-        '           : isTestingLab\n             ? "Testleri Çalıştır"\n             : isFileProcessing\n               ? "Dosyaları Kontrol Et"',
+        ': isFileProcessing\n            ? "Dosyaları Kontrol Et"',
+        ': isTestingLab\n            ? "Testleri Çalıştır"\n            : isFileProcessing\n              ? "Dosyaları Kontrol Et"',
     ),
     (
-        '     : isCodeOrdering\n       ? "İlk sıralamaya dön"\n       : isFileProcessing',
-        '     : isCodeOrdering\n       ? "İlk sıralamaya dön"\n       : isTestingLab\n         ? "Test dosyalarını sıfırla"\n         : isFileProcessing',
+        ': isFileProcessing\n        ? "Dosya projesini sıfırla"',
+        ': isTestingLab\n        ? "Test dosyalarını sıfırla"\n        : isFileProcessing\n          ? "Dosya projesini sıfırla"',
     ),
     (
-        '    : isFileProcessing\n      ? "Dosya işlemini çalıştır"',
-        '    : isTestingLab\n      ? "Testleri Çalıştır"\n      : isFileProcessing\n        ? "Dosya işlemini çalıştır"',
+        ': isFileProcessing\n      ? "Dosya işlemini çalıştır"',
+        ': isTestingLab\n      ? "Testleri Çalıştır"\n      : isFileProcessing\n        ? "Dosya işlemini çalıştır"',
     ),
     (
-        '                     : isFileProcessing\n                         ? "Dosya / terminal çıktısı"',
-        '                     : isTestingLab\n                         ? "Beklenen test sonucu"\n                         : isFileProcessing\n                           ? "Dosya / terminal çıktısı"',
+        ': isFileProcessing\n                        ? "Dosya / terminal çıktısı"',
+        ': isTestingLab\n                        ? "Beklenen test sonucu"\n                        : isFileProcessing\n                          ? "Dosya / terminal çıktısı"',
     ),
     (
         "          {currentLesson.fileSystem ? (\n            <FileSystemGuide guide={currentLesson.fileSystem} />\n          ) : null}\n\n          <StdinPanel",
