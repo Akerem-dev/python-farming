@@ -13,6 +13,7 @@
     "/content/modules/files-paths.json",
     "/content/modules/exceptions.json",
     "/content/modules/comprehensions-iterators.json",
-    "/content/modules/oop-basics.json"
+    "/content/modules/oop-basics.json",
+    "/content/modules/classes-inheritance.json"
   ]
 }

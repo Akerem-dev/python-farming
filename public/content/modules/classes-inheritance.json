@@ -1,0 +1,855 @@
+{
+  "moduleId": "classes-inheritance",
+  "lessons": [
+    {
+      "id": "intermediate.inheritance.first-subclass",
+      "moduleId": "classes-inheritance",
+      "order": 1,
+      "title": "İlk alt sınıfını oluştur",
+      "summary": "Kalıtım, ortak veri ve davranışları bir temel sınıfta tutup alt sınıflarda yeniden kullanmanı sağlar.",
+      "levelLabel": "Intermediate Inheritance",
+      "mode": "code",
+      "task": {
+        "title": "Calisan sınıfından Yazilimci türet",
+        "instructions": [
+          "Calisan sınıfını ad ve maas bilgileriyle oluştur.",
+          "bilgi() metodundan ad ve maaş metnini return et.",
+          "Yazilimci sınıfını Calisan sınıfından türet.",
+          "Yazilimci içine teknoloji() metodunu ekleyip Python döndür."
+        ],
+        "requirements": [
+          "Yazilimci(Calisan) kalıtım sözdizimi kullanılmalı.",
+          "Yazilimci nesnesi Calisan.__init__ davranışını yeniden kullanmalı.",
+          "Alt sınıf hem bilgi() hem teknoloji() metotlarına erişebilmeli."
+        ],
+        "sampleOutput": "Ada - 50000 TL\nTeknoloji: Python",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Calisan temel sınıfını ve Yazilimci alt sınıfını yaz\n\nyazilimci = Yazilimci(\"Ada\", 50000)\nprint(yazilimci.bilgi())\nprint(f\"Teknoloji: {yazilimci.teknoloji()}\")"
+      },
+      "hints": [
+        {
+          "title": "Temel sınıf",
+          "body": "Calisan.__init__ içinde self.ad ve self.maas alanlarını oluştur."
+        },
+        {
+          "title": "Kalıtım parantezle belirtilir",
+          "body": "Alt sınıf başlığı class Yazilimci(Calisan): biçimindedir."
+        },
+        {
+          "title": "Constructor tekrarına gerek yok",
+          "body": "Yazilimci kendi __init__ metodunu yazmazsa Calisan.__init__ metodunu kullanır."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.first-subclass",
+        "title": "Calisan sınıfından Yazilimci türet",
+        "xpReward": 70,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "employee-class",
+            "kind": "class_definition",
+            "name": "Calisan",
+            "minInitParams": 2,
+            "maxInitParams": 2,
+            "requiredMethods": ["__init__", "bilgi"],
+            "requiredAttributes": ["ad", "maas"],
+            "label": "Calisan temel sınıfı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "developer-class",
+            "kind": "class_definition",
+            "name": "Yazilimci",
+            "minInitParams": 0,
+            "requiredMethods": ["teknoloji"],
+            "requiredBases": ["Calisan"],
+            "label": "Yazilimci sınıfı Calisan'dan türetildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "developer-cases",
+            "kind": "class_cases",
+            "name": "Yazilimci",
+            "cases": [
+              {
+                "initArgs": ["Ada", 50000],
+                "observe": { "kind": "method", "name": "bilgi", "args": [] },
+                "expected": "Ada - 50000 TL"
+              },
+              {
+                "initArgs": ["Mert", 42000],
+                "observe": { "kind": "method", "name": "teknoloji", "args": [] },
+                "expected": "Python"
+              }
+            ],
+            "label": "Gizli kalıtım senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AAda - 50000 TL\\s*\\nTeknoloji:\\s*Python\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.inheritance.super-prediction",
+      "moduleId": "classes-inheritance",
+      "order": 2,
+      "title": "super() akışını tahmin et",
+      "summary": "super(), alt sınıftan temel sınıfın metoduna erişir ve ortak başlatma davranışının tekrar edilmesini önler.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi metin görünür?",
+        "options": [
+          { "id": "answer-premium", "label": "Premium / Aktif" },
+          { "id": "answer-active", "label": "Aktif" },
+          { "id": "answer-premium-none", "label": "Premium / None" },
+          { "id": "answer-error", "label": "AttributeError" }
+        ]
+      },
+      "task": {
+        "title": "Temel ve alt constructor sırasını takip et",
+        "instructions": [
+          "PremiumUyelik.__init__ çağrısının önce hangi satırı çalıştırdığını belirle.",
+          "super().__init__ çağrısının durum attribute alanını oluşturduğunu takip et.",
+          "Alt sınıfın seviye attribute alanını eklediğini uygula.",
+          "etiket() metodundaki iki değeri birleştir."
+        ],
+        "requirements": [
+          "super().__init__ temel constructor'ı çalıştırır.",
+          "Aynı nesne hem durum hem seviye alanına sahip olur.",
+          "Kod çalıştırılmadan tahmin yapılmalı."
+        ],
+        "sampleOutput": "Tek satırda üyelik etiketi",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Uyelik:\n    def __init__(self):\n        self.durum = \"Aktif\"\n\nclass PremiumUyelik(Uyelik):\n    def __init__(self):\n        super().__init__()\n        self.seviye = \"Premium\"\n\n    def etiket(self):\n        return f\"{self.seviye} / {self.durum}\"\n\nuyelik = PremiumUyelik()\nprint(uyelik.etiket())"
+      },
+      "hints": [
+        {
+          "title": "super() aynı nesneyi başlatır",
+          "body": "Uyelik.__init__ ayrı bir nesne oluşturmaz; PremiumUyelik nesnesine durum alanını ekler."
+        },
+        {
+          "title": "Alt sınıf devam eder",
+          "body": "Temel constructor bittikten sonra self.seviye = Premium satırı çalışır."
+        },
+        {
+          "title": "İki attribute",
+          "body": "etiket() önce seviye, sonra durum değerini yazdırır."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.super-prediction",
+        "title": "Temel ve alt constructor sırasını takip et",
+        "xpReward": 55,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-premium"
+        }
+      }
+    },
+    {
+      "id": "intermediate.inheritance.method-overriding",
+      "moduleId": "classes-inheritance",
+      "order": 3,
+      "title": "Method overriding tamamla",
+      "summary": "Alt sınıf, temel sınıftaki bir metodu aynı isimle yeniden tanımlayarak davranışı özelleştirebilir.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "SMS bildirim davranışını override et",
+        "instructions": [
+          "SmsBildirim sınıfını Bildirim sınıfından türet.",
+          "gonder() metodundaki yer tutucuyu SMS gönderildi. metniyle değiştir.",
+          "Temel sınıf metodunu değiştirmeden bırak.",
+          "Alt sınıf nesnesinin özelleştirilmiş çıktısını çalıştır."
+        ],
+        "requirements": [
+          "SmsBildirim, Bildirim sınıfını base class olarak kullanmalı.",
+          "gonder metodu alt sınıfta yeniden tanımlanmalı.",
+          "Çağrı alt sınıf davranışını döndürmeli."
+        ],
+        "sampleOutput": "SMS gönderildi.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Bildirim:\n    def gonder(self):\n        return \"Genel bildirim gönderildi.\"\n\nclass SmsBildirim(__BASE_CLASS__):\n    def gonder(self):\n        return __SMS_METNI__\n\nbildirim = SmsBildirim()\nprint(bildirim.gonder())"
+      },
+      "hints": [
+        {
+          "title": "Base class adı",
+          "body": "__BASE_CLASS__ yerine Bildirim yaz."
+        },
+        {
+          "title": "Aynı metot adı",
+          "body": "Override için alt sınıftaki metodun adı da gonder olmalı."
+        },
+        {
+          "title": "Yer tutucuyu tamamen değiştir",
+          "body": "__SMS_METNI__ yerine tırnak içinde SMS gönderildi. metnini yaz."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.method-overriding",
+        "title": "SMS bildirim davranışını override et",
+        "xpReward": 80,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "notification-base",
+            "kind": "class_definition",
+            "name": "Bildirim",
+            "minInitParams": 0,
+            "requiredMethods": ["gonder"],
+            "label": "Bildirim temel sınıfı korunuyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "sms-override",
+            "kind": "class_definition",
+            "name": "SmsBildirim",
+            "minInitParams": 0,
+            "requiredBases": ["Bildirim"],
+            "requiredOverrides": ["gonder"],
+            "label": "gonder() alt sınıfta override edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "sms-cases",
+            "kind": "class_cases",
+            "name": "SmsBildirim",
+            "cases": [
+              {
+                "initArgs": [],
+                "observe": { "kind": "method", "name": "gonder", "args": [] },
+                "expected": "SMS gönderildi."
+              }
+            ],
+            "label": "Gizli overriding senaryosu",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ASMS gönderildi\\.\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.inheritance.missing-super-debugging",
+      "moduleId": "classes-inheritance",
+      "order": 4,
+      "title": "Hata Avcısı: unutulan super()",
+      "summary": "Alt sınıf kendi constructor'ını yazdığında temel sınıfın başlatma davranışı otomatik çalışmaz; gerektiğinde super().__init__ açıkça çağrılmalıdır.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "AttributeError",
+        "symptom": "IndirimliUrun nesnesinde oran alanı var fakat temel sınıfın oluşturması gereken ad alanı bulunmuyor.",
+        "workflow": [
+          "Başlangıç kodunu çalıştır ve AttributeError mesajındaki eksik attribute adını oku.",
+          "IndirimliUrun.__init__ içinde temel constructor'ın çağrılmadığını fark et.",
+          "super().__init__(ad) satırını doğru yere ekle.",
+          "Alt sınıfın oran alanını ve etiket çıktısını koruyarak yeniden doğrula."
+        ]
+      },
+      "task": {
+        "title": "Temel sınıf başlatmasını geri getir",
+        "instructions": [
+          "Kodu önce çalıştırıp gerçek AttributeError hatasını gör.",
+          "IndirimliUrun.__init__ içine super().__init__(ad) ekle.",
+          "self.oran atamasını koru.",
+          "etiket() çıktısının Defter - %20 olduğunu doğrula."
+        ],
+        "requirements": [
+          "IndirimliUrun, Urun sınıfından türemeli.",
+          "__init__ içinde gerçek super() çağrısı bulunmalı.",
+          "ad ve oran aynı alt sınıf nesnesinde kullanılmalı."
+        ],
+        "sampleOutput": "Defter - %20",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Urun:\n    def __init__(self, ad):\n        self.ad = ad\n\nclass IndirimliUrun(Urun):\n    def __init__(self, ad, oran):\n        self.oran = oran\n\n    def etiket(self):\n        return f\"{self.ad} - %{self.oran}\"\n\nurun = IndirimliUrun(\"Defter\", 20)\nprint(urun.etiket())"
+      },
+      "hints": [
+        {
+          "title": "Alt constructor temel olanı gölgeler",
+          "body": "IndirimliUrun kendi __init__ metodunu yazdığı için Urun.__init__ otomatik çalışmaz."
+        },
+        {
+          "title": "Temel başlatma",
+          "body": "Alt constructor'ın ilk satırına super().__init__(ad) ekle."
+        },
+        {
+          "title": "Alt sınıf alanını koru",
+          "body": "self.oran = oran satırını silme; iki constructor davranışı birlikte çalışmalı."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.missing-super-debugging",
+        "title": "Temel sınıf başlatmasını geri getir",
+        "xpReward": 90,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "discount-product",
+            "kind": "class_definition",
+            "name": "IndirimliUrun",
+            "minInitParams": 2,
+            "maxInitParams": 2,
+            "requiredMethods": ["__init__", "etiket"],
+            "requiredAttributes": ["oran"],
+            "requiredBases": ["Urun"],
+            "requiredSuperCalls": ["__init__"],
+            "label": "Alt sınıf super() ile doğru başlatılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "discount-product-cases",
+            "kind": "class_cases",
+            "name": "IndirimliUrun",
+            "cases": [
+              {
+                "initArgs": ["Defter", 20],
+                "observe": { "kind": "method", "name": "etiket", "args": [] },
+                "expected": "Defter - %20"
+              },
+              {
+                "initArgs": ["Kalem", 10],
+                "observe": { "kind": "attribute", "name": "ad" },
+                "expected": "Kalem"
+              }
+            ],
+            "label": "Gizli super() senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ADefter - %20\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.inheritance.class-static-methods",
+      "moduleId": "classes-inheritance",
+      "order": 5,
+      "title": "Class method ve static method",
+      "summary": "classmethod sınıf durumuyla, staticmethod ise nesne veya sınıf durumuna ihtiyaç duymayan yardımcı davranışlarla çalışır.",
+      "levelLabel": "Method Decorator Lab",
+      "mode": "code",
+      "task": {
+        "title": "Komisyon sınıfının sınıf ve yardımcı metotlarını oluştur",
+        "instructions": [
+          "Komisyon sınıfında varsayilan_oran sınıf alanını 0.03 yap.",
+          "oran_ayarla(cls, oran) metodunu @classmethod ile tanımla.",
+          "tutar_gecerli(tutar) metodunu @staticmethod ile tanımla.",
+          "Geçersiz tutarı ValueError ile reddet ve hesapla() metodunda komisyonu döndür."
+        ],
+        "requirements": [
+          "oran_ayarla gerçek classmethod olmalı.",
+          "tutar_gecerli gerçek staticmethod olmalı.",
+          "Sınıf oranı değiştiğinde mevcut nesnelerin hesaplaması yeni oranı kullanmalı."
+        ],
+        "sampleOutput": "Komisyon: 10 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Komisyon:\n    varsayilan_oran = 0.03\n\n    # __init__, classmethod, staticmethod ve hesapla metotlarını yaz\n    pass\n\nKomisyon.oran_ayarla(0.05)\nkomisyon = Komisyon(200)\nprint(f\"Komisyon: {komisyon.hesapla():g} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Class method",
+          "body": "@classmethod altında def oran_ayarla(cls, oran): cls.varsayilan_oran = oran yaz."
+        },
+        {
+          "title": "Static method",
+          "body": "@staticmethod altında tutarın int veya float ve sıfırdan büyük olup olmadığını döndür."
+        },
+        {
+          "title": "Constructor doğrulaması",
+          "body": "tutar_gecerli false ise ValueError üret; değilse self.tutar = tutar yap."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.class-static-methods",
+        "title": "Komisyon sınıfının sınıf ve yardımcı metotlarını oluştur",
+        "xpReward": 105,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "commission-class",
+            "kind": "class_definition",
+            "name": "Komisyon",
+            "minInitParams": 1,
+            "maxInitParams": 1,
+            "requiredMethods": ["__init__", "oran_ayarla", "tutar_gecerli", "hesapla"],
+            "requiredAttributes": ["tutar"],
+            "requiredClassMethods": ["oran_ayarla"],
+            "requiredStaticMethods": ["tutar_gecerli"],
+            "label": "Classmethod ve staticmethod yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "commission-cases",
+            "kind": "class_cases",
+            "name": "Komisyon",
+            "cases": [
+              {
+                "initArgs": [200],
+                "actions": [{ "kind": "call", "name": "oran_ayarla", "args": [0.05] }],
+                "observe": { "kind": "method", "name": "hesapla", "args": [] },
+                "expected": 10
+              },
+              {
+                "initArgs": [100],
+                "observe": { "kind": "method", "name": "tutar_gecerli", "args": [-1] },
+                "expected": false
+              },
+              {
+                "initArgs": [-5],
+                "observe": { "kind": "attribute", "name": "tutar" },
+                "exception": "ValueError",
+                "messagePattern": "tutar"
+              }
+            ],
+            "label": "Gizli decorator metot senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AKomisyon:\\s*10\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.inheritance.polymorphism-lab",
+      "moduleId": "classes-inheritance",
+      "order": 6,
+      "title": "Polymorphism ile ortak arayüz",
+      "summary": "Farklı alt sınıflar aynı metot adını kendi kurallarıyla uyguladığında çağıran kod nesnenin gerçek türünü bilmeden ortak arayüzü kullanabilir.",
+      "levelLabel": "Polymorphism Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Polimorfik Kargo Hesaplayıcı",
+        "sourceShape": "kargo türleri + ağırlık listesi",
+        "targetShape": "Her alt sınıfın ucret() davranışından toplam kargo bedeli",
+        "deliverables": [
+          "Kargo temel sınıfı",
+          "StandartKargo ve HizliKargo alt sınıfları",
+          "KargoSepeti içinde ortak ucret() çağrısı"
+        ],
+        "rules": [
+          "İki alt sınıf Kargo sınıfından türemelidir.",
+          "Her alt sınıf ucret() metodunu override etmelidir.",
+          "KargoSepeti tür kontrolü yapmadan nesnelerin ucret() metodunu çağırmalıdır.",
+          "Boş sepet 0 döndürmelidir."
+        ],
+        "workflow": [
+          "Önce ortak Kargo arayüzünü tanımla.",
+          "Her alt sınıfta farklı ücret formülü uygula.",
+          "KargoSepeti içine tür adına göre doğru nesneyi ekle.",
+          "Ağırlıkları nesnelerle eşleyip aynı ucret() çağrısıyla toplamı hesapla."
+        ]
+      },
+      "task": {
+        "title": "İki farklı kargo davranışını tek akışta çalıştır",
+        "instructions": [
+          "Kargo temel sınıfında ucret(agirlik) metodunu tanımla.",
+          "StandartKargo ücretini 10 + agirlik * 5 olarak hesaplasın.",
+          "HizliKargo ücretini 20 + agirlik * 8 olarak hesaplasın.",
+          "KargoSepeti içinde eklenen nesnelerin ortak ucret() metodunu kullanarak toplamı döndür."
+        ],
+        "requirements": [
+          "StandartKargo ve HizliKargo gerçek alt sınıf olmalı.",
+          "İki alt sınıf da ucret() metodunu override etmeli.",
+          "KargoSepeti nesneleri bir listede saklamalı.",
+          "Farklı sıra ve ağırlıklarda aynı ortak akış çalışmalı."
+        ],
+        "sampleOutput": "Toplam kargo: 56 TL",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "# Kargo, StandartKargo, HizliKargo ve KargoSepeti sınıflarını yaz\n\nsepet = KargoSepeti()\nsepet.yontem_ekle(\"standart\")\nsepet.yontem_ekle(\"hizli\")\nprint(f\"Toplam kargo: {sepet.toplam_ucret([2, 2])} TL\")"
+      },
+      "hints": [
+        {
+          "title": "Ortak arayüz",
+          "body": "Kargo.ucret() temel davranışı NotImplementedError üretebilir; alt sınıflar aynı metodu yazar."
+        },
+        {
+          "title": "Nesne listesi",
+          "body": "yontem_ekle içinde StandartKargo() veya HizliKargo() nesnesini self._yontemler listesine ekle."
+        },
+        {
+          "title": "Polimorfik çağrı",
+          "body": "sum(yontem.ucret(agirlik) for yontem, agirlik in zip(...)) aynı metot adını farklı nesnelerde çalıştırır."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.polymorphism-lab",
+        "title": "İki farklı kargo davranışını tek akışta çalıştır",
+        "xpReward": 130,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "standard-shipping",
+            "kind": "class_definition",
+            "name": "StandartKargo",
+            "minInitParams": 0,
+            "requiredBases": ["Kargo"],
+            "requiredOverrides": ["ucret"],
+            "label": "StandartKargo ortak arayüzü override ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "express-shipping",
+            "kind": "class_definition",
+            "name": "HizliKargo",
+            "minInitParams": 0,
+            "requiredBases": ["Kargo"],
+            "requiredOverrides": ["ucret"],
+            "label": "HizliKargo ortak arayüzü override ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "shipping-cart",
+            "kind": "class_definition",
+            "name": "KargoSepeti",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "yontem_ekle", "toplam_ucret"],
+            "requiredAttributes": ["_yontemler"],
+            "label": "KargoSepeti nesne koleksiyonunu yönetiyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "shipping-polymorphism-cases",
+            "kind": "class_cases",
+            "name": "KargoSepeti",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "yontem_ekle", "args": ["standart"] },
+                  { "kind": "call", "name": "yontem_ekle", "args": ["hizli"] }
+                ],
+                "observe": { "kind": "method", "name": "toplam_ucret", "args": [[2, 2]] },
+                "expected": 56
+              },
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "yontem_ekle", "args": ["hizli"] },
+                  { "kind": "call", "name": "yontem_ekle", "args": ["standart"] }
+                ],
+                "observe": { "kind": "method", "name": "toplam_ucret", "args": [[1, 3]] },
+                "expected": 53
+              },
+              {
+                "initArgs": [],
+                "observe": { "kind": "method", "name": "toplam_ucret", "args": [[]] },
+                "expected": 0
+              }
+            ],
+            "label": "Gizli polymorphism senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AToplam kargo:\\s*56\\s*TL\\s*\\Z",
+            "label": "Gizli çıktı testi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.inheritance.payment-system-final",
+      "moduleId": "classes-inheritance",
+      "order": 7,
+      "title": "Final proje: Polimorfik ödeme sistemi",
+      "summary": "Temel ödeme sözleşmesini, farklı komisyon kurallarına sahip alt sınıfları ve ortak işleyici akışını çok dosyalı bir domain projesinde birleştir.",
+      "levelLabel": "Inheritance Project",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "projectTitle": "Ödeme Sistemi v1",
+        "sourceShape": "odeme_ekle(tur, tutar, taksit=1)",
+        "targetShape": "{odeme_sayisi, toplam_tahsilat, kanallar}",
+        "deliverables": [
+          "models.py içinde Odeme temel sınıfı ve üç alt sınıf",
+          "processor.py içinde polimorfik OdemeIsleyici",
+          "main.py içinde farklı ödeme türlerinin ortak raporu"
+        ],
+        "rules": [
+          "Odeme tutarı staticmethod ile doğrulamalıdır.",
+          "Odeme sınıfı varsayilan() classmethod factory metoduna sahip olmalıdır.",
+          "Alt sınıflar komisyon() metodunu override etmelidir.",
+          "KrediKarti constructor'ı super().__init__ kullanmalıdır.",
+          "OdemeIsleyici bütün nesnelerde aynı net_tutar() arayüzünü kullanmalıdır."
+        ],
+        "workflow": [
+          "Önce Odeme temel sınıfının doğrulama ve net tutar sözleşmesini kur.",
+          "KrediKarti, Havale ve KapidaOdeme komisyon davranışlarını override et.",
+          "OdemeIsleyici içinde tür adına göre doğru alt sınıf nesnesini oluştur.",
+          "Bütün ödeme nesnelerinden toplam tahsilat ve kanal raporu üret."
+        ]
+      },
+      "task": {
+        "title": "Çok dosyalı ödeme domain modelini tamamla",
+        "instructions": [
+          "models.py içinde Odeme, KrediKarti, Havale ve KapidaOdeme sınıflarını tamamla.",
+          "Odeme sınıfında classmethod factory ve staticmethod doğrulama oluştur.",
+          "processor.py içinde alt sınıf nesnelerini yöneten OdemeIsleyici yaz.",
+          "main.py akışını çalıştırıp ödeme sayısı, toplam tahsilat ve kanalları yazdır."
+        ],
+        "requirements": [
+          "Bütün ödeme türleri Odeme sınıfından türemeli.",
+          "KrediKarti yüzde 3, Havale sıfır, KapidaOdeme sabit 25 TL komisyon uygulamalı.",
+          "Geçersiz tutar ve bilinmeyen ödeme türü ValueError üretmeli.",
+          "Gizli ödeme senaryolarında aynı domain sözleşmesi korunmalı."
+        ],
+        "sampleOutput": "Ödeme sayısı: 3\nToplam tahsilat: 1755 TL\nKanallar: Havale, KapidaOdeme, KrediKarti",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu final proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from processor import OdemeIsleyici\n\nisleyici = OdemeIsleyici()\nisleyici.odeme_ekle(\"kart\", 1000, 2)\nisleyici.odeme_ekle(\"havale\", 500)\nisleyici.odeme_ekle(\"kapida\", 200)\n\nrapor = isleyici.rapor()\nprint(f\"Ödeme sayısı: {rapor['odeme_sayisi']}\")\nprint(f\"Toplam tahsilat: {rapor['toplam_tahsilat']:g} TL\")\nprint(f\"Kanallar: {', '.join(rapor['kanallar'])}\")",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from processor import OdemeIsleyici\n\nisleyici = OdemeIsleyici()\nisleyici.odeme_ekle(\"kart\", 1000, 2)\nisleyici.odeme_ekle(\"havale\", 500)\nisleyici.odeme_ekle(\"kapida\", 200)\n\nrapor = isleyici.rapor()\nprint(f\"Ödeme sayısı: {rapor['odeme_sayisi']}\")\nprint(f\"Toplam tahsilat: {rapor['toplam_tahsilat']:g} TL\")\nprint(f\"Kanallar: {', '.join(rapor['kanallar'])}\")"
+          },
+          {
+            "path": "models.py",
+            "starterCode": "class Odeme:\n    # __init__, varsayilan, tutar_gecerli, komisyon ve net_tutar metotlarını tamamla\n    pass\n\nclass KrediKarti(Odeme):\n    # super(), taksit ve yüzde 3 komisyon davranışını tamamla\n    pass\n\nclass Havale(Odeme):\n    # komisyon metodunu override et\n    pass\n\nclass KapidaOdeme(Odeme):\n    # sabit 25 TL komisyon metodunu override et\n    pass"
+          },
+          {
+            "path": "processor.py",
+            "starterCode": "from models import Odeme, KrediKarti, Havale, KapidaOdeme\n\nclass OdemeIsleyici:\n    # __init__, odeme_ekle ve rapor metotlarını tamamla\n    pass"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Temel ödeme sözleşmesi",
+          "body": "Odeme.net_tutar() self.tutar + self.komisyon() döndürür; gerçek komisyon alt sınıfa göre seçilir."
+        },
+        {
+          "title": "Alt sınıf davranışları",
+          "body": "KrediKarti komisyonu tutar * 0.03, Havale 0, KapidaOdeme 25 döndürmeli."
+        },
+        {
+          "title": "İşleyici raporu",
+          "body": "Toplamı odeme.net_tutar() çağrılarıyla hesapla; kanal adlarını type(odeme).__name__ ile toplayıp sorted() et."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.inheritance.payment-system-final",
+        "title": "Çok dosyalı ödeme domain modelini tamamla",
+        "xpReward": 190,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "models-file",
+            "kind": "file_exists",
+            "path": "models.py",
+            "label": "models.py proje içinde",
+            "visibility": "visible"
+          },
+          {
+            "id": "processor-file",
+            "kind": "file_exists",
+            "path": "processor.py",
+            "label": "processor.py proje içinde",
+            "visibility": "visible"
+          },
+          {
+            "id": "payment-base",
+            "kind": "class_definition",
+            "name": "Odeme",
+            "file": "models.py",
+            "minInitParams": 1,
+            "maxInitParams": 1,
+            "requiredMethods": ["__init__", "varsayilan", "tutar_gecerli", "komisyon", "net_tutar"],
+            "requiredAttributes": ["tutar"],
+            "requiredClassMethods": ["varsayilan"],
+            "requiredStaticMethods": ["tutar_gecerli"],
+            "label": "Odeme temel sözleşmesi doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "card-payment",
+            "kind": "class_definition",
+            "name": "KrediKarti",
+            "file": "models.py",
+            "minInitParams": 2,
+            "maxInitParams": 2,
+            "requiredAttributes": ["taksit"],
+            "requiredBases": ["Odeme"],
+            "requiredOverrides": ["komisyon"],
+            "requiredSuperCalls": ["__init__"],
+            "label": "KrediKarti kalıtım ve super() yapısı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "transfer-payment",
+            "kind": "class_definition",
+            "name": "Havale",
+            "file": "models.py",
+            "minInitParams": 0,
+            "requiredBases": ["Odeme"],
+            "requiredOverrides": ["komisyon"],
+            "label": "Havale komisyon davranışını override ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "door-payment",
+            "kind": "class_definition",
+            "name": "KapidaOdeme",
+            "file": "models.py",
+            "minInitParams": 0,
+            "requiredBases": ["Odeme"],
+            "requiredOverrides": ["komisyon"],
+            "label": "KapidaOdeme komisyon davranışını override ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "payment-processor",
+            "kind": "class_definition",
+            "name": "OdemeIsleyici",
+            "file": "processor.py",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": ["__init__", "odeme_ekle", "rapor"],
+            "requiredAttributes": ["_odemeler"],
+            "label": "OdemeIsleyici nesne koleksiyonunu yönetiyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "payment-import",
+            "kind": "import_statement",
+            "module": "models",
+            "name": "KrediKarti",
+            "file": "processor.py",
+            "label": "İşleyici ödeme alt sınıflarını import ediyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "card-cases",
+            "kind": "class_cases",
+            "name": "KrediKarti",
+            "module": "models",
+            "cases": [
+              {
+                "initArgs": [1000, 2],
+                "observe": { "kind": "method", "name": "net_tutar", "args": [] },
+                "expected": 1030
+              },
+              {
+                "initArgs": [-1, 1],
+                "observe": { "kind": "attribute", "name": "tutar" },
+                "exception": "ValueError",
+                "messagePattern": "tutar"
+              }
+            ],
+            "label": "Gizli kart ödeme senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "processor-cases",
+            "kind": "class_cases",
+            "name": "OdemeIsleyici",
+            "module": "processor",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  { "kind": "call", "name": "odeme_ekle", "args": ["kart", 1000, 2] },
+                  { "kind": "call", "name": "odeme_ekle", "args": ["havale", 500, 1] },
+                  { "kind": "call", "name": "odeme_ekle", "args": ["kapida", 200, 1] }
+                ],
+                "observe": { "kind": "method", "name": "rapor", "args": [] },
+                "expected": {
+                  "odeme_sayisi": 3,
+                  "toplam_tahsilat": 1755,
+                  "kanallar": ["Havale", "KapidaOdeme", "KrediKarti"]
+                }
+              },
+              {
+                "initArgs": [],
+                "observe": { "kind": "method", "name": "rapor", "args": [] },
+                "expected": {
+                  "odeme_sayisi": 0,
+                  "toplam_tahsilat": 0,
+                  "kanallar": []
+                }
+              },
+              {
+                "initArgs": [],
+                "actions": [{ "kind": "call", "name": "odeme_ekle", "args": ["kripto", 100, 1] }],
+                "observe": { "kind": "attribute", "name": "_odemeler" },
+                "exception": "ValueError",
+                "messagePattern": "tür"
+              }
+            ],
+            "label": "Gizli ödeme işleyici senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AÖdeme sayısı:\\s*3\\s*\\nToplam tahsilat:\\s*1755\\s*TL\\s*\\nKanallar:\\s*Havale,\\s*KapidaOdeme,\\s*KrediKarti\\s*\\Z",
+            "label": "Gizli final proje çıktısı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
