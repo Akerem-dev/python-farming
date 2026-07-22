@@ -34,6 +34,13 @@ export type TaskObjectObservation =
       kind: "repr";
     };
 
+export interface TaskTestMutant {
+  id: string;
+  label: string;
+  file: string;
+  source: string;
+}
+
 interface TaskCheckBase {
   id: string;
   label: string;
@@ -145,6 +152,15 @@ export type TaskCheck =
       min: number;
       max?: number;
       file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "test_suite";
+      testFiles: string[];
+      minTests: number;
+      minAssertions: number;
+      minParametrizeCases?: number;
+      requireRaises?: string[];
+      mutants: TaskTestMutant[];
     })
   | (TaskCheckBase & {
       kind: "file_exists";

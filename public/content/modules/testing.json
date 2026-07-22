@@ -1,0 +1,691 @@
+{
+  "moduleId": "testing",
+  "lessons": [
+    {
+      "id": "intermediate.testing.first-assert",
+      "moduleId": "testing",
+      "order": 1,
+      "title": "İlk assert testini yaz",
+      "summary": "Bir test, beklenen davranışı açık bir koşulla tanımlar ve uygulama bu sözleşmeyi bozduğunda başarısız olur.",
+      "levelLabel": "Intermediate Testing",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "İlk Test Sözleşmesi",
+        "objective": "topla() fonksiyonunun doğru sonucu verdiğini bağımsız bir test fonksiyonuyla kanıtla.",
+        "sourceFiles": ["hesaplama.py"],
+        "testFiles": ["test_hesaplama.py"],
+        "principles": [
+          "Test fonksiyonu test_ önekiyle başlamalıdır.",
+          "assert ifadesi gerçek sonuç ile beklenen sonucu karşılaştırmalıdır.",
+          "Test, doğru uygulamada geçerken bilinçli hatalı uygulamalarda başarısız olmalıdır."
+        ],
+        "workflow": [
+          "Önce test edilen fonksiyonun giriş ve çıkış sözleşmesini oku.",
+          "Yer tutucuyu doğru beklenen değerle değiştir.",
+          "Test paketini çalıştır ve görünür sonucu incele.",
+          "Gizli hatalı uygulamaların da yakalandığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "topla() için ilk test fonksiyonunu tamamla",
+        "instructions": [
+          "test_hesaplama.py dosyasını aç.",
+          "__BEKLENEN__ yer tutucusunu doğru toplam sonucu ile değiştir.",
+          "test_topla() fonksiyonunu ve assert ifadesini koru.",
+          "Testleri çalıştırarak doğru ve hatalı uygulama sonuçlarını kontrol et."
+        ],
+        "requirements": [
+          "En az bir test_ fonksiyonu bulunmalı.",
+          "En az bir assert kullanılmalı.",
+          "Test çıkarma ve sabit sıfır hatalarını yakalamalı."
+        ],
+        "sampleOutput": "Doğru uygulamada 1 test senaryosu geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "test_hesaplama.py",
+        "entrypoint": "test_hesaplama.py",
+        "starterCode": "from hesaplama import topla\n\ndef test_topla():\n    assert topla(2, 3) == __BEKLENEN__",
+        "files": [
+          {
+            "path": "hesaplama.py",
+            "starterCode": "def topla(a, b):\n    return a + b",
+            "readOnly": true
+          },
+          {
+            "path": "test_hesaplama.py",
+            "starterCode": "from hesaplama import topla\n\ndef test_topla():\n    assert topla(2, 3) == __BEKLENEN__"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Arrange", "body": "Girdiler test çağrısında 2 ve 3 olarak hazırlanmış." },
+        { "title": "Act", "body": "topla(2, 3) fonksiyonu gerçek sonucu üretir." },
+        { "title": "Assert", "body": "2 + 3 işleminin beklenen sonucunu sağ tarafa yaz." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.first-assert",
+        "title": "topla() için ilk test fonksiyonunu tamamla",
+        "xpReward": 65,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "first-suite",
+            "kind": "test_suite",
+            "testFiles": ["test_hesaplama.py"],
+            "minTests": 1,
+            "minAssertions": 1,
+            "mutants": [
+              {
+                "id": "subtract",
+                "label": "Gizli aritmetik hata testi",
+                "file": "hesaplama.py",
+                "source": "def topla(a, b):\n    return a - b"
+              },
+              {
+                "id": "constant-zero",
+                "label": "Gizli sabit sonuç testi",
+                "file": "hesaplama.py",
+                "source": "def topla(a, b):\n    return 0"
+              }
+            ],
+            "label": "İlk assert test paketi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.testing.assert-prediction",
+      "moduleId": "testing",
+      "order": 2,
+      "title": "Test sonucunu tahmin et",
+      "summary": "Başarılı assert ifadeleri terminale çıktı yazmaz; program yalnız açıkça yazdırılan metni gösterir.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde ne görünür?",
+        "options": [
+          { "id": "answer-message", "label": "2 test geçti" },
+          { "id": "answer-true", "label": "True\nTrue\n2 test geçti" },
+          { "id": "answer-assert", "label": "AssertionError" },
+          { "id": "answer-empty", "label": "Hiçbir çıktı görünmez" }
+        ]
+      },
+      "task": {
+        "title": "Başarılı assert ifadelerinin akışını takip et",
+        "instructions": [
+          "iki_kat() çağrılarının sonuçlarını hesapla.",
+          "İki assert koşulunun da doğru olup olmadığını belirle.",
+          "Başarılı assert ifadesinin terminal davranışını düşün.",
+          "Son print() satırının çıktısını seç."
+        ],
+        "requirements": [
+          "Assert yalnız yanlış koşulda hata üretir.",
+          "Başarılı assert terminale True yazdırmaz.",
+          "Kod çalıştırılmadan tahmin yapılmalı."
+        ],
+        "sampleOutput": "Tek satırlık test özeti",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def iki_kat(sayi):\n    return sayi * 2\n\nassert iki_kat(4) == 8\nassert iki_kat(0) == 0\nprint(\"2 test geçti\")"
+      },
+      "hints": [
+        { "title": "İlk koşul", "body": "iki_kat(4) sonucu 8 olduğu için ilk assert geçer." },
+        { "title": "İkinci koşul", "body": "iki_kat(0) sonucu 0 olduğu için ikinci assert geçer." },
+        { "title": "Sessiz başarı", "body": "Başarılı assert çıktı üretmez; yalnız print() görünür." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.assert-prediction",
+        "title": "Başarılı assert ifadelerinin akışını takip et",
+        "xpReward": 50,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-message"
+        }
+      }
+    },
+    {
+      "id": "intermediate.testing.boundary-cases",
+      "moduleId": "testing",
+      "order": 3,
+      "title": "Sınır durumlarını test et",
+      "summary": "İyi bir test paketi yalnız normal örneği değil; sıfır, özel oran ve tam indirim gibi sınır değerlerini de kapsar.",
+      "levelLabel": "Boundary Testing Lab",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "İndirim Fonksiyonu Sınır Testleri",
+        "objective": "Normal, sıfır, özel oran ve yüzde 100 indirim davranışlarını ayrı testlerle güvence altına al.",
+        "sourceFiles": ["indirim.py"],
+        "testFiles": ["test_indirim.py"],
+        "principles": [
+          "Her test tek ve anlamlı bir davranışı isimlendirmelidir.",
+          "Sınır değerleri normal örnekten farklı hata sınıflarını yakalar.",
+          "Beklenen değerler uygulamanın iç kodundan kopyalanmamalıdır."
+        ],
+        "workflow": [
+          "Mevcut normal senaryoyu çalıştır.",
+          "Sıfır tutar için ayrı test ekle.",
+          "Özel oran ve tam indirim testlerini yaz.",
+          "Gizli mutantların tamamının yakalandığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "Dört bağımsız sınır testi yaz",
+        "instructions": [
+          "Hazır normal indirim testini koru.",
+          "Sıfır tutarın sıfır döndürdüğünü test et.",
+          "200 TL ve yüzde 25 oranı için 150 sonucunu test et.",
+          "Yüzde 100 indirimde sonucun sıfır olduğunu test et."
+        ],
+        "requirements": [
+          "En az dört test fonksiyonu bulunmalı.",
+          "En az dört assert kullanılmalı.",
+          "Testler oranı yok sayma, negatif sınır ve tam indirim hatalarını yakalamalı."
+        ],
+        "sampleOutput": "Doğru uygulamada 4 test senaryosu geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "test_indirim.py",
+        "entrypoint": "test_indirim.py",
+        "starterCode": "from indirim import indirimli_fiyat\n\ndef test_normal_indirim():\n    assert indirimli_fiyat(100) == 90\n\n# Sıfır tutar, özel oran ve tam indirim testlerini ekle",
+        "files": [
+          {
+            "path": "indirim.py",
+            "starterCode": "def indirimli_fiyat(tutar, oran=0.10):\n    if tutar < 0:\n        raise ValueError(\"Tutar negatif olamaz.\")\n    if not 0 <= oran <= 1:\n        raise ValueError(\"Oran 0 ile 1 arasında olmalı.\")\n    return round(tutar * (1 - oran), 2)",
+            "readOnly": true
+          },
+          {
+            "path": "test_indirim.py",
+            "starterCode": "from indirim import indirimli_fiyat\n\ndef test_normal_indirim():\n    assert indirimli_fiyat(100) == 90\n\n# Sıfır tutar, özel oran ve tam indirim testlerini ekle"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Test isimleri", "body": "test_sifir_tutar, test_ozel_oran ve test_tam_indirim gibi açıklayıcı adlar kullan." },
+        { "title": "Özel oran", "body": "indirimli_fiyat(200, 0.25) çağrısının sonucu 150 olmalı." },
+        { "title": "Tam indirim", "body": "Oran 1 olduğunda tutarın tamamı düşer ve sonuç 0 olur." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.boundary-cases",
+        "title": "Dört bağımsız sınır testi yaz",
+        "xpReward": 80,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "boundary-suite",
+            "kind": "test_suite",
+            "testFiles": ["test_indirim.py"],
+            "minTests": 4,
+            "minAssertions": 4,
+            "mutants": [
+              {
+                "id": "ignore-rate",
+                "label": "Gizli özel oran hatası",
+                "file": "indirim.py",
+                "source": "def indirimli_fiyat(tutar, oran=0.10):\n    if tutar < 0:\n        raise ValueError(\"Tutar negatif olamaz.\")\n    return round(tutar * 0.90, 2)"
+              },
+              {
+                "id": "zero-becomes-negative",
+                "label": "Gizli sıfır sınırı hatası",
+                "file": "indirim.py",
+                "source": "def indirimli_fiyat(tutar, oran=0.10):\n    if tutar < 0:\n        raise ValueError(\"Tutar negatif olamaz.\")\n    if tutar == 0:\n        return -1\n    return round(tutar * (1 - oran), 2)"
+              },
+              {
+                "id": "full-discount-bug",
+                "label": "Gizli tam indirim hatası",
+                "file": "indirim.py",
+                "source": "def indirimli_fiyat(tutar, oran=0.10):\n    if tutar < 0:\n        raise ValueError(\"Tutar negatif olamaz.\")\n    if oran == 1:\n        return tutar\n    return round(tutar * (1 - oran), 2)"
+              }
+            ],
+            "label": "Sınır durumları test paketi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.testing.wrong-expectation",
+      "moduleId": "testing",
+      "order": 4,
+      "title": "Hata Avcısı: yanlış test beklentisi",
+      "summary": "Bazen uygulama doğru, test yanlıştır; başarısızlık mesajı gerçek ve beklenen değer arasındaki farkı gösterir.",
+      "levelLabel": "Test Debugging Lab",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "Kargo Eşiği Test Hatası",
+        "objective": "Doğru çalışan kargo fonksiyonuna karşı yanlış yazılmış eşik beklentisini teşhis et ve düzelt.",
+        "sourceFiles": ["kargo.py"],
+        "testFiles": ["test_kargo.py"],
+        "principles": [
+          "Başarısız test her zaman uygulamanın bozuk olduğu anlamına gelmez.",
+          "Eşik değerinin kendisi sınır testlerinde özellikle önemlidir.",
+          "Testi değiştirmeden önce iş kuralı yeniden okunmalıdır."
+        ],
+        "workflow": [
+          "Test paketini çalıştır ve başarısız assert satırını bul.",
+          "Kargo eşiği iş kuralını kaynak dosyadan oku.",
+          "Yalnız yanlış beklenen değeri düzelt.",
+          "Eşik üstü ve eşik altı davranışlarının korunmasını doğrula."
+        ]
+      },
+      "task": {
+        "title": "Yanlış eşik beklentisini düzelt",
+        "instructions": [
+          "Başlangıç testlerini çalıştır.",
+          "500 TL siparişte ücretsiz kargo kuralını incele.",
+          "test_esik_degeri() içindeki yanlış beklenen değeri düzelt.",
+          "Eşik altı testini değiştirmeden koru."
+        ],
+        "requirements": [
+          "İki test fonksiyonu korunmalı.",
+          "İki assert bulunmalı.",
+          "Testler >= ile > arasındaki sınır hatasını yakalamalı."
+        ],
+        "sampleOutput": "Doğru uygulamada 2 test senaryosu geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "test_kargo.py",
+        "entrypoint": "test_kargo.py",
+        "starterCode": "from kargo import kargo_ucreti\n\ndef test_esik_degeri():\n    assert kargo_ucreti(500) == 35\n\ndef test_esik_alti():\n    assert kargo_ucreti(499) == 35",
+        "files": [
+          {
+            "path": "kargo.py",
+            "starterCode": "def kargo_ucreti(tutar, esik=500):\n    return 0 if tutar >= esik else 35",
+            "readOnly": true
+          },
+          {
+            "path": "test_kargo.py",
+            "starterCode": "from kargo import kargo_ucreti\n\ndef test_esik_degeri():\n    assert kargo_ucreti(500) == 35\n\ndef test_esik_alti():\n    assert kargo_ucreti(499) == 35"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "İş kuralını oku", "body": "tutar >= esik olduğunda fonksiyon 0 döndürüyor." },
+        { "title": "Sınır değeri", "body": "500, eşiğe eşit olduğu için ücretsiz kargo kapsamındadır." },
+        { "title": "En küçük düzeltme", "body": "Yalnız ilk assert içindeki 35 değerini değiştir." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.wrong-expectation",
+        "title": "Yanlış eşik beklentisini düzelt",
+        "xpReward": 85,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "shipping-suite",
+            "kind": "test_suite",
+            "testFiles": ["test_kargo.py"],
+            "minTests": 2,
+            "minAssertions": 2,
+            "mutants": [
+              {
+                "id": "strict-threshold",
+                "label": "Gizli eşitlik sınırı hatası",
+                "file": "kargo.py",
+                "source": "def kargo_ucreti(tutar, esik=500):\n    return 0 if tutar > esik else 35"
+              },
+              {
+                "id": "always-paid",
+                "label": "Gizli ücretsiz kargo hatası",
+                "file": "kargo.py",
+                "source": "def kargo_ucreti(tutar, esik=500):\n    return 35"
+              }
+            ],
+            "label": "Kargo eşik testleri",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.testing.exception-tests",
+      "moduleId": "testing",
+      "order": 5,
+      "title": "Exception davranışını test et",
+      "summary": "pytest.raises, yalnız bir hata oluştuğunu değil; doğru exception türünün ve gerekirse doğru mesajın üretildiğini doğrular.",
+      "levelLabel": "Exception Testing Lab",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "Girdi Doğrulama Testleri",
+        "objective": "Geçerli adet ile ValueError ve TypeError yollarını aynı test paketinde güvence altına al.",
+        "sourceFiles": ["dogrulama.py"],
+        "testFiles": ["test_dogrulama.py"],
+        "principles": [
+          "Geçerli yol normal assert ile test edilmelidir.",
+          "Her hata yolu kendi pytest.raises bağlamında sınanmalıdır.",
+          "Hata mesajı iş kuralının anlamını taşımalıdır."
+        ],
+        "workflow": [
+          "Geçerli adet testini koru.",
+          "Sıfır veya negatif adet için ValueError testi ekle.",
+          "Metin girdi için TypeError testi ekle.",
+          "Hata türü ve mesaj mutantlarını yakaladığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "ValueError ve TypeError testlerini yaz",
+        "instructions": [
+          "pytest modülünü import et.",
+          "Geçerli adet testini koru.",
+          "pytest.raises(ValueError, match=\"pozitif\") ile sıfır adeti test et.",
+          "pytest.raises(TypeError, match=\"tam sayı\") ile metin girdiyi test et."
+        ],
+        "requirements": [
+          "En az üç test fonksiyonu bulunmalı.",
+          "En az bir normal assert kullanılmalı.",
+          "ValueError ve TypeError ayrı pytest.raises bloklarında test edilmeli."
+        ],
+        "sampleOutput": "Doğru uygulamada 3 test senaryosu geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "test_dogrulama.py",
+        "entrypoint": "test_dogrulama.py",
+        "starterCode": "import pytest\nfrom dogrulama import adet_dogrula\n\ndef test_gecerli_adet():\n    assert adet_dogrula(3) == 3\n\n# ValueError ve TypeError testlerini ekle",
+        "files": [
+          {
+            "path": "dogrulama.py",
+            "starterCode": "def adet_dogrula(adet):\n    if isinstance(adet, bool) or not isinstance(adet, int):\n        raise TypeError(\"Adet tam sayı olmalı.\")\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    return adet",
+            "readOnly": true
+          },
+          {
+            "path": "test_dogrulama.py",
+            "starterCode": "import pytest\nfrom dogrulama import adet_dogrula\n\ndef test_gecerli_adet():\n    assert adet_dogrula(3) == 3\n\n# ValueError ve TypeError testlerini ekle"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "ValueError testi", "body": "with pytest.raises(ValueError, match=\"pozitif\"): adet_dogrula(0) yaz." },
+        { "title": "TypeError testi", "body": "Metin değerini TypeError bekleyen ayrı bir with bloğunda çağır." },
+        { "title": "Testleri ayır", "body": "Her hata türü için açıklayıcı isimli ayrı test fonksiyonu kullan." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.exception-tests",
+        "title": "ValueError ve TypeError testlerini yaz",
+        "xpReward": 100,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "exception-suite",
+            "kind": "test_suite",
+            "testFiles": ["test_dogrulama.py"],
+            "minTests": 3,
+            "minAssertions": 1,
+            "requireRaises": ["ValueError", "TypeError"],
+            "mutants": [
+              {
+                "id": "zero-allowed",
+                "label": "Gizli sıfır doğrulama hatası",
+                "file": "dogrulama.py",
+                "source": "def adet_dogrula(adet):\n    if isinstance(adet, bool) or not isinstance(adet, int):\n        raise TypeError(\"Adet tam sayı olmalı.\")\n    if adet < 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    return adet"
+              },
+              {
+                "id": "wrong-type-error",
+                "label": "Gizli exception türü hatası",
+                "file": "dogrulama.py",
+                "source": "def adet_dogrula(adet):\n    if isinstance(adet, bool) or not isinstance(adet, int):\n        raise ValueError(\"Adet tam sayı olmalı.\")\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    return adet"
+              },
+              {
+                "id": "missing-message",
+                "label": "Gizli hata mesajı testi",
+                "file": "dogrulama.py",
+                "source": "def adet_dogrula(adet):\n    if isinstance(adet, bool) or not isinstance(adet, int):\n        raise TypeError(\"Geçersiz\")\n    if adet <= 0:\n        raise ValueError(\"Geçersiz\")\n    return adet"
+              }
+            ],
+            "label": "Exception test paketi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.testing.parametrize",
+      "moduleId": "testing",
+      "order": 6,
+      "title": "Parametrik testlerle tekrarı azalt",
+      "summary": "pytest.mark.parametrize, aynı davranışı farklı giriş ve beklenen sonuç çiftleriyle tek test fonksiyonunda çalıştırır.",
+      "levelLabel": "Parametric Testing Lab",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "KDV Hesaplayıcı Veri Tablosu",
+        "objective": "Farklı fiyat ve oran senaryolarını tek parametrik test fonksiyonunda okunabilir bir veri tablosuna dönüştür.",
+        "sourceFiles": ["vergi.py"],
+        "testFiles": ["test_vergi.py"],
+        "principles": [
+          "Tekrarlanan test gövdesi parametrik veriyle ayrılmalıdır.",
+          "Her tablo satırı bağımsız bir test senaryosu gibi çalışmalıdır.",
+          "Varsayılan ve özel oranlar aynı sözleşmeyi doğrulamalıdır."
+        ],
+        "workflow": [
+          "Hazır iki parametrik örneği incele.",
+          "Özel yüzde 10 oranı için bir satır ekle.",
+          "Ondalıklı fiyat ve sıfır fiyat senaryolarını ekle.",
+          "Oran ve yuvarlama mutantlarının yakalandığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "En az dört parametrik KDV senaryosu oluştur",
+        "instructions": [
+          "Hazır @pytest.mark.parametrize dekoratörünü koru.",
+          "Tabloyu en az dört veri satırına tamamla.",
+          "Varsayılan yüzde 20, özel yüzde 10, ondalıklı ve sıfır fiyat durumlarını kapsa.",
+          "Tek assert ile her satırın beklenen sonucunu doğrula."
+        ],
+        "requirements": [
+          "Bir parametrik test fonksiyonu bulunmalı.",
+          "En az dört parametrik vaka çalışmalı.",
+          "En az bir assert kullanılmalı.",
+          "Test oranı yok sayma ve yanlış yuvarlama hatalarını yakalamalı."
+        ],
+        "sampleOutput": "Doğru uygulamada en az 4 parametrik test senaryosu geçti.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu laboratuvar dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "test_vergi.py",
+        "entrypoint": "test_vergi.py",
+        "starterCode": "import pytest\nfrom vergi import kdvli_fiyat\n\n@pytest.mark.parametrize(\n    \"fiyat, oran, beklenen\",\n    [\n        (100, 0.20, 120),\n        (200, 0.20, 240),\n        # En az iki farklı vaka daha ekle\n    ],\n)\ndef test_kdvli_fiyat(fiyat, oran, beklenen):\n    assert kdvli_fiyat(fiyat, oran) == beklenen",
+        "files": [
+          {
+            "path": "vergi.py",
+            "starterCode": "def kdvli_fiyat(fiyat, oran=0.20):\n    if fiyat < 0:\n        raise ValueError(\"Fiyat negatif olamaz.\")\n    return round(fiyat * (1 + oran), 2)",
+            "readOnly": true
+          },
+          {
+            "path": "test_vergi.py",
+            "starterCode": "import pytest\nfrom vergi import kdvli_fiyat\n\n@pytest.mark.parametrize(\n    \"fiyat, oran, beklenen\",\n    [\n        (100, 0.20, 120),\n        (200, 0.20, 240),\n        # En az iki farklı vaka daha ekle\n    ],\n)\ndef test_kdvli_fiyat(fiyat, oran, beklenen):\n    assert kdvli_fiyat(fiyat, oran) == beklenen"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Özel oran", "body": "(200, 0.10, 220) satırı oran parametresinin gerçekten kullanıldığını test eder." },
+        { "title": "Ondalıklı fiyat", "body": "Örneğin 12.5 ve yüzde 20 için beklenen değer 15 olmalıdır." },
+        { "title": "Sıfır fiyat", "body": "(0, 0.20, 0) sınır vakasını tabloya ekleyebilirsin." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.parametrize",
+        "title": "En az dört parametrik KDV senaryosu oluştur",
+        "xpReward": 120,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "parametrize-suite",
+            "kind": "test_suite",
+            "testFiles": ["test_vergi.py"],
+            "minTests": 1,
+            "minAssertions": 1,
+            "minParametrizeCases": 4,
+            "mutants": [
+              {
+                "id": "ignore-custom-rate",
+                "label": "Gizli özel oran hatası",
+                "file": "vergi.py",
+                "source": "def kdvli_fiyat(fiyat, oran=0.20):\n    if fiyat < 0:\n        raise ValueError(\"Fiyat negatif olamaz.\")\n    return round(fiyat * 1.20, 2)"
+              },
+              {
+                "id": "integer-rounding",
+                "label": "Gizli ondalık yuvarlama hatası",
+                "file": "vergi.py",
+                "source": "def kdvli_fiyat(fiyat, oran=0.20):\n    if fiyat < 0:\n        raise ValueError(\"Fiyat negatif olamaz.\")\n    return int(fiyat * (1 + oran))"
+              },
+              {
+                "id": "zero-fee",
+                "label": "Gizli sıfır sınırı hatası",
+                "file": "vergi.py",
+                "source": "def kdvli_fiyat(fiyat, oran=0.20):\n    if fiyat == 0:\n        return 1\n    return round(fiyat * (1 + oran), 2)"
+              }
+            ],
+            "label": "Parametrik KDV test paketi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.testing.stock-service-final",
+      "moduleId": "testing",
+      "order": 7,
+      "title": "Final proje: Stok servisi test paketi",
+      "summary": "Birden fazla modülün normal, sınır, exception ve raporlama davranışlarını mutation-resistant bir test paketiyle güvence altına al.",
+      "levelLabel": "Automated Testing Project",
+      "mode": "test-lab",
+      "testing": {
+        "labTitle": "Stok Servisi Kalite Kapısı v1",
+        "objective": "stok.py ve rapor.py modülleri için iki test dosyasından oluşan, parametrik ve exception kapsamalı bir regresyon paketi oluştur.",
+        "sourceFiles": ["stok.py", "rapor.py"],
+        "testFiles": ["tests/test_stok.py", "tests/test_rapor.py"],
+        "principles": [
+          "Test paketi normal akış, sınır değeri ve hata yolunu birlikte kapsamalıdır.",
+          "Parametrik testler aynı sözleşmenin farklı verilerini tekrar etmeden sınamalıdır.",
+          "Rapor testleri yalnız değerleri değil, deterministik sıralamayı da doğrulamalıdır.",
+          "Kaliteli test paketi bilinçli hatalı uygulamaların tamamını reddetmelidir."
+        ],
+        "workflow": [
+          "Önce stok azaltma normal ve parametrik senaryolarını tamamla.",
+          "Geçersiz adet ve yetersiz stok exception testlerini ekle.",
+          "kritik_mi eşik davranışını tam sınır değerinde test et.",
+          "Rapor toplamı ve alfabetik kritik ürün sırasını doğrula.",
+          "Beş gizli mutant uygulamanın tamamını yakala."
+        ]
+      },
+      "task": {
+        "title": "İki dosyalı mutation-resistant test paketi tamamla",
+        "instructions": [
+          "tests/test_stok.py içinde en az dört parametrik stok azaltma vakası oluştur.",
+          "ValueError yollarını pytest.raises ile test et.",
+          "kritik_mi için eşik altı, eşit ve üstü davranışlarını doğrula.",
+          "tests/test_rapor.py içinde toplam stok ve alfabetik kritik ürün listesini test et.",
+          "Boş ürün listesi raporunu ayrıca doğrula."
+        ],
+        "requirements": [
+          "En az altı test fonksiyonu ve dört assert bulunmalı.",
+          "En az dört parametrik vaka çalışmalı.",
+          "ValueError pytest.raises ile test edilmeli.",
+          "Test paketi beş gizli uygulama hatasını yakalamalı."
+        ],
+        "sampleOutput": "Doğru uygulamada test paketi geçti; 5 gizli mutant yakalandı.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu final proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "tests/test_stok.py",
+        "entrypoint": "tests/test_stok.py",
+        "starterCode": "import pytest\nfrom stok import kritik_mi, stok_azalt\n\n@pytest.mark.parametrize(\n    \"stok, adet, beklenen\",\n    [\n        (10, 3, 7),\n        (5, 5, 0),\n        # En az iki vaka daha ekle\n    ],\n)\ndef test_stok_azalt(stok, adet, beklenen):\n    assert stok_azalt(stok, adet) == beklenen\n\n# Exception ve kritik eşik testlerini ekle",
+        "files": [
+          {
+            "path": "stok.py",
+            "starterCode": "def stok_azalt(stok, adet):\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    if adet > stok:\n        raise ValueError(\"Yetersiz stok.\")\n    return stok - adet\n\ndef kritik_mi(stok, esik=5):\n    return stok <= esik",
+            "readOnly": true
+          },
+          {
+            "path": "rapor.py",
+            "starterCode": "def stok_raporu(urunler, esik=5):\n    kritikler = sorted(urun[\"ad\"] for urun in urunler if urun[\"stok\"] <= esik)\n    return {\n        \"urun_sayisi\": len(urunler),\n        \"toplam_stok\": sum(urun[\"stok\"] for urun in urunler),\n        \"kritik_urunler\": kritikler,\n    }",
+            "readOnly": true
+          },
+          {
+            "path": "tests/test_stok.py",
+            "starterCode": "import pytest\nfrom stok import kritik_mi, stok_azalt\n\n@pytest.mark.parametrize(\n    \"stok, adet, beklenen\",\n    [\n        (10, 3, 7),\n        (5, 5, 0),\n        # En az iki vaka daha ekle\n    ],\n)\ndef test_stok_azalt(stok, adet, beklenen):\n    assert stok_azalt(stok, adet) == beklenen\n\n# Exception ve kritik eşik testlerini ekle"
+          },
+          {
+            "path": "tests/test_rapor.py",
+            "starterCode": "from rapor import stok_raporu\n\nurunler = [\n    {\"ad\": \"Defter\", \"stok\": 5},\n    {\"ad\": \"Kalem\", \"stok\": 12},\n    {\"ad\": \"Çanta\", \"stok\": 2},\n]\n\n# Normal rapor ve boş veri testlerini yaz"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Exception testleri", "body": "Sıfır adet ve stoktan büyük adet için iki ayrı pytest.raises(ValueError) testi yaz." },
+        { "title": "Eşik sınırı", "body": "kritik_mi(5, 5) sonucu True olmalı; bu test < ve <= hatasını ayırır." },
+        { "title": "Rapor sırası", "body": "Kritik ürünlerin beklenen sırası ['Çanta', 'Defter'] olmalı." }
+      ],
+      "validation": {
+        "id": "intermediate.testing.stock-service-final",
+        "title": "İki dosyalı mutation-resistant test paketi tamamla",
+        "xpReward": 200,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "stock-final-suite",
+            "kind": "test_suite",
+            "testFiles": ["tests/test_stok.py", "tests/test_rapor.py"],
+            "minTests": 6,
+            "minAssertions": 4,
+            "minParametrizeCases": 4,
+            "requireRaises": ["ValueError"],
+            "mutants": [
+              {
+                "id": "off-by-one-critical",
+                "label": "Gizli kritik eşik hatası",
+                "file": "stok.py",
+                "source": "def stok_azalt(stok, adet):\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    if adet > stok:\n        raise ValueError(\"Yetersiz stok.\")\n    return stok - adet\n\ndef kritik_mi(stok, esik=5):\n    return stok < esik"
+              },
+              {
+                "id": "wrong-decrement",
+                "label": "Gizli stok azaltma hatası",
+                "file": "stok.py",
+                "source": "def stok_azalt(stok, adet):\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    if adet > stok:\n        raise ValueError(\"Yetersiz stok.\")\n    return stok - adet + 1\n\ndef kritik_mi(stok, esik=5):\n    return stok <= esik"
+              },
+              {
+                "id": "missing-overstock-error",
+                "label": "Gizli yetersiz stok hatası",
+                "file": "stok.py",
+                "source": "def stok_azalt(stok, adet):\n    if adet <= 0:\n        raise ValueError(\"Adet pozitif olmalı.\")\n    if adet > stok:\n        return 0\n    return stok - adet\n\ndef kritik_mi(stok, esik=5):\n    return stok <= esik"
+              },
+              {
+                "id": "unsorted-report",
+                "label": "Gizli rapor sıralama hatası",
+                "file": "rapor.py",
+                "source": "def stok_raporu(urunler, esik=5):\n    kritikler = [urun[\"ad\"] for urun in urunler if urun[\"stok\"] <= esik]\n    return {\"urun_sayisi\": len(urunler), \"toplam_stok\": sum(urun[\"stok\"] for urun in urunler), \"kritik_urunler\": kritikler}"
+              },
+              {
+                "id": "wrong-total",
+                "label": "Gizli toplam stok hatası",
+                "file": "rapor.py",
+                "source": "def stok_raporu(urunler, esik=5):\n    kritikler = sorted(urun[\"ad\"] for urun in urunler if urun[\"stok\"] <= esik)\n    return {\"urun_sayisi\": len(urunler), \"toplam_stok\": len(urunler), \"kritik_urunler\": kritikler}"
+              }
+            ],
+            "label": "Stok servisi final test paketi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -9,6 +9,7 @@ import {
   validateChoiceAnswer,
   validateTaskSource,
 } from "../services/taskValidationService";
+import { validateTestingTask } from "../services/testingTaskValidationService";
 import type {
   TaskValidationResult,
   TaskValidationSpec,
@@ -66,6 +67,10 @@ function clearedValidationState() {
     errorMessage: null,
     isCompletionOpen: false,
   };
+}
+
+function requiresTestingValidation(spec: TaskValidationSpec) {
+  return spec.checks.some((check) => check.kind === "test_suite");
 }
 
 function requiresOopValidation(spec: TaskValidationSpec) {
@@ -161,18 +166,20 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : requiresOopValidation(spec)
-              ? await validateOopTask({ files, entrypoint, stdin, spec })
-              : requiresExceptionValidation(spec)
-                ? await validateExceptionTask({ files, entrypoint, stdin, spec })
-                : requiresProjectValidation(files, spec)
-                  ? await validateProjectTask({ files, entrypoint, stdin, spec })
-                  : await validateTaskSource({
-                      source: entrypointFile.content,
-                      filename: entrypointFile.path,
-                      stdin,
-                      spec,
-                    });
+            : requiresTestingValidation(spec)
+              ? await validateTestingTask({ files, entrypoint, spec })
+              : requiresOopValidation(spec)
+                ? await validateOopTask({ files, entrypoint, stdin, spec })
+                : requiresExceptionValidation(spec)
+                  ? await validateExceptionTask({ files, entrypoint, stdin, spec })
+                  : requiresProjectValidation(files, spec)
+                    ? await validateProjectTask({ files, entrypoint, stdin, spec })
+                    : await validateTaskSource({
+                        source: entrypointFile.content,
+                        filename: entrypointFile.path,
+                        stdin,
+                        spec,
+                      });
 
       set({
         status: result.passed ? "passed" : "failed",

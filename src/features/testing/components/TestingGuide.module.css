@@ -1,0 +1,83 @@
+.guide {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+  padding: var(--space-4);
+  border: 1px solid rgba(97, 175, 239, 0.34);
+  border-radius: var(--radius-md);
+  background: rgba(97, 175, 239, 0.06);
+}
+
+.guide header {
+  display: grid;
+  gap: 5px;
+}
+
+.guide header span,
+.fileGrid span,
+.principles > span,
+.workflow > span {
+  color: #78bdf2;
+  font-size: 9px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.guide header strong {
+  color: var(--color-text-primary);
+  font-size: 13px;
+}
+
+.guide header p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.fileGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.fileGrid section {
+  min-width: 0;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  padding: var(--space-3);
+  border: 1px solid rgba(97, 175, 239, 0.18);
+  border-radius: var(--radius-sm);
+  background: rgba(7, 12, 18, 0.28);
+}
+
+.fileGrid code {
+  overflow: hidden;
+  color: var(--color-text-primary);
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.principles,
+.workflow {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.principles ul,
+.workflow ol {
+  margin: 0;
+  padding-left: 19px;
+  color: var(--color-text-muted);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+@media (max-width: 920px) {
+  .fileGrid {
+    grid-template-columns: 1fr;
+  }
+}
