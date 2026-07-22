@@ -48,6 +48,12 @@
   color: #78c8d2;
 }
 
+.badge[data-mode="test-lab"] {
+  border-color: rgba(97, 175, 239, 0.42);
+  background: rgba(97, 175, 239, 0.12);
+  color: #8dc9f5;
+}
+
 .badge[data-mode="graduation"] {
   border-color: rgba(85, 197, 138, 0.42);
   background: rgba(85, 197, 138, 0.12);
