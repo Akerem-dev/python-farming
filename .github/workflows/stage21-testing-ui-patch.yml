@@ -1,0 +1,109 @@
+name: One-time Stage 21 testing UI patch
+
+on:
+  push:
+    branches:
+      - stage/21-intermediate-testing
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: stage/21-intermediate-testing
+
+      - name: Patch curriculum loader and workspace
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              source = path.read_text(encoding="utf-8")
+              if old not in source:
+                  raise SystemExit(f"Patch target missing in {path}: {old[:100]!r}")
+              path.write_text(source.replace(old, new, 1), encoding="utf-8")
+
+          service = Path("src/features/curriculum/services/curriculumService.ts")
+          replace_once(
+              service,
+              '''  "data-transformation",\n  "file-processing",\n]);''',
+              '''  "data-transformation",\n  "file-processing",\n  "test-lab",\n]);''',
+          )
+
+          testing_validation = '''\n  if (mode === "test-lab") {\n    const guide = lesson.testing;\n    if (\n      !guide ||\n      typeof guide.labTitle !== "string" ||\n      typeof guide.objective !== "string" ||\n      !Array.isArray(guide.sourceFiles) ||\n      guide.sourceFiles.length === 0 ||\n      guide.sourceFiles.some((path) => typeof path !== "string" || !isSafeWorkspacePath(path)) ||\n      !Array.isArray(guide.testFiles) ||\n      guide.testFiles.length === 0 ||\n      guide.testFiles.some(\n        (path) =>\n          typeof path !== "string" ||\n          !isSafeWorkspacePath(path) ||\n          !path.endsWith(".py") ||\n          !path.split("/").at(-1)?.startsWith("test_"),\n      ) ||\n      !Array.isArray(guide.principles) ||\n      guide.principles.length < 2 ||\n      guide.principles.some((principle) => typeof principle !== "string") ||\n      !Array.isArray(guide.workflow) ||\n      guide.workflow.length < 2 ||\n      guide.workflow.some((step) => typeof step !== "string")\n    ) {\n      throw new Error(`${lesson.id} test laboratuvarı rehberi eksik.`);\n    }\n\n    const workspacePaths = new Set(lesson.editor.files?.map((file) => file.path) ?? []);\n    const referencedPaths = [...guide.sourceFiles, ...guide.testFiles];\n    if (referencedPaths.some((path) => !workspacePaths.has(path))) {\n      throw new Error(`${lesson.id} test laboratuvarı çalışma alanında eksik dosya içeriyor.`);\n    }\n\n    const suiteChecks = validation.checks.filter((check) => check.kind === "test_suite");\n    if (suiteChecks.length === 0) {\n      throw new Error(`${lesson.id} test laboratuvarı test_suite kontrolü içermiyor.`);\n    }\n    for (const check of suiteChecks) {\n      if (\n        check.testFiles.length === 0 ||\n        check.testFiles.some((path) => !guide.testFiles.includes(path)) ||\n        check.minTests < 1 ||\n        check.minAssertions < 0 ||\n        (check.minParametrizeCases !== undefined && check.minParametrizeCases < 0) ||\n        check.mutants.length === 0 ||\n        check.mutants.some(\n          (mutant) =>\n            typeof mutant.id !== "string" ||\n            typeof mutant.label !== "string" ||\n            typeof mutant.file !== "string" ||\n            !workspacePaths.has(mutant.file) ||\n            typeof mutant.source !== "string" ||\n            mutant.source.length === 0,\n        )\n      ) {\n        throw new Error(`${lesson.id} test paketi doğrulama verisi geçersiz.`);\n      }\n    }\n  }\n'''
+          replace_once(service, '\n  if (lesson.graduation) {', testing_validation + '\n  if (lesson.graduation) {')
+
+          workspace = Path("src/pages/WorkspacePage/WorkspacePage.tsx")
+          replace_once(
+              workspace,
+              '''import { RefactoringGuide } from "../../features/refactoring/components/RefactoringGuide";\nimport { AppShell } from "../../layouts/AppShell";''',
+              '''import { RefactoringGuide } from "../../features/refactoring/components/RefactoringGuide";\nimport { TestingGuide } from "../../features/testing/components/TestingGuide";\nimport { AppShell } from "../../layouts/AppShell";''',
+          )
+          replace_once(
+              workspace,
+              '''  "data-transformation": "Veri dönüşümü",\n  "file-processing": "Dosya laboratuvarı",\n} as const;''',
+              '''  "data-transformation": "Veri dönüşümü",\n  "file-processing": "Dosya laboratuvarı",\n  "test-lab": "Test laboratuvarı",\n} as const;''',
+          )
+          replace_once(
+              workspace,
+              '''  const isDataTransformation = lessonMode === "data-transformation";\n  const isFileProcessing = lessonMode === "file-processing";\n  const usesLocalAnswer = isOutputPrediction || isCodeOrdering;''',
+              '''  const isDataTransformation = lessonMode === "data-transformation";\n  const isFileProcessing = lessonMode === "file-processing";\n  const isTestingLab = lessonMode === "test-lab";\n  const usesLocalAnswer = isOutputPrediction || isCodeOrdering;''',
+          )
+          replace_once(
+              workspace,
+              '''  const fileProcessingIntro =\n    `>>> Dosya Sistemi Laboratuvarı hazır.\\n>>> Giriş dosyası: ${entrypoint}\\n>>> Bütün okuma ve yazma işlemleri geçici proje klasörüyle sınırlandırılır.`;\n  const projectIntro =''',
+              '''  const fileProcessingIntro =\n    `>>> Dosya Sistemi Laboratuvarı hazır.\\n>>> Giriş dosyası: ${entrypoint}\\n>>> Bütün okuma ve yazma işlemleri geçici proje klasörüyle sınırlandırılır.`;\n  const testingIntro =\n    ">>> Test Laboratuvarı hazır.\\n>>> Test paketi doğru uygulamada çalıştırılır ve gizli hatalı uygulamalara karşı yeniden sınanır.";\n  const projectIntro =''',
+          )
+          replace_once(
+              workspace,
+              '''       : isCodeOrdering && !runtimeOutput && !runtimeError\n         ? orderingIntro\n         : isFileProcessing && !runtimeOutput && !runtimeError\n           ? fileProcessingIntro''',
+              '''       : isCodeOrdering && !runtimeOutput && !runtimeError\n         ? orderingIntro\n         : isTestingLab && !runtimeOutput && !runtimeError\n           ? testingIntro\n           : isFileProcessing && !runtimeOutput && !runtimeError\n             ? fileProcessingIntro''',
+          )
+          replace_once(
+              workspace,
+              '''           : isFileProcessing\n             ? "Dosyaları Kontrol Et"\n             : isMultiFileWorkspace''',
+              '''           : isTestingLab\n             ? "Testleri Çalıştır"\n             : isFileProcessing\n               ? "Dosyaları Kontrol Et"\n               : isMultiFileWorkspace''',
+          )
+          replace_once(
+              workspace,
+              '''     : isCodeOrdering\n       ? "İlk sıralamaya dön"\n       : isFileProcessing\n         ? "Dosya projesini sıfırla"''',
+              '''     : isCodeOrdering\n       ? "İlk sıralamaya dön"\n       : isTestingLab\n         ? "Test dosyalarını sıfırla"\n         : isFileProcessing\n           ? "Dosya projesini sıfırla"''',
+          )
+          replace_once(
+              workspace,
+              '''    : isFileProcessing\n      ? "Dosya işlemini çalıştır"\n      : isMultiFileWorkspace''',
+              '''    : isTestingLab\n      ? "Testleri Çalıştır"\n      : isFileProcessing\n        ? "Dosya işlemini çalıştır"\n        : isMultiFileWorkspace''',
+          )
+          replace_once(
+              workspace,
+              '''                     : isFileProcessing\n                         ? "Dosya / terminal çıktısı"\n                         : isDataTransformation''',
+              '''                     : isTestingLab\n                         ? "Beklenen test sonucu"\n                         : isFileProcessing\n                           ? "Dosya / terminal çıktısı"\n                           : isDataTransformation''',
+          )
+          replace_once(
+              workspace,
+              '''          {currentLesson.fileSystem ? (\n            <FileSystemGuide guide={currentLesson.fileSystem} />\n          ) : null}\n\n          <StdinPanel''',
+              '''          {currentLesson.fileSystem ? (\n            <FileSystemGuide guide={currentLesson.fileSystem} />\n          ) : null}\n\n          {isTestingLab && currentLesson.testing ? (\n            <TestingGuide guide={currentLesson.testing} />\n          ) : null}\n\n          <StdinPanel''',
+          )
+          replace_once(
+              workspace,
+              '''              variant={usesLocalAnswer ? "primary" : undefined}''',
+              '''              variant={usesLocalAnswer || isTestingLab ? "primary" : undefined}''',
+          )
+          replace_once(
+              workspace,
+              '''            {!usesLocalAnswer ? (''',
+              '''            {!usesLocalAnswer && !isTestingLab ? (''',
+          )
+
+      - name: Commit UI and curriculum changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/features/curriculum/services/curriculumService.ts src/pages/WorkspacePage/WorkspacePage.tsx
+          git commit -m "feat: integrate test laboratory mode"
+          git push origin HEAD:stage/21-intermediate-testing
