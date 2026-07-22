@@ -277,7 +277,16 @@ function assertLesson(value: unknown): asserts value is CurriculumLesson {
         check.kind === "node_count" &&
         ["For", "ListComp", "GeneratorExp", "comprehension"].includes(check.nodeName),
     );
-    if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasSequenceStructureCheck) {
+    const hasClassDefinitionCheck = validation.checks.some(
+      (check) => check.kind === "class_definition",
+    );
+    const hasClassCasesCheck = validation.checks.some(
+      (check) => check.kind === "class_cases",
+    );
+    const hasFunctionTransformationChecks =
+      hasFunctionDefinitionCheck && hasFunctionCasesCheck && hasSequenceStructureCheck;
+    const hasObjectModelingChecks = hasClassDefinitionCheck && hasClassCasesCheck;
+    if (!hasFunctionTransformationChecks && !hasObjectModelingChecks) {
       throw new Error(`${lesson.id} veri dönüşümü görevi yapısal ve gizli testleri içermiyor.`);
     }
   }
