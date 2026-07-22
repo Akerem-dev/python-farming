@@ -1,0 +1,1189 @@
+{
+  "moduleId": "typing-dataclasses",
+  "lessons": [
+    {
+      "id": "intermediate.typing.function-annotations",
+      "moduleId": "typing-dataclasses",
+      "order": 1,
+      "title": "Fonksiyon sözleşmesini type hint ile yaz",
+      "summary": "Parametre ve dönüş type hint’leri fonksiyonun beklediği veri sözleşmesini görünür hâle getirir.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "İndirim fonksiyonunun type hint boşluklarını tamamla",
+        "instructions": [
+          "fiyat ve oran parametrelerini float olarak işaretle.",
+          "Fonksiyonun dönüş tipini float olarak belirt.",
+          "Mevcut hesaplama davranışını ve örnek çıktıyı koru."
+        ],
+        "requirements": [
+          "Bütün parametrelerde annotation bulunmalı.",
+          "Dönüş annotation’ı float olmalı.",
+          "Fonksiyon farklı fiyat ve oranlarla doğru sonuç vermeli."
+        ],
+        "sampleOutput": "180.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def indirimli_fiyat(fiyat: ___, oran: ___ = 0.10) -> ___:\n    return round(fiyat * (1 - oran), 2)\n\n\nprint(indirimli_fiyat(200.0))\n"
+      },
+      "hints": [
+        {
+          "title": "Annotation biçimi",
+          "body": "Parametre adından sonra iki nokta ve tip yazılır: fiyat: float."
+        },
+        {
+          "title": "Dönüş tipi",
+          "body": "Parantezden sonra -> float kullan."
+        },
+        {
+          "title": "Davranışı değiştirme",
+          "body": "Yalnızca type hint boşluklarını doldur; hesaplama satırı aynı kalabilir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.function-annotations",
+        "title": "İndirim fonksiyonunun type hint boşluklarını tamamla",
+        "xpReward": 70,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "signature",
+            "kind": "function_annotations",
+            "name": "indirimli_fiyat",
+            "parameters": [
+              {
+                "name": "fiyat",
+                "accepted": [
+                  "float"
+                ]
+              },
+              {
+                "name": "oran",
+                "accepted": [
+                  "float"
+                ]
+              }
+            ],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "Fonksiyon type hint sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "indirimli_fiyat",
+            "cases": [
+              {
+                "args": [
+                  200.0
+                ],
+                "expected": 180.0
+              },
+              {
+                "args": [
+                  99.9,
+                  0.2
+                ],
+                "expected": 79.92
+              },
+              {
+                "args": [
+                  50.0,
+                  0.0
+                ],
+                "expected": 50.0
+              }
+            ],
+            "label": "Gizli fiyat senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\A180(?:\\.0+)?\\s*\\Z",
+            "label": "Örnek çıktı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.typing.runtime-behavior",
+      "moduleId": "typing-dataclasses",
+      "order": 2,
+      "title": "Type hint çalışma zamanını zorlar mı?",
+      "summary": "Python type hint’leri varsayılan olarak belge ve analiz sözleşmesidir; değerleri çalışma zamanında otomatik reddetmez.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Program terminale ne yazdırır?",
+        "options": [
+          {
+            "id": "thirty",
+            "label": "30"
+          },
+          {
+            "id": "type-error",
+            "label": "TypeError"
+          },
+          {
+            "id": "joined",
+            "label": "1020"
+          },
+          {
+            "id": "none",
+            "label": "None"
+          }
+        ]
+      },
+      "task": {
+        "title": "Kodu çalıştırmadan çıktıyı tahmin et",
+        "instructions": [
+          "Fonksiyon annotation’larını incele.",
+          "Python’ın type hint’leri çalışma zamanında otomatik doğrulayıp doğrulamadığını düşün.",
+          "Doğru terminal çıktısını seç."
+        ],
+        "requirements": [
+          "Kodu çalıştırmadan cevap ver.",
+          "Annotation ile gerçek argüman türünü birbirinden ayır.",
+          "Tek doğru seçenek seçilmeli."
+        ],
+        "sampleOutput": "30",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def birlestir(sol: str, sag: str) -> str:\n    return sol + sag\n\n\nprint(birlestir(10, 20))\n"
+      },
+      "hints": [
+        {
+          "title": "Type hint bir güvenlik duvarı değildir",
+          "body": "Python varsayılan olarak argümanı annotation ile karşılaştırıp engellemez."
+        },
+        {
+          "title": "+ operatörüne bak",
+          "body": "İki int değerde + toplama işlemi yapar."
+        },
+        {
+          "title": "Statik analiz ayrı katmandır",
+          "body": "Mypy gibi araçlar kod çalışmadan önce tür uyuşmazlığını raporlayabilir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.runtime-behavior",
+        "title": "Kodu çalıştırmadan çıktıyı tahmin et",
+        "xpReward": 55,
+        "timeoutMs": 5000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "thirty"
+        }
+      }
+    },
+    {
+      "id": "intermediate.typing.optional-collections",
+      "moduleId": "typing-dataclasses",
+      "order": 3,
+      "title": "Optional ve koleksiyon tipleri",
+      "summary": "Optional ve iç içe koleksiyon annotation’ları eksik değerleri ve veri yapısının şeklini açıkça anlatır.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "Aktif ürün filtresini tamamen tiple",
+        "instructions": [
+          "urunler parametresini list[dict[str, object]] olarak işaretle.",
+          "kategori parametresini Optional[str] yap ve varsayılan None değerini koru.",
+          "Dönüş tipini list[str] olarak belirt."
+        ],
+        "requirements": [
+          "typing.Optional import edilmeli.",
+          "Bütün parametre ve dönüş annotation’ları çözümlenebilmeli.",
+          "Kategori verilmediğinde ve verildiğinde doğru liste dönmeli."
+        ],
+        "sampleOutput": "['Defter', 'Çanta']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from typing import Optional\n\n\ndef aktif_urun_adlari(urunler, kategori=None):\n    return [\n        str(urun[\"ad\"])\n        for urun in urunler\n        if bool(urun[\"aktif\"])\n        and (kategori is None or urun[\"kategori\"] == kategori)\n    ]\n\n\nveri = [\n    {\"ad\": \"Defter\", \"kategori\": \"Kırtasiye\", \"aktif\": True},\n    {\"ad\": \"Kalem\", \"kategori\": \"Kırtasiye\", \"aktif\": False},\n    {\"ad\": \"Çanta\", \"kategori\": \"Aksesuar\", \"aktif\": True},\n]\nprint(aktif_urun_adlari(veri))\n"
+      },
+      "hints": [
+        {
+          "title": "İç içe tip",
+          "body": "Sözlük listesini list[dict[str, object]] biçiminde yaz."
+        },
+        {
+          "title": "Optional eşdeğeri",
+          "body": "Optional[str], str | None anlamına gelir."
+        },
+        {
+          "title": "Dönüş listesi",
+          "body": "Fonksiyon yalnız ürün adlarını döndürdüğü için dönüş tipi list[str] olmalı."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.optional-collections",
+        "title": "Aktif ürün filtresini tamamen tiple",
+        "xpReward": 85,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "signature",
+            "kind": "function_annotations",
+            "name": "aktif_urun_adlari",
+            "parameters": [
+              {
+                "name": "urunler",
+                "accepted": [
+                  "list[dict[str, object]]"
+                ]
+              },
+              {
+                "name": "kategori",
+                "accepted": [
+                  "Optional[str]",
+                  "str | None"
+                ]
+              }
+            ],
+            "returnAccepted": [
+              "list[str]"
+            ],
+            "requireAllParameters": true,
+            "label": "Koleksiyon type hint sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "aktif_urun_adlari",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "Defter",
+                      "kategori": "Kırtasiye",
+                      "aktif": true
+                    },
+                    {
+                      "ad": "Kalem",
+                      "kategori": "Kırtasiye",
+                      "aktif": false
+                    },
+                    {
+                      "ad": "Çanta",
+                      "kategori": "Aksesuar",
+                      "aktif": true
+                    }
+                  ]
+                ],
+                "expected": [
+                  "Defter",
+                  "Çanta"
+                ]
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "Defter",
+                      "kategori": "Kırtasiye",
+                      "aktif": true
+                    },
+                    {
+                      "ad": "Çanta",
+                      "kategori": "Aksesuar",
+                      "aktif": true
+                    }
+                  ],
+                  "Kırtasiye"
+                ],
+                "expected": [
+                  "Defter"
+                ]
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli koleksiyon senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "Defter.*Çanta",
+            "flags": "s",
+            "label": "Örnek çıktı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.typing.mutable-default-debug",
+      "moduleId": "typing-dataclasses",
+      "order": 4,
+      "title": "Hata Avcısı: dataclass mutable default",
+      "summary": "Dataclass alanlarında değiştirilebilir varsayılanlar doğrudan paylaşılmaz; field(default_factory=...) ile her nesneye ayrı değer üretilir.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "ValueError / mutable default",
+        "symptom": "Sınıf tanımlanırken mutable default for field urunler is not allowed mesajı görülür.",
+        "workflow": [
+          "Kodu çalıştır ve traceback’in son satırını oku.",
+          "field fonksiyonunu import et.",
+          "[] yerine field(default_factory=list) kullan.",
+          "İki ayrı Sepet nesnesinin listelerinin paylaşılmadığını doğrula."
+        ]
+      },
+      "task": {
+        "title": "Paylaşılan liste varsayılanını güvenli factory ile düzelt",
+        "instructions": [
+          "Bozuk kodu çalıştır ve ValueError mesajını oku.",
+          "field fonksiyonunu dataclasses modülünden import et.",
+          "urunler alanında field(default_factory=list) kullan."
+        ],
+        "requirements": [
+          "Sepet gerçek bir dataclass olarak kalmalı.",
+          "urunler alanı list[str] annotation’ını korumalı.",
+          "Yeni Sepet nesneleri birbirinden bağımsız boş listelerle başlamalı."
+        ],
+        "sampleOutput": "['Kalem']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from dataclasses import dataclass\n\n\n@dataclass\nclass Sepet:\n    urunler: list[str] = []\n\n    def ekle(self, ad: str) -> None:\n        self.urunler.append(ad)\n\n\nsepet = Sepet()\nsepet.ekle(\"Kalem\")\nprint(sepet.urunler)\n"
+      },
+      "hints": [
+        {
+          "title": "Hata satırını oku",
+          "body": "Dataclass, mutable default olarak [] kullanılmasını bilinçli şekilde reddeder."
+        },
+        {
+          "title": "field importu",
+          "body": "from dataclasses import dataclass, field yaz."
+        },
+        {
+          "title": "Factory çağrılmaz",
+          "body": "default_factory=list yaz; list() sonucunu doğrudan verme."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.mutable-default-debug",
+        "title": "Paylaşılan liste varsayılanını güvenli factory ile düzelt",
+        "xpReward": 90,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "dataclass",
+            "kind": "dataclass_definition",
+            "name": "Sepet",
+            "fields": [
+              {
+                "name": "urunler",
+                "accepted": [
+                  "list[str]"
+                ],
+                "defaultKind": "factory",
+                "factory": "list"
+              }
+            ],
+            "requiredMethods": [
+              "ekle"
+            ],
+            "label": "Güvenli dataclass alanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "class_cases",
+            "name": "Sepet",
+            "cases": [
+              {
+                "initArgs": [],
+                "actions": [
+                  {
+                    "kind": "call",
+                    "name": "ekle",
+                    "args": [
+                      "Kalem"
+                    ]
+                  }
+                ],
+                "observe": {
+                  "kind": "attribute",
+                  "name": "urunler"
+                },
+                "expected": [
+                  "Kalem"
+                ]
+              },
+              {
+                "initArgs": [],
+                "observe": {
+                  "kind": "attribute",
+                  "name": "urunler"
+                },
+                "expected": []
+              }
+            ],
+            "label": "Bağımsız sepet nesneleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "Kalem",
+            "label": "Düzeltme sonrası çıktı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.typing.frozen-dataclass",
+      "moduleId": "typing-dataclasses",
+      "order": 5,
+      "title": "Frozen dataclass ile değişmez model",
+      "summary": "frozen=True, veri modelini oluşturulduktan sonra yanlışlıkla değiştirmeye karşı korur.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Ürün modelini frozen dataclass yap",
+        "instructions": [
+          "dataclass dekoratöründeki boşluğu frozen=True ile tamamla.",
+          "Alan type hint’lerini ve toplam_deger metodunu koru.",
+          "Fiyatı sonradan değiştirme girişiminin engellendiğini doğrula."
+        ],
+        "requirements": [
+          "Urun gerçek ve frozen bir dataclass olmalı.",
+          "ad, fiyat ve stok alanları doğru tiplere sahip olmalı.",
+          "toplam_deger() farklı ürünlerde doğru çalışmalı."
+        ],
+        "sampleOutput": "Toplam değer: 135.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(___)\nclass Urun:\n    ad: str\n    fiyat: float\n    stok: int = 0\n\n    def toplam_deger(self) -> float:\n        return self.fiyat * self.stok\n\n\nurun = Urun(\"Defter\", 45.0, 3)\nprint(f\"Toplam değer: {urun.toplam_deger()}\")\n"
+      },
+      "hints": [
+        {
+          "title": "Dekoratör argümanı",
+          "body": "@dataclass(frozen=True) yaz."
+        },
+        {
+          "title": "Alan varsayılanı",
+          "body": "stok: int = 0 geçerli bir değer varsayılanıdır."
+        },
+        {
+          "title": "Frozen davranışı",
+          "body": "Nesne oluşturulduktan sonra urun.fiyat = ... ataması FrozenInstanceError üretir."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.frozen-dataclass",
+        "title": "Ürün modelini frozen dataclass yap",
+        "xpReward": 105,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "dataclass",
+            "kind": "dataclass_definition",
+            "name": "Urun",
+            "fields": [
+              {
+                "name": "ad",
+                "accepted": [
+                  "str"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "fiyat",
+                "accepted": [
+                  "float"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "stok",
+                "accepted": [
+                  "int"
+                ],
+                "defaultKind": "value"
+              }
+            ],
+            "frozen": true,
+            "requiredMethods": [
+              "toplam_deger"
+            ],
+            "label": "Frozen ürün dataclass sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "class_cases",
+            "name": "Urun",
+            "cases": [
+              {
+                "initArgs": [
+                  "Defter",
+                  45.0,
+                  3
+                ],
+                "observe": {
+                  "kind": "method",
+                  "name": "toplam_deger",
+                  "args": []
+                },
+                "expected": 135.0
+              },
+              {
+                "initArgs": [
+                  "Kalem",
+                  15.0,
+                  2
+                ],
+                "actions": [
+                  {
+                    "kind": "setattr",
+                    "name": "fiyat",
+                    "value": 20.0
+                  }
+                ],
+                "observe": {
+                  "kind": "attribute",
+                  "name": "fiyat"
+                },
+                "exception": "FrozenInstanceError"
+              }
+            ],
+            "label": "Gizli frozen model senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "Toplam değer:\\s*135(?:\\.0+)?",
+            "label": "Örnek çıktı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.typing.protocol",
+      "moduleId": "typing-dataclasses",
+      "order": 6,
+      "title": "Protocol ile yapısal sözleşme",
+      "summary": "Protocol, ortak davranışı kalıtım zorunluluğu olmadan type checker’a tanıtır.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "Toplanabilir protocol ve iki uyumlu model oluştur",
+        "instructions": [
+          "Toplanabilir sınıfını Protocol tabanından türet ve runtime_checkable yap.",
+          "toplam() metodunun dönüş tipini float olarak belirt.",
+          "Urun ve Hizmet modellerini dataclass olarak tanımlayıp genel_toplam akışını tamamla."
+        ],
+        "requirements": [
+          "Protocol toplam() sözleşmesini içermeli.",
+          "Urun ve Hizmet protocol’dan kalıtım almadan aynı metodu sağlamalı.",
+          "genel_toplam ve fatura_ozeti tamamen tiplendirilmiş olmalı."
+        ],
+        "sampleOutput": "270.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from dataclasses import dataclass\nfrom typing import Protocol, runtime_checkable\n\n\n# Toplanabilir protocol'unu burada tanımla.\n\n\n@dataclass\nclass Urun:\n    ad: str\n    fiyat: float\n    adet: int = 1\n\n    def toplam(self) -> float:\n        return self.fiyat * self.adet\n\n\n@dataclass\nclass Hizmet:\n    ad: str\n    saat: float\n    saatlik_ucret: float\n\n    def toplam(self) -> float:\n        return self.saat * self.saatlik_ucret\n\n\ndef genel_toplam(kalemler):\n    return sum(kalem.toplam() for kalem in kalemler)\n\n\ndef fatura_ozeti(veriler):\n    kalemler = []\n    for veri in veriler:\n        if veri[\"tur\"] == \"urun\":\n            kalemler.append(Urun(veri[\"ad\"], veri[\"fiyat\"], veri.get(\"adet\", 1)))\n        else:\n            kalemler.append(Hizmet(veri[\"ad\"], veri[\"saat\"], veri[\"saatlik_ucret\"]))\n    return genel_toplam(kalemler)\n\n\nornek = [\n    {\"tur\": \"urun\", \"ad\": \"Defter\", \"fiyat\": 45.0, \"adet\": 2},\n    {\"tur\": \"hizmet\", \"ad\": \"Kurulum\", \"saat\": 2.0, \"saatlik_ucret\": 90.0},\n]\nprint(fatura_ozeti(ornek))\n"
+      },
+      "hints": [
+        {
+          "title": "Protocol gövdesi",
+          "body": "class Toplanabilir(Protocol): altında toplam(self) -> float metodunu ... gövdesiyle tanımla."
+        },
+        {
+          "title": "Runtime kontrolü",
+          "body": "Sınıfın üstüne @runtime_checkable ekle."
+        },
+        {
+          "title": "Koleksiyon tipi",
+          "body": "genel_toplam parametresi list[Toplanabilir] olmalı."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.protocol",
+        "title": "Toplanabilir protocol ve iki uyumlu model oluştur",
+        "xpReward": 135,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "protocol",
+            "kind": "protocol_definition",
+            "name": "Toplanabilir",
+            "runtimeCheckable": true,
+            "methods": [
+              {
+                "name": "toplam",
+                "returnAccepted": [
+                  "float"
+                ]
+              }
+            ],
+            "label": "Toplanabilir protocol sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "urun",
+            "kind": "dataclass_definition",
+            "name": "Urun",
+            "fields": [
+              {
+                "name": "ad",
+                "accepted": [
+                  "str"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "fiyat",
+                "accepted": [
+                  "float"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "adet",
+                "accepted": [
+                  "int"
+                ],
+                "defaultKind": "value"
+              }
+            ],
+            "requiredMethods": [
+              "toplam"
+            ],
+            "label": "Urun dataclass modeli",
+            "visibility": "visible"
+          },
+          {
+            "id": "hizmet",
+            "kind": "dataclass_definition",
+            "name": "Hizmet",
+            "fields": [
+              {
+                "name": "ad",
+                "accepted": [
+                  "str"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "saat",
+                "accepted": [
+                  "float"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "saatlik_ucret",
+                "accepted": [
+                  "float"
+                ],
+                "defaultKind": "required"
+              }
+            ],
+            "requiredMethods": [
+              "toplam"
+            ],
+            "label": "Hizmet dataclass modeli",
+            "visibility": "visible"
+          },
+          {
+            "id": "genel-signature",
+            "kind": "function_annotations",
+            "name": "genel_toplam",
+            "parameters": [
+              {
+                "name": "kalemler",
+                "accepted": [
+                  "list[Toplanabilir]"
+                ]
+              }
+            ],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "genel_toplam type hint sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "ozet-signature",
+            "kind": "function_annotations",
+            "name": "fatura_ozeti",
+            "parameters": [
+              {
+                "name": "veriler",
+                "accepted": [
+                  "list[dict[str, object]]"
+                ]
+              }
+            ],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "fatura_ozeti type hint sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "fatura_ozeti",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "tur": "urun",
+                      "ad": "Defter",
+                      "fiyat": 45.0,
+                      "adet": 2
+                    },
+                    {
+                      "tur": "hizmet",
+                      "ad": "Kurulum",
+                      "saat": 2.0,
+                      "saatlik_ucret": 90.0
+                    }
+                  ]
+                ],
+                "expected": 270.0
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "tur": "urun",
+                      "ad": "Kalem",
+                      "fiyat": 15.0,
+                      "adet": 3
+                    }
+                  ]
+                ],
+                "expected": 45.0
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": 0
+              }
+            ],
+            "label": "Gizli protocol davranış senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\A270(?:\\.0+)?\\s*\\Z",
+            "label": "Örnek çıktı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.typing.final-order-model",
+      "moduleId": "typing-dataclasses",
+      "order": 7,
+      "title": "Final proje: tip güvenli sipariş modeli",
+      "summary": "Protocol, frozen dataclass, default_factory, Optional ve koleksiyon type hint’lerini çok dosyalı bir sipariş modelinde birleştir.",
+      "levelLabel": "Intermediate Learning",
+      "mode": "code",
+      "task": {
+        "title": "Tip güvenli sipariş domain modelini tamamla",
+        "instructions": [
+          "models.py içindeki Protocol ve bütün metot dönüş annotation’larını tamamla.",
+          "Urun ve Siparis dataclass alan sözleşmelerini koru.",
+          "service.py içindeki siparis_ozeti fonksiyonunu tamamen tiple ve davranışı koru.",
+          "PYTHON10 kuponunda yüzde 10 indirimli rapor döndür."
+        ],
+        "requirements": [
+          "Toplanabilir.toplam(), Urun.toplam() ve Siparis.toplam() -> float olmalı.",
+          "Urun frozen; etiketler ve kalemler default_factory=list kullanmalı.",
+          "siparis_ozeti JSON uyumlu dict[str, object] döndürmeli.",
+          "Gizli sipariş veri setleri ve boş sipariş doğru işlenmeli."
+        ],
+        "sampleOutput": "{'musteri': 'Ada', 'kalem_sayisi': 2, 'toplam': 369.0, 'etiketler': ['Aksesuar', 'Kırtasiye']}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from service import siparis_ozeti\n\n\nurunler = [\n    {\"ad\": \"Defter\", \"birim_fiyat\": 45.0, \"adet\": 2, \"etiketler\": [\"Kırtasiye\"]},\n    {\"ad\": \"Çanta\", \"birim_fiyat\": 320.0, \"adet\": 1, \"etiketler\": [\"Aksesuar\"]},\n]\nprint(siparis_ozeti(\"Ada\", urunler, \"PYTHON10\"))\n",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import siparis_ozeti\n\n\nurunler = [\n    {\"ad\": \"Defter\", \"birim_fiyat\": 45.0, \"adet\": 2, \"etiketler\": [\"Kırtasiye\"]},\n    {\"ad\": \"Çanta\", \"birim_fiyat\": 320.0, \"adet\": 1, \"etiketler\": [\"Aksesuar\"]},\n]\nprint(siparis_ozeti(\"Ada\", urunler, \"PYTHON10\"))\n",
+            "readOnly": true
+          },
+          {
+            "path": "models.py",
+            "starterCode": "from dataclasses import dataclass, field\nfrom typing import Protocol\n\n\nclass Toplanabilir(Protocol):\n    def toplam(self):\n        ...\n\n\n@dataclass(frozen=True)\nclass Urun:\n    ad: str\n    birim_fiyat: float\n    adet: int = 1\n    etiketler: list[str] = field(default_factory=list)\n\n    def toplam(self):\n        return self.birim_fiyat * self.adet\n\n\n@dataclass\nclass Siparis:\n    musteri: str\n    kalemler: list[Toplanabilir] = field(default_factory=list)\n    kupon: str | None = None\n\n    def toplam(self):\n        ara_toplam = sum(kalem.toplam() for kalem in self.kalemler)\n        if self.kupon == \"PYTHON10\":\n            return round(ara_toplam * 0.90, 2)\n        return round(ara_toplam, 2)\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from models import Siparis, Urun\n\n\ndef siparis_ozeti(musteri, urunler, kupon=None):\n    kalemler = [\n        Urun(\n            veri[\"ad\"],\n            veri[\"birim_fiyat\"],\n            veri.get(\"adet\", 1),\n            list(veri.get(\"etiketler\", [])),\n        )\n        for veri in urunler\n    ]\n    siparis = Siparis(musteri, kalemler, kupon)\n    etiketler = sorted({\n        etiket\n        for urun in kalemler\n        for etiket in urun.etiketler\n    })\n    return {\n        \"musteri\": siparis.musteri,\n        \"kalem_sayisi\": len(kalemler),\n        \"toplam\": siparis.toplam(),\n        \"etiketler\": etiketler,\n    }\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Metot dönüşleri",
+          "body": "Protocol ve iki dataclass içindeki toplam metotlarının tamamına -> float ekle."
+        },
+        {
+          "title": "Servis imzası",
+          "body": "musteri: str, urunler: list[dict[str, object]], kupon: str | None = None ve -> dict[str, object] kullan."
+        },
+        {
+          "title": "Factory alanları",
+          "body": "etiketler ve kalemler alanlarında field(default_factory=list) korunmalı."
+        },
+        {
+          "title": "Gizli testler",
+          "body": "Boş sipariş, kuponsuz sipariş ve farklı etiket listeleri yeniden çalıştırılır."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.typing.final-order-model",
+        "title": "Tip güvenli sipariş domain modelini tamamla",
+        "xpReward": 210,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "protocol",
+            "kind": "protocol_definition",
+            "name": "Toplanabilir",
+            "file": "models.py",
+            "methods": [
+              {
+                "name": "toplam",
+                "returnAccepted": [
+                  "float"
+                ]
+              }
+            ],
+            "label": "Toplanabilir protocol sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "urun-model",
+            "kind": "dataclass_definition",
+            "name": "Urun",
+            "file": "models.py",
+            "fields": [
+              {
+                "name": "ad",
+                "accepted": [
+                  "str"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "birim_fiyat",
+                "accepted": [
+                  "float"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "adet",
+                "accepted": [
+                  "int"
+                ],
+                "defaultKind": "value"
+              },
+              {
+                "name": "etiketler",
+                "accepted": [
+                  "list[str]"
+                ],
+                "defaultKind": "factory",
+                "factory": "list"
+              }
+            ],
+            "frozen": true,
+            "requiredMethods": [
+              "toplam"
+            ],
+            "label": "Frozen Urun dataclass modeli",
+            "visibility": "visible"
+          },
+          {
+            "id": "siparis-model",
+            "kind": "dataclass_definition",
+            "name": "Siparis",
+            "file": "models.py",
+            "fields": [
+              {
+                "name": "musteri",
+                "accepted": [
+                  "str"
+                ],
+                "defaultKind": "required"
+              },
+              {
+                "name": "kalemler",
+                "accepted": [
+                  "list[Toplanabilir]"
+                ],
+                "defaultKind": "factory",
+                "factory": "list"
+              },
+              {
+                "name": "kupon",
+                "accepted": [
+                  "str | None",
+                  "Optional[str]"
+                ],
+                "defaultKind": "value"
+              }
+            ],
+            "requiredMethods": [
+              "toplam"
+            ],
+            "label": "Siparis dataclass modeli",
+            "visibility": "visible"
+          },
+          {
+            "id": "protocol-method",
+            "kind": "function_annotations",
+            "name": "toplam",
+            "className": "Toplanabilir",
+            "file": "models.py",
+            "parameters": [],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "Protocol metot type hint’i",
+            "visibility": "visible"
+          },
+          {
+            "id": "urun-method",
+            "kind": "function_annotations",
+            "name": "toplam",
+            "className": "Urun",
+            "file": "models.py",
+            "parameters": [],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "Urun.toplam dönüş tipi",
+            "visibility": "visible"
+          },
+          {
+            "id": "siparis-method",
+            "kind": "function_annotations",
+            "name": "toplam",
+            "className": "Siparis",
+            "file": "models.py",
+            "parameters": [],
+            "returnAccepted": [
+              "float"
+            ],
+            "requireAllParameters": true,
+            "label": "Siparis.toplam dönüş tipi",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-signature",
+            "kind": "function_annotations",
+            "name": "siparis_ozeti",
+            "file": "service.py",
+            "parameters": [
+              {
+                "name": "musteri",
+                "accepted": [
+                  "str"
+                ]
+              },
+              {
+                "name": "urunler",
+                "accepted": [
+                  "list[dict[str, object]]"
+                ]
+              },
+              {
+                "name": "kupon",
+                "accepted": [
+                  "str | None",
+                  "Optional[str]"
+                ]
+              }
+            ],
+            "returnAccepted": [
+              "dict[str, object]"
+            ],
+            "requireAllParameters": true,
+            "label": "Servis type hint sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "siparis_ozeti",
+            "module": "service",
+            "cases": [
+              {
+                "args": [
+                  "Ada",
+                  [
+                    {
+                      "ad": "Defter",
+                      "birim_fiyat": 45.0,
+                      "adet": 2,
+                      "etiketler": [
+                        "Kırtasiye"
+                      ]
+                    },
+                    {
+                      "ad": "Çanta",
+                      "birim_fiyat": 320.0,
+                      "adet": 1,
+                      "etiketler": [
+                        "Aksesuar"
+                      ]
+                    }
+                  ],
+                  "PYTHON10"
+                ],
+                "expected": {
+                  "musteri": "Ada",
+                  "kalem_sayisi": 2,
+                  "toplam": 369.0,
+                  "etiketler": [
+                    "Aksesuar",
+                    "Kırtasiye"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "Mert",
+                  [
+                    {
+                      "ad": "Kalem",
+                      "birim_fiyat": 15.0,
+                      "adet": 3,
+                      "etiketler": [
+                        "Kırtasiye",
+                        "Ofis"
+                      ]
+                    }
+                  ],
+                  null
+                ],
+                "expected": {
+                  "musteri": "Mert",
+                  "kalem_sayisi": 1,
+                  "toplam": 45.0,
+                  "etiketler": [
+                    "Kırtasiye",
+                    "Ofis"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "Ece",
+                  [],
+                  null
+                ],
+                "expected": {
+                  "musteri": "Ece",
+                  "kalem_sayisi": 0,
+                  "toplam": 0,
+                  "etiketler": []
+                }
+              }
+            ],
+            "label": "Gizli sipariş raporu senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "frozen-case",
+            "kind": "class_cases",
+            "name": "Urun",
+            "module": "models",
+            "cases": [
+              {
+                "initArgs": [
+                  "Defter",
+                  45.0,
+                  1,
+                  []
+                ],
+                "actions": [
+                  {
+                    "kind": "setattr",
+                    "name": "adet",
+                    "value": 2
+                  }
+                ],
+                "observe": {
+                  "kind": "attribute",
+                  "name": "adet"
+                },
+                "exception": "FrozenInstanceError"
+              }
+            ],
+            "label": "Frozen ürün davranışı",
+            "visibility": "hidden"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "369(?:\\.0+)?.*Aksesuar.*Kırtasiye",
+            "flags": "s",
+            "label": "Final proje çıktısı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}

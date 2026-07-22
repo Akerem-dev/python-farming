@@ -41,6 +41,24 @@ export interface TaskTestMutant {
   source: string;
 }
 
+export interface TaskAnnotationExpectation {
+  name: string;
+  accepted: string[];
+}
+
+export interface TaskDataclassFieldExpectation {
+  name: string;
+  accepted: string[];
+  defaultKind?: "required" | "value" | "factory";
+  factory?: string;
+}
+
+export interface TaskProtocolMethodExpectation {
+  name: string;
+  parameters?: TaskAnnotationExpectation[];
+  returnAccepted?: string[];
+}
+
 interface TaskCheckBase {
   id: string;
   label: string;
@@ -83,6 +101,15 @@ export type TaskCheck =
       file?: string;
     })
   | (TaskCheckBase & {
+      kind: "function_annotations";
+      name: string;
+      className?: string;
+      parameters: TaskAnnotationExpectation[];
+      returnAccepted: string[];
+      requireAllParameters?: boolean;
+      file?: string;
+    })
+  | (TaskCheckBase & {
       kind: "function_cases";
       name: string;
       module?: string;
@@ -115,6 +142,21 @@ export type TaskCheck =
       requiredStaticMethods?: string[];
       requiredOverrides?: string[];
       requiredSuperCalls?: string[];
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "dataclass_definition";
+      name: string;
+      fields: TaskDataclassFieldExpectation[];
+      frozen?: boolean;
+      requiredMethods?: string[];
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "protocol_definition";
+      name: string;
+      methods: TaskProtocolMethodExpectation[];
+      runtimeCheckable?: boolean;
       file?: string;
     })
   | (TaskCheckBase & {
