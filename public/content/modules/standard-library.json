@@ -1,0 +1,538 @@
+{
+  "moduleId": "standard-library",
+  "lessons": [
+    {
+      "id": "intermediate.standard-library.datetime-delivery",
+      "moduleId": "standard-library",
+      "order": 1,
+      "title": "datetime ile teslim tarihi hesapla",
+      "summary": "datetime ve timedelta, tarih metnini güvenli bir tarih nesnesine çevirip takvim hesabı yapmanı sağlar.",
+      "levelLabel": "Intermediate Standard Library",
+      "mode": "code-completion",
+      "task": {
+        "title": "Teslim tarihi fonksiyonunu tamamla",
+        "instructions": [
+          "datetime.strptime() ile başlangıç metnini tarih nesnesine dönüştür.",
+          "timedelta(days=gun) kullanarak teslim gününü ekle.",
+          "Fonksiyondan str değil gerçek date nesnesi döndür.",
+          "Hazır print() satırını koru."
+        ],
+        "requirements": [
+          "Fonksiyon iki parametre almalı.",
+          "Dönüş tipi date olmalı.",
+          "Ay ve yıl geçişleri doğru hesaplanmalı."
+        ],
+        "sampleOutput": "2026-08-01",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from datetime import date, datetime, timedelta\n\ndef teslim_tarihi(baslangic: str, gun: int) -> date:\n    baslangic_tarihi = __TARIH_DONUSUMU__\n    return __TESLIM_TARIHI__\n\nprint(teslim_tarihi(\"2026-07-22\", 10).isoformat())"
+      },
+      "hints": [
+        { "title": "Metni ayrıştır", "body": "datetime.strptime(baslangic, \"%Y-%m-%d\").date() gerçek date nesnesi üretir." },
+        { "title": "Gün ekle", "body": "Tarih nesnesine timedelta(days=gun) ekleyebilirsin." },
+        { "title": "Yer tutucuları kaldır", "body": "İki __...__ yer tutucusunun kodda kalmadığından emin ol." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.datetime-delivery",
+        "title": "Teslim tarihi fonksiyonunu tamamla",
+        "xpReward": 80,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "delivery-cases",
+            "kind": "stdlib_function_cases",
+            "name": "teslim_tarihi",
+            "cases": [
+              { "args": ["2026-07-22", 10], "expected": "2026-08-01", "expectedType": "date" },
+              { "args": ["2026-12-30", 3], "expected": "2027-01-02", "expectedType": "date" },
+              { "args": ["2028-02-28", 1], "expected": "2028-02-29", "expectedType": "date" }
+            ],
+            "label": "Gizli takvim senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.standard-library.decimal-prediction",
+      "moduleId": "standard-library",
+      "order": 2,
+      "title": "Decimal ve float çıktısını tahmin et",
+      "summary": "Decimal, finansal hesaplarda ondalık değerleri metinden kurarak ikili kayan nokta sürprizlerini önler.",
+      "levelLabel": "Practice Mode",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştırıldığında terminalde hangi iki satır görünür?",
+        "options": [
+          { "id": "answer-precise", "label": "0.30000000000000004\n0.3" },
+          { "id": "answer-both-short", "label": "0.3\n0.3" },
+          { "id": "answer-decimal-long", "label": "0.3\n0.30000000000000004" },
+          { "id": "answer-error", "label": "TypeError" }
+        ]
+      },
+      "task": {
+        "title": "İki sayı temsilinin farkını izle",
+        "instructions": [
+          "İlk satırdaki float toplamasını değerlendir.",
+          "Decimal değerlerinin metinden oluşturulduğunu fark et.",
+          "İki print() çıktısını doğru sırayla seç."
+        ],
+        "requirements": [
+          "Float ve Decimal aynı temsil sistemi değildir.",
+          "Decimal değerleri string girdilerden oluşturulmuştur.",
+          "Kod çalıştırılmadan tahmin yapılmalı."
+        ],
+        "sampleOutput": "İki ondalık sonuç",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from decimal import Decimal\n\nprint(0.1 + 0.2)\nprint(Decimal(\"0.1\") + Decimal(\"0.2\"))"
+      },
+      "hints": [
+        { "title": "Float temsili", "body": "0.1 ve 0.2 ikili kayan nokta sisteminde tam temsil edilemez." },
+        { "title": "Metinden Decimal", "body": "Decimal(\"0.1\") ondalık değeri doğrudan metinden kurar." },
+        { "title": "Sıra", "body": "Önce float, sonra Decimal sonucu yazdırılıyor." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.decimal-prediction",
+        "title": "İki sayı temsilinin farkını izle",
+        "xpReward": 55,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "answer-precise"
+        }
+      }
+    },
+    {
+      "id": "intermediate.standard-library.collections-toolbox",
+      "moduleId": "standard-library",
+      "order": 3,
+      "title": "Counter ve deque araçlarını kullan",
+      "summary": "collections modülü frekans sayımı ve sınırlı kuyruk gibi yaygın veri yapılarını hazır ve güvenilir biçimde sunar.",
+      "levelLabel": "Code Completion",
+      "mode": "code-completion",
+      "task": {
+        "title": "Stok frekansı ve son işlem kuyruğunu tamamla",
+        "instructions": [
+          "stok_frekansi() fonksiyonundan gerçek Counter nesnesi döndür.",
+          "son_islemler() fonksiyonunda limit uzunluğunda deque oluştur.",
+          "En yeni kayıtların sırasını koru.",
+          "Hazır örnek çıktı satırlarını değiştirme."
+        ],
+        "requirements": [
+          "Counter ve deque doğrudan kullanılmalı.",
+          "son_islemler varsayılan limit olarak 3 kullanmalı.",
+          "Fonksiyonlar farklı ve boş listelerde çalışmalı."
+        ],
+        "sampleOutput": "{'A': 3, 'B': 1}\n['iki', 'üç', 'dört']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from collections import Counter, deque\n\ndef stok_frekansi(kodlar):\n    return __COUNTER__\n\ndef son_islemler(islemler, limit=3):\n    return __DEQUE__\n\nprint(dict(stok_frekansi([\"A\", \"B\", \"A\", \"A\"])))\nprint(list(son_islemler([\"bir\", \"iki\", \"üç\", \"dört\"])))"
+      },
+      "hints": [
+        { "title": "Frekans sayımı", "body": "Counter(kodlar) her benzersiz değerin kaç kez geçtiğini sayar." },
+        { "title": "Son kayıtlar", "body": "islemler[-limit:] dilimi en yeni kayıtları seçer." },
+        { "title": "Sınırlı kuyruk", "body": "deque(..., maxlen=limit) uzunluğu kendiliğinden sınırlar." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.collections-toolbox",
+        "title": "Stok frekansı ve son işlem kuyruğunu tamamla",
+        "xpReward": 95,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "counter-cases",
+            "kind": "stdlib_function_cases",
+            "name": "stok_frekansi",
+            "cases": [
+              { "args": [["A", "B", "A", "A"]], "expected": { "A": 3, "B": 1 }, "expectedType": "Counter" },
+              { "args": [[]], "expected": {}, "expectedType": "Counter" }
+            ],
+            "label": "Gizli Counter testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "deque-cases",
+            "kind": "stdlib_function_cases",
+            "name": "son_islemler",
+            "cases": [
+              { "args": [["bir", "iki", "üç", "dört"]], "expected": ["iki", "üç", "dört"], "expectedType": "deque" },
+              { "args": [[1, 2, 3, 4, 5], 2], "expected": [4, 5], "expectedType": "deque" },
+              { "args": [[], 4], "expected": [], "expectedType": "deque" }
+            ],
+            "label": "Gizli deque testleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.standard-library.timezone-debugging",
+      "moduleId": "standard-library",
+      "order": 4,
+      "title": "Hata Avcısı: naive ve aware datetime",
+      "summary": "Timezone bilgisi olmayan naive datetime ile timezone-aware datetime doğrudan çıkarılamaz; iki taraf aynı zaman sözleşmesini kullanmalıdır.",
+      "levelLabel": "Debugging Lab",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "TypeError",
+        "symptom": "Program offset-naive ve offset-aware datetime değerlerini çıkarmaya çalışırken duruyor.",
+        "workflow": [
+          "Başlangıç kodunu çalıştır ve TypeError mesajını oku.",
+          "Örnek başlangıç zamanında eksik UTC ofsetini bul.",
+          "İki ISO metnini de +03:00 ofsetiyle aynı sözleşmeye getir.",
+          "Fonksiyonu farklı gizli aware zamanlarla yeniden doğrula."
+        ]
+      },
+      "task": {
+        "title": "Zaman dilimi sözleşmesini düzelt",
+        "instructions": [
+          "Kodu önce çalıştırarak gerçek hatayı gör.",
+          "Hazır fonksiyonun datetime.fromisoformat() kullanımını koru.",
+          "Örnek başlangıç değerine +03:00 ofsetini ekle.",
+          "Geçen dakika sonucunun 210 olduğunu doğrula."
+        ],
+        "requirements": [
+          "Her iki örnek datetime timezone-aware olmalı.",
+          "Fonksiyon dakika sayısını int olarak döndürmeli.",
+          "Farklı ofsetlerde aynı anı temsil eden değerler doğru işlenmeli."
+        ],
+        "sampleOutput": "210",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from datetime import datetime\n\ndef gecen_dakika(baslangic, bitis):\n    baslangic_dt = datetime.fromisoformat(baslangic)\n    bitis_dt = datetime.fromisoformat(bitis)\n    return int((bitis_dt - baslangic_dt).total_seconds() // 60)\n\nprint(gecen_dakika(\"2026-07-22T09:00:00\", \"2026-07-22T12:30:00+03:00\"))"
+      },
+      "hints": [
+        { "title": "Naive değer", "body": "İlk ISO metninde UTC ofseti bulunmuyor." },
+        { "title": "Aynı sözleşme", "body": "İlk metni 2026-07-22T09:00:00+03:00 biçimine getir." },
+        { "title": "Fonksiyonu bozma", "body": "Sorun çıkarma işleminde değil, örnek verinin timezone bilgisindedir." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.timezone-debugging",
+        "title": "Zaman dilimi sözleşmesini düzelt",
+        "xpReward": 95,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "timezone-cases",
+            "kind": "stdlib_function_cases",
+            "name": "gecen_dakika",
+            "cases": [
+              { "args": ["2026-07-22T09:00:00+03:00", "2026-07-22T12:30:00+03:00"], "expected": 210, "expectedType": "int" },
+              { "args": ["2026-07-22T09:00:00+00:00", "2026-07-22T12:00:00+03:00"], "expected": 0, "expectedType": "int" },
+              { "args": ["2026-07-22T23:30:00+03:00", "2026-07-23T00:15:00+03:00"], "expected": 45, "expectedType": "int" }
+            ],
+            "label": "Gizli timezone testleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.standard-library.itertools-stream",
+      "moduleId": "standard-library",
+      "order": 5,
+      "title": "itertools ile kaynakları birleştir",
+      "summary": "chain ve islice, büyük veri kaynaklarını ara liste oluşturmadan sırayla birleştirip sınırlı bölümünü tüketebilir.",
+      "levelLabel": "Iterator Laboratory",
+      "mode": "code",
+      "task": {
+        "title": "Birleşik kaynaktan ilk kayıtları seç",
+        "instructions": [
+          "kaynaklar içindeki iterable değerleri chain.from_iterable() ile birleştir.",
+          "islice() ile yalnız ilk limit kaydı tüket.",
+          "Sonucu liste olarak döndür.",
+          "Boş kaynak ve limit sıfır durumlarını destekle."
+        ],
+        "requirements": [
+          "Ara birleşik liste oluşturulmamalı.",
+          "Varsayılan limit 4 olmalı.",
+          "Kaynakların özgün sırası korunmalı."
+        ],
+        "sampleOutput": "['A1', 'A2', 'B1', 'C1']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from itertools import chain, islice\n\ndef ilk_kayitlar(kaynaklar, limit=4):\n    # chain.from_iterable ve islice kullan\n    pass\n\nprint(ilk_kayitlar([[\"A1\", \"A2\"], [\"B1\"], [\"C1\", \"C2\"]]))"
+      },
+      "hints": [
+        { "title": "Kaynakları düzleştir", "body": "chain.from_iterable(kaynaklar) tek ve lazy bir akış üretir." },
+        { "title": "Sınırla", "body": "islice(akış, limit) ilk limit öğeyi seçer." },
+        { "title": "Dönüş sözleşmesi", "body": "Görev sonucu liste istediği için islice sonucunu list() ile tüket." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.itertools-stream",
+        "title": "Birleşik kaynaktan ilk kayıtları seç",
+        "xpReward": 105,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "itertools-cases",
+            "kind": "stdlib_function_cases",
+            "name": "ilk_kayitlar",
+            "cases": [
+              { "args": [[ ["A1", "A2"], ["B1"], ["C1", "C2"] ]], "expected": ["A1", "A2", "B1", "C1"], "expectedType": "list" },
+              { "args": [[[1, 2], [], [3, 4]], 3], "expected": [1, 2, 3], "expectedType": "list" },
+              { "args": [[], 5], "expected": [], "expectedType": "list" },
+              { "args": [[[1, 2]], 0], "expected": [], "expectedType": "list" }
+            ],
+            "label": "Gizli lazy akış testleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.standard-library.enum-cache",
+      "moduleId": "standard-library",
+      "order": 6,
+      "title": "Enum ve lru_cache ile sözleşme kur",
+      "summary": "Enum sınırlı durum değerlerini isimlendirir; lru_cache ise saf fonksiyonların tekrarlanan sonuçlarını güvenli biçimde önbelleğe alır.",
+      "levelLabel": "Standard Library Architecture",
+      "mode": "code",
+      "task": {
+        "title": "Sipariş durumları ve önbellekli komisyon oranı oluştur",
+        "instructions": [
+          "SiparisDurumu Enum sınıfını üç zorunlu üyeyle oluştur.",
+          "komisyon_orani() fonksiyonunu @lru_cache(maxsize=32) ile süsle.",
+          "kart, havale ve kapıda kanalları için Decimal oran döndür.",
+          "Bilinmeyen kanalda ValueError fırlat."
+        ],
+        "requirements": [
+          "Enum üye adları ve değerleri sözleşmeyle aynı olmalı.",
+          "Fonksiyon gerçek Decimal döndürmeli.",
+          "lru_cache dekoratörü fonksiyon üzerinde bulunmalı."
+        ],
+        "sampleOutput": "kargoda\n0.03",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from decimal import Decimal\nfrom enum import Enum\nfrom functools import lru_cache\n\nclass SiparisDurumu(Enum):\n    # HAZIRLANIYOR, KARGODA, TESLIM_EDILDI üyelerini ekle\n    pass\n\n# lru_cache dekoratörünü ekle\ndef komisyon_orani(kanal):\n    # kart=0.03, havale=0.00, kapida=0.05\n    pass\n\nprint(SiparisDurumu.KARGODA.value)\nprint(komisyon_orani(\"kart\"))"
+      },
+      "hints": [
+        { "title": "Enum değerleri", "body": "Üyeleri HAZIRLANIYOR = \"hazirlaniyor\" biçiminde tanımla." },
+        { "title": "Önbellek", "body": "Fonksiyonun hemen üstüne @lru_cache(maxsize=32) yaz." },
+        { "title": "Decimal", "body": "Oranları Decimal(\"0.03\") gibi metinden oluştur." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.enum-cache",
+        "title": "Sipariş durumları ve önbellekli komisyon oranı oluştur",
+        "xpReward": 135,
+        "timeoutMs": 5000,
+        "checks": [
+          {
+            "id": "status-enum",
+            "kind": "enum_definition",
+            "name": "SiparisDurumu",
+            "members": {
+              "HAZIRLANIYOR": "hazirlaniyor",
+              "KARGODA": "kargoda",
+              "TESLIM_EDILDI": "teslim_edildi"
+            },
+            "label": "Sipariş durumu Enum sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "commission-cache",
+            "kind": "decorator_usage",
+            "name": "komisyon_orani",
+            "accepted": ["lru_cache"],
+            "label": "Komisyon önbellek dekoratörü",
+            "visibility": "visible"
+          },
+          {
+            "id": "commission-cases",
+            "kind": "stdlib_function_cases",
+            "name": "komisyon_orani",
+            "cases": [
+              { "args": ["kart"], "expected": "0.03", "expectedType": "Decimal" },
+              { "args": ["havale"], "expected": "0.00", "expectedType": "Decimal" },
+              { "args": ["kapida"], "expected": "0.05", "expectedType": "Decimal" }
+            ],
+            "label": "Gizli Decimal komisyon testleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "intermediate.standard-library.scheduled-report",
+      "moduleId": "standard-library",
+      "order": 7,
+      "title": "Final proje: zamanlanmış satış raporu",
+      "summary": "Tarih penceresi, hassas para hesabı, kategori frekansı, Enum durumu ve önbellekli tarih ayrıştırmayı tek bir deterministik raporlama servisinde birleştir.",
+      "levelLabel": "Intermediate Standard Library Project",
+      "mode": "code",
+      "task": {
+        "title": "Yedi günlük deterministik satış raporu üret",
+        "instructions": [
+          "models.py içinde RaporDurumu Enum sınıfını tamamla.",
+          "reporting.py içinde para(), tarih_coz() ve zamanlanmis_rapor() fonksiyonlarını oluştur.",
+          "Referans tarih dahil son gun takvim günündeki satışları filtrele.",
+          "Toplamı Decimal ile iki ondalık basamakta hesapla ve kategori adetlerini Counter ile üret.",
+          "Boş raporda BOS, kayıt bulunan raporda HAZIR durumunu döndür."
+        ],
+        "requirements": [
+          "Hiçbir hesap sistem saatine veya date.today() değerine bağlı olmamalı.",
+          "Para toplamı float ile yapılmamalı.",
+          "tarih_coz() @lru_cache ile önbelleklenmeli.",
+          "Çıktı yalnız JSON uyumlu string, sayı, liste ve sözlüklerden oluşmalı."
+        ],
+        "sampleOutput": "{'baslangic': '2026-07-16', 'bitis': '2026-07-22', 'satis_sayisi': 2, 'toplam': '300.50', 'kategoriler': {'Aksesuar': 1, 'Kırtasiye': 1}, 'durum': 'hazir'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu proje dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from reporting import zamanlanmis_rapor\n\nsatislar = [\n    {\"tarih\": \"2026-07-15\", \"kategori\": \"Kırtasiye\", \"tutar\": \"100.10\"},\n    {\"tarih\": \"2026-07-19\", \"kategori\": \"Aksesuar\", \"tutar\": \"250.20\"},\n    {\"tarih\": \"2026-07-22\", \"kategori\": \"Kırtasiye\", \"tutar\": \"50.30\"},\n]\n\nprint(zamanlanmis_rapor(satislar, \"2026-07-22\", 7))",
+        "files": [
+          {
+            "path": "models.py",
+            "starterCode": "from enum import Enum\n\nclass RaporDurumu(Enum):\n    # HAZIR ve BOS üyelerini tamamla\n    pass"
+          },
+          {
+            "path": "reporting.py",
+            "starterCode": "from collections import Counter\nfrom datetime import date, datetime, timedelta\nfrom decimal import Decimal, ROUND_HALF_UP\nfrom functools import lru_cache\nfrom models import RaporDurumu\n\n# tarih_coz fonksiyonunu lru_cache ile yaz\n\ndef para(tutar) -> Decimal:\n    pass\n\ndef zamanlanmis_rapor(satislar, referans, gun=7):\n    # Başlangıç tarihi dahil son gun takvim gününü filtrele\n    # Counter ve Decimal kullanarak raporu döndür\n    pass"
+          },
+          {
+            "path": "main.py",
+            "starterCode": "from reporting import zamanlanmis_rapor\n\nsatislar = [\n    {\"tarih\": \"2026-07-15\", \"kategori\": \"Kırtasiye\", \"tutar\": \"100.10\"},\n    {\"tarih\": \"2026-07-19\", \"kategori\": \"Aksesuar\", \"tutar\": \"250.20\"},\n    {\"tarih\": \"2026-07-22\", \"kategori\": \"Kırtasiye\", \"tutar\": \"50.30\"},\n]\n\nprint(zamanlanmis_rapor(satislar, \"2026-07-22\", 7))"
+          }
+        ]
+      },
+      "hints": [
+        { "title": "Tarih penceresi", "body": "baslangic = referans_tarihi - timedelta(days=gun - 1) ile iki sınırı dahil et." },
+        { "title": "Para hassasiyeti", "body": "Decimal(str(tutar)).quantize(Decimal(\"0.01\"), rounding=ROUND_HALF_UP) kullan." },
+        { "title": "Rapor durumu", "body": "Seçili satış varsa RaporDurumu.HAZIR.value, yoksa RaporDurumu.BOS.value döndür." }
+      ],
+      "validation": {
+        "id": "intermediate.standard-library.scheduled-report",
+        "title": "Yedi günlük deterministik satış raporu üret",
+        "xpReward": 235,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "report-status-enum",
+            "kind": "enum_definition",
+            "name": "RaporDurumu",
+            "module": "models",
+            "members": {
+              "HAZIR": "hazir",
+              "BOS": "bos"
+            },
+            "label": "Rapor durumu Enum sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "date-cache",
+            "kind": "decorator_usage",
+            "name": "tarih_coz",
+            "file": "reporting.py",
+            "accepted": ["lru_cache"],
+            "label": "Tarih ayrıştırma önbelleği",
+            "visibility": "visible"
+          },
+          {
+            "id": "money-cases",
+            "kind": "stdlib_function_cases",
+            "name": "para",
+            "module": "reporting",
+            "cases": [
+              { "args": ["12.345"], "expected": "12.35", "expectedType": "Decimal" },
+              { "args": ["0.1"], "expected": "0.10", "expectedType": "Decimal" },
+              { "args": [250], "expected": "250.00", "expectedType": "Decimal" }
+            ],
+            "label": "Gizli para hassasiyeti testleri",
+            "visibility": "hidden"
+          },
+          {
+            "id": "scheduled-report-cases",
+            "kind": "stdlib_function_cases",
+            "name": "zamanlanmis_rapor",
+            "module": "reporting",
+            "cases": [
+              {
+                "args": [
+                  [
+                    { "tarih": "2026-07-15", "kategori": "Kırtasiye", "tutar": "100.10" },
+                    { "tarih": "2026-07-19", "kategori": "Aksesuar", "tutar": "250.20" },
+                    { "tarih": "2026-07-22", "kategori": "Kırtasiye", "tutar": "50.30" }
+                  ],
+                  "2026-07-22",
+                  7
+                ],
+                "expected": {
+                  "baslangic": "2026-07-16",
+                  "bitis": "2026-07-22",
+                  "satis_sayisi": 2,
+                  "toplam": "300.50",
+                  "kategoriler": { "Aksesuar": 1, "Kırtasiye": 1 },
+                  "durum": "hazir"
+                },
+                "expectedType": "dict"
+              },
+              {
+                "args": [
+                  [
+                    { "tarih": "2026-08-01", "kategori": "A", "tutar": "0.10" },
+                    { "tarih": "2026-08-02", "kategori": "A", "tutar": "0.20" }
+                  ],
+                  "2026-08-02",
+                  2
+                ],
+                "expected": {
+                  "baslangic": "2026-08-01",
+                  "bitis": "2026-08-02",
+                  "satis_sayisi": 2,
+                  "toplam": "0.30",
+                  "kategoriler": { "A": 2 },
+                  "durum": "hazir"
+                },
+                "expectedType": "dict"
+              },
+              {
+                "args": [[], "2026-09-10", 3],
+                "expected": {
+                  "baslangic": "2026-09-08",
+                  "bitis": "2026-09-10",
+                  "satis_sayisi": 0,
+                  "toplam": "0.00",
+                  "kategoriler": {},
+                  "durum": "bos"
+                },
+                "expectedType": "dict"
+              }
+            ],
+            "label": "Gizli zamanlanmış rapor testleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}

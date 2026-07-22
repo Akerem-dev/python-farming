@@ -119,6 +119,18 @@ export type TaskCheck =
       }>;
     })
   | (TaskCheckBase & {
+      kind: "stdlib_function_cases";
+      name: string;
+      module?: string;
+      cases: Array<{
+        args: TaskCaseValue[];
+        kwargs?: { [key: string]: TaskCaseValue };
+        expected?: TaskCaseValue;
+        expectedType?: string;
+        timezoneAware?: boolean;
+      }>;
+    })
+  | (TaskCheckBase & {
       kind: "function_raises";
       name: string;
       module?: string;
@@ -157,6 +169,18 @@ export type TaskCheck =
       name: string;
       methods: TaskProtocolMethodExpectation[];
       runtimeCheckable?: boolean;
+      file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "enum_definition";
+      name: string;
+      module?: string;
+      members: { [key: string]: TaskCaseValue };
+    })
+  | (TaskCheckBase & {
+      kind: "decorator_usage";
+      name: string;
+      accepted: string[];
       file?: string;
     })
   | (TaskCheckBase & {
