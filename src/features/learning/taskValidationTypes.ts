@@ -69,27 +69,6 @@ export interface TaskPatternCase {
 export interface TaskDecoratorTargetExpectation {
   name: string;
   module?: string;
-  expectedName?: string;
-  expectedDoc?: string;
-  cases: TaskPatternCase[];
-}
-
-export interface TaskContextProbeExpectation {
-  name: string;
-  module?: string;
-  cases: TaskPatternCase[];
-}
-
-export interface TaskPatternCase {
-  args: TaskCaseValue[];
-  kwargs?: { [key: string]: TaskCaseValue };
-  expected?: TaskCaseValue;
-  outputPattern?: string;
-}
-
-export interface TaskDecoratorTargetExpectation {
-  name: string;
-  module?: string;
   file?: string;
   expectedName?: string;
   expectedDoc?: string;
