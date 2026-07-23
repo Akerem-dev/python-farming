@@ -18,6 +18,11 @@ import {
   getBeginnerGraduationLesson,
   getBeginnerGraduationSnapshot,
 } from "../../features/mastery/beginnerGraduation";
+import {
+  getIntermediateGraduationLesson,
+  getIntermediateGraduationSnapshot,
+  intermediateGraduationLessonId,
+} from "../../features/mastery/intermediateGraduation";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import { AppShell } from "../../layouts/AppShell";
 import styles from "./HomePage.module.css";
@@ -55,11 +60,16 @@ export function HomePage() {
   }, [loadCatalog, loadProgress]);
 
   const modules = useMemo(() => getOrderedModules(catalog), [catalog]);
-  const graduation = useMemo(
+  const beginnerGraduation = useMemo(
     () => getBeginnerGraduationSnapshot(catalog, completedLessonIds),
     [catalog, completedLessonIds],
   );
-  const graduationLesson = getBeginnerGraduationLesson(catalog);
+  const intermediateGraduation = useMemo(
+    () => getIntermediateGraduationSnapshot(catalog, completedLessonIds),
+    [catalog, completedLessonIds],
+  );
+  const beginnerGraduationLesson = getBeginnerGraduationLesson(catalog);
+  const intermediateGraduationLesson = getIntermediateGraduationLesson(catalog);
   const resumeLesson = useMemo(
     () => getResumeLesson(catalog, completedLessonIds, lastLessonId),
     [catalog, completedLessonIds, lastLessonId],
@@ -85,7 +95,7 @@ export function HomePage() {
     publishedLessonCount > 0
       ? Math.round((completedPublishedLessons / publishedLessonCount) * 100)
       : 0;
-  const completedBeginnerModules = graduation.completedCoreModules;
+  const completedBeginnerModules = beginnerGraduation.completedCoreModules;
   const beginnerRoadmapProgress = Math.round((completedBeginnerModules / 8) * 100);
   const intermediateModules =
     catalog?.levels.find((level) => level.id === "intermediate")?.modules ?? [];
@@ -105,6 +115,7 @@ export function HomePage() {
   const levelRows = roadmapLevels.map((level) => {
     const isBeginner = level.id === "beginner";
     const isIntermediate = level.id === "intermediate";
+    const isAdvanced = level.id === "advanced";
     return {
       ...level,
       completedModules: isBeginner
@@ -117,8 +128,16 @@ export function HomePage() {
         : isIntermediate
           ? intermediateRoadmapProgress
           : 0,
-      locked: isBeginner ? false : isIntermediate ? !graduation.intermediateUnlocked : true,
-      unlocked: isIntermediate && graduation.intermediateUnlocked,
+      locked: isBeginner
+        ? false
+        : isIntermediate
+          ? !beginnerGraduation.intermediateUnlocked
+          : isAdvanced
+            ? !intermediateGraduation.advancedUnlocked
+            : true,
+      unlocked:
+        (isIntermediate && beginnerGraduation.intermediateUnlocked) ||
+        (isAdvanced && intermediateGraduation.advancedUnlocked),
     };
   });
 
@@ -160,9 +179,50 @@ export function HomePage() {
   const currentLevelLabel =
     resumeModule.id === "beginner-graduation"
       ? "Sınav"
-      : resumeLevel?.id === "intermediate"
-        ? "Orta Seviye"
-        : "Başlangıç";
+      : resumeModule.id === "intermediate-project"
+        ? "Bitirme Projesi"
+        : resumeLevel?.id === "intermediate"
+          ? "Orta Seviye"
+          : "Başlangıç";
+
+  const showingIntermediateGraduation = beginnerGraduation.graduated;
+  const graduationView = showingIntermediateGraduation
+    ? {
+        graduated: intermediateGraduation.graduated,
+        unlocked: intermediateGraduation.projectUnlocked,
+        masteryScore: intermediateGraduation.masteryScore,
+        badgeName: intermediateGraduation.badgeName,
+        completedCoreLessons: intermediateGraduation.completedCoreLessons,
+        totalCoreLessons: intermediateGraduation.totalCoreLessons,
+        completedCoreModules: intermediateGraduation.completedCoreModules,
+        totalCoreModules: intermediateGraduation.totalCoreModules,
+        weakTopics: intermediateGraduation.weakTopics,
+        lesson: intermediateGraduationLesson,
+        lessonId: intermediateGraduationLessonId,
+        levelName: "Orta Seviye",
+        nextLevel: "İleri Seviye",
+        readyTitle: "Dokuz modülü üretim kalitesinde tek projede kanıtla",
+        readyDescription:
+          "Sipariş Yönetim Sistemi bitirme projesini tamamlayarak Orta Seviye rozetini kazan ve İleri Seviye yolunu aç.",
+      }
+    : {
+        graduated: beginnerGraduation.graduated,
+        unlocked: beginnerGraduation.examUnlocked,
+        masteryScore: beginnerGraduation.masteryScore,
+        badgeName: beginnerGraduation.badgeName,
+        completedCoreLessons: beginnerGraduation.completedCoreLessons,
+        totalCoreLessons: beginnerGraduation.totalCoreLessons,
+        completedCoreModules: beginnerGraduation.completedCoreModules,
+        totalCoreModules: beginnerGraduation.totalCoreModules,
+        weakTopics: beginnerGraduation.weakTopics,
+        lesson: beginnerGraduationLesson,
+        lessonId: beginnerGraduationLessonId,
+        levelName: "Başlangıç",
+        nextLevel: "Orta Seviye",
+        readyTitle: "Sekiz modülü tek projede kanıtla",
+        readyDescription:
+          "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır.",
+      };
 
   return (
     <AppShell activeRoute={routes.home} context="Ana Sayfa / Müfredat">
@@ -217,37 +277,40 @@ export function HomePage() {
             </div>
           </article>
 
-          <article className={`${styles.panel} ${styles.graduationPanel}`} data-graduated={graduation.graduated || undefined}>
+          <article
+            className={`${styles.panel} ${styles.graduationPanel}`}
+            data-graduated={graduationView.graduated || undefined}
+          >
             <div className={styles.graduationScore}>
               <span>Ustalık puanı</span>
-              <strong>{graduation.masteryScore}</strong>
+              <strong>{graduationView.masteryScore}</strong>
               <small>/ 100</small>
             </div>
             <div className={styles.graduationBody}>
               <span className={styles.eyebrow}>
-                {graduation.graduated
-                  ? "Başlangıç seviyesi mezuniyeti"
-                  : graduation.examUnlocked
-                    ? "Final sınavı hazır"
-                    : "Mezuniyete giden yol"}
+                {graduationView.graduated
+                  ? `${graduationView.levelName} mezuniyeti`
+                  : graduationView.unlocked
+                    ? "Bitirme projesi hazır"
+                    : `${graduationView.levelName} mezuniyetine giden yol`}
               </span>
               <h2>
-                {graduation.graduated
-                  ? graduation.badgeName
-                  : graduation.examUnlocked
-                    ? "Sekiz modülü tek projede kanıtla"
-                    : `${graduation.completedCoreLessons} / ${graduation.totalCoreLessons} temel ders tamamlandı`}
+                {graduationView.graduated
+                  ? graduationView.badgeName
+                  : graduationView.unlocked
+                    ? graduationView.readyTitle
+                    : `${graduationView.completedCoreLessons} / ${graduationView.totalCoreLessons} ders tamamlandı`}
               </h2>
               <p>
-                {graduation.graduated
-                  ? "Mezuniyet rozeti kazanıldı ve Orta Seviye öğrenim yolu açıldı."
-                  : graduation.examUnlocked
-                    ? "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır."
-                    : "En düşük tamamlanma oranına sahip modüller aşağıda gösteriliyor. Bu konular tamamlandıkça sınav otomatik açılır."}
+                {graduationView.graduated
+                  ? `Mezuniyet rozeti kazanıldı ve ${graduationView.nextLevel} öğrenim yolu açıldı.`
+                  : graduationView.unlocked
+                    ? graduationView.readyDescription
+                    : "En düşük tamamlanma oranına sahip modüller aşağıda gösteriliyor. Bu konular tamamlandıkça bitirme projesi otomatik açılır."}
               </p>
-              {!graduation.graduated && !graduation.examUnlocked ? (
+              {!graduationView.graduated && !graduationView.unlocked ? (
                 <div className={styles.weakTopics}>
-                  {graduation.weakTopics.map((topic) => (
+                  {graduationView.weakTopics.map((topic) => (
                     <div key={topic.id}>
                       <span>{topic.number}</span>
                       <b>{topic.title}</b>
@@ -258,20 +321,22 @@ export function HomePage() {
               ) : null}
             </div>
             <div className={styles.graduationAction}>
-              {graduation.graduated ? (
+              {graduationView.graduated ? (
                 <div className={styles.graduationBadge}>
                   <i>◆</i>
-                  <span>Orta Seviye</span>
+                  <span>{graduationView.nextLevel}</span>
                   <strong>Açıldı</strong>
                 </div>
-              ) : graduation.examUnlocked && graduationLesson ? (
-                <Button variant="primary" onClick={() => openLesson(beginnerGraduationLessonId)}>
-                  Mezuniyet sınavına gir →
+              ) : graduationView.unlocked && graduationView.lesson ? (
+                <Button variant="primary" onClick={() => openLesson(graduationView.lessonId)}>
+                  Bitirme projesini aç →
                 </Button>
               ) : (
                 <div>
                   <span>Hazırlık</span>
-                  <strong>{graduation.completedCoreModules} / {graduation.totalCoreModules} modül</strong>
+                  <strong>
+                    {graduationView.completedCoreModules} / {graduationView.totalCoreModules} modül
+                  </strong>
                 </div>
               )}
             </div>

@@ -1,0 +1,254 @@
+{
+  "moduleId": "intermediate-project",
+  "lessons": [
+    {
+      "id": "intermediate.project.final-capstone",
+      "moduleId": "intermediate-project",
+      "order": 1,
+      "title": "Orta Seviye Bitirme Projesi",
+      "summary": "Dokuz Orta Seviye modülünde öğrendiğin mimari, kalıcılık, hata yönetimi, test, typing ve raporlama becerilerini üretim kalitesinde tek projede birleştir.",
+      "levelLabel": "Intermediate Graduation Project",
+      "mode": "file-processing",
+      "graduation": {
+        "badgeName": "Python Farming Orta Seviye Mezunu",
+        "nextLevel": "İleri Seviye",
+        "topics": [
+          "Çok dosyalı modül mimarisi",
+          "Dataclass domain modeli",
+          "Enum durum sözleşmesi",
+          "Decimal para hassasiyeti",
+          "JSON kalıcılığı",
+          "Özel exception ve hata yönetimi",
+          "Type hint ve çalışma zamanı sözleşmesi",
+          "Otomatik test paketi",
+          "Deterministik tarih raporlaması"
+        ],
+        "criteria": [
+          "İlk dokuz Orta Seviye modülün bütün dersleri tamamlanmış olmalı.",
+          "Domain, repository, service ve reporting sorumlulukları ayrı dosyalarda tutulmalı.",
+          "Para hesapları Decimal ile yapılmalı ve JSON çıktısında iki ondalıklı metin kullanılmalı.",
+          "Geçersiz sipariş verileri VeriHatasi ile reddedilmeli.",
+          "Öğrencinin test paketinde en az altı test fonksiyonu ve sekiz assert bulunmalı.",
+          "Kaynak JSON değiştirilmeden iki kalıcı çıktı dosyası üretilmeli."
+        ]
+      },
+      "fileSystem": {
+        "projectTitle": "Orta Seviye Mezuniyet Projesi · Sipariş Yönetim Sistemi",
+        "workingDirectory": ".",
+        "inputFiles": [
+          {
+            "path": "data/siparisler.json",
+            "description": "Değiştirilmeden okunacak ham sipariş kayıtları"
+          }
+        ],
+        "outputFiles": [
+          {
+            "path": "output/siparisler.json",
+            "description": "Normalize edilmiş kalıcı sipariş özeti"
+          },
+          {
+            "path": "output/rapor.json",
+            "description": "Sabit referans tarihle üretilen haftalık rapor"
+          }
+        ],
+        "rules": [
+          "models.py yalnız domain modellerini ve SiparisDurumu Enum sözleşmesini taşımalıdır.",
+          "repository.py JSON okuma-yazma sorumluluğunu JsonSiparisDeposu sınıfında toplamalıdır.",
+          "service.py ham sözlükleri doğrulayıp Siparis nesnelerine dönüştürmelidir.",
+          "reporting.py sistem saatini kullanmamalı; referans tarih parametresiyle deterministik çalışmalıdır.",
+          "Bütün fiyat ve toplamlar Decimal ile hesaplanmalıdır.",
+          "data/siparisler.json hiçbir koşulda değiştirilmemelidir.",
+          "tests klasöründeki testler doğru uygulamada geçmeli ve sınır durumlarını kapsamalıdır."
+        ],
+        "workflow": [
+          "Önce models.py ve errors.py sözleşmelerini tamamla.",
+          "JSON deposunu ve ham veriyi doğrulayan service katmanını oluştur.",
+          "Haftalık raporu Decimal ve sabit referans tarihle üret.",
+          "Test dosyalarına normal, boş ve hatalı veri senaryoları ekle.",
+          "main.py ile projeyi çalıştırıp iki çıktı dosyasını üret.",
+          "Bütün kalite kapılarını Bitirme Projesini Kontrol Et düğmesiyle gönder."
+        ]
+      },
+      "task": {
+        "title": "Üretim kalitesinde sipariş yönetim sistemi geliştir",
+        "instructions": [
+          "SiparisKalemi ve Siparis dataclass modellerini Decimal toplam metotlarıyla tamamla.",
+          "JsonSiparisDeposu sınıfında UTF-8 JSON yükleme ve kaydetme işlemlerini uygula.",
+          "siparis_olustur() ile ham veriyi doğrula; geçersiz alanlarda VeriHatasi üret.",
+          "siparisi_sozluge() ile kalıcı ve JSON uyumlu sipariş özeti oluştur.",
+          "haftalik_rapor() fonksiyonunu referans tarih ve gün penceresiyle deterministik yaz.",
+          "İki test dosyasında en az altı test fonksiyonu ve sekiz assert oluştur.",
+          "main.py çalıştığında output/siparisler.json ve output/rapor.json dosyalarını üret."
+        ],
+        "requirements": [
+          "SiparisKalemi frozen dataclass, Siparis normal dataclass olmalı.",
+          "SiparisDurumu gerçek Enum ve VeriHatasi özel Exception olmalı.",
+          "Servis ve raporlama fonksiyonlarının bütün parametre ve dönüş type hint'leri bulunmalı.",
+          "Geçersiz adet, fiyat, tarih veya eksik alan güvenli biçimde reddedilmeli.",
+          "Öğrenci test paketi doğru uygulamada tamamen geçmeli.",
+          "Kaynak JSON korunmalı ve beklenen iki JSON çıktısı üretilmeli."
+        ],
+        "sampleOutput": "Sipariş sayısı: 2\nToplam: 245.50 TL\nMüşteriler: Ada\nDurum: hazir",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu bitirme projesi dışarıdan terminal girdisi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from repository import JsonSiparisDeposu\nfrom reporting import haftalik_rapor\nfrom service import siparis_olustur, siparisi_sozluge\n\n\ndef main() -> None:\n    kaynak = JsonSiparisDeposu(\"data/siparisler.json\")\n    ham_siparisler = kaynak.yukle()\n    siparisler = [siparis_olustur(veri) for veri in ham_siparisler]\n\n    JsonSiparisDeposu(\"output/siparisler.json\").kaydet(\n        [siparisi_sozluge(siparis) for siparis in siparisler]\n    )\n    rapor = haftalik_rapor(siparisler, \"2026-07-23\", 7)\n    JsonSiparisDeposu(\"output/rapor.json\").kaydet(rapor)\n\n    print(f\"Sipariş sayısı: {rapor['siparis_sayisi']}\")\n    print(f\"Toplam: {rapor['toplam']} TL\")\n    print(f\"Müşteriler: {', '.join(rapor['musteriler'])}\")\n    print(f\"Durum: {rapor['durum']}\")\n\n\nif __name__ == \"__main__\":\n    main()",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from repository import JsonSiparisDeposu\nfrom reporting import haftalik_rapor\nfrom service import siparis_olustur, siparisi_sozluge\n\n\ndef main() -> None:\n    kaynak = JsonSiparisDeposu(\"data/siparisler.json\")\n    ham_siparisler = kaynak.yukle()\n    siparisler = [siparis_olustur(veri) for veri in ham_siparisler]\n\n    JsonSiparisDeposu(\"output/siparisler.json\").kaydet(\n        [siparisi_sozluge(siparis) for siparis in siparisler]\n    )\n    rapor = haftalik_rapor(siparisler, \"2026-07-23\", 7)\n    JsonSiparisDeposu(\"output/rapor.json\").kaydet(rapor)\n\n    print(f\"Sipariş sayısı: {rapor['siparis_sayisi']}\")\n    print(f\"Toplam: {rapor['toplam']} TL\")\n    print(f\"Müşteriler: {', '.join(rapor['musteriler'])}\")\n    print(f\"Durum: {rapor['durum']}\")\n\n\nif __name__ == \"__main__\":\n    main()"
+          },
+          {
+            "path": "models.py",
+            "starterCode": "from dataclasses import dataclass, field\nfrom datetime import date\nfrom decimal import Decimal\nfrom enum import Enum\n\n\nclass SiparisDurumu(Enum):\n    TASLAK = \"taslak\"\n    TAMAMLANDI = \"tamamlandi\"\n\n\n@dataclass(frozen=True)\nclass SiparisKalemi:\n    ad: str\n    birim_fiyat: Decimal\n    adet: int\n\n    def toplam(self) -> Decimal:\n        raise NotImplementedError\n\n\n@dataclass\nclass Siparis:\n    siparis_id: str\n    musteri: str\n    tarih: date\n    kalemler: list[SiparisKalemi] = field(default_factory=list)\n    durum: SiparisDurumu = SiparisDurumu.TASLAK\n\n    def toplam(self) -> Decimal:\n        raise NotImplementedError"
+          },
+          {
+            "path": "errors.py",
+            "starterCode": "class VeriHatasi(Exception):\n    \"\"\"Sipariş verisi sözleşmeye uymadığında fırlatılır.\"\"\""
+          },
+          {
+            "path": "repository.py",
+            "starterCode": "import json\nfrom pathlib import Path\n\nfrom errors import VeriHatasi\n\n\nclass JsonSiparisDeposu:\n    def __init__(self, yol: str):\n        self.yol = Path(yol)\n\n    def yukle(self) -> object:\n        raise NotImplementedError\n\n    def kaydet(self, veri: object) -> None:\n        raise NotImplementedError"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from decimal import Decimal, InvalidOperation\n\nfrom errors import VeriHatasi\nfrom models import Siparis, SiparisDurumu, SiparisKalemi\n\n\ndef siparis_olustur(veri: dict[str, object]) -> Siparis:\n    raise NotImplementedError\n\n\ndef siparisi_sozluge(siparis: Siparis) -> dict[str, object]:\n    raise NotImplementedError"
+          },
+          {
+            "path": "reporting.py",
+            "starterCode": "from datetime import datetime, timedelta\nfrom decimal import Decimal\n\nfrom models import Siparis\n\n\ndef haftalik_rapor(\n    siparisler: list[Siparis],\n    referans: str,\n    gun: int = 7,\n) -> dict[str, object]:\n    raise NotImplementedError"
+          },
+          {
+            "path": "data/siparisler.json",
+            "starterCode": "[\n  {\n    \"siparis_id\": \"S-001\",\n    \"musteri\": \"Ada\",\n    \"tarih\": \"2026-07-20\",\n    \"durum\": \"tamamlandi\",\n    \"kalemler\": [\n      {\"ad\": \"Defter\", \"birim_fiyat\": \"45.00\", \"adet\": 2},\n      {\"ad\": \"Kalem\", \"birim_fiyat\": \"15.50\", \"adet\": 1}\n    ]\n  },\n  {\n    \"siparis_id\": \"S-002\",\n    \"musteri\": \"Mert\",\n    \"tarih\": \"2026-07-15\",\n    \"durum\": \"tamamlandi\",\n    \"kalemler\": [\n      {\"ad\": \"Çanta\", \"birim_fiyat\": \"320.00\", \"adet\": 1}\n    ]\n  },\n  {\n    \"siparis_id\": \"S-003\",\n    \"musteri\": \"Ada\",\n    \"tarih\": \"2026-07-22\",\n    \"durum\": \"tamamlandi\",\n    \"kalemler\": [\n      {\"ad\": \"Suluk\", \"birim_fiyat\": \"70.00\", \"adet\": 2}\n    ]\n  }\n]",
+            "readOnly": true
+          },
+          {
+            "path": "output/siparisler.json",
+            "starterCode": "[]",
+            "readOnly": true
+          },
+          {
+            "path": "output/rapor.json",
+            "starterCode": "{}",
+            "readOnly": true
+          },
+          {
+            "path": "tests/test_service.py",
+            "starterCode": "from decimal import Decimal\n\nfrom errors import VeriHatasi\nfrom models import Siparis\nfrom service import siparis_olustur, siparisi_sozluge\n\n\ndef ornek_veri():\n    return {\n        \"siparis_id\": \"T-001\",\n        \"musteri\": \"Ada\",\n        \"tarih\": \"2026-07-20\",\n        \"durum\": \"tamamlandi\",\n        \"kalemler\": [{\"ad\": \"Kalem\", \"birim_fiyat\": \"15.50\", \"adet\": 2}],\n    }\n\n\ndef test_gecerli_siparis():\n    siparis = siparis_olustur(ornek_veri())\n    assert isinstance(siparis, Siparis)\n    assert siparis.toplam() == Decimal(\"31.00\")\n\n\n# Geçersiz adet, eksik alan ve JSON sözlüğe dönüşüm testlerini ekle."
+          },
+          {
+            "path": "tests/test_reporting.py",
+            "starterCode": "from service import siparis_olustur\nfrom reporting import haftalik_rapor\n\n\ndef test_bos_rapor():\n    rapor = haftalik_rapor([], \"2026-07-23\", 7)\n    assert rapor[\"durum\"] == \"bos\"\n    assert rapor[\"toplam\"] == \"0.00\"\n\n\n# Tarih penceresi, toplam ve benzersiz müşteri testlerini ekle."
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Domain katmanını önce bitir",
+          "body": "SiparisKalemi.toplam() birim_fiyat * adet; Siparis.toplam() ise kalem toplamlarının Decimal toplamı olmalı."
+        },
+        {
+          "title": "Ham veriyi sınırda doğrula",
+          "body": "siparis_olustur() içinde alan varlığı, ISO tarih, pozitif adet ve Decimal fiyat dönüşümünü kontrol edip VeriHatasi üret."
+        },
+        {
+          "title": "Raporu deterministik tut",
+          "body": "referans tarihini datetime.strptime ile date nesnesine çevir; başlangıç = referans - timedelta(days=gun - 1) olmalı."
+        },
+        {
+          "title": "Test kalitesi",
+          "body": "Normal örnek dışında boş liste, sınır tarihi, geçersiz adet, eksik alan ve JSON dönüşümünü ayrı test fonksiyonlarında doğrula."
+        }
+      ],
+      "validation": {
+        "id": "intermediate.project.final-capstone",
+        "title": "Üretim kalitesinde sipariş yönetim sistemi geliştir",
+        "xpReward": 300,
+        "timeoutMs": 12000,
+        "checks": [
+          {
+            "id": "capstone-quality-gate",
+            "kind": "capstone_project",
+            "requiredFiles": [
+              "main.py",
+              "models.py",
+              "errors.py",
+              "repository.py",
+              "service.py",
+              "reporting.py",
+              "data/siparisler.json",
+              "tests/test_service.py",
+              "tests/test_reporting.py"
+            ],
+            "testFiles": ["tests/test_service.py", "tests/test_reporting.py"],
+            "minTests": 6,
+            "minAssertions": 8,
+            "label": "Orta Seviye bitirme projesi kalite kapısı",
+            "visibility": "visible"
+          },
+          {
+            "id": "orders-output-exists",
+            "kind": "file_exists",
+            "path": "output/siparisler.json",
+            "label": "Normalize sipariş çıktısı üretildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-output-exists",
+            "kind": "file_exists",
+            "path": "output/rapor.json",
+            "label": "Haftalık rapor çıktısı üretildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "source-unchanged",
+            "kind": "file_unchanged",
+            "path": "data/siparisler.json",
+            "label": "Kaynak sipariş verisi değiştirilmedi",
+            "visibility": "hidden"
+          },
+          {
+            "id": "orders-json",
+            "kind": "json_file_equals",
+            "path": "output/siparisler.json",
+            "expected": [
+              {"siparis_id": "S-001", "musteri": "Ada", "tarih": "2026-07-20", "durum": "tamamlandi", "toplam": "105.50"},
+              {"siparis_id": "S-002", "musteri": "Mert", "tarih": "2026-07-15", "durum": "tamamlandi", "toplam": "320.00"},
+              {"siparis_id": "S-003", "musteri": "Ada", "tarih": "2026-07-22", "durum": "tamamlandi", "toplam": "140.00"}
+            ],
+            "label": "Kalıcı sipariş JSON sözleşmesi",
+            "visibility": "hidden"
+          },
+          {
+            "id": "report-json",
+            "kind": "json_file_equals",
+            "path": "output/rapor.json",
+            "expected": {
+              "baslangic": "2026-07-17",
+              "bitis": "2026-07-23",
+              "siparis_sayisi": 2,
+              "toplam": "245.50",
+              "musteriler": ["Ada"],
+              "durum": "hazir"
+            },
+            "label": "Deterministik rapor JSON sözleşmesi",
+            "visibility": "hidden"
+          },
+          {
+            "id": "terminal-output",
+            "kind": "stdout_regex",
+            "pattern": "\\ASipariş sayısı:\\s*2\\s*\\nToplam:\\s*245\\.50\\s*TL\\s*\\nMüşteriler:\\s*Ada\\s*\\nDurum:\\s*hazir\\s*\\Z",
+            "flags": "i",
+            "label": "Bitirme projesi terminal özeti",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
