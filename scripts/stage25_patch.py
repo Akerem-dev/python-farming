@@ -57,8 +57,8 @@ replace_once(
 )
 replace_once(
     store_path,
-    '''            : requiresTestingValidation(spec)\n              ? await validateTestingTask({ files, entrypoint, spec })''',
-    '''            : requiresAdvancedPatternValidation(spec)\n              ? await validateAdvancedPatternTask({ files, entrypoint, spec })\n              : requiresTestingValidation(spec)\n                ? await validateTestingTask({ files, entrypoint, spec })''',
+    '''            : requiresCapstoneValidation(spec)\n              ? await validateCapstoneTask({ files, entrypoint, stdin, spec })\n              : requiresTestingValidation(spec)\n                ? await validateTestingTask({ files, entrypoint, spec })''',
+    '''            : requiresCapstoneValidation(spec)\n              ? await validateCapstoneTask({ files, entrypoint, stdin, spec })\n              : requiresAdvancedPatternValidation(spec)\n                ? await validateAdvancedPatternTask({ files, entrypoint, spec })\n                : requiresTestingValidation(spec)\n                  ? await validateTestingTask({ files, entrypoint, spec })''',
 )
 
 home = Path("src/pages/HomePage/HomePage.tsx")
