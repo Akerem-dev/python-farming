@@ -398,7 +398,7 @@ if (mode === "test-lab") {
 
   if (lesson.graduation) {
     if (
-      mode !== "data-transformation" ||
+      !["data-transformation", "file-processing"].includes(mode) ||
       typeof lesson.graduation.badgeName !== "string" ||
       typeof lesson.graduation.nextLevel !== "string" ||
       !Array.isArray(lesson.graduation.topics) ||
@@ -411,26 +411,50 @@ if (mode === "test-lab") {
       throw new Error(`${lesson.id} mezuniyet sınavı rehberi eksik.`);
     }
 
-    const hasFunctionDefinitionCheck = validation.checks.some(
-      (check) => check.kind === "function_definition",
+    const capstoneChecks = validation.checks.filter(
+      (check) => check.kind === "capstone_project",
     );
-    const hasFunctionCasesCheck = validation.checks.some(
-      (check) => check.kind === "function_cases",
-    );
-    const requiredNodeNames = ["For", "If", "Dict"];
-    const hasRequiredNodes = requiredNodeNames.every((nodeName) =>
-      validation.checks.some(
-        (check) => check.kind === "node_count" && check.nodeName === nodeName,
-      ),
-    );
-    const hasSetCheck = validation.checks.some(
-      (check) =>
-        (check.kind === "node_count" && ["Set", "SetComp"].includes(check.nodeName)) ||
-        (check.kind === "call" && ["set", "add"].includes(check.name)),
-    );
+    if (capstoneChecks.length > 0) {
+      const workspacePaths = new Set(lesson.editor.files?.map((file) => file.path) ?? []);
+      if (mode !== "file-processing" || capstoneChecks.length !== 1) {
+        throw new Error(`${lesson.id} bitirme projesi file-processing modunda tek kalite kapısı taşımalıdır.`);
+      }
+      for (const check of capstoneChecks) {
+        if (
+          check.requiredFiles.length < 6 ||
+          check.requiredFiles.some((path) => !workspacePaths.has(path)) ||
+          check.testFiles.length < 2 ||
+          check.testFiles.some(
+            (path) => !workspacePaths.has(path) || !path.split("/").at(-1)?.startsWith("test_"),
+          ) ||
+          check.minTests < 4 ||
+          check.minAssertions < 4
+        ) {
+          throw new Error(`${lesson.id} bitirme projesi kalite kapısı geçersiz.`);
+        }
+      }
+    } else {
+      const hasFunctionDefinitionCheck = validation.checks.some(
+        (check) => check.kind === "function_definition",
+      );
+      const hasFunctionCasesCheck = validation.checks.some(
+        (check) => check.kind === "function_cases",
+      );
+      const requiredNodeNames = ["For", "If", "Dict"];
+      const hasRequiredNodes = requiredNodeNames.every((nodeName) =>
+        validation.checks.some(
+          (check) => check.kind === "node_count" && check.nodeName === nodeName,
+        ),
+      );
+      const hasSetCheck = validation.checks.some(
+        (check) =>
+          (check.kind === "node_count" && ["Set", "SetComp"].includes(check.nodeName)) ||
+          (check.kind === "call" && ["set", "add"].includes(check.name)),
+      );
 
-    if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasRequiredNodes || !hasSetCheck) {
-      throw new Error(`${lesson.id} mezuniyet sınavı kapsamlı yapısal testleri içermiyor.`);
+      if (!hasFunctionDefinitionCheck || !hasFunctionCasesCheck || !hasRequiredNodes || !hasSetCheck) {
+        throw new Error(`${lesson.id} mezuniyet sınavı kapsamlı yapısal testleri içermiyor.`);
+      }
     }
   }
 }
