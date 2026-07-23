@@ -1,0 +1,371 @@
+{
+  "moduleId": "decorators-context-managers",
+  "lessons": [
+    {
+      "id": "advanced.decorators.basic",
+      "moduleId": "decorators-context-managers",
+      "order": 1,
+      "title": "İlk decorator’ını yaz",
+      "summary": "Bir fonksiyonun davranışını kaynak fonksiyona dokunmadan wrapper üzerinden genişlet.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Fonksiyon çağrılarını günlüğe alan decorator oluştur",
+        "instructions": [
+          "logla(func) decorator fonksiyonunu tanımla.",
+          "İçeride wrapper(*args, **kwargs) fonksiyonu oluştur.",
+          "Fonksiyon çağrılmadan önce Çalışıyor: <fonksiyon adı> yazdır.",
+          "Wrapper gerçek fonksiyonun dönüş değerini aynen döndürsün."
+        ],
+        "requirements": [
+          "Gerçek iç içe wrapper fonksiyonu kullanılmalı.",
+          "Decorator @logla biçiminde uygulanmalı.",
+          "Toplama sonucu korunmalı."
+        ],
+        "sampleOutput": "Çalışıyor: topla\n7",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def logla(func):\n    # wrapper fonksiyonunu yaz\n    pass\n\n\n@logla\ndef topla(a, b):\n    return a + b\n\n\nprint(topla(3, 4))"
+      },
+      "hints": [
+        { "title": "İç içe fonksiyon", "body": "wrapper, func değişkenini closure üzerinden kullanabilir." },
+        { "title": "Esnek imza", "body": "wrapper(*args, **kwargs) ile her imzayı destekle." },
+        { "title": "Decorator dönüşü", "body": "logla fonksiyonunun sonunda wrapper döndür." }
+      ],
+      "validation": {
+        "id": "advanced.decorators.basic",
+        "title": "Fonksiyon çağrılarını günlüğe alan decorator oluştur",
+        "xpReward": 80,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["main.py"],
+            "decorators": [{ "name": "logla", "file": "main.py", "minNestedFunctions": 1 }],
+            "decoratedFunctions": [{ "name": "topla", "decorator": "logla", "file": "main.py" }],
+            "functionCases": [
+              { "module": "main", "name": "topla", "args": [5, 8], "expected": 13 },
+              { "module": "main", "name": "topla", "args": [-2, 7], "expected": 5 }
+            ],
+            "label": "Decorator sözleşmesi ve gizli çağrılar",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators.wraps-prediction",
+      "moduleId": "decorators-context-managers",
+      "order": 2,
+      "title": "wraps metadata’sını tahmin et",
+      "summary": "functools.wraps kullanılmadığında dekore edilen fonksiyonun adının neden wrapper olduğunu analiz et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Programın iki çıktı satırı nedir?",
+        "options": [
+          { "id": "a", "label": "hesapla / hesapla" },
+          { "id": "b", "label": "wrapper / hesapla" },
+          { "id": "c", "label": "wrapper / wrapper" },
+          { "id": "d", "label": "hesapla / wrapper" }
+        ]
+      },
+      "task": {
+        "title": "Decorator metadata akışını tahmin et",
+        "instructions": ["Kodun ilk ve ikinci print çıktısını belirle.", "functools.wraps öncesi ve sonrası __name__ değerlerini karşılaştır."],
+        "requirements": ["Tek bir seçenek işaretlenmeli.", "Kod çalıştırılmadan önce tahmin yapılmalı."],
+        "sampleOutput": "wrapper\nhesapla",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from functools import wraps\n\ndef sade(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n@sade\ndef hesapla():\n    return 42\n\nprint(hesapla.__name__)\n\ndef koru(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n@koru\ndef hesapla():\n    return 42\n\nprint(hesapla.__name__)"
+      },
+      "hints": [
+        { "title": "Decorator değiştirme yapar", "body": "@sade sonrası hesapla adı wrapper nesnesini gösterir." },
+        { "title": "wraps metadata kopyalar", "body": "@wraps(func), __name__ ve __doc__ gibi alanları korur." }
+      ],
+      "validation": {
+        "id": "advanced.decorators.wraps-prediction",
+        "title": "Decorator metadata akışını tahmin et",
+        "xpReward": 60,
+        "timeoutMs": 4000,
+        "checks": [],
+        "answer": { "kind": "choice", "correctOptionId": "b" }
+      }
+    },
+    {
+      "id": "advanced.decorators.parameterized",
+      "moduleId": "decorators-context-managers",
+      "order": 3,
+      "title": "Parametreli decorator fabrikası",
+      "summary": "Decorator’a ayar gönderen üç katmanlı closure yapısını kur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Başarısız çağrıyı belirli sayıda yeniden deneyen decorator yaz",
+        "instructions": [
+          "tekrar(deneme) decorator fabrikasını tamamla.",
+          "İçeride decorator(func) ve wrapper(*args, **kwargs) katmanlarını oluştur.",
+          "wrapper ValueError oluştuğunda çağrıyı en fazla deneme kez tekrar etsin.",
+          "functools.wraps ile fonksiyon metadata’sını koru."
+        ],
+        "requirements": ["Üç katmanlı closure kullanılmalı.", "wraps zorunlu.", "Son denemede hata yeniden fırlatılmalı."],
+        "sampleOutput": "Başarılı: 12",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "retry.py",
+        "starterCode": "from functools import wraps\n\ndef tekrar(deneme):\n    # decorator ve wrapper katmanlarını tamamla\n    pass\n\n\n@tekrar(3)\ndef pozitif_bol(a, b):\n    if b <= 0:\n        raise ValueError(\"Bölen pozitif olmalı.\")\n    return a / b\n\n\nprint(f\"Başarılı: {pozitif_bol(24, 2):g}\")"
+      },
+      "hints": [
+        { "title": "Üç fonksiyon", "body": "tekrar → decorator → wrapper sırasını kur." },
+        { "title": "Son hatayı koru", "body": "Döngü bittikten sonra son ValueError yeniden raise edilmeli." },
+        { "title": "Metadata", "body": "@wraps(func) wrapper’ın hemen üstünde olmalı." }
+      ],
+      "validation": {
+        "id": "advanced.decorators.parameterized",
+        "title": "Başarısız çağrıyı belirli sayıda yeniden deneyen decorator yaz",
+        "xpReward": 105,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["retry.py"],
+            "decorators": [{ "name": "tekrar", "file": "retry.py", "minNestedFunctions": 1, "parameterized": true, "requireWraps": true }],
+            "decoratedFunctions": [{ "name": "pozitif_bol", "decorator": "tekrar", "file": "retry.py" }],
+            "functionCases": [
+              { "module": "retry", "name": "pozitif_bol", "args": [30, 5], "expected": 6 },
+              { "module": "retry", "name": "pozitif_bol", "args": [7, 2], "expected": 3.5 }
+            ],
+            "label": "Parametreli decorator ve gizli çağrılar",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators.wraps-debugging",
+      "moduleId": "decorators-context-managers",
+      "order": 4,
+      "title": "Hata Avcısı: kaybolan fonksiyon kimliği",
+      "summary": "Decorator sonrası bozulan __name__ ve __doc__ metadata’sını functools.wraps ile onar.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "Metadata regression",
+        "symptom": "Fonksiyon çalışıyor ancak __name__ değeri wrapper ve dokümantasyonu None oluyor.",
+        "workflow": ["Programı çalıştır ve metadata çıktısını incele.", "functools.wraps import et.", "Wrapper’ın üstüne @wraps(func) ekle.", "Fonksiyon adı ve docstring’in düzeldiğini doğrula."]
+      },
+      "task": {
+        "title": "Decorator metadata regresyonunu düzelt",
+        "instructions": ["Kodun davranışını değiştirmeden metadata’yı koru.", "raporla.__name__ değeri raporla olmalı.", "raporla.__doc__ özgün açıklamayı taşımalı."],
+        "requirements": ["functools.wraps kullanılmalı.", "Decorator kaldırılmamalı.", "Fonksiyon sonucu korunmalı."],
+        "sampleOutput": "raporla\nSatış toplamını üretir.\n125",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def olc(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n\n@olc\ndef raporla(tutarlar):\n    \"\"\"Satış toplamını üretir.\"\"\"\n    return sum(tutarlar)\n\n\nprint(raporla.__name__)\nprint(raporla.__doc__)\nprint(raporla([50, 75]))"
+      },
+      "hints": [
+        { "title": "Doğru araç", "body": "from functools import wraps ile başla." },
+        { "title": "Doğru konum", "body": "@wraps(func), wrapper tanımının hemen üstünde olmalı." }
+      ],
+      "validation": {
+        "id": "advanced.decorators.wraps-debugging",
+        "title": "Decorator metadata regresyonunu düzelt",
+        "xpReward": 100,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["main.py"],
+            "decorators": [{ "name": "olc", "file": "main.py", "minNestedFunctions": 1, "requireWraps": true }],
+            "decoratedFunctions": [{ "name": "raporla", "decorator": "olc", "file": "main.py" }],
+            "functionCases": [{ "module": "main", "name": "raporla", "args": [[10, 20, 30]], "expected": 60 }],
+            "label": "wraps metadata koruması",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.context.class-based",
+      "moduleId": "decorators-context-managers",
+      "order": 5,
+      "title": "Sınıf tabanlı context manager",
+      "summary": "__enter__ ve __exit__ protokolüyle kaynağın her durumda kapatılmasını garanti et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Dosya kaynağını yöneten context manager sınıfı oluştur",
+        "instructions": [
+          "MetinDosyasi sınıfını tanımla.",
+          "__enter__ içinde dosyayı UTF-8 yazma modunda aç ve dosya nesnesini döndür.",
+          "__exit__ içinde dosyayı kapat.",
+          "with MetinDosyasi(...) as dosya yapısını çalışır hâle getir."
+        ],
+        "requirements": ["__enter__ ve __exit__ zorunlu.", "Dosya exception durumunda da kapanmalı.", "UTF-8 kullanılmalı."],
+        "sampleOutput": "Kayıt tamamlandı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class MetinDosyasi:\n    def __init__(self, yol):\n        self.yol = yol\n        self.dosya = None\n\n    # __enter__ ve __exit__ metotlarını yaz\n\n\nwith MetinDosyasi(\"kayit.txt\") as dosya:\n    dosya.write(\"Kayıt tamamlandı\")\n\nprint(\"Kayıt tamamlandı\")"
+      },
+      "hints": [
+        { "title": "Kaynağı aç", "body": "self.dosya = open(self.yol, 'w', encoding='utf-8') kullan." },
+        { "title": "with değeri", "body": "__enter__ dosya nesnesini return etmeli." },
+        { "title": "Kapatma", "body": "__exit__ içinde self.dosya.close() çağır." }
+      ],
+      "validation": {
+        "id": "advanced.context.class-based",
+        "title": "Dosya kaynağını yöneten context manager sınıfı oluştur",
+        "xpReward": 125,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["main.py"],
+            "contextManagers": [{ "name": "MetinDosyasi", "file": "main.py", "implementation": "class" }],
+            "generatedFiles": [{ "path": "kayit.txt", "pattern": "Kayıt tamamlandı" }],
+            "label": "Context manager protokolü ve cleanup",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.context.contextlib",
+      "moduleId": "decorators-context-managers",
+      "order": 6,
+      "title": "contextlib ile generator context manager",
+      "summary": "@contextmanager ve try/finally kullanarak kısa ama güvenli kaynak yöneticisi yaz.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Geçici işlem günlüğünü contextmanager ile yönet",
+        "instructions": [
+          "islem_gunlugu(yol) generator fonksiyonunu tamamla.",
+          "@contextmanager decorator’ını kullan.",
+          "Dosya nesnesini yield et.",
+          "finally bloğunda dosyayı kapat."
+        ],
+        "requirements": ["contextlib.contextmanager zorunlu.", "Gerçek yield kullanılmalı.", "Cleanup finally içinde olmalı."],
+        "sampleOutput": "2 kayıt yazıldı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "log_context.py",
+        "starterCode": "from contextlib import contextmanager\n\n@contextmanager\ndef islem_gunlugu(yol):\n    # dosyayı aç, yield et ve finally içinde kapat\n    pass\n\n\nwith islem_gunlugu(\"islemler.txt\") as log:\n    log.write(\"siparis:1\\n\")\n    log.write(\"siparis:2\\n\")\n\nprint(\"2 kayıt yazıldı\")"
+      },
+      "hints": [
+        { "title": "Generator protokolü", "body": "try içinde yield dosya, finally içinde dosya.close() kullan." },
+        { "title": "Decorator", "body": "Fonksiyonun üzerinde @contextmanager kalmalı." }
+      ],
+      "validation": {
+        "id": "advanced.context.contextlib",
+        "title": "Geçici işlem günlüğünü contextmanager ile yönet",
+        "xpReward": 130,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["log_context.py"],
+            "contextManagers": [{ "name": "islem_gunlugu", "file": "log_context.py", "implementation": "generator" }],
+            "generatedFiles": [{ "path": "islemler.txt", "pattern": "siparis:1.*siparis:2" }],
+            "label": "contextmanager, yield ve kalıcı günlük",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.final-project",
+      "moduleId": "decorators-context-managers",
+      "order": 7,
+      "title": "Final proje: İşlem günlüğü kaynak yöneticisi",
+      "summary": "Decorator ve context manager katmanlarını çok dosyalı, hata güvenli bir işlem hattında birleştir.",
+      "levelLabel": "Advanced Project Lab",
+      "mode": "code",
+      "task": {
+        "title": "Ölçümlü ve güvenli rapor üretim hattı kur",
+        "instructions": [
+          "patterns.py içinde @olc decorator’ını functools.wraps ile tamamla.",
+          "resources.py içinde @contextmanager tabanlı guvenli_log fonksiyonunu tamamla.",
+          "pipeline.py içinde rapor_uret fonksiyonunu @olc ile dekore et.",
+          "Raporu sözlük olarak döndür ve log dosyasına başlangıç/bitiş kayıtlarını yaz."
+        ],
+        "requirements": [
+          "Decorator metadata’yı korumalı.",
+          "Context manager try/finally ile cleanup yapmalı.",
+          "Rapor farklı veri listelerinde doğru sonuç vermeli.",
+          "Log dosyası kalıcı olmalı."
+        ],
+        "sampleOutput": "Kayıt: 3\nToplam: 450\nKategoriler: Aksesuar, Kırtasiye",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu proje girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from pipeline import rapor_uret\n\nveriler = [\n    {\"tutar\": 120, \"kategori\": \"Kırtasiye\"},\n    {\"tutar\": 250, \"kategori\": \"Aksesuar\"},\n    {\"tutar\": 80, \"kategori\": \"Kırtasiye\"},\n]\nrapor = rapor_uret(veriler, \"output/islem.log\")\nprint(f\"Kayıt: {rapor['kayit_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")",
+        "files": [
+          { "path": "main.py", "starterCode": "from pipeline import rapor_uret\n\nveriler = [\n    {\"tutar\": 120, \"kategori\": \"Kırtasiye\"},\n    {\"tutar\": 250, \"kategori\": \"Aksesuar\"},\n    {\"tutar\": 80, \"kategori\": \"Kırtasiye\"},\n]\nrapor = rapor_uret(veriler, \"output/islem.log\")\nprint(f\"Kayıt: {rapor['kayit_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")", "readOnly": true },
+          { "path": "patterns.py", "starterCode": "from functools import wraps\nfrom time import perf_counter\n\ndef olc(func):\n    # wraps kullanan wrapper'ı tamamla\n    pass\n" },
+          { "path": "resources.py", "starterCode": "from contextlib import contextmanager\nfrom pathlib import Path\n\n@contextmanager\ndef guvenli_log(yol):\n    # üst klasörü oluştur, dosyayı aç, yield et ve kapat\n    pass\n" },
+          { "path": "pipeline.py", "starterCode": "from patterns import olc\nfrom resources import guvenli_log\n\n# @olc ile dekore et\ndef rapor_uret(veriler, log_yolu):\n    # başlangıç ve bitiş loglarını yaz, raporu döndür\n    pass\n" }
+        ]
+      },
+      "hints": [
+        { "title": "Decorator", "body": "olc içinde @wraps(func) kullanan wrapper oluştur ve sonucu değiştirmeden döndür." },
+        { "title": "Kaynak yöneticisi", "body": "Path(yol).parent.mkdir(parents=True, exist_ok=True) ardından try/yield/finally kullan." },
+        { "title": "Rapor sözleşmesi", "body": "kayit_sayisi, toplam ve sorted kategoriler anahtarlarını döndür." }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.final-project",
+        "title": "Ölçümlü ve güvenli rapor üretim hattı kur",
+        "xpReward": 220,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "patterns",
+            "kind": "advanced_patterns",
+            "requiredFiles": ["main.py", "patterns.py", "resources.py", "pipeline.py"],
+            "decorators": [{ "name": "olc", "file": "patterns.py", "minNestedFunctions": 1, "requireWraps": true }],
+            "decoratedFunctions": [{ "name": "rapor_uret", "decorator": "olc", "file": "pipeline.py" }],
+            "contextManagers": [{ "name": "guvenli_log", "file": "resources.py", "implementation": "generator" }],
+            "functionCases": [
+              { "module": "pipeline", "name": "rapor_uret", "args": [[{ "tutar": 10, "kategori": "A" }, { "tutar": 15, "kategori": "B" }], "output/gizli1.log"], "expected": { "kayit_sayisi": 2, "toplam": 25, "kategoriler": ["A", "B"] } },
+              { "module": "pipeline", "name": "rapor_uret", "args": [[], "output/gizli2.log"], "expected": { "kayit_sayisi": 0, "toplam": 0, "kategoriler": [] } }
+            ],
+            "generatedFiles": [{ "path": "output/islem.log", "pattern": "başladı.*bitti" }],
+            "label": "Decorator, context manager, gizli rapor ve log kalite kapısı",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  ]
+}
