@@ -25,6 +25,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/content/curriculum.json src/features/learning/taskValidationTypes.ts src/features/learning/store/taskValidationStore.ts src/pages/HomePage/HomePage.tsx
+          git add public/content/curriculum.json public/content/modules/decorators-context-managers.json src/features/learning/taskValidationTypes.ts src/features/learning/store/taskValidationStore.ts src/features/learning/services/advancedPatternTaskValidationService.ts src/pages/HomePage/HomePage.tsx
           git commit -m "feat: wire advanced curriculum and pattern validation"
           git push
