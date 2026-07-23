@@ -59,6 +59,27 @@ export interface TaskProtocolMethodExpectation {
   returnAccepted?: string[];
 }
 
+export interface TaskPatternCase {
+  args: TaskCaseValue[];
+  kwargs?: { [key: string]: TaskCaseValue };
+  expected?: TaskCaseValue;
+  outputPattern?: string;
+}
+
+export interface TaskDecoratorTargetExpectation {
+  name: string;
+  module?: string;
+  expectedName?: string;
+  expectedDoc?: string;
+  cases: TaskPatternCase[];
+}
+
+export interface TaskContextProbeExpectation {
+  name: string;
+  module?: string;
+  cases: TaskPatternCase[];
+}
+
 interface TaskCheckBase {
   id: string;
   label: string;
@@ -182,6 +203,34 @@ export type TaskCheck =
       name: string;
       accepted: string[];
       file?: string;
+    })
+  | (TaskCheckBase & {
+      kind: "decorator_contract";
+      name: string;
+      file?: string;
+      parameterized: boolean;
+      requireWraps: boolean;
+      targets: TaskDecoratorTargetExpectation[];
+    })
+  | (TaskCheckBase & {
+      kind: "context_manager_contract";
+      name: string;
+      file?: string;
+      module?: string;
+      implementation: "class" | "generator";
+      enterReturnsSelf?: boolean;
+      exitSuppresses?: boolean;
+      requireTryFinally?: boolean;
+      initArgs?: TaskCaseValue[];
+      probe?: TaskContextProbeExpectation;
+    })
+  | (TaskCheckBase & {
+      kind: "resource_management_project";
+      requiredFiles: string[];
+      decoratorName: string;
+      contextManagerName: string;
+      functionName: string;
+      functionModule: string;
     })
   | (TaskCheckBase & {
       kind: "class_cases";
