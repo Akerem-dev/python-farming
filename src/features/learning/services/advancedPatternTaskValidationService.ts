@@ -186,7 +186,8 @@ def check_decorator(check, namespace):
 
     for target_spec in check.get("targets", []):
         target_name = target_spec["name"]
-        if not target_has_decorator(path, target_name, check["name"]):
+        target_path = target_spec.get("file", path)
+        if not target_has_decorator(target_path, target_name, check["name"]):
             return False, f"{target_name} fonksiyonu @{check['name']} ile süslenmemiş."
         module_name = target_spec.get("module")
         target_namespace = resolve_namespace(module_name, namespace)
@@ -294,6 +295,7 @@ def check_resource_project(check):
         "targets": [{
             "name": check.get("functionName", "rapor_uret"),
             "module": check.get("functionModule", "service"),
+            "file": "service.py",
             "expectedName": check.get("functionName", "rapor_uret"),
             "cases": [],
         }],
