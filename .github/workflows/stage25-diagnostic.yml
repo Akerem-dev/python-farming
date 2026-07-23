@@ -1,0 +1,26 @@
+name: Stage 25 Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit-diagnostic:
+    if: github.head_ref == 'stage/25-advanced-decorators-context-managers'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run quiet unit diagnostic
+        shell: bash
+        run: |
+          git init -q .
+          git remote add origin "https://github.com/${GITHUB_REPOSITORY}.git"
+          git fetch -q --depth=1 origin "${GITHUB_SHA}"
+          git checkout -q FETCH_HEAD
+          npm install --silent >/dev/null 2>&1
+          set +e
+          npm test > /tmp/stage25-test.log 2>&1
+          status=$?
+          set -e
+          tail -n 70 /tmp/stage25-test.log
+          exit $status
