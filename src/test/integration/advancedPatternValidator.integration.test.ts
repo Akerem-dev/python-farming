@@ -93,9 +93,9 @@ from resources import guvenli_log
 @olc
 def rapor_uret(veriler, log_yolu):
     with guvenli_log(log_yolu) as log:
-        log.write("başladı\n")
+        log.write("başladı\\n")
         sonuc = sum(veriler)
-        log.write("bitti\n")
+        log.write("bitti\\n")
     return sonuc
 `,
     };
