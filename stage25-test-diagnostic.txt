@@ -1,0 +1,80 @@
+
+> python-farming@0.1.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/python-farming/python-farming[39m
+
+ [32m✓[39m src/tests/unit/standardLibraryValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 140[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 143[2mms[22m[39m
+ [32m✓[39m src/tests/unit/capstoneTaskValidationService.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 211[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 137[2mms[22m[39m
+ [32m✓[39m src/tests/unit/inheritanceValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 160[2mms[22m[39m
+ [31m❯[39m src/test/integration/advancedPatternValidator.integration.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 49[2mms[22m[39m
+[31m     [31m×[31m validates wraps, decorated functions and generator context managers[39m[32m 47[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 93[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[33m 760[2mms[22m[39m
+     [33m[2m✓[22m[39m runs parametrized and exception tests while killing mutants [33m 543[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateGraduation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 20[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateUnlock.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateCapstoneContent.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorWorkspace.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/decoratorsContextManagersContent.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/terminalFormatter.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumPackageLoading.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 15[2mms[22m[39m
+ [32m✓[39m src/tests/unit/orderValidationService.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorStore.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorLanguages.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 4[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/integration/advancedPatternValidator.integration.test.ts[2m > [22madvanced pattern validator integration[2m > [22mvalidates wraps, decorated functions and generator context managers
+[31m[1mAssertionError[22m: expected false to be true // Object.is equality[39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- true[39m
+[31m+ false[39m
+
+[36m [2m❯[22m src/test/integration/advancedPatternValidator.integration.test.ts:[2m137:27[22m[39m
+    [90m135|[39m
+    [90m136|[39m     [35mconst[39m result [33m=[39m [34mrunValidator[39m(files[33m,[39m [32m"main.py"[39m[33m,[39m spec)[33m;[39m
+    [90m137|[39m     [34mexpect[39m(result[33m.[39mpassed)[33m.[39m[34mtoBe[39m([35mtrue[39m)[33m;[39m
+    [90m   |[39m                           [31m^[39m
+    [90m138|[39m     [34mexpect[39m(result[33m.[39mscore)[33m.[39m[34mtoBe[39m([34m100[39m)[33m;[39m
+    [90m139|[39m   })[33m;[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m39 passed[39m[22m[90m (40)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m155 passed[39m[22m[90m (156)[39m
+[2m   Start at [22m 12:15:13
+[2m   Duration [22m 3.56s[2m (transform 709ms, setup 0ms, import 1.50s, tests 1.99s, environment 7ms)[22m
+
+
+::error file=/home/runner/work/python-farming/python-farming/src/test/integration/advancedPatternValidator.integration.test.ts,title=src/test/integration/advancedPatternValidator.integration.test.ts > advanced pattern validator integration > validates wraps%2C decorated functions and generator context managers,line=137,column=27::AssertionError: expected false to be true // Object.is equality%0A%0A- Expected%0A+ Received%0A%0A- true%0A+ false%0A%0A ❯ src/test/integration/advancedPatternValidator.integration.test.ts:137:27%0A%0A
+EXIT_STATUS=1
