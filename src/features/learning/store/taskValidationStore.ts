@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { validateAdvancedPatternTask } from "../services/advancedPatternTaskValidationService";
 import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
 import { validateCapstoneTask } from "../services/capstoneTaskValidationService";
 import { validateExceptionTask } from "../services/exceptionTaskValidationService";
@@ -70,6 +71,15 @@ function clearedValidationState() {
     errorMessage: null,
     isCompletionOpen: false,
   };
+}
+
+function requiresAdvancedPatternValidation(spec: TaskValidationSpec) {
+  const advancedChecks = new Set([
+    "decorator_contract",
+    "context_manager_contract",
+    "resource_management_project",
+  ]);
+  return spec.checks.some((check) => advancedChecks.has(check.kind));
 }
 
 function requiresCapstoneValidation(spec: TaskValidationSpec) {
@@ -191,8 +201,10 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : requiresCapstoneValidation(spec)
-              ? await validateCapstoneTask({ files, entrypoint, stdin, spec })
+            : requiresAdvancedPatternValidation(spec)
+              ? await validateAdvancedPatternTask({ files, entrypoint, stdin, spec })
+              : requiresCapstoneValidation(spec)
+                ? await validateCapstoneTask({ files, entrypoint, stdin, spec })
               : requiresTestingValidation(spec)
                 ? await validateTestingTask({ files, entrypoint, spec })
                 : requiresStandardLibraryValidation(spec)

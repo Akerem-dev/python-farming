@@ -1,0 +1,700 @@
+{
+  "moduleId": "decorators-context-managers",
+  "lessons": [
+    {
+      "id": "advanced.decorators-context.basic-decorator",
+      "moduleId": "decorators-context-managers",
+      "order": 1,
+      "title": "İlk decorator’ını yaz",
+      "summary": "Bir fonksiyonun davranışını değiştirmeden etrafına izleme katmanı ekle.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "izle decorator’ı ile fonksiyon çağrısını kaydet",
+        "instructions": [
+          "izle(func) decorator fonksiyonunu oluştur.",
+          "İçeride wrapper(*args, **kwargs) tanımla.",
+          "Fonksiyon çağrısından önce '<ad> çağrıldı' yazdır.",
+          "topla() fonksiyonunu @izle ile süsle ve dönüş değerini koru."
+        ],
+        "requirements": [
+          "Gerçek decorator sözdizimi kullanılmalı.",
+          "wrapper bütün argümanları iletmeli.",
+          "topla(2, 3) sonucu 5 kalmalı."
+        ],
+        "sampleOutput": "topla çağrıldı\n5",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def izle(func):\n    # wrapper fonksiyonunu tamamla\n    pass\n\n\n@izle\ndef topla(a, b):\n    return a + b\n\n\nprint(topla(2, 3))\n"
+      },
+      "hints": [
+        {
+          "title": "Fonksiyon da bir değerdir",
+          "body": "Decorator, fonksiyonu parametre olarak alıp yeni bir fonksiyon döndürür."
+        },
+        {
+          "title": "Argümanları koru",
+          "body": "wrapper(*args, **kwargs) ile bütün çağrıları özgün fonksiyona ilet."
+        },
+        {
+          "title": "Dönüş değerini unutma",
+          "body": "wrapper içinde return func(*args, **kwargs) kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.basic-decorator",
+        "title": "izle decorator’ı ile fonksiyon çağrısını kaydet",
+        "xpReward": 80,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "decorator",
+            "kind": "decorator_contract",
+            "name": "izle",
+            "file": "main.py",
+            "parameterized": false,
+            "requireWraps": false,
+            "targets": [
+              {
+                "name": "topla",
+                "cases": [
+                  {
+                    "args": [
+                      2,
+                      3
+                    ],
+                    "expected": 5,
+                    "outputPattern": "topla çağrıldı"
+                  },
+                  {
+                    "args": [
+                      -4,
+                      10
+                    ],
+                    "expected": 6,
+                    "outputPattern": "topla çağrıldı"
+                  }
+                ]
+              }
+            ],
+            "label": "izle decorator sözleşmesi doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\Atopla çağrıldı\\s*\\n5\\s*\\Z",
+            "flags": "i",
+            "label": "Örnek decorator çıktısı doğru",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.wraps-prediction",
+      "moduleId": "decorators-context-managers",
+      "order": 2,
+      "title": "wraps metadata çıktısını tahmin et",
+      "summary": "functools.wraps kullanılmadığında decorator’ın fonksiyon kimliğini nasıl değiştirdiğini analiz et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Kod çalıştığında ekrana hangi metin yazılır?",
+        "options": [
+          {
+            "id": "a",
+            "label": "hesapla"
+          },
+          {
+            "id": "b",
+            "label": "wrapper"
+          },
+          {
+            "id": "c",
+            "label": "decorator"
+          },
+          {
+            "id": "d",
+            "label": "None"
+          }
+        ]
+      },
+      "task": {
+        "title": "Decorator sonrası __name__ çıktısını tahmin et",
+        "instructions": [
+          "Kodu çalıştırmadan decorator akışını izle.",
+          "@etiketle ifadesinin hesapla ismine hangi fonksiyonu bağladığını belirle.",
+          "Doğru çıktıyı seç."
+        ],
+        "requirements": [
+          "Cevap yalnız görünür koda dayanmalı.",
+          "functools.wraps kullanılmadığına dikkat edilmeli."
+        ],
+        "sampleOutput": "wrapper",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def etiketle(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n\n@etiketle\ndef hesapla():\n    return 42\n\n\nprint(hesapla.__name__)\n"
+      },
+      "hints": [
+        {
+          "title": "Decorator dönüşünü izle",
+          "body": "@etiketle, hesapla ismini etiketle(hesapla) sonucuna bağlar."
+        },
+        {
+          "title": "Dönen fonksiyonun adı",
+          "body": "Dönen nesne doğrudan wrapper fonksiyonudur."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.wraps-prediction",
+        "title": "Decorator sonrası __name__ çıktısını tahmin et",
+        "xpReward": 55,
+        "timeoutMs": 4000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "b"
+        }
+      }
+    },
+    {
+      "id": "advanced.decorators-context.parameterized-decorator",
+      "moduleId": "decorators-context-managers",
+      "order": 3,
+      "title": "Parametreli decorator oluştur",
+      "summary": "Decorator fabrikasıyla aynı davranışı ayarlanabilir sayıda tekrar çalıştır.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "tekrar(adet) decorator fabrikasını tamamla",
+        "instructions": [
+          "tekrar(adet) dış fonksiyonunu tamamla.",
+          "İçeride decorator(func) ve wrapper(*args, **kwargs) katmanlarını kur.",
+          "wrapper, özgün fonksiyonu adet kez çalıştırıp sonuçları listede döndürsün.",
+          "@wraps(func) ile metadata’yı koru."
+        ],
+        "requirements": [
+          "Üç katmanlı decorator yapısı bulunmalı.",
+          "functools.wraps kullanılmalı.",
+          "iki_kati(4) sonucu [8, 8, 8] olmalı."
+        ],
+        "sampleOutput": "[8, 8, 8]\niki_kati",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from functools import wraps\n\n\ndef tekrar(adet):\n    # decorator ve wrapper katmanlarını tamamla\n    pass\n\n\n@tekrar(3)\ndef iki_kati(sayi):\n    return sayi * 2\n\n\nprint(iki_kati(4))\nprint(iki_kati.__name__)\n"
+      },
+      "hints": [
+        {
+          "title": "Decorator fabrikası",
+          "body": "İlk fonksiyon ayarı alır, ikinci fonksiyon süslenecek fonksiyonu alır."
+        },
+        {
+          "title": "Sonuç listesi",
+          "body": "[func(*args, **kwargs) for _ in range(adet)] döndürebilirsin."
+        },
+        {
+          "title": "Metadata",
+          "body": "wrapper fonksiyonunun üzerine @wraps(func) yaz."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.parameterized-decorator",
+        "title": "tekrar(adet) decorator fabrikasını tamamla",
+        "xpReward": 100,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "decorator",
+            "kind": "decorator_contract",
+            "name": "tekrar",
+            "file": "main.py",
+            "parameterized": true,
+            "requireWraps": true,
+            "targets": [
+              {
+                "name": "iki_kati",
+                "expectedName": "iki_kati",
+                "cases": [
+                  {
+                    "args": [
+                      4
+                    ],
+                    "expected": [
+                      8,
+                      8,
+                      8
+                    ]
+                  },
+                  {
+                    "args": [
+                      -2
+                    ],
+                    "expected": [
+                      -4,
+                      -4,
+                      -4
+                    ]
+                  }
+                ]
+              }
+            ],
+            "label": "Parametreli decorator ve wraps sözleşmesi doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\A\\[8,\\s*8,\\s*8\\]\\s*\\niki_kati\\s*\\Z",
+            "label": "Decorator sonucu ve metadata doğru",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.wraps-debugging",
+      "moduleId": "decorators-context-managers",
+      "order": 4,
+      "title": "Hata Avcısı: kaybolan fonksiyon kimliği",
+      "summary": "Decorator’ın bozduğu __name__ ve docstring metadata’sını functools.wraps ile onar.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "Decorator metadata hatasını düzelt",
+        "instructions": [
+          "Kodu çalıştır ve yanlış fonksiyon adını gözlemle.",
+          "functools.wraps aracını doğru yerden import et.",
+          "wrapper üzerine doğru decorator’ı ekle.",
+          "islem.__name__ ve islem.__doc__ değerlerini koru."
+        ],
+        "requirements": [
+          "@wraps(func) kullanılmalı.",
+          "Fonksiyon davranışı değişmemeli.",
+          "Çıktıda islem ve Kare hesaplar. görünmeli."
+        ],
+        "sampleOutput": "islem\nKare hesaplar.\n25",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def etiketle(func):\n    def wrapper(*args, **kwargs):\n        return func(*args, **kwargs)\n    return wrapper\n\n\n@etiketle\ndef islem(sayi):\n    \"\"\"Kare hesaplar.\"\"\"\n    return sayi ** 2\n\n\nprint(islem.__name__)\nprint(islem.__doc__)\nprint(islem(5))\n"
+      },
+      "hints": [
+        {
+          "title": "Sorun wrapper’da",
+          "body": "Decorator’dan sonra islem ismi wrapper fonksiyonunu gösteriyor."
+        },
+        {
+          "title": "functools.wraps",
+          "body": "from functools import wraps ile aracı içe aktar."
+        },
+        {
+          "title": "Doğru konum",
+          "body": "@wraps(func), wrapper tanımının hemen üzerinde olmalı."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.wraps-debugging",
+        "title": "Decorator metadata hatasını düzelt",
+        "xpReward": 95,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "decorator",
+            "kind": "decorator_contract",
+            "name": "etiketle",
+            "file": "main.py",
+            "parameterized": false,
+            "requireWraps": true,
+            "targets": [
+              {
+                "name": "islem",
+                "expectedName": "islem",
+                "expectedDoc": "Kare hesaplar.",
+                "cases": [
+                  {
+                    "args": [
+                      5
+                    ],
+                    "expected": 25
+                  },
+                  {
+                    "args": [
+                      3
+                    ],
+                    "expected": 9
+                  }
+                ]
+              }
+            ],
+            "label": "wraps metadata onarımı doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\Aislem\\s*\\nKare hesaplar\\.\\s*\\n25\\s*\\Z",
+            "label": "Fonksiyon kimliği ve davranışı korundu",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "Decorator metadata kaybı",
+        "symptom": "__name__ ve __doc__ değerleri özgün fonksiyonu göstermiyor.",
+        "workflow": [
+          "Decorator dönüşündeki wrapper fonksiyonunu bul.",
+          "functools.wraps aracını import et.",
+          "@wraps(func) satırını wrapper üzerine ekle.",
+          "Metadata ve dönüş değerini yeniden çalıştırarak doğrula."
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.class-context-manager",
+      "moduleId": "decorators-context-managers",
+      "order": 5,
+      "title": "Sınıf tabanlı context manager",
+      "summary": "__enter__ ve __exit__ protokolüyle kaynağın yaşam döngüsünü güvenli biçimde yönet.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "KaynakSayaci context manager sınıfını tamamla",
+        "instructions": [
+          "KaynakSayaci.__enter__ içinde aktif durumunu True yap ve self döndür.",
+          "__exit__ içinde aktif durumunu False yap.",
+          "Hataları bastırmamak için __exit__ False döndürsün.",
+          "kaynak_durumu() fonksiyonundaki with akışını koru."
+        ],
+        "requirements": [
+          "__enter__ ve __exit__ bulunmalı.",
+          "with içindeki nesne self olmalı.",
+          "Blok sonrası kaynak kapalı olmalı."
+        ],
+        "sampleOutput": "[True, False]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class KaynakSayaci:\n    def __init__(self):\n        self.aktif = False\n\n    def __enter__(self):\n        # kaynağı aç ve nesneyi döndür\n        pass\n\n    def __exit__(self, exc_type, exc, tb):\n        # kaynağı kapat; hatayı bastırma\n        pass\n\n\ndef kaynak_durumu():\n    kaynak = KaynakSayaci()\n    with kaynak as aktif_kaynak:\n        blok_ici = aktif_kaynak.aktif\n    return [blok_ici, kaynak.aktif]\n\n\nprint(kaynak_durumu())\n"
+      },
+      "hints": [
+        {
+          "title": "with giriş değeri",
+          "body": "as sonrasındaki değişken __enter__ dönüş değerini alır."
+        },
+        {
+          "title": "Her durumda kapanış",
+          "body": "__exit__, blok normal veya hatalı bitse de çağrılır."
+        },
+        {
+          "title": "Hata bastırma",
+          "body": "False döndürmek, oluşan hatanın dışarı taşınmasını sağlar."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.class-context-manager",
+        "title": "KaynakSayaci context manager sınıfını tamamla",
+        "xpReward": 110,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "context",
+            "kind": "context_manager_contract",
+            "name": "KaynakSayaci",
+            "file": "main.py",
+            "implementation": "class",
+            "enterReturnsSelf": true,
+            "exitSuppresses": false,
+            "probe": {
+              "name": "kaynak_durumu",
+              "cases": [
+                {
+                  "args": [],
+                  "expected": [
+                    true,
+                    false
+                  ]
+                }
+              ]
+            },
+            "label": "Sınıf context manager protokolü doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\A\\[True,\\s*False\\]\\s*\\Z",
+            "label": "Kaynak yaşam döngüsü doğru",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.generator-context-manager",
+      "moduleId": "decorators-context-managers",
+      "order": 6,
+      "title": "contextlib ile geçici ayar yönet",
+      "summary": "@contextmanager ve try/finally kullanarak geçici durum değişikliğini geri al.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "gecici_ayar context manager fonksiyonunu tamamla",
+        "instructions": [
+          "@contextmanager decorator’ını kullan.",
+          "Sözlükteki eski değeri sakla.",
+          "with bloğuna yeni değeri yield et.",
+          "finally içinde eski değeri mutlaka geri yükle."
+        ],
+        "requirements": [
+          "Gerçek contextlib.contextmanager kullanılmalı.",
+          "Fonksiyon yield içermeli.",
+          "Geri alma işlemi finally bloğunda olmalı."
+        ],
+        "sampleOutput": "['test', 'production']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from contextlib import contextmanager\n\n\n@contextmanager\ndef gecici_ayar(ayarlar, anahtar, yeni_deger):\n    # eski değeri sakla, yeni değeri uygula ve finally içinde geri yükle\n    pass\n\n\ndef ayar_akisi():\n    ayarlar = {\"mod\": \"production\"}\n    with gecici_ayar(ayarlar, \"mod\", \"test\"):\n        blok_ici = ayarlar[\"mod\"]\n    return [blok_ici, ayarlar[\"mod\"]]\n\n\nprint(ayar_akisi())\n"
+      },
+      "hints": [
+        {
+          "title": "Önce eski değeri sakla",
+          "body": "eski_deger = ayarlar[anahtar] ile başlangıç durumunu koru."
+        },
+        {
+          "title": "yield sınırı",
+          "body": "yield yeni_deger satırından önce değişikliği uygula."
+        },
+        {
+          "title": "finally garantisi",
+          "body": "Blok hata verse bile eski değerin geri dönmesi için finally kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.generator-context-manager",
+        "title": "gecici_ayar context manager fonksiyonunu tamamla",
+        "xpReward": 130,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "context",
+            "kind": "context_manager_contract",
+            "name": "gecici_ayar",
+            "file": "main.py",
+            "implementation": "generator",
+            "requireTryFinally": true,
+            "probe": {
+              "name": "ayar_akisi",
+              "cases": [
+                {
+                  "args": [],
+                  "expected": [
+                    "test",
+                    "production"
+                  ]
+                }
+              ]
+            },
+            "label": "Generator context manager ve geri alma sözleşmesi doğru",
+            "visibility": "visible"
+          },
+          {
+            "id": "output",
+            "kind": "stdout_regex",
+            "pattern": "\\A\\['test',\\s*'production'\\]\\s*\\Z",
+            "label": "Geçici ayar güvenle geri alındı",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.decorators-context.resource-project",
+      "moduleId": "decorators-context-managers",
+      "order": 7,
+      "title": "Final proje: Denetlenebilir kaynak yönetimi",
+      "summary": "Parametreli decorator, wraps, sınıf context manager, Decimal ve JSON kalıcılığını üretim benzeri bir akışta birleştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "file-processing",
+      "task": {
+        "title": "Denetlenebilir JSON raporlama hattını tamamla",
+        "instructions": [
+          "audit(olay) parametreli decorator’ını ve metadata korumasını tamamla.",
+          "JsonKaynak sınıfında dosyayı __enter__ ile aç, __exit__ ile kapat.",
+          "rapor_uret() içinde kaynak JSON’u context manager ile oku.",
+          "Decimal toplamı, alfabetik kategorileri ve iki ondalıklı metni üret.",
+          "output/rapor.json dosyasını UTF-8 JSON olarak yaz."
+        ],
+        "requirements": [
+          "Kaynak veri değiştirilmemeli.",
+          "rapor_uret tamamen type hint içermeli.",
+          "Audit kaydı çağrı öncesi ve sonrası tutulmalı.",
+          "Dosya tanıtıcısı with sonrası kapalı olmalı."
+        ],
+        "sampleOutput": "İşlem sayısı: 3\nToplam: 180.75\nKategoriler: Aksesuar, Kırtasiye",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from service import rapor_uret\n\nrapor = rapor_uret(\"data/islemler.json\", \"output/rapor.json\")\nprint(f\"İşlem sayısı: {rapor['islem_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")\n",
+        "files": [
+          {
+            "path": "main.py",
+            "readOnly": true,
+            "starterCode": "from service import rapor_uret\n\nrapor = rapor_uret(\"data/islemler.json\", \"output/rapor.json\")\nprint(f\"İşlem sayısı: {rapor['islem_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")\n"
+          },
+          {
+            "path": "decorators.py",
+            "starterCode": "from functools import wraps\n\nAUDIT_LOG = []\n\n\ndef audit(olay):\n    # Parametreli decorator: çağrı öncesi ve sonrası kayıt ekle.\n    pass\n"
+          },
+          {
+            "path": "resources.py",
+            "starterCode": "class JsonKaynak:\n    def __init__(self, yol):\n        self.yol = yol\n        self.dosya = None\n\n    def __enter__(self):\n        # UTF-8 JSON dosyasını aç ve dosya nesnesini döndür.\n        pass\n\n    def __exit__(self, exc_type, exc, tb):\n        # Açılan dosyayı kapat ve hatayı bastırma.\n        pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "import json\nfrom decimal import Decimal\nfrom decorators import audit\nfrom resources import JsonKaynak\n\n\n@audit(\"rapor\")\ndef rapor_uret(kaynak: str, hedef: str) -> dict[str, object]:\n    # JsonKaynak ile veriyi oku.\n    # Decimal ile toplamı hesapla.\n    # Kategorileri benzersiz ve alfabetik hazırla.\n    # Hedef JSON dosyasını oluştur ve raporu döndür.\n    pass\n"
+          },
+          {
+            "path": "data/islemler.json",
+            "readOnly": true,
+            "starterCode": "[\n  {\"kategori\": \"Kırtasiye\", \"tutar\": \"45.50\"},\n  {\"kategori\": \"Aksesuar\", \"tutar\": \"120.00\"},\n  {\"kategori\": \"Kırtasiye\", \"tutar\": \"15.25\"}\n]\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Decorator sözleşmesi",
+          "body": "audit(olay) → decorator(func) → @wraps(func) wrapper katmanlarını kur."
+        },
+        {
+          "title": "Kaynağı sahiplen",
+          "body": "JsonKaynak.__enter__ dosyayı açmalı; __exit__ aynı dosyayı her durumda kapatmalı."
+        },
+        {
+          "title": "Para hassasiyeti",
+          "body": "Decimal(str(deger)) kullan ve toplamı format(toplam, '.2f') ile metne çevir."
+        },
+        {
+          "title": "Çıktı klasörü",
+          "body": "Path(hedef).parent.mkdir(parents=True, exist_ok=True) ile hedef klasörü yazmadan önce hazırla."
+        }
+      ],
+      "validation": {
+        "id": "advanced.decorators-context.resource-project",
+        "title": "Denetlenebilir JSON raporlama hattını tamamla",
+        "xpReward": 230,
+        "timeoutMs": 9000,
+        "checks": [
+          {
+            "id": "project",
+            "kind": "resource_management_project",
+            "requiredFiles": [
+              "main.py",
+              "decorators.py",
+              "resources.py",
+              "service.py",
+              "data/islemler.json"
+            ],
+            "decoratorName": "audit",
+            "contextManagerName": "JsonKaynak",
+            "functionName": "rapor_uret",
+            "functionModule": "service",
+            "label": "Decorator ve context manager kalite kapısı",
+            "visibility": "visible"
+          },
+          {
+            "id": "output-file",
+            "kind": "file_exists",
+            "path": "output/rapor.json",
+            "label": "Rapor JSON dosyası üretildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "output-json",
+            "kind": "json_file_equals",
+            "path": "output/rapor.json",
+            "expected": {
+              "islem_sayisi": 3,
+              "toplam": "180.75",
+              "kategoriler": [
+                "Aksesuar",
+                "Kırtasiye"
+              ]
+            },
+            "label": "Rapor JSON sözleşmesi doğru",
+            "visibility": "hidden"
+          },
+          {
+            "id": "source-safe",
+            "kind": "file_unchanged",
+            "path": "data/islemler.json",
+            "label": "Kaynak JSON değiştirilmedi",
+            "visibility": "hidden"
+          },
+          {
+            "id": "terminal",
+            "kind": "stdout_regex",
+            "pattern": "\\Aİşlem sayısı:\\s*3\\s*\\nToplam:\\s*180\\.75\\s*\\nKategoriler:\\s*Aksesuar,\\s*Kırtasiye\\s*\\Z",
+            "flags": "i",
+            "label": "Final proje terminal çıktısı doğru",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "fileSystem": {
+        "projectTitle": "İleri Seviye Kaynak Yönetimi Laboratuvarı",
+        "workingDirectory": "Geçici ve izole ders çalışma klasörü",
+        "inputFiles": [
+          {
+            "path": "data/islemler.json",
+            "description": "Salt okunur işlem kayıtları"
+          }
+        ],
+        "outputFiles": [
+          {
+            "path": "output/rapor.json",
+            "description": "Decorator ile denetlenen kalıcı rapor"
+          }
+        ],
+        "rules": [
+          "Kaynak JSON üzerinde değişiklik yapma.",
+          "Dosya açma ve kapatma sorumluluğunu JsonKaynak sınıfında tut.",
+          "Para toplamında float yerine Decimal kullan.",
+          "Audit kayıtlarında özgün fonksiyon metadata’sını koru."
+        ],
+        "workflow": [
+          "Decorator katmanını ve wraps kullanımını tamamla.",
+          "JsonKaynak yaşam döngüsünü uygula.",
+          "rapor_uret içinde veriyi oku ve raporu hesapla.",
+          "JSON çıktısını yaz, terminali kontrol et ve kalite kapısını çalıştır."
+        ]
+      }
+    }
+  ]
+}
