@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
+import { validateCapstoneTask } from "../services/capstoneTaskValidationService";
 import { validateExceptionTask } from "../services/exceptionTaskValidationService";
 import { validateOopTask } from "../services/oopTaskValidationService";
 import { validateOrderAnswer } from "../services/orderValidationService";
@@ -69,6 +70,10 @@ function clearedValidationState() {
     errorMessage: null,
     isCompletionOpen: false,
   };
+}
+
+function requiresCapstoneValidation(spec: TaskValidationSpec) {
+  return spec.checks.some((check) => check.kind === "capstone_project");
 }
 
 function requiresTestingValidation(spec: TaskValidationSpec) {
@@ -186,24 +191,26 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
           ? validateChoiceAnswer(spec, get().selectedOptionId)
           : spec.answer?.kind === "order"
             ? validateOrderAnswer(spec, get().orderedBlockIds)
-            : requiresTestingValidation(spec)
-              ? await validateTestingTask({ files, entrypoint, spec })
-              : requiresStandardLibraryValidation(spec)
-                ? await validateStandardLibraryTask({ files, entrypoint, stdin, spec })
-                : requiresTypingValidation(spec)
-                  ? await validateTypingTask({ files, entrypoint, stdin, spec })
-                  : requiresOopValidation(spec)
-                    ? await validateOopTask({ files, entrypoint, stdin, spec })
-                    : requiresExceptionValidation(spec)
-                      ? await validateExceptionTask({ files, entrypoint, stdin, spec })
-                      : requiresProjectValidation(files, spec)
-                        ? await validateProjectTask({ files, entrypoint, stdin, spec })
-                        : await validateTaskSource({
-                            source: entrypointFile.content,
-                            filename: entrypointFile.path,
-                            stdin,
-                            spec,
-                          });
+            : requiresCapstoneValidation(spec)
+              ? await validateCapstoneTask({ files, entrypoint, stdin, spec })
+              : requiresTestingValidation(spec)
+                ? await validateTestingTask({ files, entrypoint, spec })
+                : requiresStandardLibraryValidation(spec)
+                  ? await validateStandardLibraryTask({ files, entrypoint, stdin, spec })
+                  : requiresTypingValidation(spec)
+                    ? await validateTypingTask({ files, entrypoint, stdin, spec })
+                    : requiresOopValidation(spec)
+                      ? await validateOopTask({ files, entrypoint, stdin, spec })
+                      : requiresExceptionValidation(spec)
+                        ? await validateExceptionTask({ files, entrypoint, stdin, spec })
+                        : requiresProjectValidation(files, spec)
+                          ? await validateProjectTask({ files, entrypoint, stdin, spec })
+                          : await validateTaskSource({
+                              source: entrypointFile.content,
+                              filename: entrypointFile.path,
+                              stdin,
+                              spec,
+                            });
 
       set({
         status: result.passed ? "passed" : "failed",
