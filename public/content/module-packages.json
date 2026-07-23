@@ -17,6 +17,7 @@
     "/content/modules/classes-inheritance.json",
     "/content/modules/testing.json",
     "/content/modules/typing-dataclasses.json",
-    "/content/modules/standard-library.json"
+    "/content/modules/standard-library.json",
+    "/content/modules/intermediate-project.json"
   ]
 }
