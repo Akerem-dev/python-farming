@@ -1,0 +1,39 @@
+name: Stage 25 Test Diagnostic
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  diagnose:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Capture failing test output
+        shell: bash
+        run: |
+          set +e
+          npm test > /tmp/test.log 2>&1
+          status=$?
+          tail -n 160 /tmp/test.log > stage25-test-diagnostic.txt
+          echo "EXIT_STATUS=$status" >> stage25-test-diagnostic.txt
+          exit 0
+      - name: Commit diagnostic
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add stage25-test-diagnostic.txt
+          git commit -m "chore: capture stage 25 test diagnostic"
+          git push origin HEAD:${{ github.head_ref }}
