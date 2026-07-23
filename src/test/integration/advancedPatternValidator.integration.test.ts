@@ -134,7 +134,9 @@ def rapor_uret(veriler, log_yolu):
     };
 
     const result = runValidator(files, "main.py", spec);
-    expect(result.passed).toBe(true);
+    if (!result.passed) {
+      throw new Error(JSON.stringify(result, null, 2));
+    }
     expect(result.score).toBe(100);
   });
 });
