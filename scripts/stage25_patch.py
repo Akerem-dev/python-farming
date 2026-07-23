@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+# Stage 25 deterministic product patch.
+
 
 def replace_once(path: str, old: str, new: str) -> None:
     file_path = Path(path)
@@ -43,11 +45,6 @@ replace_once(
 )
 
 store_path = "src/features/learning/store/taskValidationStore.ts"
-replace_once(
-    store_path,
-    '''import { runtimeClient } from''',
-    '''import { runtimeClient } from''',
-) if False else None
 replace_once(
     store_path,
     '''import { validateExceptionTask } from "../services/exceptionTaskValidationService";''',
