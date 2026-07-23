@@ -52,7 +52,12 @@ validation_types = "src/features/learning/taskValidationTypes.ts"
 replace_once(
     validation_types,
     "interface TaskCheckBase {",
-    '''export interface TaskPatternCase {\n  args: TaskCaseValue[];\n  kwargs?: { [key: string]: TaskCaseValue };\n  expected?: TaskCaseValue;\n  outputPattern?: string;\n}\n\nexport interface TaskDecoratorTargetExpectation {\n  name: string;\n  module?: string;\n  expectedName?: string;\n  expectedDoc?: string;\n  cases: TaskPatternCase[];\n}\n\nexport interface TaskContextProbeExpectation {\n  name: string;\n  module?: string;\n  cases: TaskPatternCase[];\n}\n\ninterface TaskCheckBase {''',
+    '''export interface TaskPatternCase {\n  args: TaskCaseValue[];\n  kwargs?: { [key: string]: TaskCaseValue };\n  expected?: TaskCaseValue;\n  outputPattern?: string;\n}\n\nexport interface TaskDecoratorTargetExpectation {\n  name: string;\n  module?: string;\n  file?: string;\n  expectedName?: string;\n  expectedDoc?: string;\n  cases: TaskPatternCase[];\n}\n\nexport interface TaskContextProbeExpectation {\n  name: string;\n  module?: string;\n  cases: TaskPatternCase[];\n}\n\ninterface TaskCheckBase {''',
+)
+replace_once(
+    validation_types,
+    "  module?: string;\n  expectedName?: string;\n  expectedDoc?: string;\n  cases: TaskPatternCase[];\n}",
+    "  module?: string;\n  file?: string;\n  expectedName?: string;\n  expectedDoc?: string;\n  cases: TaskPatternCase[];\n}",
 )
 replace_once(
     validation_types,
@@ -80,6 +85,20 @@ replace_once(
 )
 
 
+# Advanced validator cross-file target support
+validator_path = "src/features/learning/services/advancedPatternTaskValidationService.ts"
+replace_once(
+    validator_path,
+    '''        if not target_has_decorator(path, target_name, check["name"]):\n            return False, f"{target_name} fonksiyonu @{check['name']} ile süslenmemiş."''',
+    '''        target_path = target_spec.get("file", path)\n        if not target_has_decorator(target_path, target_name, check["name"]):\n            return False, f"{target_name} fonksiyonu @{check['name']} ile süslenmemiş."''',
+)
+replace_once(
+    validator_path,
+    '''            "module": check.get("functionModule", "service"),\n            "expectedName": check.get("functionName", "rapor_uret"),''',
+    '''            "module": check.get("functionModule", "service"),\n            "file": "service.py",\n            "expectedName": check.get("functionName", "rapor_uret"),''',
+)
+
+
 # Home page advanced progress
 home_path = "src/pages/HomePage/HomePage.tsx"
 replace_once(
@@ -102,3 +121,17 @@ replace_once(
     ''': resumeLevel?.id === "intermediate"\n          ? "Orta Seviye"\n          : "Başlangıç";''',
     ''': resumeLevel?.id === "advanced"\n          ? "İleri Seviye"\n          : resumeLevel?.id === "intermediate"\n            ? "Orta Seviye"\n            : "Başlangıç";''',
 )
+
+
+# Content corrections
+package_path = Path("public/content/modules/decorators-context-managers.json")
+package = json.loads(package_path.read_text(encoding="utf-8"))
+first_target = package["lessons"][0]["validation"]["checks"][0]["targets"][0]
+first_target.pop("expectedName", None)
+final_lesson = package["lessons"][-1]
+if not any(hint["title"] == "Çıktı klasörü" for hint in final_lesson["hints"]):
+    final_lesson["hints"].append({
+        "title": "Çıktı klasörü",
+        "body": "Path(hedef).parent.mkdir(parents=True, exist_ok=True) ile hedef klasörü yazmadan önce hazırla.",
+    })
+package_path.write_text(json.dumps(package, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
