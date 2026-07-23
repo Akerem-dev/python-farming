@@ -229,6 +229,13 @@ export type TaskCheck =
       mutants: TaskTestMutant[];
     })
   | (TaskCheckBase & {
+      kind: "capstone_project";
+      requiredFiles: string[];
+      testFiles: string[];
+      minTests: number;
+      minAssertions: number;
+    })
+  | (TaskCheckBase & {
       kind: "file_exists";
       path: string;
     })
