@@ -22,5 +22,5 @@ jobs:
           npm test > /tmp/stage25-test.log 2>&1
           status=$?
           set -e
-          tail -n 70 /tmp/stage25-test.log
+          tail -n 30 /tmp/stage25-test.log
           exit $status
