@@ -5,7 +5,12 @@
       "id": "beginner",
       "title": "Başlangıç seviyesi",
       "modules": [
-        { "id": "python-introduction", "number": "01", "title": "Python’a Giriş", "lessonIds": [] },
+        {
+          "id": "python-introduction",
+          "number": "01",
+          "title": "Python’a Giriş",
+          "lessonIds": []
+        },
         {
           "id": "variables-data-types",
           "number": "02",
@@ -16,29 +21,168 @@
             "beginner.variables.input"
           ]
         },
-        { "id": "operators", "number": "03", "title": "Operatörler", "lessonIds": [] },
-        { "id": "conditionals", "number": "04", "title": "Koşullar", "lessonIds": [] },
-        { "id": "loops", "number": "05", "title": "Döngüler", "lessonIds": [] },
-        { "id": "functions", "number": "06", "title": "Fonksiyonlar", "lessonIds": [] },
-        { "id": "lists-tuples", "number": "07", "title": "Listeler ve Tuple", "lessonIds": [] },
-        { "id": "dictionaries-sets", "number": "08", "title": "Sözlükler ve Kümeler", "lessonIds": [] },
-        { "id": "beginner-graduation", "number": "EX", "title": "Başlangıç Mezuniyeti", "lessonIds": [] }
+        {
+          "id": "operators",
+          "number": "03",
+          "title": "Operatörler",
+          "lessonIds": []
+        },
+        {
+          "id": "conditionals",
+          "number": "04",
+          "title": "Koşullar",
+          "lessonIds": []
+        },
+        {
+          "id": "loops",
+          "number": "05",
+          "title": "Döngüler",
+          "lessonIds": []
+        },
+        {
+          "id": "functions",
+          "number": "06",
+          "title": "Fonksiyonlar",
+          "lessonIds": []
+        },
+        {
+          "id": "lists-tuples",
+          "number": "07",
+          "title": "Listeler ve Tuple",
+          "lessonIds": []
+        },
+        {
+          "id": "dictionaries-sets",
+          "number": "08",
+          "title": "Sözlükler ve Kümeler",
+          "lessonIds": []
+        },
+        {
+          "id": "beginner-graduation",
+          "number": "EX",
+          "title": "Başlangıç Mezuniyeti",
+          "lessonIds": []
+        }
       ]
     },
     {
       "id": "intermediate",
       "title": "Orta Seviye",
       "modules": [
-        { "id": "modules-packages", "number": "01", "title": "Modüller ve Paketler", "lessonIds": [] },
-        { "id": "files-paths", "number": "02", "title": "Dosyalar ve Path", "lessonIds": [] },
-        { "id": "exceptions", "number": "03", "title": "Hata Yönetimi", "lessonIds": [] },
-        { "id": "comprehensions-iterators", "number": "04", "title": "Comprehension ve Iterator", "lessonIds": [] },
-        { "id": "oop-basics", "number": "05", "title": "Nesne Yönelimli Temeller", "lessonIds": [] },
-        { "id": "classes-inheritance", "number": "06", "title": "Sınıflar ve Kalıtım", "lessonIds": [] },
-        { "id": "testing", "number": "07", "title": "Test Yazma", "lessonIds": [] },
-        { "id": "typing-dataclasses", "number": "08", "title": "Typing ve Dataclass", "lessonIds": [] },
-        { "id": "standard-library", "number": "09", "title": "Standart Kütüphane", "lessonIds": [] },
-        { "id": "intermediate-project", "number": "10", "title": "Orta Seviye Projesi", "lessonIds": [] }
+        {
+          "id": "modules-packages",
+          "number": "01",
+          "title": "Modüller ve Paketler",
+          "lessonIds": []
+        },
+        {
+          "id": "files-paths",
+          "number": "02",
+          "title": "Dosyalar ve Path",
+          "lessonIds": []
+        },
+        {
+          "id": "exceptions",
+          "number": "03",
+          "title": "Hata Yönetimi",
+          "lessonIds": []
+        },
+        {
+          "id": "comprehensions-iterators",
+          "number": "04",
+          "title": "Comprehension ve Iterator",
+          "lessonIds": []
+        },
+        {
+          "id": "oop-basics",
+          "number": "05",
+          "title": "Nesne Yönelimli Temeller",
+          "lessonIds": []
+        },
+        {
+          "id": "classes-inheritance",
+          "number": "06",
+          "title": "Sınıflar ve Kalıtım",
+          "lessonIds": []
+        },
+        {
+          "id": "testing",
+          "number": "07",
+          "title": "Test Yazma",
+          "lessonIds": []
+        },
+        {
+          "id": "typing-dataclasses",
+          "number": "08",
+          "title": "Typing ve Dataclass",
+          "lessonIds": []
+        },
+        {
+          "id": "standard-library",
+          "number": "09",
+          "title": "Standart Kütüphane",
+          "lessonIds": []
+        },
+        {
+          "id": "intermediate-project",
+          "number": "10",
+          "title": "Orta Seviye Projesi",
+          "lessonIds": []
+        }
+      ]
+    },
+    {
+      "id": "advanced",
+      "title": "İleri Seviye",
+      "modules": [
+        {
+          "id": "decorators-context-managers",
+          "number": "01",
+          "title": "Decorator ve Context Manager",
+          "lessonIds": []
+        },
+        {
+          "id": "generators-coroutines",
+          "number": "02",
+          "title": "Generator ve Coroutine",
+          "lessonIds": []
+        },
+        {
+          "id": "async-await",
+          "number": "03",
+          "title": "Async ve Await",
+          "lessonIds": []
+        },
+        {
+          "id": "networking-http",
+          "number": "04",
+          "title": "HTTP ve Ağ Programlama",
+          "lessonIds": []
+        },
+        {
+          "id": "databases-advanced",
+          "number": "05",
+          "title": "İleri Veritabanı",
+          "lessonIds": []
+        },
+        {
+          "id": "architecture-patterns",
+          "number": "06",
+          "title": "Mimari ve Tasarım Desenleri",
+          "lessonIds": []
+        },
+        {
+          "id": "packaging-performance",
+          "number": "07",
+          "title": "Paketleme ve Performans",
+          "lessonIds": []
+        },
+        {
+          "id": "advanced-project",
+          "number": "08",
+          "title": "İleri Seviye Projesi",
+          "lessonIds": []
+        }
       ]
     }
   ],
@@ -72,9 +216,18 @@
         "starterCode": "# Kendini tanıtan iki değişken oluştur\n\nad = \"\"\nyas = 0\n\nprint(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\")"
       },
       "hints": [
-        { "title": "Metin değerleri tırnak içine yazılır", "body": "ad değişkenine değer verirken çift veya tek tırnak kullan." },
-        { "title": "Yaş sayısal olmalı", "body": "yas değişkenine tırnaksız, sıfırdan büyük bir tam sayı ata." },
-        { "title": "f-string kullanabilirsin", "body": "print(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\") biçimi değişkenleri metne yerleştirir." }
+        {
+          "title": "Metin değerleri tırnak içine yazılır",
+          "body": "ad değişkenine değer verirken çift veya tek tırnak kullan."
+        },
+        {
+          "title": "Yaş sayısal olmalı",
+          "body": "yas değişkenine tırnaksız, sıfırdan büyük bir tam sayı ata."
+        },
+        {
+          "title": "f-string kullanabilirsin",
+          "body": "print(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\") biçimi değişkenleri metne yerleştirir."
+        }
       ],
       "validation": {
         "id": "beginner.variables.introduction",
@@ -82,14 +235,65 @@
         "xpReward": 40,
         "timeoutMs": 4000,
         "checks": [
-          { "id": "assign-ad", "kind": "assignment", "name": "ad", "label": "ad değişkeni tanımlandı", "visibility": "visible" },
-          { "id": "assign-yas", "kind": "assignment", "name": "yas", "label": "yas değişkeni tanımlandı", "visibility": "visible" },
-          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
-          { "id": "ad-string", "kind": "variable_type", "name": "ad", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
-          { "id": "ad-not-empty", "kind": "variable_non_empty", "name": "ad", "label": "Gizli test 2", "visibility": "hidden" },
-          { "id": "yas-integer", "kind": "variable_type", "name": "yas", "expectedType": "int", "label": "Gizli test 3", "visibility": "hidden" },
-          { "id": "yas-positive", "kind": "variable_positive", "name": "yas", "label": "Gizli test 4", "visibility": "hidden" },
-          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\AMerhaba,\\s*ben\\s+.+\\s+ve\\s+\\d+\\s+yaşındayım\\.\\s*\\Z", "flags": "i", "label": "Gizli test 5", "visibility": "hidden" }
+          {
+            "id": "assign-ad",
+            "kind": "assignment",
+            "name": "ad",
+            "label": "ad değişkeni tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "assign-yas",
+            "kind": "assignment",
+            "name": "yas",
+            "label": "yas değişkeni tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-print",
+            "kind": "call",
+            "name": "print",
+            "label": "print() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "ad-string",
+            "kind": "variable_type",
+            "name": "ad",
+            "expectedType": "str",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          },
+          {
+            "id": "ad-not-empty",
+            "kind": "variable_non_empty",
+            "name": "ad",
+            "label": "Gizli test 2",
+            "visibility": "hidden"
+          },
+          {
+            "id": "yas-integer",
+            "kind": "variable_type",
+            "name": "yas",
+            "expectedType": "int",
+            "label": "Gizli test 3",
+            "visibility": "hidden"
+          },
+          {
+            "id": "yas-positive",
+            "kind": "variable_positive",
+            "name": "yas",
+            "label": "Gizli test 4",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\AMerhaba,\\s*ben\\s+.+\\s+ve\\s+\\d+\\s+yaşındayım\\.\\s*\\Z",
+            "flags": "i",
+            "label": "Gizli test 5",
+            "visibility": "hidden"
+          }
         ]
       }
     },
@@ -122,9 +326,18 @@
         "starterCode": "# Alışveriş toplamını hesapla\n\nurun = \"Defter\"\nfiyat = 45\nadet = 2\ntoplam = 0\n\nprint(f\"{adet} adet {urun} toplam {toplam} TL.\")"
       },
       "hints": [
-        { "title": "Çarpma operatörü", "body": "İki sayıyı çarpmak için * operatörünü kullan." },
-        { "title": "Sonucu sakla", "body": "toplam = fiyat * adet ifadesi sonucu toplam değişkenine atar." },
-        { "title": "Çıktıyı kontrol et", "body": "Beklenen toplam 90 olmalı ve cümle örnek çıktı biçiminde yazdırılmalı." }
+        {
+          "title": "Çarpma operatörü",
+          "body": "İki sayıyı çarpmak için * operatörünü kullan."
+        },
+        {
+          "title": "Sonucu sakla",
+          "body": "toplam = fiyat * adet ifadesi sonucu toplam değişkenine atar."
+        },
+        {
+          "title": "Çıktıyı kontrol et",
+          "body": "Beklenen toplam 90 olmalı ve cümle örnek çıktı biçiminde yazdırılmalı."
+        }
       ],
       "validation": {
         "id": "beginner.variables.calculation",
@@ -132,12 +345,50 @@
         "xpReward": 45,
         "timeoutMs": 4000,
         "checks": [
-          { "id": "assign-urun", "kind": "assignment", "name": "urun", "label": "urun değişkeni tanımlandı", "visibility": "visible" },
-          { "id": "assign-toplam", "kind": "assignment", "name": "toplam", "label": "toplam değişkeni tanımlandı", "visibility": "visible" },
-          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
-          { "id": "urun-string", "kind": "variable_type", "name": "urun", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
-          { "id": "toplam-positive", "kind": "variable_positive", "name": "toplam", "label": "Gizli test 2", "visibility": "hidden" },
-          { "id": "expected-output", "kind": "stdout_regex", "pattern": "\\A2\\s+adet\\s+Defter\\s+toplam\\s+90\\s+TL\\.\\s*\\Z", "flags": "i", "label": "Gizli test 3", "visibility": "hidden" }
+          {
+            "id": "assign-urun",
+            "kind": "assignment",
+            "name": "urun",
+            "label": "urun değişkeni tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "assign-toplam",
+            "kind": "assignment",
+            "name": "toplam",
+            "label": "toplam değişkeni tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-print",
+            "kind": "call",
+            "name": "print",
+            "label": "print() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "urun-string",
+            "kind": "variable_type",
+            "name": "urun",
+            "expectedType": "str",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          },
+          {
+            "id": "toplam-positive",
+            "kind": "variable_positive",
+            "name": "toplam",
+            "label": "Gizli test 2",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "\\A2\\s+adet\\s+Defter\\s+toplam\\s+90\\s+TL\\.\\s*\\Z",
+            "flags": "i",
+            "label": "Gizli test 3",
+            "visibility": "hidden"
+          }
         ]
       }
     },
@@ -170,9 +421,18 @@
         "starterCode": "# Kullanıcıdan ad ve yaş bilgisini al\n\nad = input(\"Adın: \")\nyas = int(input(\"Yaşın: \"))\n\nprint(f\"Merhaba, ben {ad} ve {yas} yaşındayım.\")"
       },
       "hints": [
-        { "title": "input() her zaman metin döndürür", "body": "Ad için input() sonucu doğrudan kullanılabilir." },
-        { "title": "Yaşı dönüştür", "body": "Sayısal işlem için int(input(...)) kullanarak metni tam sayıya çevir." },
-        { "title": "Program girdisi sırası", "body": "Girdi panelinin ilk satırı ad, ikinci satırı yaş olarak programa gönderilir." }
+        {
+          "title": "input() her zaman metin döndürür",
+          "body": "Ad için input() sonucu doğrudan kullanılabilir."
+        },
+        {
+          "title": "Yaşı dönüştür",
+          "body": "Sayısal işlem için int(input(...)) kullanarak metni tam sayıya çevir."
+        },
+        {
+          "title": "Program girdisi sırası",
+          "body": "Girdi panelinin ilk satırı ad, ikinci satırı yaş olarak programa gönderilir."
+        }
       ],
       "validation": {
         "id": "beginner.variables.input",
@@ -180,13 +440,58 @@
         "xpReward": 50,
         "timeoutMs": 4000,
         "checks": [
-          { "id": "call-input", "kind": "call", "name": "input", "label": "input() kullanıldı", "visibility": "visible" },
-          { "id": "call-int", "kind": "call", "name": "int", "label": "int() kullanıldı", "visibility": "visible" },
-          { "id": "call-print", "kind": "call", "name": "print", "label": "print() kullanıldı", "visibility": "visible" },
-          { "id": "ad-string", "kind": "variable_type", "name": "ad", "expectedType": "str", "label": "Gizli test 1", "visibility": "hidden" },
-          { "id": "yas-integer", "kind": "variable_type", "name": "yas", "expectedType": "int", "label": "Gizli test 2", "visibility": "hidden" },
-          { "id": "yas-positive", "kind": "variable_positive", "name": "yas", "label": "Gizli test 3", "visibility": "hidden" },
-          { "id": "expected-output", "kind": "stdout_regex", "pattern": "(?s)\\AAdın:\\s*Yaşın:\\s*Merhaba,\\s*ben\\s+Kerem\\s+ve\\s+23\\s+yaşındayım\\.\\s*\\Z", "flags": "i", "label": "Gizli test 4", "visibility": "hidden" }
+          {
+            "id": "call-input",
+            "kind": "call",
+            "name": "input",
+            "label": "input() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-int",
+            "kind": "call",
+            "name": "int",
+            "label": "int() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "call-print",
+            "kind": "call",
+            "name": "print",
+            "label": "print() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "ad-string",
+            "kind": "variable_type",
+            "name": "ad",
+            "expectedType": "str",
+            "label": "Gizli test 1",
+            "visibility": "hidden"
+          },
+          {
+            "id": "yas-integer",
+            "kind": "variable_type",
+            "name": "yas",
+            "expectedType": "int",
+            "label": "Gizli test 2",
+            "visibility": "hidden"
+          },
+          {
+            "id": "yas-positive",
+            "kind": "variable_positive",
+            "name": "yas",
+            "label": "Gizli test 3",
+            "visibility": "hidden"
+          },
+          {
+            "id": "expected-output",
+            "kind": "stdout_regex",
+            "pattern": "(?s)\\AAdın:\\s*Yaşın:\\s*Merhaba,\\s*ben\\s+Kerem\\s+ve\\s+23\\s+yaşındayım\\.\\s*\\Z",
+            "flags": "i",
+            "label": "Gizli test 4",
+            "visibility": "hidden"
+          }
         ]
       }
     }

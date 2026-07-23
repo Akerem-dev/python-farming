@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { RuntimeSourceFile } from "../../../runtime/runtimeProtocol";
 import { validateCapstoneTask } from "../services/capstoneTaskValidationService";
+import { validateAdvancedPatternTask } from "../services/advancedPatternTaskValidationService";
 import { validateExceptionTask } from "../services/exceptionTaskValidationService";
 import { validateOopTask } from "../services/oopTaskValidationService";
 import { validateOrderAnswer } from "../services/orderValidationService";
@@ -74,6 +75,10 @@ function clearedValidationState() {
 
 function requiresCapstoneValidation(spec: TaskValidationSpec) {
   return spec.checks.some((check) => check.kind === "capstone_project");
+}
+
+function requiresAdvancedPatternValidation(spec: TaskValidationSpec) {
+  return spec.checks.some((check) => check.kind === "advanced_patterns");
 }
 
 function requiresTestingValidation(spec: TaskValidationSpec) {
@@ -193,8 +198,10 @@ export const useTaskValidationStore = create<TaskValidationStore>((set, get) => 
             ? validateOrderAnswer(spec, get().orderedBlockIds)
             : requiresCapstoneValidation(spec)
               ? await validateCapstoneTask({ files, entrypoint, stdin, spec })
-              : requiresTestingValidation(spec)
-                ? await validateTestingTask({ files, entrypoint, spec })
+              : requiresAdvancedPatternValidation(spec)
+                ? await validateAdvancedPatternTask({ files, entrypoint, spec })
+                : requiresTestingValidation(spec)
+                  ? await validateTestingTask({ files, entrypoint, spec })
                 : requiresStandardLibraryValidation(spec)
                   ? await validateStandardLibraryTask({ files, entrypoint, stdin, spec })
                   : requiresTypingValidation(spec)

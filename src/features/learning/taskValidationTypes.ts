@@ -236,6 +236,38 @@ export type TaskCheck =
       minAssertions: number;
     })
   | (TaskCheckBase & {
+      kind: "advanced_patterns";
+      requiredFiles: string[];
+      decorators?: Array<{
+        name: string;
+        file?: string;
+        minNestedFunctions?: number;
+        parameterized?: boolean;
+        requireWraps?: boolean;
+      }>;
+      decoratedFunctions?: Array<{
+        name: string;
+        decorator: string;
+        file?: string;
+      }>;
+      contextManagers?: Array<{
+        name: string;
+        file?: string;
+        implementation: "class" | "generator";
+      }>;
+      functionCases?: Array<{
+        module: string;
+        name: string;
+        args: TaskCaseValue[];
+        kwargs?: { [key: string]: TaskCaseValue };
+        expected: TaskCaseValue;
+      }>;
+      generatedFiles?: Array<{
+        path: string;
+        pattern?: string;
+      }>;
+    })
+  | (TaskCheckBase & {
       kind: "file_exists";
       path: string;
     })
