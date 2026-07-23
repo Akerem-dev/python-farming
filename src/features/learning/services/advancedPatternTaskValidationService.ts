@@ -263,18 +263,19 @@ export async function validateAdvancedPatternTask(input: {
     path: VALIDATOR_PATH,
     content: VALIDATOR_SOURCE,
   };
-  const result: ExecuteCodeResult = await runtimeClient.executeProject({
-    version: runtimeProtocolVersion,
+  const projectFiles = [validatorFile, ...input.files];
+  const response = await runtimeClient.send<ExecuteCodeResult>({
     requestId: createRequestId(),
-    command: "execute_code",
+    protocolVersion: runtimeProtocolVersion,
+    kind: "execute_code",
     payload: {
       source: VALIDATOR_SOURCE,
       filename: VALIDATOR_PATH,
-      files: [validatorFile, ...input.files],
+      files: projectFiles,
       entrypoint: VALIDATOR_PATH,
       stdin: [
         JSON.stringify({
-          files: [VALIDATOR_PATH, ...input.files.map((file) => file.path)],
+          files: projectFiles.map((file) => file.path),
           entrypoint: input.entrypoint,
           spec: input.spec,
         }),
@@ -283,11 +284,15 @@ export async function validateAdvancedPatternTask(input: {
     },
   });
 
-  if (result.timedOut) {
-    throw new Error("Decorator/context manager doğrulaması zaman aşımına uğradı.");
+  if (!response.payload) {
+    throw new Error("Decorator/context manager doğrulama motoru sonuç döndürmedi.");
   }
-  if (result.runtimeError || result.exitCode !== 0) {
-    throw new Error(result.runtimeError ?? result.stderr ?? "İleri seviye doğrulayıcı çalıştırılamadı.");
+  if (response.status !== "ok") {
+    const diagnostic = response.diagnostics[0]?.message;
+    const runtimeMessage = response.payload.stderr.trim();
+    throw new Error(
+      diagnostic || runtimeMessage || "İleri seviye doğrulayıcı çalıştırılamadı.",
+    );
   }
-  return parseTaskValidationOutput(result.stdout);
+  return parseTaskValidationOutput(response.payload.stdout);
 }
