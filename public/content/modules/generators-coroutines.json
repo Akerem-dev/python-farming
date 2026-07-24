@@ -824,6 +824,29 @@
             ]
           }
         ]
+      },
+      "dataTransformation": {
+        "projectTitle": "Lazy Satış İşleme Hattı",
+        "sourceShape": "[{tutar, kategori, gecerli}, ...]",
+        "targetShape": "{satis_sayisi, toplam, kategoriler}",
+        "deliverables": [
+          "yield from kullanan satış kaynağı",
+          "Lazy filtre ve normalizasyon generator aşamaları",
+          "send() ile veri alan rapor coroutine'i",
+          "Tek geçişli servis ve kalıcı akış günlüğü"
+        ],
+        "rules": [
+          "Kaynak satış koleksiyonu değiştirilmemelidir.",
+          "Filtre ve dönüşüm aşamalarında ara satış listesi oluşturulmamalıdır.",
+          "Coroutine next() ile hazırlanmalı ve iş bitince close() ile kapatılmalıdır.",
+          "Boş ve farklı eşikli akışlar sözleşmeye uygun rapor döndürmelidir."
+        ],
+        "workflow": [
+          "satis_kaynagi ile kaynak iterable'ı yield from üzerinden aktar.",
+          "gecerli_satislar ile yalnız geçerli ve eşik üstü kayıtları yield et.",
+          "normalize_satis ile sink'in beklediği alanları lazy biçimde üret.",
+          "rapor_toplayici coroutine'ini hazırla, kayıtları send et ve sonucu tek geçişte döndür."
+        ]
       }
     }
   ]
