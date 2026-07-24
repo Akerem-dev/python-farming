@@ -195,6 +195,15 @@
             "visibility": "visible"
           }
         ]
+      },
+      "debugging": {
+        "errorType": "TightCoupling",
+        "symptom": "RaporServisi kendi Repository nesnesini oluşturduğu için sahte repository ile test edilemiyor.",
+        "workflow": [
+          "Bağımlılığın nerede oluşturulduğunu belirle.",
+          "Repository nesnesini __init__ parametresi olarak dışarıdan al.",
+          "Servisi sahte repository ile yeniden çalıştır."
+        ]
       }
     },
     {
