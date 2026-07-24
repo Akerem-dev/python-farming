@@ -1,0 +1,50 @@
+{
+  "id": "advanced.arch.strategy-prediction",
+  "moduleId": "architecture-patterns",
+  "order": 2,
+  "title": "Strategy seçimini tahmin et",
+  "summary": "Strategy deseni, değişebilen hesaplama davranışlarını ortak bir arayüz altında değiştirilebilir nesnelere ayırır.",
+  "levelLabel": "Architecture Practice",
+  "mode": "output-prediction",
+  "choice": {
+    "prompt": "Program hangi iki satırı yazdırır?",
+    "options": [
+      {"id": "a", "label": "900 / 800"},
+      {"id": "b", "label": "1000 / 900"},
+      {"id": "c", "label": "900 / 900"},
+      {"id": "d", "label": "TypeError"}
+    ]
+  },
+  "task": {
+    "title": "İndirim stratejilerinin sonucunu seç",
+    "instructions": [
+      "StandartIndirim ve PremiumIndirim uygulamalarını incele.",
+      "FiyatHesaplayici'nın strategy nesnesini constructor'dan aldığını takip et.",
+      "1000 kuruş için iki sonucu belirle."
+    ],
+    "requirements": [
+      "Standart strategy yüzde 10 indirim uygular.",
+      "Premium strategy yüzde 20 indirim uygular.",
+      "Hesaplayıcı strategy.indirimli() metodunu çağırır."
+    ],
+    "sampleOutput": "900 / 800",
+    "stdinEnabled": false,
+    "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+    "defaultStdin": ""
+  },
+  "editor": {
+    "filename": "main.py",
+    "starterCode": "class StandartIndirim:\n    def indirimli(self, tutar):\n        return tutar * 90 // 100\n\nclass PremiumIndirim:\n    def indirimli(self, tutar):\n        return tutar * 80 // 100\n\nclass FiyatHesaplayici:\n    def __init__(self, strategy):\n        self.strategy = strategy\n\n    def hesapla(self, tutar):\n        return self.strategy.indirimli(tutar)\n\nprint(FiyatHesaplayici(StandartIndirim()).hesapla(1000))\nprint(FiyatHesaplayici(PremiumIndirim()).hesapla(1000))\n"
+  },
+  "hints": [
+    {"title": "Strategy değişir", "body": "FiyatHesaplayici sınıfının kodu aynı kalır; yalnız verilen nesne değişir."}
+  ],
+  "validation": {
+    "id": "advanced.arch.strategy-prediction",
+    "title": "İndirim stratejilerinin sonucunu seç",
+    "xpReward": 70,
+    "timeoutMs": 1000,
+    "checks": [],
+    "answer": {"kind": "choice", "correctOptionId": "a"}
+  }
+}
