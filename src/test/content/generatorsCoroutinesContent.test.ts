@@ -12,6 +12,12 @@ const content = JSON.parse(readFileSync(packagePath, "utf-8")) as {
     id: string;
     order: number;
     mode: string;
+    dataTransformation?: {
+      projectTitle: string;
+      deliverables: string[];
+      rules: string[];
+      workflow: string[];
+    };
     validation: {
       xpReward: number;
       checks: Array<Record<string, unknown>>;
@@ -34,19 +40,36 @@ describe("generators and coroutines curriculum package", () => {
       .flatMap((lesson) => lesson.validation.checks)
       .filter((check) => check.kind === "advanced_patterns");
 
-    const generators = checks.flatMap((check) => (check.generators as Array<Record<string, unknown>> | undefined) ?? []);
-    const scenarios = checks.flatMap((check) => (check.scenarios as Array<Record<string, unknown>> | undefined) ?? []);
-    const actions = scenarios.flatMap((scenario) => (scenario.actions as Array<Record<string, unknown>> | undefined) ?? []);
+    const generators = checks.flatMap(
+      (check) => (check.generators as Array<Record<string, unknown>> | undefined) ?? [],
+    );
+    const scenarios = checks.flatMap(
+      (check) => (check.scenarios as Array<Record<string, unknown>> | undefined) ?? [],
+    );
+    const actions = scenarios.flatMap(
+      (scenario) =>
+        (scenario.actions as Array<Record<string, unknown>> | undefined) ?? [],
+    );
 
     expect(generators.some((generator) => generator.requireYieldFrom === true)).toBe(true);
     expect(actions.some((action) => action.kind === "send")).toBe(true);
     expect(actions.some((action) => action.kind === "throw")).toBe(true);
     expect(actions.some((action) => action.kind === "close")).toBe(true);
-    expect(actions.some((action) => action.kind === "state" && action.expected === "GEN_CLOSED")).toBe(true);
+    expect(
+      actions.some(
+        (action) => action.kind === "state" && action.expected === "GEN_CLOSED",
+      ),
+    ).toBe(true);
 
     const finalLesson = content.lessons.at(-1);
     const finalCheck = finalLesson?.validation.checks[0];
     expect(finalLesson?.mode).toBe("data-transformation");
+    expect(finalLesson?.dataTransformation?.projectTitle).toBe(
+      "Lazy Satış İşleme Hattı",
+    );
+    expect(finalLesson?.dataTransformation?.deliverables).toHaveLength(4);
+    expect(finalLesson?.dataTransformation?.rules).toHaveLength(4);
+    expect(finalLesson?.dataTransformation?.workflow).toHaveLength(4);
     expect((finalCheck?.requiredFiles as string[] | undefined)).toEqual([
       "main.py",
       "source.py",
