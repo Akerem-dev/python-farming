@@ -886,6 +886,15 @@
             "visibility": "visible"
           },
           {
+            "id": "order-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 2,
+            "file": "service.py",
+            "label": "Sipariş ve satır döngüleri",
+            "visibility": "visible"
+          },
+          {
             "id": "scenario-cases",
             "kind": "function_cases",
             "name": "senaryo_calistir",
