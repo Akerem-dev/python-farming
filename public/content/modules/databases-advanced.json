@@ -1,0 +1,1016 @@
+{
+  "moduleId": "databases-advanced",
+  "lessons": [
+    {
+      "id": "advanced.db.parameterized-select",
+      "moduleId": "databases-advanced",
+      "order": 1,
+      "title": "Parametrik sorguyla ürün filtrele",
+      "summary": "sqlite3 üzerinde güvenli parametre bağlama, sıralama ve satır dönüştürme akışını kur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Stoklu ürünleri güvenli sorgula",
+        "instructions": [
+          "stoklu_urunler(kayitlar, kategori, minimum) fonksiyonunu tamamla.",
+          "Kayıtları geçici SQLite tablosuna ekle ve SELECT sorgusunda ? parametreleri kullan.",
+          "Sonucu ürün adına göre sıralanmış sözlük listesi olarak döndür."
+        ],
+        "requirements": [
+          "sqlite3 kullanılmalı.",
+          "Kategori ve minimum SQL metnine f-string ile eklenmemeli.",
+          "Sonuçlar ad, kategori ve stok alanlarını taşımalı."
+        ],
+        "sampleOutput": "[{'ad': 'Defter', 'kategori': 'kırtasiye', 'stok': 8}]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\ndef stoklu_urunler(kayitlar, kategori, minimum):\n    connection = sqlite3.connect(\":memory:\")\n    connection.execute(\"CREATE TABLE urunler (ad TEXT, kategori TEXT, stok INTEGER)\")\n    connection.executemany(\n        \"INSERT INTO urunler (ad, kategori, stok) VALUES (?, ?, ?)\",\n        [(item[\"ad\"], item[\"kategori\"], item[\"stok\"]) for item in kayitlar],\n    )\n    # Parametrik SELECT sorgusunu yaz.\n    rows = []\n    connection.close()\n    return [{\"ad\": row[0], \"kategori\": row[1], \"stok\": row[2]} for row in rows]\n\nif __name__ == \"__main__\":\n    print(stoklu_urunler(\n        [{\"ad\": \"Kalem\", \"kategori\": \"kırtasiye\", \"stok\": 3},\n         {\"ad\": \"Defter\", \"kategori\": \"kırtasiye\", \"stok\": 8}],\n        \"kırtasiye\", 5,\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "Parametre bağlama",
+          "body": "execute(SQL, (kategori, minimum)) kullanıcı değerlerini SQL metninden ayırır."
+        },
+        {
+          "title": "Sıra",
+          "body": "ORDER BY ad kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.db.parameterized-select",
+        "title": "Stoklu ürünleri güvenli sorgula",
+        "xpReward": 100,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "db-import",
+            "kind": "import_statement",
+            "module": "sqlite3",
+            "file": "main.py",
+            "label": "sqlite3 import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "select-function",
+            "kind": "function_definition",
+            "name": "stoklu_urunler",
+            "minParams": 3,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Filtreleme fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "safe-query",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "SELECT[\\s\\S]*?WHERE\\s+kategori\\s*=\\s*\\?\\s+AND\\s+stok\\s*>=\\s*\\?",
+            "flags": "i",
+            "label": "Parametrik WHERE sorgusu",
+            "visibility": "visible"
+          },
+          {
+            "id": "select-cases",
+            "kind": "function_cases",
+            "name": "stoklu_urunler",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "Kalem",
+                      "kategori": "kırtasiye",
+                      "stok": 3
+                    },
+                    {
+                      "ad": "Defter",
+                      "kategori": "kırtasiye",
+                      "stok": 8
+                    },
+                    {
+                      "ad": "Kablo",
+                      "kategori": "elektronik",
+                      "stok": 12
+                    }
+                  ],
+                  "kırtasiye",
+                  5
+                ],
+                "expected": [
+                  {
+                    "ad": "Defter",
+                    "kategori": "kırtasiye",
+                    "stok": 8
+                  }
+                ]
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "B",
+                      "kategori": "x",
+                      "stok": 5
+                    },
+                    {
+                      "ad": "A",
+                      "kategori": "x",
+                      "stok": 7
+                    },
+                    {
+                      "ad": "C",
+                      "kategori": "y",
+                      "stok": 9
+                    }
+                  ],
+                  "x",
+                  0
+                ],
+                "expected": [
+                  {
+                    "ad": "A",
+                    "kategori": "x",
+                    "stok": 7
+                  },
+                  {
+                    "ad": "B",
+                    "kategori": "x",
+                    "stok": 5
+                  }
+                ]
+              },
+              {
+                "args": [
+                  [],
+                  "x",
+                  1
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli sorgu senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.transaction-rollback",
+      "moduleId": "databases-advanced",
+      "order": 2,
+      "title": "Transaction rollback sonucunu tahmin et",
+      "summary": "with connection bloğunda exception oluştuğunda güncellemelerin neden geri alındığını gözlemle.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Rollback sonrası bakiyeyi seç",
+        "instructions": [
+          "Başlangıç verisini ve hata üreten transaction bloğunu incele.",
+          "ValueError yakalandıktan sonra kalan bakiyeyi belirle."
+        ],
+        "requirements": [
+          "Tek seçenek işaretlenmeli.",
+          "Hata oluşan transaction içindeki UPDATE geri alınır."
+        ],
+        "sampleOutput": "100",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\nconnection = sqlite3.connect(\":memory:\")\nconnection.execute(\"CREATE TABLE hesaplar (id INTEGER PRIMARY KEY, bakiye INTEGER)\")\nconnection.execute(\"INSERT INTO hesaplar (id, bakiye) VALUES (1, 100)\")\nconnection.commit()\n\ntry:\n    with connection:\n        connection.execute(\"UPDATE hesaplar SET bakiye = bakiye - 40 WHERE id = 1\")\n        raise ValueError(\"işlem iptal\")\nexcept ValueError:\n    pass\n\nprint(connection.execute(\"SELECT bakiye FROM hesaplar WHERE id = 1\").fetchone()[0])\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.db.transaction-rollback",
+        "title": "Rollback sonrası bakiyeyi seç",
+        "xpReward": 70,
+        "timeoutMs": 8000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      },
+      "choice": {
+        "prompt": "Program hangi değeri yazdırır?",
+        "options": [
+          {
+            "id": "a",
+            "label": "100"
+          },
+          {
+            "id": "b",
+            "label": "60"
+          },
+          {
+            "id": "c",
+            "label": "40"
+          },
+          {
+            "id": "d",
+            "label": "Hiçbir şey yazdırmaz"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.schema-foreign-key",
+      "moduleId": "databases-advanced",
+      "order": 3,
+      "title": "Foreign key kullanan şemayı kur",
+      "summary": "PRAGMA foreign_keys, CHECK ve ON DELETE CASCADE ile tutarlı bir ilişkisel şema oluştur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Müşteri ve sipariş tablolarını hazırla",
+        "instructions": [
+          "sema_ozeti() içinde foreign key denetimini aç.",
+          "musteriler ve siparisler tablolarını oluştur; siparisler.musteri_id foreign key olsun.",
+          "Etkin foreign key değerini, tablo adlarını ve foreign key sayısını döndür."
+        ],
+        "requirements": [
+          "PRAGMA foreign_keys = ON kullanılmalı.",
+          "Sipariş toplamı negatif olamamalı.",
+          "Müşteri silindiğinde siparişleri CASCADE ile silinmeli."
+        ],
+        "sampleOutput": "{'foreign_keys': 1, 'tables': ['musteriler', 'siparisler'], 'fk_count': 1}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\ndef sema_ozeti():\n    connection = sqlite3.connect(\":memory:\")\n    # Foreign key denetimini aç ve iki tabloyu oluştur.\n    tables = [row[0] for row in connection.execute(\n        \"SELECT name FROM sqlite_master WHERE type = 'table' \"\n        \"AND name NOT LIKE 'sqlite_%' ORDER BY name\"\n    )]\n    foreign_keys = connection.execute(\"PRAGMA foreign_keys\").fetchone()[0]\n    fk_count = len(connection.execute(\"PRAGMA foreign_key_list(siparisler)\").fetchall())\n    connection.close()\n    return {\"foreign_keys\": foreign_keys, \"tables\": tables, \"fk_count\": fk_count}\n\nif __name__ == \"__main__\":\n    print(sema_ozeti())\n"
+      },
+      "hints": [
+        {
+          "title": "Foreign key",
+          "body": "PRAGMA foreign_keys = ON komutunu tablo oluşturmadan önce çalıştır."
+        },
+        {
+          "title": "Silme davranışı",
+          "body": "FOREIGN KEY (...) REFERENCES musteriler(id) ON DELETE CASCADE kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.db.schema-foreign-key",
+        "title": "Müşteri ve sipariş tablolarını hazırla",
+        "xpReward": 130,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "schema-import",
+            "kind": "import_statement",
+            "module": "sqlite3",
+            "file": "main.py",
+            "label": "sqlite3 import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "schema-function",
+            "kind": "function_definition",
+            "name": "sema_ozeti",
+            "minParams": 0,
+            "maxParams": 0,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Şema fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "pragma-regex",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "PRAGMA\\s+foreign_keys\\s*=\\s*ON",
+            "flags": "i",
+            "label": "Foreign key denetimi açıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "cascade-regex",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "FOREIGN\\s+KEY[\\s\\S]*?ON\\s+DELETE\\s+CASCADE",
+            "flags": "i",
+            "label": "Cascade ilişkisi kuruldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "schema-cases",
+            "kind": "function_cases",
+            "name": "sema_ozeti",
+            "module": "main",
+            "cases": [
+              {
+                "args": [],
+                "expected": {
+                  "foreign_keys": 1,
+                  "tables": [
+                    "musteriler",
+                    "siparisler"
+                  ],
+                  "fk_count": 1
+                }
+              }
+            ],
+            "label": "Gerçek SQLite şema kontrolü",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.sql-injection-debug",
+      "moduleId": "databases-advanced",
+      "order": 4,
+      "title": "Hata Avcısı: SQL injection açığını kapat",
+      "summary": "SQL metnine doğrudan eklenen kullanıcı girdisini parametrik sorguya dönüştür.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "E-posta aramasını güvenli hâle getir",
+        "instructions": [
+          "kullanici_bul() içindeki f-string SQL sorgusunu kaldır.",
+          "E-posta değerini ? placeholder ile execute() parametresi olarak gönder.",
+          "Normal aramayı korurken saldırı metninin bütün kullanıcıları döndürmesini engelle."
+        ],
+        "requirements": [
+          "SQL metni kullanıcı girdisiyle birleştirilmemeli.",
+          "Tek eşleşme sözlük olarak, eşleşme yoksa None dönmeli.",
+          "Saldırı metni sonuç üretmemeli."
+        ],
+        "sampleOutput": "{'id': 2, 'eposta': 'ada@example.com'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\ndef kullanici_bul(kullanicilar, eposta):\n    connection = sqlite3.connect(\":memory:\")\n    connection.execute(\"CREATE TABLE kullanicilar (id INTEGER PRIMARY KEY, eposta TEXT UNIQUE)\")\n    connection.executemany(\n        \"INSERT INTO kullanicilar (id, eposta) VALUES (?, ?)\",\n        [(item[\"id\"], item[\"eposta\"]) for item in kullanicilar],\n    )\n    # HATALI: kullanıcı girdisi doğrudan SQL metnine ekleniyor.\n    row = connection.execute(\n        f\"SELECT id, eposta FROM kullanicilar WHERE eposta = '{eposta}'\"\n    ).fetchone()\n    connection.close()\n    if row is None:\n        return None\n    return {\"id\": row[0], \"eposta\": row[1]}\n\nif __name__ == \"__main__\":\n    print(kullanici_bul(\n        [{\"id\": 1, \"eposta\": \"ali@example.com\"},\n         {\"id\": 2, \"eposta\": \"ada@example.com\"}],\n        \"ada@example.com\",\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "Placeholder",
+          "body": "WHERE eposta = ? yaz ve execute() çağrısına (eposta,) tuple'ını ver."
+        }
+      ],
+      "debugging": {
+        "errorType": "SQL injection",
+        "symptom": "Özel hazırlanmış e-posta metni WHERE koşulunu bozarak yetkisiz satır döndürebilir.",
+        "workflow": [
+          "SQL metnindeki f-string bölümünü bul.",
+          "Kullanıcı değerini SQL metninden ayır.",
+          "Normal ve saldırı girdileriyle yeniden kontrol et."
+        ]
+      },
+      "validation": {
+        "id": "advanced.db.sql-injection-debug",
+        "title": "E-posta aramasını güvenli hâle getir",
+        "xpReward": 130,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "safe-search-function",
+            "kind": "function_definition",
+            "name": "kullanici_bul",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Kullanıcı arama fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "safe-placeholder",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "WHERE\\s+eposta\\s*=\\s*\\?",
+            "flags": "i",
+            "label": "Parametrik e-posta sorgusu",
+            "visibility": "visible"
+          },
+          {
+            "id": "safe-search-cases",
+            "kind": "function_cases",
+            "name": "kullanici_bul",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "eposta": "ali@example.com"
+                    },
+                    {
+                      "id": 2,
+                      "eposta": "ada@example.com"
+                    }
+                  ],
+                  "ada@example.com"
+                ],
+                "expected": {
+                  "id": 2,
+                  "eposta": "ada@example.com"
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "eposta": "ali@example.com"
+                    },
+                    {
+                      "id": 2,
+                      "eposta": "ada@example.com"
+                    }
+                  ],
+                  "yok@example.com"
+                ],
+                "expected": null
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "eposta": "ali@example.com"
+                    },
+                    {
+                      "id": 2,
+                      "eposta": "ada@example.com"
+                    }
+                  ],
+                  "' OR 1=1 --"
+                ],
+                "expected": null
+              }
+            ],
+            "label": "Normal ve saldırı senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.atomic-transfer",
+      "moduleId": "databases-advanced",
+      "order": 5,
+      "title": "Atomik stok transferi uygula",
+      "summary": "İki UPDATE işlemini tek transaction içinde çalıştır ve başarısız akışta tüm değişiklikleri geri al.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Depolar arasında güvenli stok taşı",
+        "instructions": [
+          "stok_transfer(kayitlar, kaynak, hedef, urun, adet) fonksiyonunu tamamla.",
+          "Kaynak stok yetersizse ValueError üret ve hiçbir satırı değiştirme.",
+          "Başarılı durumda kaynak ve hedef stoklarını tek transaction içinde güncelle."
+        ],
+        "requirements": [
+          "with connection transaction bloğu kullanılmalı.",
+          "Negatif veya sıfır adet reddedilmeli.",
+          "Sonuç depo adına göre sıralı sözlük olmalı."
+        ],
+        "sampleOutput": "{'A': 6, 'B': 7}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\ndef stok_transfer(kayitlar, kaynak, hedef, urun, adet):\n    connection = sqlite3.connect(\":memory:\")\n    connection.execute(\n        \"CREATE TABLE depo_stok (depo TEXT, urun TEXT, \"\n        \"adet INTEGER CHECK(adet >= 0), PRIMARY KEY (depo, urun))\"\n    )\n    connection.executemany(\n        \"INSERT INTO depo_stok (depo, urun, adet) VALUES (?, ?, ?)\",\n        [(item[\"depo\"], item[\"urun\"], item[\"adet\"]) for item in kayitlar],\n    )\n    connection.commit()\n    # Kontrol ve iki UPDATE işlemini tek transaction içinde tamamla.\n    result = {row[0]: row[1] for row in connection.execute(\n        \"SELECT depo, adet FROM depo_stok WHERE urun = ? ORDER BY depo\", (urun,)\n    )}\n    connection.close()\n    return result\n\nif __name__ == \"__main__\":\n    print(stok_transfer(\n        [{\"depo\": \"A\", \"urun\": \"Defter\", \"adet\": 10},\n         {\"depo\": \"B\", \"urun\": \"Defter\", \"adet\": 3}],\n        \"A\", \"B\", \"Defter\", 4,\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "Transaction",
+          "body": "with connection: bloğu başarılıysa commit, exception oluşursa rollback yapar."
+        },
+        {
+          "title": "Kaynak kontrolü",
+          "body": "Önce mevcut adedi oku; yetersizse UPDATE yapmadan ValueError üret."
+        }
+      ],
+      "validation": {
+        "id": "advanced.db.atomic-transfer",
+        "title": "Depolar arasında güvenli stok taşı",
+        "xpReward": 155,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "transfer-function",
+            "kind": "function_definition",
+            "name": "stok_transfer",
+            "minParams": 5,
+            "maxParams": 5,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Transfer fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "transaction-with",
+            "kind": "node_count",
+            "nodeName": "With",
+            "min": 1,
+            "file": "main.py",
+            "label": "Transaction context'i",
+            "visibility": "visible"
+          },
+          {
+            "id": "transfer-cases",
+            "kind": "function_cases",
+            "name": "stok_transfer",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "depo": "A",
+                      "urun": "Defter",
+                      "adet": 10
+                    },
+                    {
+                      "depo": "B",
+                      "urun": "Defter",
+                      "adet": 3
+                    }
+                  ],
+                  "A",
+                  "B",
+                  "Defter",
+                  4
+                ],
+                "expected": {
+                  "A": 6,
+                  "B": 7
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "depo": "X",
+                      "urun": "Kalem",
+                      "adet": 5
+                    },
+                    {
+                      "depo": "Y",
+                      "urun": "Kalem",
+                      "adet": 0
+                    }
+                  ],
+                  "X",
+                  "Y",
+                  "Kalem",
+                  5
+                ],
+                "expected": {
+                  "X": 0,
+                  "Y": 5
+                }
+              }
+            ],
+            "label": "Başarılı transfer senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "transfer-raises",
+            "kind": "function_raises",
+            "name": "stok_transfer",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "depo": "A",
+                      "urun": "Defter",
+                      "adet": 2
+                    },
+                    {
+                      "depo": "B",
+                      "urun": "Defter",
+                      "adet": 1
+                    }
+                  ],
+                  "A",
+                  "B",
+                  "Defter",
+                  3
+                ],
+                "exception": "ValueError",
+                "messagePattern": "yetersiz"
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "depo": "A",
+                      "urun": "Defter",
+                      "adet": 2
+                    },
+                    {
+                      "depo": "B",
+                      "urun": "Defter",
+                      "adet": 1
+                    }
+                  ],
+                  "A",
+                  "B",
+                  "Defter",
+                  0
+                ],
+                "exception": "ValueError",
+                "messagePattern": "pozitif"
+              }
+            ],
+            "label": "Rollback ve girdi doğrulama",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.index-introspection",
+      "moduleId": "databases-advanced",
+      "order": 6,
+      "title": "İndeks sözleşmesini doğrula",
+      "summary": "Bileşik indeks oluştur, SQLite metadata tablolarından kolon sırasını okuyarak yapıyı doğrula.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Kategori ve stok indeksini oluştur",
+        "instructions": [
+          "indeks_bilgisi() içinde urunler tablosunu ve idx_urunler_kategori_stok indeksini oluştur.",
+          "İndeks kolonları kategori ve stok sırasını izlemeli.",
+          "PRAGMA index_info ile indeks kolon adlarını liste olarak döndür."
+        ],
+        "requirements": [
+          "CREATE INDEX kullanılmalı.",
+          "İndeks iki kolonu doğru sırada içermeli.",
+          "Fonksiyon SQLite metadata sonucunu döndürmeli."
+        ],
+        "sampleOutput": "['kategori', 'stok']",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import sqlite3\n\ndef indeks_bilgisi():\n    connection = sqlite3.connect(\":memory:\")\n    connection.execute(\n        \"CREATE TABLE urunler (id INTEGER PRIMARY KEY, kategori TEXT, stok INTEGER)\"\n    )\n    # idx_urunler_kategori_stok bileşik indeksini oluştur.\n    columns = [row[2] for row in connection.execute(\n        \"PRAGMA index_info(idx_urunler_kategori_stok)\"\n    )]\n    connection.close()\n    return columns\n\nif __name__ == \"__main__\":\n    print(indeks_bilgisi())\n"
+      },
+      "hints": [
+        {
+          "title": "Bileşik indeks",
+          "body": "CREATE INDEX ad ON tablo (birinci_kolon, ikinci_kolon) biçimini kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.db.index-introspection",
+        "title": "Kategori ve stok indeksini oluştur",
+        "xpReward": 170,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "index-function",
+            "kind": "function_definition",
+            "name": "indeks_bilgisi",
+            "minParams": 0,
+            "maxParams": 0,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "İndeks fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "create-index",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "CREATE\\s+INDEX\\s+idx_urunler_kategori_stok\\s+ON\\s+urunler\\s*\\(\\s*kategori\\s*,\\s*stok\\s*\\)",
+            "flags": "i",
+            "label": "Bileşik indeks oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "index-cases",
+            "kind": "function_cases",
+            "name": "indeks_bilgisi",
+            "module": "main",
+            "cases": [
+              {
+                "args": [],
+                "expected": [
+                  "kategori",
+                  "stok"
+                ]
+              }
+            ],
+            "label": "Gerçek indeks kolonları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.db.order-database-project",
+      "moduleId": "databases-advanced",
+      "order": 7,
+      "title": "Final proje: Transactional sipariş veritabanı",
+      "summary": "Migration, repository ve servis katmanlarını birleştirerek rollback güvenli bir SQLite sipariş sistemi kur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Çok dosyalı sipariş veritabanını tamamla",
+        "instructions": [
+          "Migration dosyasında ürün, sipariş ve sipariş_satirlari tablolarını; foreign key ve indeksleri oluştur.",
+          "database.py içinde foreign key denetimini açıp migration metnini executescript ile uygula.",
+          "Repository fonksiyonlarını parametrik sorgularla tamamla.",
+          "Her siparişi ayrı transaction içinde işle; herhangi bir satır başarısızsa siparişin tamamını rollback et.",
+          "senaryo_calistir() sipariş sayısı, toplam kuruş, ürün stokları ve reddedilen sipariş sayısını döndürsün."
+        ],
+        "requirements": [
+          "sqlite3 ve in-memory veritabanı kullanılmalı.",
+          "Para değerleri kuruş cinsinden INTEGER tutulmalı.",
+          "Stok hiçbir zaman negatife düşmemeli.",
+          "Foreign key ve ON DELETE CASCADE aktif olmalı.",
+          "Bütün SQL değerleri parametre bağlama ile gönderilmeli."
+        ],
+        "sampleOutput": "{'siparis_sayisi': 1, 'toplam_kurus': 3500, 'stoklar': {'Defter': 4, 'Kalem': 8}, 'reddedilen': 0}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import senaryo_calistir\n\nif __name__ == \"__main__\":\n    print(senaryo_calistir(\n        [\n            {\"id\": 1, \"ad\": \"Defter\", \"fiyat_kurus\": 2500, \"stok\": 5},\n            {\"id\": 2, \"ad\": \"Kalem\", \"fiyat_kurus\": 500, \"stok\": 10},\n        ],\n        [{\"musteri\": \"Ada\", \"satirlar\": [\n            {\"urun_id\": 1, \"adet\": 1},\n            {\"urun_id\": 2, \"adet\": 2},\n        ]}],\n    ))\n"
+          },
+          {
+            "path": "database.py",
+            "starterCode": "import sqlite3\nfrom pathlib import Path\n\nMIGRATION_PATH = Path(\"migrations/001_init.txt\")\n\ndef connection_olustur():\n    connection = sqlite3.connect(\":memory:\")\n    connection.row_factory = sqlite3.Row\n    # Foreign key denetimini aç ve migration metnini uygula.\n    return connection\n"
+          },
+          {
+            "path": "repository.py",
+            "starterCode": "def urunleri_yukle(connection, urunler):\n    # Ürünleri parametrik executemany ile ekle.\n    pass\n\ndef urun_getir(connection, urun_id):\n    # Tek ürünü getir; bulunamazsa ValueError üret.\n    pass\n\ndef siparis_baslat(connection, musteri):\n    # Siparişi ekle ve yeni id'yi döndür.\n    pass\n\ndef siparis_satiri_ekle(connection, siparis_id, urun_id, adet, birim_fiyat_kurus):\n    # Sipariş satırını ekle.\n    pass\n\ndef stok_azalt(connection, urun_id, adet):\n    # Stok yeterliyse azalt; değilse ValueError üret.\n    pass\n\ndef siparis_toplamini_guncelle(connection, siparis_id, toplam_kurus):\n    # Sipariş toplamını güncelle.\n    pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from database import connection_olustur\nfrom repository import (\n    siparis_baslat,\n    siparis_satiri_ekle,\n    siparis_toplamini_guncelle,\n    stok_azalt,\n    urun_getir,\n    urunleri_yukle,\n)\n\ndef senaryo_calistir(urunler, islemler):\n    connection = connection_olustur()\n    reddedilen = 0\n    # Ürünleri yükle, her siparişi ayrı transaction içinde işle\n    # ve başarısız siparişleri rollback ederek say.\n    connection.close()\n    return {}\n"
+          },
+          {
+            "path": "migrations/001_init.txt",
+            "starterCode": "-- Ürün, sipariş ve sipariş satırı tablolarını oluştur.\n-- Foreign key, CHECK ve indeks sözleşmelerini ekle.\n"
+          }
+        ],
+        "starterCode": "from service import senaryo_calistir\n\nif __name__ == \"__main__\":\n    print(senaryo_calistir(\n        [\n            {\"id\": 1, \"ad\": \"Defter\", \"fiyat_kurus\": 2500, \"stok\": 5},\n            {\"id\": 2, \"ad\": \"Kalem\", \"fiyat_kurus\": 500, \"stok\": 10},\n        ],\n        [{\"musteri\": \"Ada\", \"satirlar\": [\n            {\"urun_id\": 1, \"adet\": 1},\n            {\"urun_id\": 2, \"adet\": 2},\n        ]}],\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "Migration",
+          "body": "Path.read_text() ile SQL metnini oku ve connection.executescript() ile uygula."
+        },
+        {
+          "title": "Atomik stok azaltma",
+          "body": "UPDATE ... WHERE id = ? AND stok >= ? sorgusunun rowcount değerini kontrol et."
+        },
+        {
+          "title": "Transaction sınırı",
+          "body": "Her sipariş için with connection: kullan; ValueError tüm siparişi geri alır."
+        }
+      ],
+      "dataTransformation": {
+        "sourceShape": "Ürün sözlükleri ve sipariş işlem listesi",
+        "targetShape": "SQLite transaction'larından üretilen özet sözlük",
+        "rules": [
+          "Her sipariş ayrı transaction içinde işlenir.",
+          "Yetersiz stokta sipariş rollback edilir ve reddedilen sayısı artar.",
+          "Toplamlar kuruş cinsinden INTEGER hesaplanır.",
+          "Stok özeti ürün adına göre sıralanır."
+        ],
+        "workflow": [
+          "Migration ile şemayı oluştur.",
+          "Başlangıç ürünlerini parametrik yükle.",
+          "Siparişleri repository fonksiyonlarıyla işle.",
+          "Transaction sonuçlarından özeti üret."
+        ]
+      },
+      "validation": {
+        "id": "advanced.db.order-database-project",
+        "title": "Çok dosyalı sipariş veritabanını tamamla",
+        "xpReward": 245,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "migration-file",
+            "kind": "file_exists",
+            "path": "migrations/001_init.txt",
+            "label": "Migration dosyası",
+            "visibility": "visible"
+          },
+          {
+            "id": "sqlite-import",
+            "kind": "import_statement",
+            "module": "sqlite3",
+            "file": "database.py",
+            "label": "sqlite3 bağlantı katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "foreign-keys",
+            "kind": "file_content_regex",
+            "path": "database.py",
+            "pattern": "PRAGMA\\s+foreign_keys\\s*=\\s*ON",
+            "flags": "i",
+            "label": "Foreign key denetimi",
+            "visibility": "visible"
+          },
+          {
+            "id": "migration-script",
+            "kind": "file_content_regex",
+            "path": "database.py",
+            "pattern": "executescript",
+            "flags": "i",
+            "label": "Migration çalıştırıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "migration-tables",
+            "kind": "file_content_regex",
+            "path": "migrations/001_init.txt",
+            "pattern": "CREATE\\s+TABLE\\s+urunler[\\s\\S]*?CREATE\\s+TABLE\\s+siparisler[\\s\\S]*?CREATE\\s+TABLE\\s+siparis_satirlari",
+            "flags": "i",
+            "label": "İlişkisel tablolar",
+            "visibility": "visible"
+          },
+          {
+            "id": "migration-fk",
+            "kind": "file_content_regex",
+            "path": "migrations/001_init.txt",
+            "pattern": "FOREIGN\\s+KEY[\\s\\S]*?ON\\s+DELETE\\s+CASCADE",
+            "flags": "i",
+            "label": "Cascade foreign key",
+            "visibility": "visible"
+          },
+          {
+            "id": "scenario-function",
+            "kind": "function_definition",
+            "name": "senaryo_calistir",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "service.py",
+            "label": "Senaryo servisi",
+            "visibility": "visible"
+          },
+          {
+            "id": "transaction-loop",
+            "kind": "node_count",
+            "nodeName": "With",
+            "min": 1,
+            "file": "service.py",
+            "label": "Sipariş transaction'ı",
+            "visibility": "visible"
+          },
+          {
+            "id": "scenario-cases",
+            "kind": "function_cases",
+            "name": "senaryo_calistir",
+            "module": "service",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Defter",
+                      "fiyat_kurus": 2500,
+                      "stok": 5
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Kalem",
+                      "fiyat_kurus": 500,
+                      "stok": 10
+                    }
+                  ],
+                  [
+                    {
+                      "musteri": "Ada",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 1
+                        },
+                        {
+                          "urun_id": 2,
+                          "adet": 2
+                        }
+                      ]
+                    }
+                  ]
+                ],
+                "expected": {
+                  "siparis_sayisi": 1,
+                  "toplam_kurus": 3500,
+                  "stoklar": {
+                    "Defter": 4,
+                    "Kalem": 8
+                  },
+                  "reddedilen": 0
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Kitap",
+                      "fiyat_kurus": 4000,
+                      "stok": 2
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Ayraç",
+                      "fiyat_kurus": 300,
+                      "stok": 4
+                    }
+                  ],
+                  [
+                    {
+                      "musteri": "Ali",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 1
+                        }
+                      ]
+                    },
+                    {
+                      "musteri": "Ece",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 5
+                        },
+                        {
+                          "urun_id": 2,
+                          "adet": 1
+                        }
+                      ]
+                    },
+                    {
+                      "musteri": "Can",
+                      "satirlar": [
+                        {
+                          "urun_id": 2,
+                          "adet": 2
+                        }
+                      ]
+                    }
+                  ]
+                ],
+                "expected": {
+                  "siparis_sayisi": 2,
+                  "toplam_kurus": 4600,
+                  "stoklar": {
+                    "Ayraç": 2,
+                    "Kitap": 1
+                  },
+                  "reddedilen": 1
+                }
+              },
+              {
+                "args": [
+                  [],
+                  []
+                ],
+                "expected": {
+                  "siparis_sayisi": 0,
+                  "toplam_kurus": 0,
+                  "stoklar": {},
+                  "reddedilen": 0
+                }
+              }
+            ],
+            "label": "Gizli transaction senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
