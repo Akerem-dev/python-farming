@@ -70,6 +70,8 @@ describe("generators and coroutines curriculum package", () => {
     expect(finalLesson?.dataTransformation?.deliverables).toHaveLength(4);
     expect(finalLesson?.dataTransformation?.rules).toHaveLength(4);
     expect(finalLesson?.dataTransformation?.workflow).toHaveLength(4);
+    expect(finalCheck?.kind).toBe("advanced_patterns");
+    expect((finalCheck?.generators as unknown[] | undefined)).toHaveLength(4);
     expect((finalCheck?.requiredFiles as string[] | undefined)).toEqual([
       "main.py",
       "source.py",
