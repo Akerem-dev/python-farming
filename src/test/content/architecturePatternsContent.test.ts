@@ -34,6 +34,15 @@ describe("architecture patterns module content", () => {
     }
   });
 
+  it("keeps the tight-coupling debugging guide complete", () => {
+    const debuggingLesson = modulePackage.lessons.find(
+      (lesson) => lesson.id === "advanced.arch.coupling",
+    );
+    expect(debuggingLesson?.mode).toBe("debugging");
+    expect(debuggingLesson?.debugging?.errorType).toBe("TightCoupling");
+    expect(debuggingLesson?.debugging?.workflow).toHaveLength(3);
+  });
+
   it("ships an eight-file layered final project with hidden cases", () => {
     const finalLesson = modulePackage.lessons.at(-1);
     expect(finalLesson?.editor.files).toHaveLength(8);
