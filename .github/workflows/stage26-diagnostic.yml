@@ -1,4 +1,4 @@
-name: Stage 26 Diagnostic
+name: Stage 26 Curriculum Fix
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  diagnose:
+  fix:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -17,23 +17,52 @@ jobs:
         with:
           ref: ${{ github.head_ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-      - run: npm install
-      - name: Capture test tail
-        shell: bash
+      - name: Add final project transformation guide
         run: |
-          set +e
-          npm test > /tmp/stage26-test.log 2>&1
-          status=$?
-          tail -n 180 /tmp/stage26-test.log > stage26-diagnostic.txt
-          echo "EXIT_STATUS=$status" >> stage26-diagnostic.txt
-          exit 0
-      - name: Commit diagnostic
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("public/content/modules/generators-coroutines.json")
+          package = json.loads(path.read_text(encoding="utf-8"))
+          lesson = next(
+              item
+              for item in package["lessons"]
+              if item["id"] == "advanced.generators.final-pipeline"
+          )
+          lesson["dataTransformation"] = {
+              "projectTitle": "Lazy Satış İşleme Hattı",
+              "sourceShape": "[{tutar, kategori, gecerli}, ...]",
+              "targetShape": "{satis_sayisi, toplam, kategoriler}",
+              "deliverables": [
+                  "yield from kullanan satış kaynağı",
+                  "Lazy filtre ve normalizasyon generator aşamaları",
+                  "send() ile veri alan rapor coroutine'i",
+                  "Tek geçişli servis ve kalıcı akış günlüğü",
+              ],
+              "rules": [
+                  "Kaynak satış koleksiyonu değiştirilmemelidir.",
+                  "Filtre ve dönüşüm aşamalarında ara satış listesi oluşturulmamalıdır.",
+                  "Coroutine next() ile hazırlanmalı ve iş bitince close() ile kapatılmalıdır.",
+                  "Boş ve farklı eşikli akışlar sözleşmeye uygun rapor döndürmelidir.",
+              ],
+              "workflow": [
+                  "satis_kaynagi ile kaynak iterable'ı yield from üzerinden aktar.",
+                  "gecerli_satislar ile yalnız geçerli ve eşik üstü kayıtları yield et.",
+                  "normalize_satis ile sink'in beklediği alanları lazy biçimde üret.",
+                  "rapor_toplayici coroutine'ini hazırla, kayıtları send et ve sonucu tek geçişte döndür.",
+              ],
+          }
+          path.write_text(
+              json.dumps(package, ensure_ascii=False, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          PY
+      - name: Remove temporary diagnostics and commit fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add stage26-diagnostic.txt
-          git commit -m "chore: capture stage 26 diagnostic"
+          git rm --ignore-unmatch .github/workflows/stage26-diagnostic.yml stage26-diagnostic.txt
+          git add public/content/modules/generators-coroutines.json
+          git commit -m "fix: add generator final transformation guide"
           git push origin HEAD:${{ github.head_ref }}
