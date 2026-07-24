@@ -32,6 +32,9 @@ describe("async and await module content", () => {
     expect(modes.has("debugging")).toBe(true);
 
     const finalLesson = modulePackage.lessons.at(-1);
+    expect(finalLesson?.id).toBe("advanced.async.telemetry-final");
+    expect(finalLesson?.validation.xpReward).toBe(220);
+    expect(finalLesson?.editor.entrypoint).toBe("main.py");
     expect(finalLesson?.editor.files?.map((file) => file.path)).toEqual([
       "main.py",
       "telemetry.py",
