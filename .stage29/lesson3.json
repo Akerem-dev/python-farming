@@ -1,0 +1,69 @@
+{
+  "id": "advanced.arch.repository-protocol",
+  "moduleId": "architecture-patterns",
+  "order": 3,
+  "title": "Repository sözleşmesini Protocol ile tanımla",
+  "summary": "Repository veri kaynağını servis katmanından ayırır; Protocol ise kalıtım zorunluluğu olmadan beklenen metot sözleşmesini tanımlar.",
+  "levelLabel": "Advanced Typing",
+  "mode": "code-completion",
+  "task": {
+    "title": "UrunRepository Protocol sözleşmesini tamamla",
+    "instructions": [
+      "UrunRepository sınıfını runtime_checkable Protocol yap.",
+      "listele() metodunu list[dict[str, object]] dönüş tipiyle tanımla.",
+      "BellekRepository aynı metodu gerçek davranışla uygulasın.",
+      "repository_raporu(veriler) ürün adlarını alfabetik döndürsün."
+    ],
+    "requirements": [
+      "Protocol gerçek typing.Protocol tabanından türemeli.",
+      "@runtime_checkable kullanılmalı.",
+      "BellekRepository'nin Protocol'dan kalıtım alması zorunlu olmamalı."
+    ],
+    "sampleOutput": "[\"Ajanda\", \"Kalem\"]",
+    "stdinEnabled": false,
+    "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+    "defaultStdin": ""
+  },
+  "editor": {
+    "filename": "main.py",
+    "starterCode": "from typing import Protocol, runtime_checkable\n\n\n@runtime_checkable\nclass UrunRepository(Protocol):\n    def listele(self) -> list[dict[str, object]]:\n        ...\n\n\nclass BellekRepository:\n    def __init__(self, veriler: list[dict[str, object]]):\n        self._veriler = list(veriler)\n\n    def listele(self) -> list[dict[str, object]]:\n        return list(self._veriler)\n\n\ndef repository_raporu(veriler: list[dict[str, object]]) -> list[str]:\n    repository: UrunRepository = BellekRepository(veriler)\n    return sorted(str(urun[\"ad\"]) for urun in repository.listele())\n\n\nif __name__ == \"__main__\":\n    print(repository_raporu([{\"ad\": \"Kalem\"}, {\"ad\": \"Ajanda\"}]))\n"
+  },
+  "hints": [
+    {"title": "Yapısal uyum", "body": "BellekRepository, UrunRepository'den kalıtım almadan aynı metodu sağladığı için sözleşmeye uyar."}
+  ],
+  "validation": {
+    "id": "advanced.arch.repository-protocol",
+    "title": "UrunRepository Protocol sözleşmesini tamamla",
+    "xpReward": 140,
+    "timeoutMs": 7000,
+    "checks": [
+      {
+        "id": "repo-protocol",
+        "kind": "protocol_definition",
+        "name": "UrunRepository",
+        "runtimeCheckable": true,
+        "methods": [
+          {
+            "name": "listele",
+            "parameters": [],
+            "returnAccepted": ["list[dict[str,object]]", "list[dict[str, object]]"]
+          }
+        ],
+        "label": "Repository Protocol sözleşmesi",
+        "visibility": "visible"
+      },
+      {
+        "id": "repo-cases",
+        "kind": "function_cases",
+        "name": "repository_raporu",
+        "cases": [
+          {"args": [[{"ad": "Kalem"}, {"ad": "Ajanda"}]], "expected": ["Ajanda", "Kalem"]},
+          {"args": [[{"ad": "Zımba"}, {"ad": "Defter"}, {"ad": "Cetvel"}]], "expected": ["Cetvel", "Defter", "Zımba"]},
+          {"args": [[]], "expected": []}
+        ],
+        "label": "Gizli repository senaryoları",
+        "visibility": "hidden"
+      }
+    ]
+  }
+}
