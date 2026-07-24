@@ -1,0 +1,82 @@
+{
+  "id": "advanced.arch.debug-hardcoded-dependency",
+  "moduleId": "architecture-patterns",
+  "order": 4,
+  "title": "Hata Avcısı: sabit bağımlılığı ayır",
+  "summary": "Bir servisin somut adapter'ı kendi içinde oluşturması test edilebilirliği düşürür ve değişiklik maliyetini artırır.",
+  "levelLabel": "Architecture Debugging",
+  "mode": "debugging",
+  "debugging": {
+    "errorType": "Tight Coupling",
+    "symptom": "RaporServisi her zaman DosyaKaynak kullanıyor; testte sahte kaynak enjekte edilemiyor.",
+    "workflow": [
+      "RaporServisi constructor'ına kaynak parametresi ekle.",
+      "self.kaynak = kaynak ile bağımlılığı sakla.",
+      "rapor() içinde yalnız enjekte edilen kaynağı kullan.",
+      "rapor_uret(veriler) fonksiyonunda somut adapter'ı dışarıda oluştur."
+    ]
+  },
+  "task": {
+    "title": "RaporServisi'ni gevşek bağlı hâle getir",
+    "instructions": [
+      "RaporServisi içindeki DosyaKaynak() üretimini kaldır.",
+      "Constructor'dan kaynak nesnesi kabul et.",
+      "rapor() metodunu self.kaynak.oku() üzerinden çalıştır.",
+      "rapor_uret(veriler) fonksiyonunu composition root olarak bırak."
+    ],
+    "requirements": [
+      "Service katmanı somut adapter oluşturmamalı.",
+      "Bağımlılık constructor injection ile gelmeli.",
+      "Boş ve farklı veri kümeleri gizli testlerden geçmeli."
+    ],
+    "sampleOutput": "{\"kayit_sayisi\": 2, \"toplam\": 30}",
+    "stdinEnabled": false,
+    "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+    "defaultStdin": ""
+  },
+  "editor": {
+    "filename": "main.py",
+    "entrypoint": "main.py",
+    "files": [
+      {
+        "path": "main.py",
+        "starterCode": "from adapter import DosyaKaynak\nfrom service import RaporServisi\n\n\ndef rapor_uret(veriler):\n    return RaporServisi(DosyaKaynak(veriler)).rapor()\n\n\nif __name__ == \"__main__\":\n    print(rapor_uret([10, 20]))\n"
+      },
+      {
+        "path": "adapter.py",
+        "starterCode": "class DosyaKaynak:\n    def __init__(self, veriler):\n        self._veriler = list(veriler)\n\n    def oku(self):\n        return list(self._veriler)\n"
+      },
+      {
+        "path": "service.py",
+        "starterCode": "from adapter import DosyaKaynak\n\n\nclass RaporServisi:\n    def __init__(self, kaynak):\n        # HATA: dışarıdan gelen kaynak yerine somut adapter oluşturuluyor.\n        self.kaynak = DosyaKaynak([])\n\n    def rapor(self):\n        veriler = self.kaynak.oku()\n        return {\"kayit_sayisi\": len(veriler), \"toplam\": sum(veriler)}\n"
+      }
+    ],
+    "starterCode": "from adapter import DosyaKaynak\nfrom service import RaporServisi\n\n\ndef rapor_uret(veriler):\n    return RaporServisi(DosyaKaynak(veriler)).rapor()\n"
+  },
+  "hints": [
+    {"title": "Tek satırlık çekirdek düzeltme", "body": "self.kaynak = kaynak yazınca servis dışarıdan verilen adapter ile çalışır."}
+  ],
+  "validation": {
+    "id": "advanced.arch.debug-hardcoded-dependency",
+    "title": "RaporServisi'ni gevşek bağlı hâle getir",
+    "xpReward": 140,
+    "timeoutMs": 7000,
+    "checks": [
+      {"id": "injected-source", "kind": "file_content_regex", "path": "service.py", "pattern": "self\\.kaynak\\s*=\\s*kaynak", "flags": "m", "label": "Kaynak bağımlılığı enjekte edildi", "visibility": "visible"},
+      {"id": "service-uses-source", "kind": "file_content_regex", "path": "service.py", "pattern": "veriler\\s*=\\s*self\\.kaynak\\.oku\\(\\)", "flags": "m", "label": "Service yalnız enjekte edilen kaynağı kullanıyor", "visibility": "visible"},
+      {
+        "id": "report-cases",
+        "kind": "function_cases",
+        "name": "rapor_uret",
+        "module": "main",
+        "cases": [
+          {"args": [[10, 20]], "expected": {"kayit_sayisi": 2, "toplam": 30}},
+          {"args": [[5, -2, 7]], "expected": {"kayit_sayisi": 3, "toplam": 10}},
+          {"args": [[]], "expected": {"kayit_sayisi": 0, "toplam": 0}}
+        ],
+        "label": "Gizli gevşek bağlılık senaryoları",
+        "visibility": "hidden"
+      }
+    ]
+  }
+}
