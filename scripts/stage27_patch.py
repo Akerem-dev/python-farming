@@ -1,18 +1,22 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[1]
 
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise SystemExit(message)
+
+
 # 1) TaskCheck union
 path = root / "src/features/learning/taskValidationTypes.ts"
 text = path.read_text(encoding="utf-8")
-marker = '''  | (TaskCheckBase & {
-      kind: "file_exists";
-      path: string;
-    })'''
-insert = '''  | (TaskCheckBase & {
+if 'kind: "async_programming"' not in text:
+    async_union = '''  | (TaskCheckBase & {
       kind: "async_programming";
       requiredFiles: string[];
       asyncFunctions?: Array<{
@@ -37,53 +41,54 @@ insert = '''  | (TaskCheckBase & {
         observeArgIndex?: number;
       }>;
     })
-'''+marker
-if 'kind: "async_programming"' not in text:
-    if marker not in text:
-        raise SystemExit("taskValidationTypes marker not found")
-    text = text.replace(marker, insert, 1)
+'''
+    needle = '  | (TaskCheckBase & {\n      kind: "file_exists";'
+    require(needle in text, "taskValidationTypes insertion point not found")
+    text = text.replace(needle, async_union + needle, 1)
     path.write_text(text, encoding="utf-8")
+    print("patched taskValidationTypes.ts")
 
-# 2) Store import, predicate and dispatch
+# 2) Store import
 path = root / "src/features/learning/store/taskValidationStore.ts"
 text = path.read_text(encoding="utf-8")
-import_marker = 'import { validateAdvancedPatternTask } from "../services/advancedPatternTaskValidationService";\n'
 async_import = 'import { validateAsyncProgrammingTask } from "../services/asyncProgrammingTaskValidationService";\n'
 if async_import not in text:
-    if import_marker not in text:
-        raise SystemExit("store import marker not found")
-    text = text.replace(import_marker, import_marker + async_import, 1)
+    needle = 'import { validateAdvancedPatternTask } from "../services/advancedPatternTaskValidationService";\n'
+    require(needle in text, "store import insertion point not found")
+    text = text.replace(needle, needle + async_import, 1)
 
-predicate_marker = '''function requiresAdvancedPatternValidation(spec: TaskValidationSpec) {
-  return spec.checks.some((check) => check.kind === "advanced_patterns");
-}
-'''
-predicate = '''function requiresAsyncProgrammingValidation(spec: TaskValidationSpec) {
+# 3) Store predicate
+if "function requiresAsyncProgrammingValidation" not in text:
+    predicate = '''function requiresAsyncProgrammingValidation(spec: TaskValidationSpec) {
   return spec.checks.some((check) => check.kind === "async_programming");
 }
 
 '''
-if "function requiresAsyncProgrammingValidation" not in text:
-    if predicate_marker not in text:
-        raise SystemExit("store predicate marker not found")
-    text = text.replace(predicate_marker, predicate + predicate_marker, 1)
+    needle = "function requiresAdvancedPatternValidation(spec: TaskValidationSpec)"
+    index = text.find(needle)
+    require(index >= 0, "store predicate insertion point not found")
+    text = text[:index] + predicate + text[index:]
 
-dispatch_marker = ''': requiresAdvancedPatternValidation(spec)
-                 ? await validateAdvancedPatternTask({ files, entrypoint, spec })'''
-dispatch = ''': requiresAsyncProgrammingValidation(spec)
+# 4) Store dispatch
+if "? await validateAsyncProgrammingTask" not in text:
+    pattern = re.compile(
+        r": requiresAdvancedPatternValidation\(spec\)\s*\n\s*\? await validateAdvancedPatternTask\(\{ files, entrypoint, spec \}\)"
+    )
+    replacement = ''': requiresAsyncProgrammingValidation(spec)
                  ? await validateAsyncProgrammingTask({ files, entrypoint, spec })
                : requiresAdvancedPatternValidation(spec)
                  ? await validateAdvancedPatternTask({ files, entrypoint, spec })'''
-if "? await validateAsyncProgrammingTask" not in text:
-    if dispatch_marker not in text:
-        raise SystemExit("store dispatch marker not found")
-    text = text.replace(dispatch_marker, dispatch, 1)
-path.write_text(text, encoding="utf-8")
+    text, count = pattern.subn(replacement, text, count=1)
+    require(count == 1, "store dispatch insertion point not found")
 
-# 3) Module package index
+path.write_text(text, encoding="utf-8")
+print("patched taskValidationStore.ts")
+
+# 5) Module package index
 path = root / "public/content/module-packages.json"
 data = json.loads(path.read_text(encoding="utf-8"))
 entry = "/content/modules/async-await.json"
 if entry not in data["files"]:
     data["files"].append(entry)
 path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+print("patched module-packages.json")
