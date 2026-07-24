@@ -20,6 +20,7 @@
     "/content/modules/standard-library.json",
     "/content/modules/intermediate-project.json",
     "/content/modules/decorators-context-managers.json",
-    "/content/modules/generators-coroutines.json"
+    "/content/modules/generators-coroutines.json",
+    "/content/modules/async-await.json"
   ]
 }
