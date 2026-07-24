@@ -17,8 +17,10 @@ type AdvancedPatternCheck = Extract<TaskCheck, { kind: "advanced_patterns" }>;
 
 const VALIDATOR_SOURCE = String.raw`
 import ast
+import builtins
 import contextlib
 import importlib
+import inspect
 import io
 import json
 import os
@@ -69,10 +71,6 @@ def item(check, passed, message):
     }
 
 
-def module_name_for(path):
-    return path[:-3].replace("/", ".")
-
-
 def find_function(tree, name):
     for node in ast.walk(tree):
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == name:
@@ -118,6 +116,24 @@ def returns_callable(node):
         for child in ast.walk(node)
     )
 
+
+def generator_counts(node):
+    yields = sum(isinstance(child, ast.Yield) for child in ast.walk(node))
+    yield_from = sum(isinstance(child, ast.YieldFrom) for child in ast.walk(node))
+    return yields + yield_from, yield_from
+
+
+def exception_type(name):
+    candidate = getattr(builtins, name, None)
+    if isinstance(candidate, type) and issubclass(candidate, BaseException):
+        return candidate
+    raise ValueError(f"Bilinmeyen exception sınıfı: {name}")
+
+
+def compare(actual, expected):
+    return normalize(actual) == normalize(expected)
+
+
 sources = {}
 trees = {}
 syntax_errors = {}
@@ -132,7 +148,6 @@ for path in file_paths:
     except (OSError, UnicodeError, SyntaxError) as error:
         syntax_errors[path] = str(error)
 
-namespace = {"__name__": "__main__"}
 stdout_buffer = io.StringIO()
 stderr_buffer = io.StringIO()
 runtime_error = None
@@ -140,7 +155,7 @@ if not syntax_errors:
     sys.path.insert(0, os.getcwd())
     try:
         with contextlib.redirect_stdout(stdout_buffer), contextlib.redirect_stderr(stderr_buffer):
-            namespace = runpy.run_path(entrypoint, run_name="__main__")
+            runpy.run_path(entrypoint, run_name="__main__")
     except BaseException:
         runtime_error = traceback.format_exc()
 
@@ -200,6 +215,72 @@ for check in spec.get("checks", []):
             if node is None or "contextmanager" not in names or not has_yield:
                 failures.append(f"{expected['name']} @contextmanager ve yield kullanmıyor")
 
+    for expected in check.get("generators", []):
+        path = expected.get("file", entrypoint)
+        tree = trees.get(path)
+        node = find_function(tree, expected["name"]) if tree else None
+        if node is None:
+            failures.append(f"{path} içinde {expected['name']} fonksiyonu bulunamadı")
+            continue
+        yield_count, yield_from_count = generator_counts(node)
+        minimum = int(expected.get("minYieldCount", 1))
+        if yield_count < minimum:
+            failures.append(f"{expected['name']} en az {minimum} yield noktası içermeli")
+        maximum = expected.get("maxYieldCount")
+        if maximum is not None and yield_count > int(maximum):
+            failures.append(f"{expected['name']} en fazla {maximum} yield noktası içermeli")
+        if expected.get("requireYieldFrom") and yield_from_count == 0:
+            failures.append(f"{expected['name']} yield from kullanmıyor")
+
+    for scenario in check.get("scenarios", []):
+        label = f"{scenario['module']}.{scenario['name']}"
+        try:
+            module = importlib.import_module(scenario["module"])
+            factory = getattr(module, scenario["name"])
+            generator = factory(*scenario.get("args", []), **scenario.get("kwargs", {}))
+            if not inspect.isgenerator(generator):
+                failures.append(f"{label} gerçek generator nesnesi döndürmüyor")
+                continue
+
+            for index, action in enumerate(scenario.get("actions", []), start=1):
+                kind = action["kind"]
+                try:
+                    if kind == "next":
+                        actual = next(generator)
+                    elif kind == "send":
+                        actual = generator.send(action.get("value"))
+                    elif kind == "throw":
+                        exc = exception_type(action["exception"])
+                        actual = generator.throw(exc(action.get("message", "")))
+                    elif kind == "close":
+                        actual = generator.close()
+                    elif kind == "collect":
+                        actual = list(generator)
+                    elif kind == "state":
+                        actual = inspect.getgeneratorstate(generator)
+                    else:
+                        raise ValueError(f"Desteklenmeyen generator aksiyonu: {kind}")
+                except BaseException as error:
+                    expected_exception = action.get("expectedException")
+                    if expected_exception and type(error).__name__ == expected_exception:
+                        pattern = action.get("messagePattern")
+                        if pattern and re.search(pattern, str(error)) is None:
+                            failures.append(f"{label} adım {index} exception mesajı eşleşmedi")
+                        continue
+                    failures.append(f"{label} adım {index} çalıştırılamadı: {type(error).__name__}: {error}")
+                    break
+
+                if "expectedException" in action:
+                    failures.append(f"{label} adım {index} {action['expectedException']} üretmeliydi")
+                    break
+                if "expected" in action and not compare(actual, action.get("expected")):
+                    failures.append(
+                        f"{label} adım {index} {normalize(actual)!r} döndürdü; beklenen {action.get('expected')!r}"
+                    )
+                    break
+        except BaseException as error:
+            failures.append(f"{label} senaryosu kurulamadı: {type(error).__name__}: {error}")
+
     for case in check.get("functionCases", []):
         try:
             module = importlib.import_module(case["module"])
@@ -221,11 +302,14 @@ for check in spec.get("checks", []):
             if re.search(pattern, content, re.MULTILINE | re.DOTALL) is None:
                 failures.append(f"{path} beklenen içeriği taşımıyor")
 
+    if runtime_error is not None:
+        failures.append("Giriş dosyası çalışırken yakalanmamış bir Python hatası oluştu")
+
     results.append(
         item(
             check,
             not failures,
-            "Decorator ve context manager sözleşmeleri doğru."
+            "İleri seviye davranış sözleşmeleri doğru."
             if not failures else "; ".join(failures),
         )
     )
@@ -256,7 +340,7 @@ export async function validateAdvancedPatternTask(input: {
     (candidate): candidate is AdvancedPatternCheck => candidate.kind === "advanced_patterns",
   );
   if (!check) {
-    throw new Error("Decorator ve context manager kalite kapısı bulunamadı.");
+    throw new Error("İleri seviye kalite kapısı bulunamadı.");
   }
 
   const validatorFile: RuntimeSourceFile = {
@@ -285,14 +369,12 @@ export async function validateAdvancedPatternTask(input: {
   });
 
   if (!response.payload) {
-    throw new Error("Decorator/context manager doğrulama motoru sonuç döndürmedi.");
+    throw new Error("İleri seviye doğrulama motoru sonuç döndürmedi.");
   }
   if (response.status !== "ok") {
     const diagnostic = response.diagnostics[0]?.message;
     const runtimeMessage = response.payload.stderr.trim();
-    throw new Error(
-      diagnostic || runtimeMessage || "İleri seviye doğrulayıcı çalıştırılamadı.",
-    );
+    throw new Error(diagnostic || runtimeMessage || "İleri seviye doğrulayıcı çalıştırılamadı.");
   }
   return parseTaskValidationOutput(response.payload.stdout);
 }
