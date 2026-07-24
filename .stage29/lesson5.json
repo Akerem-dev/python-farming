@@ -1,0 +1,73 @@
+{
+  "id": "advanced.arch.factory-adapter",
+  "moduleId": "architecture-patterns",
+  "order": 5,
+  "title": "Factory ve Adapter ile dış sistemi sar",
+  "summary": "Adapter dış sistemin biçimini uygulama sözleşmesine çevirir; Factory ise doğru adapter'ın oluşturulmasını tek noktada toplar.",
+  "levelLabel": "Advanced Patterns",
+  "mode": "code",
+  "task": {
+    "title": "Bildirim adapter factory'sini tamamla",
+    "instructions": [
+      "EmailAdapter ve SmsAdapter sınıfları gonder(alici, mesaj) metodunu sağlasın.",
+      "adapter_olustur(kanal) factory fonksiyonu email ve sms seçimlerini yapsın.",
+      "bildirim_raporu(kanal, alici, mesaj) adapter çıktısını normalize etsin.",
+      "Bilinmeyen kanalda ValueError üret."
+    ],
+    "requirements": [
+      "Factory seçimi tek fonksiyonda olmalı.",
+      "Adapter'lar dış biçimi ortak sözleşmeye çevirmeli.",
+      "Kanal karşılaştırması küçük harfe normalize edilmeli."
+    ],
+    "sampleOutput": "{\"kanal\": \"sms\", \"hedef\": \"555\", \"icerik\": \"Hazır\"}",
+    "stdinEnabled": false,
+    "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+    "defaultStdin": ""
+  },
+  "editor": {
+    "filename": "main.py",
+    "entrypoint": "main.py",
+    "files": [
+      {
+        "path": "main.py",
+        "starterCode": "from factory import adapter_olustur\n\n\ndef bildirim_raporu(kanal, alici, mesaj):\n    adapter = adapter_olustur(kanal)\n    return adapter.gonder(alici, mesaj)\n\n\nif __name__ == \"__main__\":\n    print(bildirim_raporu(\"sms\", \"555\", \"Hazır\"))\n"
+      },
+      {
+        "path": "adapters.py",
+        "starterCode": "class EmailAdapter:\n    def gonder(self, alici, mesaj):\n        return {\"kanal\": \"email\", \"hedef\": alici.lower(), \"icerik\": mesaj}\n\n\nclass SmsAdapter:\n    def gonder(self, alici, mesaj):\n        return {\"kanal\": \"sms\", \"hedef\": str(alici), \"icerik\": mesaj}\n"
+      },
+      {
+        "path": "factory.py",
+        "starterCode": "from adapters import EmailAdapter, SmsAdapter\n\n\ndef adapter_olustur(kanal):\n    # email ve sms için doğru adapter nesnesini döndür.\n    pass\n"
+      }
+    ],
+    "starterCode": "from factory import adapter_olustur\n\n\ndef bildirim_raporu(kanal, alici, mesaj):\n    adapter = adapter_olustur(kanal)\n    return adapter.gonder(alici, mesaj)\n"
+  },
+  "hints": [
+    {"title": "Factory", "body": "normalize = kanal.lower() ile seçim yap; bilinmeyen değerde ValueError üret."}
+  ],
+  "validation": {
+    "id": "advanced.arch.factory-adapter",
+    "title": "Bildirim adapter factory'sini tamamla",
+    "xpReward": 165,
+    "timeoutMs": 7000,
+    "checks": [
+      {"id": "factory-function", "kind": "function_definition", "name": "adapter_olustur", "minParams": 1, "maxParams": 1, "requireReturn": true, "file": "factory.py", "label": "Adapter factory fonksiyonu", "visibility": "visible"},
+      {"id": "email-import", "kind": "import_statement", "module": "adapters", "name": "EmailAdapter", "file": "factory.py", "label": "Email adapter importu", "visibility": "visible"},
+      {"id": "sms-import", "kind": "import_statement", "module": "adapters", "name": "SmsAdapter", "file": "factory.py", "label": "SMS adapter importu", "visibility": "visible"},
+      {"id": "factory-branches", "kind": "node_count", "nodeName": "If", "min": 2, "file": "factory.py", "label": "Factory seçim dalları", "visibility": "visible"},
+      {
+        "id": "adapter-cases",
+        "kind": "function_cases",
+        "name": "bildirim_raporu",
+        "module": "main",
+        "cases": [
+          {"args": ["sms", "555", "Hazır"], "expected": {"kanal": "sms", "hedef": "555", "icerik": "Hazır"}},
+          {"args": ["EMAIL", "ADA@EXAMPLE.COM", "Merhaba"], "expected": {"kanal": "email", "hedef": "ada@example.com", "icerik": "Merhaba"}}
+        ],
+        "label": "Gizli factory ve adapter senaryoları",
+        "visibility": "hidden"
+      }
+    ]
+  }
+}
