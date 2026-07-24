@@ -1,0 +1,33 @@
+name: Stage 26 Patch
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.head_ref == 'stage/26-advanced-asyncio'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/stage26_patch.py
+      - name: Commit generated product changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/content/module-packages.json src/features/learning/services/advancedPatternTaskValidationService.ts src/features/learning/services/asyncioTaskValidationService.ts
+          if git diff --cached --quiet; then
+            echo "No patch changes"
+          else
+            git commit -m "feat: integrate asyncio validation pipeline"
+            git push origin HEAD:${{ github.head_ref }}
+          fi
