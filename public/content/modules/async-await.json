@@ -1,0 +1,719 @@
+{
+  "moduleId": "async-await",
+  "lessons": [
+    {
+      "id": "advanced.async.first-await",
+      "moduleId": "async-await",
+      "order": 1,
+      "title": "İlk async fonksiyonunu bekle",
+      "summary": "async def ve await kullanarak event loop’u bloke etmeden gecikmeli bir sonuç üret.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Gecikmeli mesajı async olarak döndür",
+        "instructions": [
+          "mesaj_getir(metin, gecikme) async fonksiyonunu tanımla.",
+          "asyncio.sleep() çağrısını await et.",
+          "Metni büyük harfe çevirip döndür."
+        ],
+        "requirements": [
+          "Fonksiyon async def olmalı.",
+          "En az bir await kullanılmalı.",
+          "time.sleep() kullanılmamalı."
+        ],
+        "sampleOutput": "PYTHON FARMING",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def mesaj_getir(metin, gecikme=0.01):\n    # Event loop'u bloke etmeden bekle\n    pass\n\n\nasync def main():\n    print(await mesaj_getir(\"Python Farming\"))\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "await noktası",
+          "body": "asyncio.sleep() bir coroutine döndürür; sonucu beklemek için await kullan."
+        },
+        {
+          "title": "Bloke etme",
+          "body": "Async görevlerde time.sleep() event loop'u durdurur."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.first-await",
+        "title": "Gecikmeli mesajı async olarak döndür",
+        "xpReward": 95,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Async fonksiyon ve gizli mesaj senaryoları",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "mesaj_getir",
+                "file": "main.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.sleep"
+                ],
+                "disallowCalls": [
+                  "time.sleep"
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "mesaj_getir",
+                "args": [
+                  "merhaba",
+                  0
+                ],
+                "action": "call",
+                "expected": "MERHABA"
+              },
+              {
+                "module": "main",
+                "name": "mesaj_getir",
+                "args": [
+                  "Async",
+                  0
+                ],
+                "action": "call",
+                "expected": "ASYNC"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.execution-order",
+      "moduleId": "async-await",
+      "order": 2,
+      "title": "Await yürütme sırasını tahmin et",
+      "summary": "Bir coroutine’in await noktasında kontrolü event loop’a bıraktığını ve ana akışın hangi sırada ilerlediğini analiz et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Async programın çıktı sırasını seç",
+        "instructions": [
+          "main() içindeki print sırasını incele.",
+          "await sırasında bekle fonksiyonunun tamamlanmasını hesaba kat."
+        ],
+        "requirements": [
+          "Tek seçenek işaretlenmeli.",
+          "Coroutine çağrısı await edildiği için sonuç tamamlanmadan sonraki satıra geçilmez."
+        ],
+        "sampleOutput": "başla\nA\nbitti",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def bekle(etiket):\n    await asyncio.sleep(0)\n    print(etiket)\n\n\nasync def main():\n    print(\"başla\")\n    await bekle(\"A\")\n    print(\"bitti\")\n\n\nasyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "await tamamlanmayı bekler",
+          "body": "main, bekle coroutine'i bitmeden bitti satırına ilerlemez."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.execution-order",
+        "title": "Async programın çıktı sırasını seç",
+        "xpReward": 65,
+        "timeoutMs": 8000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "c"
+        }
+      },
+      "choice": {
+        "prompt": "Programın çıktı sırası nedir?",
+        "options": [
+          {
+            "id": "a",
+            "label": "başla / bitti / A"
+          },
+          {
+            "id": "b",
+            "label": "A / başla / bitti"
+          },
+          {
+            "id": "c",
+            "label": "başla / A / bitti"
+          },
+          {
+            "id": "d",
+            "label": "Coroutine nesnesi yazdırılır"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.gather-concurrency",
+      "moduleId": "async-await",
+      "order": 3,
+      "title": "gather ile görevleri eşzamanlı çalıştır",
+      "summary": "Bağımsız I/O görevlerini sırayla beklemek yerine asyncio.gather ile aynı event loop üzerinde birlikte ilerlet.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Üç veri görevini aynı anda tamamla",
+        "instructions": [
+          "veri_getir fonksiyonunu değiştirme.",
+          "toplu_getir içinde bütün coroutine’leri asyncio.gather ile bekle.",
+          "Sonuç sırasını giriş sırasıyla aynı tut."
+        ],
+        "requirements": [
+          "asyncio.gather kullanılmalı.",
+          "Sıralı tek tek await zinciri kullanılmamalı.",
+          "time.sleep yasak."
+        ],
+        "sampleOutput": "alpha\nbeta\ngamma",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def veri_getir(ad, gecikme):\n    await asyncio.sleep(gecikme)\n    return ad\n\n\nasync def toplu_getir(gorevler):\n    # Bütün veri_getir coroutine'lerini aynı anda bekle\n    pass\n\n\nasync def main():\n    gorevler = [(\"alpha\", 0.04), (\"beta\", 0.04), (\"gamma\", 0.04)]\n    print(*await toplu_getir(gorevler), sep=\"\\n\")\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "Coroutine listesi",
+          "body": "Her tuple için veri_getir(ad, gecikme) coroutine'i oluştur."
+        },
+        {
+          "title": "Sıra korunur",
+          "body": "gather sonuçları, görevler farklı zamanda bitse bile verilen awaitable sırasına göre döndürür."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.gather-concurrency",
+        "title": "Üç veri görevini aynı anda tamamla",
+        "xpReward": 130,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "gather ve gerçek eşzamanlı süre kontrolü",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "veri_getir",
+                "file": "main.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.sleep"
+                ],
+                "disallowCalls": [
+                  "time.sleep"
+                ]
+              },
+              {
+                "name": "toplu_getir",
+                "file": "main.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.gather"
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "toplu_getir",
+                "args": [
+                  [
+                    [
+                      "a",
+                      0.03
+                    ],
+                    [
+                      "b",
+                      0.03
+                    ],
+                    [
+                      "c",
+                      0.03
+                    ]
+                  ]
+                ],
+                "action": "call",
+                "expected": [
+                  "a",
+                  "b",
+                  "c"
+                ],
+                "maxDurationMs": 75
+              },
+              {
+                "module": "main",
+                "name": "toplu_getir",
+                "args": [
+                  []
+                ],
+                "action": "call",
+                "expected": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.missing-await-debugging",
+      "moduleId": "async-await",
+      "order": 4,
+      "title": "Hata Avcısı: unutulan await",
+      "summary": "Bir async fonksiyon çağrısının doğrudan sonuç değil coroutine nesnesi döndürdüğünü gerçek TypeError üzerinden düzelt.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "Coroutine nesnesini sonuç gibi kullanma hatasını düzelt",
+        "instructions": [
+          "Programı çalıştır ve TypeError mesajını incele.",
+          "hesapla() çağrısını doğru yerde await et.",
+          "main fonksiyonunun 43 döndürmesini ve yazdırmasını sağla."
+        ],
+        "requirements": [
+          "main async kalmalı.",
+          "hesapla await edilmeli.",
+          "Coroutine warning kalmamalı."
+        ],
+        "sampleOutput": "43",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def hesapla():\n    await asyncio.sleep(0)\n    return 42\n\n\nasync def main():\n    sonuc = hesapla()\n    print(sonuc + 1)\n    return sonuc + 1\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "Coroutine nesnesi",
+          "body": "async def ile tanımlanan fonksiyonu çağırmak henüz gövdeyi çalıştırmaz."
+        },
+        {
+          "title": "Sonuç alma",
+          "body": "sonuc = await hesapla() biçimi coroutine'i tamamlar."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.missing-await-debugging",
+        "title": "Coroutine nesnesini sonuç gibi kullanma hatasını düzelt",
+        "xpReward": 115,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Eksik await ve gerçek dönüş değeri",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "hesapla",
+                "file": "main.py",
+                "minAwaitCount": 1
+              },
+              {
+                "name": "main",
+                "file": "main.py",
+                "minAwaitCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "main",
+                "args": [],
+                "action": "call",
+                "expected": 43
+              }
+            ]
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "TypeError",
+        "symptom": "Coroutine nesnesi bir tam sayıyla toplanmaya çalışılıyor.",
+        "workflow": [
+          "Traceback’in son satırını oku.",
+          "hesapla() çağrısının coroutine döndürdüğünü fark et.",
+          "Çağrıyı await ederek gerçek sonucu al.",
+          "Programı yeniden çalıştır ve warning kalmadığını doğrula."
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.timeout-control",
+      "moduleId": "async-await",
+      "order": 5,
+      "title": "Timeout ile yavaş görevi sınırla",
+      "summary": "Bir coroutine’in sonsuza kadar beklemesini önlemek için asyncio.wait_for ile süre bütçesi uygula.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Yavaş işlemi zaman aşımıyla güvenli çağır",
+        "instructions": [
+          "yavas_islem coroutine’ini değiştirme.",
+          "guvenli_cagir içinde asyncio.wait_for kullan.",
+          "Timeout durumunda 'zaman aşımı' döndür."
+        ],
+        "requirements": [
+          "asyncio.wait_for zorunlu.",
+          "asyncio.TimeoutError yakalanmalı.",
+          "Hızlı görev gerçek sonucunu döndürmeli."
+        ],
+        "sampleOutput": "tamam\nzaman aşımı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def yavas_islem(gecikme):\n    await asyncio.sleep(gecikme)\n    return \"tamam\"\n\n\nasync def guvenli_cagir(gecikme, timeout=0.05):\n    # İşlemi verilen süre bütçesiyle sınırla\n    pass\n\n\nasync def main():\n    print(await guvenli_cagir(0))\n    print(await guvenli_cagir(0.2))\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "Süre bütçesi",
+          "body": "await asyncio.wait_for(yavas_islem(gecikme), timeout) kullan."
+        },
+        {
+          "title": "Exception türü",
+          "body": "Zaman aşımını asyncio.TimeoutError ile yönet."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.timeout-control",
+        "title": "Yavaş işlemi zaman aşımıyla güvenli çağır",
+        "xpReward": 135,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "wait_for ve timeout senaryoları",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "guvenli_cagir",
+                "file": "main.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.wait_for"
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "guvenli_cagir",
+                "args": [
+                  0,
+                  0.05
+                ],
+                "action": "call",
+                "expected": "tamam"
+              },
+              {
+                "module": "main",
+                "name": "guvenli_cagir",
+                "args": [
+                  0.1,
+                  0.01
+                ],
+                "action": "call",
+                "expected": "zaman aşımı",
+                "maxDurationMs": 80
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.cancellation-cleanup",
+      "moduleId": "async-await",
+      "order": 6,
+      "title": "Task iptalinde cleanup yap",
+      "summary": "İptal edilen görevde CancelledError’ı yutmadan temizleme adımını tamamla ve iptali üst katmana taşı.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "İptal edilen görevin temizliğini garanti et",
+        "instructions": [
+          "izlenen_islem başlangıç ve bitiş kayıtlarını korusun.",
+          "CancelledError durumunda 'temizlendi' ekle.",
+          "Temizlikten sonra hatayı yeniden raise et."
+        ],
+        "requirements": [
+          "asyncio.CancelledError açıkça ele alınmalı.",
+          "İptal yutulmamalı.",
+          "time.sleep kullanılmamalı."
+        ],
+        "sampleOutput": "başladı\ntemizlendi",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import asyncio\n\n\nasync def izlenen_islem(iz):\n    iz.append(\"başladı\")\n    await asyncio.sleep(1)\n    iz.append(\"bitti\")\n\n\nasync def main():\n    iz = []\n    task = asyncio.create_task(izlenen_islem(iz))\n    await asyncio.sleep(0)\n    task.cancel()\n    try:\n        await task\n    except asyncio.CancelledError:\n        pass\n    print(*iz, sep=\"\\n\")\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+      },
+      "hints": [
+        {
+          "title": "İptal de bir kontrol akışıdır",
+          "body": "CancelledError yakalandığında cleanup yap, sonra bare raise ile iptali sürdür."
+        },
+        {
+          "title": "finally alternatifi",
+          "body": "Kaynak temizliği için try/finally de kullanılabilir."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.cancellation-cleanup",
+        "title": "İptal edilen görevin temizliğini garanti et",
+        "xpReward": 160,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Cancellation propagation ve cleanup izi",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "izlenen_islem",
+                "file": "main.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.sleep"
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "izlenen_islem",
+                "args": [
+                  []
+                ],
+                "action": "cancel",
+                "cancelAfterMs": 0,
+                "expectedException": "CancelledError",
+                "observeArgIndex": 0,
+                "expected": [
+                  "başladı",
+                  "temizlendi"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "CancelledError",
+        "symptom": "Görev iptal edildiğinde cleanup izi oluşmuyor.",
+        "workflow": [
+          "Task’in iptal edildiği noktayı belirle.",
+          "izlenen_islem içinde CancelledError’ı yakala.",
+          "Temizlik kaydını ekle.",
+          "bare raise ile iptali üst katmana aktar."
+        ]
+      }
+    },
+    {
+      "id": "advanced.async.pipeline-final",
+      "moduleId": "async-await",
+      "order": 7,
+      "title": "Final proje: kontrollü async veri hattı",
+      "summary": "Semaphore, task, gather, timeout ve hata yönetimini çok dosyalı deterministik bir veri hattında birleştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Eşzamanlı veri işleme hattını tamamla",
+        "instructions": [
+          "tek_gorev içinde semaphore ile eşzamanlılık sınırı uygula.",
+          "veri_getir çağrısını wait_for ile sınırla ve ValueError/TimeoutError sonuçlarını rapora dönüştür.",
+          "rapor_uret içinde create_task ve gather kullan; başarılı, zaman aşımı ve hata kimliklerini ayrı listelerde döndür."
+        ],
+        "requirements": [
+          "asyncio.Semaphore ve async with zorunlu.",
+          "asyncio.create_task, gather ve wait_for kullanılmalı.",
+          "Çıktı sırası giriş sırasını korumalı.",
+          "Worker dosyası değiştirilmemeli."
+        ],
+        "sampleOutput": "{'basarili': [{'id': 'A', 'deger': 10}, {'id': 'D', 'deger': 40}], 'zaman_asimi': ['B'], 'hatalar': ['C']}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "import asyncio\nfrom pipeline import rapor_uret\n\n\nasync def main():\n    gorevler = [\n        {\"id\": \"A\", \"gecikme\": 0.01, \"deger\": 10},\n        {\"id\": \"B\", \"gecikme\": 0.20, \"deger\": 20},\n        {\"id\": \"C\", \"gecikme\": 0.01, \"deger\": 30, \"hata\": True},\n        {\"id\": \"D\", \"gecikme\": 0.01, \"deger\": 40},\n    ]\n    print(await rapor_uret(gorevler, limit=2, timeout=0.05))\n\n\nif __name__ == \"__main__\":\n    asyncio.run(main())\n"
+          },
+          {
+            "path": "worker.py",
+            "starterCode": "import asyncio\n\n\nasync def veri_getir(gorev):\n    await asyncio.sleep(gorev[\"gecikme\"])\n    if gorev.get(\"hata\"):\n        raise ValueError(f\"{gorev['id']} başarısız\")\n    return {\"id\": gorev[\"id\"], \"deger\": gorev[\"deger\"]}\n",
+            "readOnly": true
+          },
+          {
+            "path": "pipeline.py",
+            "starterCode": "import asyncio\nfrom worker import veri_getir\n\n\nasync def tek_gorev(gorev, semaphore, timeout):\n    # Semaphore içinde timeout ve hata yönetimi uygula\n    pass\n\n\nasync def rapor_uret(gorevler, limit=2, timeout=0.05):\n    # Task'leri oluştur, gather ile bekle ve raporu üret\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Sınırlı eşzamanlılık",
+          "body": "semaphore = asyncio.Semaphore(limit) oluştur ve tek_gorev içinde async with semaphore kullan."
+        },
+        {
+          "title": "Sonuç sözleşmesi",
+          "body": "Her tek_gorev sonucu durum alanı taşıyabilir; rapor_uret bu sonuçları üç listeye ayırır."
+        }
+      ],
+      "validation": {
+        "id": "advanced.async.pipeline-final",
+        "title": "Eşzamanlı veri işleme hattını tamamla",
+        "xpReward": 220,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "async-contract",
+            "kind": "async_programming",
+            "requiredFiles": [
+              "main.py",
+              "worker.py",
+              "pipeline.py"
+            ],
+            "label": "Semaphore, task, timeout ve gizli pipeline senaryoları",
+            "visibility": "visible",
+            "asyncFunctions": [
+              {
+                "name": "tek_gorev",
+                "file": "pipeline.py",
+                "minAwaitCount": 1,
+                "minAsyncWithCount": 1,
+                "requiredCalls": [
+                  "asyncio.wait_for"
+                ]
+              },
+              {
+                "name": "rapor_uret",
+                "file": "pipeline.py",
+                "minAwaitCount": 1,
+                "requiredCalls": [
+                  "asyncio.Semaphore",
+                  "asyncio.create_task",
+                  "asyncio.gather"
+                ],
+                "disallowCalls": [
+                  "time.sleep"
+                ]
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "pipeline",
+                "name": "rapor_uret",
+                "args": [
+                  [
+                    {
+                      "id": "A",
+                      "gecikme": 0,
+                      "deger": 10
+                    },
+                    {
+                      "id": "B",
+                      "gecikme": 0.08,
+                      "deger": 20
+                    },
+                    {
+                      "id": "C",
+                      "gecikme": 0,
+                      "deger": 30,
+                      "hata": true
+                    },
+                    {
+                      "id": "D",
+                      "gecikme": 0,
+                      "deger": 40
+                    }
+                  ],
+                  2,
+                  0.02
+                ],
+                "action": "call",
+                "expected": {
+                  "basarili": [
+                    {
+                      "id": "A",
+                      "deger": 10
+                    },
+                    {
+                      "id": "D",
+                      "deger": 40
+                    }
+                  ],
+                  "zaman_asimi": [
+                    "B"
+                  ],
+                  "hatalar": [
+                    "C"
+                  ]
+                },
+                "maxDurationMs": 120
+              },
+              {
+                "module": "pipeline",
+                "name": "rapor_uret",
+                "args": [
+                  [],
+                  3,
+                  0.02
+                ],
+                "action": "call",
+                "expected": {
+                  "basarili": [],
+                  "zaman_asimi": [],
+                  "hatalar": []
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
