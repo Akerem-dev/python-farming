@@ -19,6 +19,7 @@
     "/content/modules/typing-dataclasses.json",
     "/content/modules/standard-library.json",
     "/content/modules/intermediate-project.json",
-    "/content/modules/decorators-context-managers.json"
+    "/content/modules/decorators-context-managers.json",
+    "/content/modules/generators-coroutines.json"
   ]
 }

@@ -1,0 +1,830 @@
+{
+  "moduleId": "generators-coroutines",
+  "lessons": [
+    {
+      "id": "advanced.generators.lazy-range",
+      "moduleId": "generators-coroutines",
+      "order": 1,
+      "title": "İlk lazy generator’ını yaz",
+      "summary": "yield kullanarak değerleri tek seferde listeye doldurmadan, ihtiyaç oldukça üret.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Belirli aralıktaki çift sayıları lazy üret",
+        "instructions": [
+          "cift_sayilar(baslangic, bitis) generator fonksiyonunu tanımla.",
+          "Aralıktaki çift sayıları yield ile sırayla üret.",
+          "Liste oluşturup döndürme; fonksiyon gerçek generator olmalı."
+        ],
+        "requirements": [
+          "En az bir yield kullanılmalı.",
+          "return listesi kullanılmamalı.",
+          "Başlangıç ve bitiş dahil davranışı korunmalı."
+        ],
+        "sampleOutput": "2\n4\n6",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def cift_sayilar(baslangic, bitis):\n    # Sayıları tek tek yield et\n    pass\n\n\nfor sayi in cift_sayilar(1, 6):\n    print(sayi)"
+      },
+      "hints": [
+        {
+          "title": "Generator gövdesi",
+          "body": "Döngü içinde koşulu sağlayan değeri yield et."
+        },
+        {
+          "title": "Lazy davranış",
+          "body": "Sonuç listesi oluşturmak yerine her değeri üretildiği anda gönder."
+        }
+      ],
+      "validation": {
+        "id": "advanced.generators.lazy-range",
+        "title": "Belirli aralıktaki çift sayıları lazy üret",
+        "xpReward": 85,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Gerçek generator ve gizli aralıklar",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "cift_sayilar",
+                "file": "main.py",
+                "minYieldCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "cift_sayilar",
+                "args": [
+                  1,
+                  6
+                ],
+                "actions": [
+                  {
+                    "kind": "collect",
+                    "expected": [
+                      2,
+                      4,
+                      6
+                    ]
+                  }
+                ]
+              },
+              {
+                "module": "main",
+                "name": "cift_sayilar",
+                "args": [
+                  7,
+                  7
+                ],
+                "actions": [
+                  {
+                    "kind": "collect",
+                    "expected": []
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.generators.exhaustion-prediction",
+      "moduleId": "generators-coroutines",
+      "order": 2,
+      "title": "Generator tükenmesini tahmin et",
+      "summary": "Bir generator nesnesinin tek kullanımlık akış olduğunu ve ikinci tüketimde boş kaldığını analiz et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Tek kullanımlık generator çıktısını tahmin et",
+        "instructions": [
+          "İlk list() çağrısının sonucunu belirle.",
+          "Aynı generator üzerindeki ikinci list() çağrısının sonucunu belirle."
+        ],
+        "requirements": [
+          "Tek bir seçenek işaretlenmeli.",
+          "Yeni generator oluşturulmadığına dikkat edilmeli."
+        ],
+        "sampleOutput": "[1, 4, 9]\n[]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def kareler(sayilar):\n    for sayi in sayilar:\n        yield sayi ** 2\n\nakis = kareler([1, 2, 3])\nprint(list(akis))\nprint(list(akis))"
+      },
+      "hints": [
+        {
+          "title": "Akış durumu",
+          "body": "list() generator’ı sonuna kadar tüketir."
+        },
+        {
+          "title": "Tekrar kullanım",
+          "body": "Tükenen generator başa dönmez."
+        }
+      ],
+      "validation": {
+        "id": "advanced.generators.exhaustion-prediction",
+        "title": "Tek kullanımlık generator çıktısını tahmin et",
+        "xpReward": 60,
+        "timeoutMs": 6000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "b"
+        }
+      },
+      "choice": {
+        "prompt": "Programın iki çıktı satırı nedir?",
+        "options": [
+          {
+            "id": "a",
+            "label": "[1, 4, 9] / [1, 4, 9]"
+          },
+          {
+            "id": "b",
+            "label": "[1, 4, 9] / []"
+          },
+          {
+            "id": "c",
+            "label": "[] / [1, 4, 9]"
+          },
+          {
+            "id": "d",
+            "label": "StopIteration hatası"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.generators.yield-from",
+      "moduleId": "generators-coroutines",
+      "order": 3,
+      "title": "yield from ile akışları birleştir",
+      "summary": "İç içe iterasyonları manuel döngüler yerine generator delegation ile sadeleştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Grupları yield from ile düzleştir",
+        "instructions": [
+          "duzlestir(gruplar) generator fonksiyonunu tamamla.",
+          "Her alt grubun elemanlarını yield from ile aktar.",
+          "Boş alt gruplarda hata üretme."
+        ],
+        "requirements": [
+          "yield from zorunlu.",
+          "İç içe sonuç listesi oluşturulmamalı.",
+          "Farklı iterable türleri desteklenmeli."
+        ],
+        "sampleOutput": "Python\nFarming\nİleri",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def duzlestir(gruplar):\n    for grup in gruplar:\n        # grup elemanlarını delegation ile aktar\n        pass\n\n\nprint(*duzlestir([[\"Python\"], [\"Farming\", \"İleri\"]]), sep=\"\\n\")"
+      },
+      "hints": [
+        {
+          "title": "Delegation",
+          "body": "Her grup için yield from grup yaz."
+        },
+        {
+          "title": "Boş iterable",
+          "body": "yield from boş iterable üzerinde doğal olarak hiçbir değer üretmez."
+        }
+      ],
+      "validation": {
+        "id": "advanced.generators.yield-from",
+        "title": "Grupları yield from ile düzleştir",
+        "xpReward": 110,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "yield from ve gizli iterable senaryoları",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "duzlestir",
+                "file": "main.py",
+                "minYieldCount": 1,
+                "requireYieldFrom": true
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "duzlestir",
+                "args": [
+                  [
+                    [
+                      1,
+                      2
+                    ],
+                    [],
+                    [
+                      3
+                    ]
+                  ]
+                ],
+                "actions": [
+                  {
+                    "kind": "collect",
+                    "expected": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                ]
+              },
+              {
+                "module": "main",
+                "name": "duzlestir",
+                "args": [
+                  [
+                    [
+                      "a"
+                    ],
+                    [
+                      "b",
+                      "c"
+                    ]
+                  ]
+                ],
+                "actions": [
+                  {
+                    "kind": "collect",
+                    "expected": [
+                      "a",
+                      "b",
+                      "c"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.coroutines.prime-debugging",
+      "moduleId": "generators-coroutines",
+      "order": 4,
+      "title": "Hata Avcısı: coroutine’i hazırlamadan send",
+      "summary": "Yeni oluşturulan generator’a ilk değer gönderilmeden önce neden next() veya send(None) gerektiğini düzelt.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "Coroutine priming hatasını düzelt",
+        "instructions": [
+          "Programı çalıştır ve TypeError mesajını incele.",
+          "toplayici coroutine’ini ilk send öncesinde hazırla.",
+          "5 ve 7 değerlerinden sonra güncel toplamları koru."
+        ],
+        "requirements": [
+          "Generator yapısı korunmalı.",
+          "İlk gerçek veri send edilmeden önce priming yapılmalı.",
+          "Toplamlar 5 ve 12 olmalı."
+        ],
+        "sampleOutput": "5\n12",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def toplayici():\n    toplam = 0\n    while True:\n        deger = yield toplam\n        toplam += deger\n\n\nakis = toplayici()\nprint(akis.send(5))\nprint(akis.send(7))"
+      },
+      "hints": [
+        {
+          "title": "İlk durak",
+          "body": "Generator ilk yield noktasına kadar ilerletilmelidir."
+        },
+        {
+          "title": "Priming",
+          "body": "İlk gerçek send çağrısından önce next(akis) kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.coroutines.prime-debugging",
+        "title": "Coroutine priming hatasını düzelt",
+        "xpReward": 105,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Priming ve send yaşam döngüsü",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "toplayici",
+                "file": "main.py",
+                "minYieldCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "toplayici",
+                "args": [],
+                "actions": [
+                  {
+                    "kind": "next",
+                    "expected": 0
+                  },
+                  {
+                    "kind": "send",
+                    "value": 5,
+                    "expected": 5
+                  },
+                  {
+                    "kind": "send",
+                    "value": 7,
+                    "expected": 12
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "TypeError",
+        "symptom": "Yeni generator nesnesine sıfırdan farklı bir değer ilk işlem olarak gönderiliyor.",
+        "workflow": [
+          "Programı çalıştır ve TypeError mesajını gör.",
+          "Generator’ı next() ile ilk yield noktasına ilerlet.",
+          "Gerçek değerleri send() ile gönder.",
+          "Ara toplamların 5 ve 12 olduğunu doğrula."
+        ]
+      }
+    },
+    {
+      "id": "advanced.coroutines.accumulator",
+      "moduleId": "generators-coroutines",
+      "order": 5,
+      "title": "send ile durum tutan coroutine",
+      "summary": "Coroutine içine gönderilen değerlerle çalışan, her adımda güncel ölçümü geri üreten çift yönlü akış kur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Ortalama hesaplayan coroutine oluştur",
+        "instructions": [
+          "hareketli_ortalama() generator fonksiyonunu yaz.",
+          "İlk next() çağrısında 0 döndür.",
+          "Her send(deger) sonrasında bütün değerlerin ortalamasını döndür.",
+          "Durumu generator içinde tut."
+        ],
+        "requirements": [
+          "yield ile değer alınıp sonuç gönderilmeli.",
+          "Global değişken kullanılmamalı.",
+          "Farklı sayı dizileri doğru çalışmalı."
+        ],
+        "sampleOutput": "10.0\n15.0\n20.0",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def hareketli_ortalama():\n    # toplam ve adet durumunu generator içinde tut\n    pass\n\n\nakis = hareketli_ortalama()\nnext(akis)\nprint(akis.send(10))\nprint(akis.send(20))\nprint(akis.send(30))"
+      },
+      "hints": [
+        {
+          "title": "İlk yield",
+          "body": "İlk durak için deger = yield 0 kullanılabilir."
+        },
+        {
+          "title": "Sonsuz coroutine",
+          "body": "while True içinde toplam ve adet değerlerini güncelle."
+        }
+      ],
+      "validation": {
+        "id": "advanced.coroutines.accumulator",
+        "title": "Ortalama hesaplayan coroutine oluştur",
+        "xpReward": 125,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "Çift yönlü coroutine ve gizli ortalamalar",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "hareketli_ortalama",
+                "file": "main.py",
+                "minYieldCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "hareketli_ortalama",
+                "args": [],
+                "actions": [
+                  {
+                    "kind": "next",
+                    "expected": 0
+                  },
+                  {
+                    "kind": "send",
+                    "value": 10,
+                    "expected": 10
+                  },
+                  {
+                    "kind": "send",
+                    "value": 20,
+                    "expected": 15
+                  },
+                  {
+                    "kind": "send",
+                    "value": 30,
+                    "expected": 20
+                  }
+                ]
+              },
+              {
+                "module": "main",
+                "name": "hareketli_ortalama",
+                "args": [],
+                "actions": [
+                  {
+                    "kind": "next",
+                    "expected": 0
+                  },
+                  {
+                    "kind": "send",
+                    "value": -5,
+                    "expected": -5
+                  },
+                  {
+                    "kind": "send",
+                    "value": 5,
+                    "expected": 0
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.coroutines.throw-close",
+      "moduleId": "generators-coroutines",
+      "order": 6,
+      "title": "throw ve close ile yaşam döngüsü",
+      "summary": "Coroutine’e dışarıdan hata gönder, kontrollü biçimde devam et ve close sonrası cleanup davranışını garanti et.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Kontrollü sayaç coroutine’ini tamamla",
+        "instructions": [
+          "sayac() generator fonksiyonunu tamamla.",
+          "ValueError throw edildiğinde sayacı sıfırla ve yeni değeri yield et.",
+          "GeneratorExit sırasında cleanup satırını yazdır ve hatayı yeniden yükselt.",
+          "Normal send değerlerini sayaca ekle."
+        ],
+        "requirements": [
+          "throw(ValueError) kontrollü yakalanmalı.",
+          "GeneratorExit yutulmamalı.",
+          "close() sonrası generator kapalı olmalı."
+        ],
+        "sampleOutput": "0\n5\n0\nKapatıldı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def sayac():\n    toplam = 0\n    try:\n        while True:\n            try:\n                deger = yield toplam\n                toplam += deger\n            except ValueError:\n                # sayacı sıfırla\n                pass\n    except GeneratorExit:\n        print(\"Kapatıldı\")\n        # kapanışı tamamla\n\n\nakis = sayac()\nprint(next(akis))\nprint(akis.send(5))\nprint(akis.throw(ValueError(\"sıfırla\")))\nakis.close()"
+      },
+      "hints": [
+        {
+          "title": "Dış hata",
+          "body": "İç try/except ValueError bloğunda toplamı sıfıra çek."
+        },
+        {
+          "title": "Kapanış",
+          "body": "GeneratorExit yakalandıktan sonra bare raise ile kapanışı sürdür."
+        }
+      ],
+      "validation": {
+        "id": "advanced.coroutines.throw-close",
+        "title": "Kontrollü sayaç coroutine’ini tamamla",
+        "xpReward": 140,
+        "timeoutMs": 6000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py"
+            ],
+            "label": "throw, close ve kapalı generator durumu",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "sayac",
+                "file": "main.py",
+                "minYieldCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "main",
+                "name": "sayac",
+                "args": [],
+                "actions": [
+                  {
+                    "kind": "next",
+                    "expected": 0
+                  },
+                  {
+                    "kind": "send",
+                    "value": 8,
+                    "expected": 8
+                  },
+                  {
+                    "kind": "throw",
+                    "exception": "ValueError",
+                    "message": "sıfırla",
+                    "expected": 0
+                  },
+                  {
+                    "kind": "send",
+                    "value": 3,
+                    "expected": 3
+                  },
+                  {
+                    "kind": "close"
+                  },
+                  {
+                    "kind": "state",
+                    "expected": "GEN_CLOSED"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.generators.final-pipeline",
+      "moduleId": "generators-coroutines",
+      "order": 7,
+      "title": "Final proje: Lazy satış akışı",
+      "summary": "Kaynak generator, filtre/dönüşüm aşamaları ve coroutine sink’i çok dosyalı, tek geçişli bir veri hattında birleştir.",
+      "levelLabel": "Advanced Project Lab",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Tek geçişli satış işleme hattı kur",
+        "instructions": [
+          "source.py içinde satis_kaynagi ile satışları lazy üret.",
+          "pipeline.py içinde gecerli_satislar ve normalize_satis generator aşamalarını kur.",
+          "sink.py içinde rapor_toplayici coroutine’ini yaz.",
+          "service.py içinde akisi_isle ile pipeline’ı tek kez tüket, coroutine’e gönder ve raporu döndür.",
+          "İşlenen kayıtları output/akis.log dosyasına yaz."
+        ],
+        "requirements": [
+          "yield from kaynak aktarımında kullanılmalı.",
+          "Filtre ve dönüşüm aşamaları generator olmalı.",
+          "Sink send() ile veri almalı ve close() ile kapatılmalı.",
+          "Gizli satış listelerinde sonuç doğru olmalı."
+        ],
+        "sampleOutput": "Satış: 2\nToplam: 380\nKategoriler: Kırtasiye, Teknoloji",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "starterCode": "from service import akisi_isle\n\nsatislar = [\n    {\"tutar\": 250, \"kategori\": \"Teknoloji\", \"gecerli\": True},\n    {\"tutar\": 130, \"kategori\": \"Kırtasiye\", \"gecerli\": True},\n    {\"tutar\": 40, \"kategori\": \"İptal\", \"gecerli\": False},\n]\nrapor = akisi_isle(satislar, min_tutar=100, log_yolu=\"output/akis.log\")\nprint(f\"Satış: {rapor['satis_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import akisi_isle\n\nsatislar = [\n    {\"tutar\": 250, \"kategori\": \"Teknoloji\", \"gecerli\": True},\n    {\"tutar\": 130, \"kategori\": \"Kırtasiye\", \"gecerli\": True},\n    {\"tutar\": 40, \"kategori\": \"İptal\", \"gecerli\": False},\n]\nrapor = akisi_isle(satislar, min_tutar=100, log_yolu=\"output/akis.log\")\nprint(f\"Satış: {rapor['satis_sayisi']}\")\nprint(f\"Toplam: {rapor['toplam']}\")\nprint(f\"Kategoriler: {', '.join(rapor['kategoriler'])}\")",
+            "readOnly": true
+          },
+          {
+            "path": "source.py",
+            "starterCode": "def satis_kaynagi(satislar):\n    # satış iterable'ını yield from ile aktar\n    pass\n"
+          },
+          {
+            "path": "pipeline.py",
+            "starterCode": "def gecerli_satislar(satislar, min_tutar=0):\n    # geçerli ve eşik üstü satışları lazy üret\n    pass\n\n\ndef normalize_satis(satislar):\n    # tutar ve kategori alanlarını normalize ederek yield et\n    pass\n"
+          },
+          {
+            "path": "sink.py",
+            "starterCode": "def rapor_toplayici():\n    # send ile satış al, her adımda güncel raporu yield et\n    pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from pathlib import Path\nfrom source import satis_kaynagi\nfrom pipeline import gecerli_satislar, normalize_satis\nfrom sink import rapor_toplayici\n\n\ndef akisi_isle(satislar, min_tutar=0, log_yolu=\"output/akis.log\"):\n    # lazy pipeline'ı tek kez tüket ve sink coroutine'e gönder\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Kaynak",
+          "body": "satis_kaynagi içinde yield from satislar kullan."
+        },
+        {
+          "title": "Pipeline",
+          "body": "Her aşama bir önceki iterable’ı for ile tüketip uygun kaydı yield etmeli."
+        },
+        {
+          "title": "Sink",
+          "body": "İlk yield başlangıç raporunu verir; send edilen satışla sayaç, toplam ve kategori kümesini güncelle."
+        },
+        {
+          "title": "Servis",
+          "body": "Coroutine’i next() ile hazırla, her kaydı send et, sonunda close() çağır ve log klasörünü oluştur."
+        }
+      ],
+      "validation": {
+        "id": "advanced.generators.final-pipeline",
+        "title": "Tek geçişli satış işleme hattı kur",
+        "xpReward": 225,
+        "timeoutMs": 9000,
+        "checks": [
+          {
+            "id": "pipeline",
+            "kind": "advanced_patterns",
+            "requiredFiles": [
+              "main.py",
+              "source.py",
+              "pipeline.py",
+              "sink.py",
+              "service.py"
+            ],
+            "label": "Lazy pipeline, coroutine sink, gizli raporlar ve log",
+            "visibility": "visible",
+            "generators": [
+              {
+                "name": "satis_kaynagi",
+                "file": "source.py",
+                "minYieldCount": 1,
+                "requireYieldFrom": true
+              },
+              {
+                "name": "gecerli_satislar",
+                "file": "pipeline.py",
+                "minYieldCount": 1
+              },
+              {
+                "name": "normalize_satis",
+                "file": "pipeline.py",
+                "minYieldCount": 1
+              },
+              {
+                "name": "rapor_toplayici",
+                "file": "sink.py",
+                "minYieldCount": 1
+              }
+            ],
+            "scenarios": [
+              {
+                "module": "sink",
+                "name": "rapor_toplayici",
+                "args": [],
+                "actions": [
+                  {
+                    "kind": "next",
+                    "expected": {
+                      "satis_sayisi": 0,
+                      "toplam": 0,
+                      "kategoriler": []
+                    }
+                  },
+                  {
+                    "kind": "send",
+                    "value": {
+                      "tutar": 25,
+                      "kategori": "A"
+                    },
+                    "expected": {
+                      "satis_sayisi": 1,
+                      "toplam": 25,
+                      "kategoriler": [
+                        "A"
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "send",
+                    "value": {
+                      "tutar": 15,
+                      "kategori": "B"
+                    },
+                    "expected": {
+                      "satis_sayisi": 2,
+                      "toplam": 40,
+                      "kategoriler": [
+                        "A",
+                        "B"
+                      ]
+                    }
+                  },
+                  {
+                    "kind": "close"
+                  },
+                  {
+                    "kind": "state",
+                    "expected": "GEN_CLOSED"
+                  }
+                ]
+              }
+            ],
+            "functionCases": [
+              {
+                "module": "service",
+                "name": "akisi_isle",
+                "args": [
+                  [
+                    {
+                      "tutar": 10,
+                      "kategori": "A",
+                      "gecerli": true
+                    },
+                    {
+                      "tutar": 5,
+                      "kategori": "B",
+                      "gecerli": false
+                    },
+                    {
+                      "tutar": 30,
+                      "kategori": "C",
+                      "gecerli": true
+                    }
+                  ],
+                  10,
+                  "output/gizli1.log"
+                ],
+                "expected": {
+                  "satis_sayisi": 2,
+                  "toplam": 40,
+                  "kategoriler": [
+                    "A",
+                    "C"
+                  ]
+                }
+              },
+              {
+                "module": "service",
+                "name": "akisi_isle",
+                "args": [
+                  [],
+                  0,
+                  "output/gizli2.log"
+                ],
+                "expected": {
+                  "satis_sayisi": 0,
+                  "toplam": 0,
+                  "kategoriler": []
+                }
+              }
+            ],
+            "generatedFiles": [
+              {
+                "path": "output/akis.log",
+                "pattern": "Teknoloji.*Kırtasiye"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}
