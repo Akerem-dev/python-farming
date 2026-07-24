@@ -1,1 +1,501 @@
-PLACEHOLDER
+{
+  "moduleId": "architecture-patterns",
+  "lessons": [
+    {
+      "id": "advanced.arch.di",
+      "moduleId": "architecture-patterns",
+      "order": 1,
+      "title": "Dependency injection ile bağımlılığı dışarıdan al",
+      "summary": "Dependency injection ile bağımlılığı dışarıdan al",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Dependency injection ile bağımlılığı dışarıdan al",
+        "instructions": [
+          "Dependency injection ile bağımlılığı dışarıdan al"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Bildirimci:\n    def gonder(self, mesaj): return f\"Gönderildi: {mesaj}\"\nclass SiparisServisi:\n    def __init__(self, bildirimci): self.bildirimci = bildirimci\n    def tamamla(self, siparis_id): return self.bildirimci.gonder(f\"Sipariş {siparis_id} tamamlandı\")\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.di",
+        "title": "Dependency injection ile bağımlılığı dışarıdan al",
+        "xpReward": 110,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "c",
+            "kind": "class_definition",
+            "name": "SiparisServisi",
+            "methods": [
+              "__init__",
+              "tamamla"
+            ],
+            "label": "Servis sınıfı",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.strategy",
+      "moduleId": "architecture-patterns",
+      "order": 2,
+      "title": "Strategy seçiminin çıktısını tahmin et",
+      "summary": "Strategy seçiminin çıktısını tahmin et",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Strategy seçiminin çıktısını tahmin et",
+        "instructions": [
+          "Strategy seçiminin çıktısını tahmin et"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Standart:\n    def hesapla(self,t): return t\nclass Indirimli:\n    def hesapla(self,t): return t*0.8\nprint(Standart().hesapla(100))\nprint(Indirimli().hesapla(100))\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.strategy",
+        "title": "Strategy seçiminin çıktısını tahmin et",
+        "xpReward": 70,
+        "timeoutMs": 10000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      },
+      "choice": {
+        "prompt": "Çıktı nedir?",
+        "options": [
+          {
+            "id": "a",
+            "label": "100 / 80.0"
+          },
+          {
+            "id": "b",
+            "label": "100 / 100"
+          },
+          {
+            "id": "c",
+            "label": "80 / 100"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.factory",
+      "moduleId": "architecture-patterns",
+      "order": 3,
+      "title": "Factory ile doğru nesneyi üret",
+      "summary": "Factory ile doğru nesneyi üret",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Factory ile doğru nesneyi üret",
+        "instructions": [
+          "Factory ile doğru nesneyi üret"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Kart:\n    def komisyon(self,t): return t*0.03\nclass Havale:\n    def komisyon(self,t): return 0\ndef odeme_olustur(tur):\n    pass\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.factory",
+        "title": "Factory ile doğru nesneyi üret",
+        "xpReward": 125,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "f",
+            "kind": "function_definition",
+            "name": "odeme_olustur",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "label": "Factory fonksiyonu",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.coupling",
+      "moduleId": "architecture-patterns",
+      "order": 4,
+      "title": "Hata Avcısı: sıkı bağlılığı kır",
+      "summary": "Hata Avcısı: sıkı bağlılığı kır",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "Hata Avcısı: sıkı bağlılığı kır",
+        "instructions": [
+          "Hata Avcısı: sıkı bağlılığı kır"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class Repository:\n    def say(self): return 3\nclass RaporServisi:\n    def __init__(self):\n        self.repository = Repository()\n    def rapor(self): return {\"kayit\": self.repository.say()}\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.coupling",
+        "title": "Hata Avcısı: sıkı bağlılığı kır",
+        "xpReward": 135,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "c",
+            "kind": "class_definition",
+            "name": "RaporServisi",
+            "methods": [
+              "__init__",
+              "rapor"
+            ],
+            "label": "Rapor servisi",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.adapter",
+      "moduleId": "architecture-patterns",
+      "order": 5,
+      "title": "Adapter ile eski sistemi ortak arayüze bağla",
+      "summary": "Adapter ile eski sistemi ortak arayüze bağla",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Adapter ile eski sistemi ortak arayüze bağla",
+        "instructions": [
+          "Adapter ile eski sistemi ortak arayüze bağla"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class EskiSms:\n    def sms_yolla(self,telefon,metin): return f\"{telefon}:{metin}\"\nclass SmsAdapter:\n    def __init__(self,istemci,telefon): pass\n    def gonder(self,mesaj): pass\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.adapter",
+        "title": "Adapter ile eski sistemi ortak arayüze bağla",
+        "xpReward": 150,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "a",
+            "kind": "class_definition",
+            "name": "SmsAdapter",
+            "methods": [
+              "__init__",
+              "gonder"
+            ],
+            "label": "Adapter sınıfı",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.repository-service",
+      "moduleId": "architecture-patterns",
+      "order": 6,
+      "title": "Repository ve service layer'ı ayır",
+      "summary": "Repository ve service layer'ı ayır",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Repository ve service layer'ı ayır",
+        "instructions": [
+          "Repository ve service layer'ı ayır"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from service import UrunServisi\n",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import UrunServisi\n"
+          },
+          {
+            "path": "repository.py",
+            "starterCode": "class BellekUrunRepository:\n    def __init__(self): self._urunler={}\n    def kaydet(self,urun): pass\n    def getir(self,urun_id): pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "class UrunServisi:\n    def __init__(self,repository): self.repository=repository\n    def urun_ekle(self,urun): pass\n    def urun_getir(self,urun_id): pass\n"
+          }
+        ],
+        "entrypoint": "main.py"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.repository-service",
+        "title": "Repository ve service layer'ı ayır",
+        "xpReward": 170,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "r",
+            "kind": "class_definition",
+            "name": "BellekUrunRepository",
+            "methods": [
+              "kaydet",
+              "getir"
+            ],
+            "file": "repository.py",
+            "label": "Repository",
+            "visibility": "visible"
+          },
+          {
+            "id": "s",
+            "kind": "class_definition",
+            "name": "UrunServisi",
+            "methods": [
+              "urun_ekle",
+              "urun_getir"
+            ],
+            "file": "service.py",
+            "label": "Service",
+            "visibility": "visible"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.final",
+      "moduleId": "architecture-patterns",
+      "order": 7,
+      "title": "Final proje: Çok katmanlı katalog uygulaması",
+      "summary": "Final proje: Çok katmanlı katalog uygulaması",
+      "levelLabel": "Advanced Learning",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Final proje: Çok katmanlı katalog uygulaması",
+        "instructions": [
+          "Final proje: Çok katmanlı katalog uygulaması"
+        ],
+        "requirements": [
+          "Tasarım sözleşmesi korunmalı.",
+          "Gizli senaryolar geçmeli."
+        ],
+        "sampleOutput": "Görev çıktısı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from app import senaryo_calistir\n",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from app import senaryo_calistir\n"
+          },
+          {
+            "path": "domain.py",
+            "starterCode": "from dataclasses import dataclass\n@dataclass(frozen=True)\nclass Urun:\n    id:int\n    ad:str\n    fiyat:int\n"
+          },
+          {
+            "path": "ports.py",
+            "starterCode": "from typing import Protocol\nclass UrunRepository(Protocol):\n    def kaydet(self,urun): ...\n    def listele(self): ...\n"
+          },
+          {
+            "path": "adapters.py",
+            "starterCode": "class BellekRepository:\n    def __init__(self): self._urunler=[]\n    def kaydet(self,urun): pass\n    def listele(self): pass\n"
+          },
+          {
+            "path": "strategies.py",
+            "starterCode": "class StandartFiyat:\n    def uygula(self,fiyat): return fiyat\nclass IndirimliFiyat:\n    def uygula(self,fiyat): return int(fiyat*0.8)\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "class KatalogServisi:\n    def __init__(self,repository,fiyat_stratejisi): pass\n    def urun_ekle(self,urun): pass\n    def rapor(self): pass\n"
+          },
+          {
+            "path": "factory.py",
+            "starterCode": "def servis_olustur(indirimli=False):\n    pass\n"
+          },
+          {
+            "path": "app.py",
+            "starterCode": "def senaryo_calistir(urunler,indirimli=False):\n    pass\n"
+          }
+        ],
+        "entrypoint": "main.py"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.arch.final",
+        "title": "Final proje: Çok katmanlı katalog uygulaması",
+        "xpReward": 300,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "p",
+            "kind": "file_exists",
+            "path": "ports.py",
+            "label": "Port katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "s",
+            "kind": "class_definition",
+            "name": "KatalogServisi",
+            "methods": [
+              "__init__",
+              "urun_ekle",
+              "rapor"
+            ],
+            "file": "service.py",
+            "label": "Service",
+            "visibility": "visible"
+          },
+          {
+            "id": "f",
+            "kind": "function_definition",
+            "name": "servis_olustur",
+            "minParams": 0,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "factory.py",
+            "label": "Factory",
+            "visibility": "visible"
+          },
+          {
+            "id": "l",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "app.py",
+            "label": "Dönüşüm",
+            "visibility": "visible"
+          },
+          {
+            "id": "c",
+            "kind": "function_cases",
+            "name": "senaryo_calistir",
+            "module": "app",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Defter",
+                      "fiyat": 1000
+                    }
+                  ],
+                  false
+                ],
+                "expected": {
+                  "urun_sayisi": 1,
+                  "toplam_fiyat": 1000,
+                  "urunler": [
+                    "Defter"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Defter",
+                      "fiyat": 1000
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Kalem",
+                      "fiyat": 500
+                    }
+                  ],
+                  true
+                ],
+                "expected": {
+                  "urun_sayisi": 2,
+                  "toplam_fiyat": 1200,
+                  "urunler": [
+                    "Defter",
+                    "Kalem"
+                  ]
+                }
+              }
+            ],
+            "label": "Gizli senaryolar",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Ürün sözlükleri",
+        "targetShape": "Katmanlı servis raporu",
+        "rules": [
+          "Factory bağımlılıkları kurar.",
+          "Repository ayrıntısı service dışına sızmaz."
+        ],
+        "workflow": [
+          "Factory kurar.",
+          "Service işler.",
+          "Rapor döner."
+        ]
+      }
+    }
+  ]
+}
