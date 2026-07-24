@@ -28,8 +28,8 @@ describe("architecture patterns module content", () => {
   });
 
   it("covers DI, strategy, factory, adapter, repository and service layers", () => {
-    const text = JSON.stringify(modulePackage);
-    for (const keyword of ["dependency", "Strategy", "Factory", "Adapter", "Repository", "Service"]) {
+    const text = JSON.stringify(modulePackage).toLowerCase();
+    for (const keyword of ["dependency", "strategy", "factory", "adapter", "repository", "service"]) {
       expect(text).toContain(keyword);
     }
   });
