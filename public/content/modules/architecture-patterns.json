@@ -1,0 +1,1110 @@
+{
+  "moduleId": "architecture-patterns",
+  "lessons": [
+    {
+      "id": "advanced.arch.dependency-injection",
+      "moduleId": "architecture-patterns",
+      "order": 1,
+      "title": "Bağımlılığı dışarıdan enjekte et",
+      "summary": "Dependency injection, bir servisin kullandığı repository gibi bağımlılıkları kendi içinde üretmek yerine dışarıdan almasını sağlar.",
+      "levelLabel": "Advanced Architecture",
+      "mode": "code",
+      "task": {
+        "title": "UrunServisi'ni repository bağımlılığıyla kur",
+        "instructions": [
+          "BellekRepository sınıfını ürün sözlüklerini saklayacak biçimde tamamla.",
+          "UrunServisi constructor'ında hazır bir repository nesnesi kabul et.",
+          "listele() metodu repository sonucunu ürün adına göre sıralasın.",
+          "di_raporu(veriler) ürün adlarını döndürsün."
+        ],
+        "requirements": [
+          "UrunServisi kendi içinde BellekRepository oluşturmamalı.",
+          "Bağımlılık self.repository = repository biçiminde saklanmalı.",
+          "Aynı servis farklı veri kümeleriyle çalışabilmeli."
+        ],
+        "sampleOutput": "[\"Defter\", \"Kalem\"]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from repository import BellekRepository\nfrom service import UrunServisi\n\n\ndef di_raporu(veriler):\n    repository = BellekRepository(veriler)\n    servis = UrunServisi(repository)\n    return [urun[\"ad\"] for urun in servis.listele()]\n\n\nif __name__ == \"__main__\":\n    print(di_raporu([{\"id\": 2, \"ad\": \"Kalem\"}, {\"id\": 1, \"ad\": \"Defter\"}]))\n"
+          },
+          {
+            "path": "repository.py",
+            "starterCode": "class BellekRepository:\n    def __init__(self, veriler):\n        self._veriler = list(veriler)\n\n    def listele(self):\n        # Dışarıya bağımsız bir liste döndür.\n        pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "class UrunServisi:\n    def __init__(self, repository):\n        # Bağımlılığı dışarıdan al ve sakla.\n        pass\n\n    def listele(self):\n        # Repository sonucunu ürün adına göre sırala.\n        pass\n"
+          }
+        ],
+        "starterCode": "from repository import BellekRepository\nfrom service import UrunServisi\n\n\ndef di_raporu(veriler):\n    repository = BellekRepository(veriler)\n    servis = UrunServisi(repository)\n    return [urun[\"ad\"] for urun in servis.listele()]\n"
+      },
+      "hints": [
+        {
+          "title": "Injection noktası",
+          "body": "UrunServisi.__init__ içinde self.repository = repository yaz."
+        },
+        {
+          "title": "Kopya döndür",
+          "body": "Repository list(self._veriler) döndürürse dışarıdaki değişiklikler iç durumu bozmaz."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.dependency-injection",
+        "title": "UrunServisi'ni repository bağımlılığıyla kur",
+        "xpReward": 110,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "repository-file",
+            "kind": "file_exists",
+            "path": "repository.py",
+            "label": "Repository katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-file",
+            "kind": "file_exists",
+            "path": "service.py",
+            "label": "Service katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "injection-assignment",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\s*=\\s*repository",
+            "flags": "m",
+            "label": "Bağımlılık constructor içinde saklanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "repository-copy",
+            "kind": "file_content_regex",
+            "path": "repository.py",
+            "pattern": "return\\s+list\\(\\s*self\\._veriler\\s*\\)",
+            "flags": "m",
+            "label": "Repository bağımsız liste döndürüyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "di-cases",
+            "kind": "function_cases",
+            "name": "di_raporu",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 2,
+                      "ad": "Kalem"
+                    },
+                    {
+                      "id": 1,
+                      "ad": "Defter"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "Defter",
+                  "Kalem"
+                ]
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 3,
+                      "ad": "Zımba"
+                    },
+                    {
+                      "id": 1,
+                      "ad": "Ajanda"
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Silgi"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "Ajanda",
+                  "Silgi",
+                  "Zımba"
+                ]
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli dependency injection senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.strategy-prediction",
+      "moduleId": "architecture-patterns",
+      "order": 2,
+      "title": "Strategy seçimini tahmin et",
+      "summary": "Strategy deseni, değişebilen hesaplama davranışlarını ortak bir arayüz altında değiştirilebilir nesnelere ayırır.",
+      "levelLabel": "Architecture Practice",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Program hangi iki satırı yazdırır?",
+        "options": [
+          {
+            "id": "a",
+            "label": "900 / 800"
+          },
+          {
+            "id": "b",
+            "label": "1000 / 900"
+          },
+          {
+            "id": "c",
+            "label": "900 / 900"
+          },
+          {
+            "id": "d",
+            "label": "TypeError"
+          }
+        ]
+      },
+      "task": {
+        "title": "İndirim stratejilerinin sonucunu seç",
+        "instructions": [
+          "StandartIndirim ve PremiumIndirim uygulamalarını incele.",
+          "FiyatHesaplayici'nın strategy nesnesini constructor'dan aldığını takip et.",
+          "1000 kuruş için iki sonucu belirle."
+        ],
+        "requirements": [
+          "Standart strategy yüzde 10 indirim uygular.",
+          "Premium strategy yüzde 20 indirim uygular.",
+          "Hesaplayıcı strategy.indirimli() metodunu çağırır."
+        ],
+        "sampleOutput": "900 / 800",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class StandartIndirim:\n    def indirimli(self, tutar):\n        return tutar * 90 // 100\n\nclass PremiumIndirim:\n    def indirimli(self, tutar):\n        return tutar * 80 // 100\n\nclass FiyatHesaplayici:\n    def __init__(self, strategy):\n        self.strategy = strategy\n\n    def hesapla(self, tutar):\n        return self.strategy.indirimli(tutar)\n\nprint(FiyatHesaplayici(StandartIndirim()).hesapla(1000))\nprint(FiyatHesaplayici(PremiumIndirim()).hesapla(1000))\n"
+      },
+      "hints": [
+        {
+          "title": "Strategy değişir",
+          "body": "FiyatHesaplayici sınıfının kodu aynı kalır; yalnız verilen nesne değişir."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.strategy-prediction",
+        "title": "İndirim stratejilerinin sonucunu seç",
+        "xpReward": 70,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      }
+    },
+    {
+      "id": "advanced.arch.repository-protocol",
+      "moduleId": "architecture-patterns",
+      "order": 3,
+      "title": "Repository sözleşmesini Protocol ile tanımla",
+      "summary": "Repository veri kaynağını servis katmanından ayırır; Protocol ise kalıtım zorunluluğu olmadan beklenen metot sözleşmesini tanımlar.",
+      "levelLabel": "Advanced Typing",
+      "mode": "code-completion",
+      "task": {
+        "title": "UrunRepository Protocol sözleşmesini tamamla",
+        "instructions": [
+          "UrunRepository sınıfını runtime_checkable Protocol yap.",
+          "listele() metodunu list[dict[str, object]] dönüş tipiyle tanımla.",
+          "BellekRepository aynı metodu gerçek davranışla uygulasın.",
+          "repository_raporu(veriler) ürün adlarını alfabetik döndürsün."
+        ],
+        "requirements": [
+          "Protocol gerçek typing.Protocol tabanından türemeli.",
+          "@runtime_checkable kullanılmalı.",
+          "BellekRepository'nin Protocol'dan kalıtım alması zorunlu olmamalı."
+        ],
+        "sampleOutput": "[\"Ajanda\", \"Kalem\"]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from typing import Protocol, runtime_checkable\n\n\n@runtime_checkable\nclass UrunRepository(Protocol):\n    def listele(self) -> list[dict[str, object]]:\n        ...\n\n\nclass BellekRepository:\n    def __init__(self, veriler: list[dict[str, object]]):\n        self._veriler = list(veriler)\n\n    def listele(self) -> list[dict[str, object]]:\n        return list(self._veriler)\n\n\ndef repository_raporu(veriler: list[dict[str, object]]) -> list[str]:\n    repository: UrunRepository = BellekRepository(veriler)\n    return sorted(str(urun[\"ad\"]) for urun in repository.listele())\n\n\nif __name__ == \"__main__\":\n    print(repository_raporu([{\"ad\": \"Kalem\"}, {\"ad\": \"Ajanda\"}]))\n"
+      },
+      "hints": [
+        {
+          "title": "Yapısal uyum",
+          "body": "BellekRepository, UrunRepository'den kalıtım almadan aynı metodu sağladığı için sözleşmeye uyar."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.repository-protocol",
+        "title": "UrunRepository Protocol sözleşmesini tamamla",
+        "xpReward": 140,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "repo-protocol",
+            "kind": "protocol_definition",
+            "name": "UrunRepository",
+            "runtimeCheckable": true,
+            "methods": [
+              {
+                "name": "listele",
+                "parameters": [],
+                "returnAccepted": [
+                  "list[dict[str,object]]",
+                  "list[dict[str, object]]"
+                ]
+              }
+            ],
+            "label": "Repository Protocol sözleşmesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "repo-cases",
+            "kind": "function_cases",
+            "name": "repository_raporu",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "Kalem"
+                    },
+                    {
+                      "ad": "Ajanda"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "Ajanda",
+                  "Kalem"
+                ]
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "Zımba"
+                    },
+                    {
+                      "ad": "Defter"
+                    },
+                    {
+                      "ad": "Cetvel"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "Cetvel",
+                  "Defter",
+                  "Zımba"
+                ]
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli repository senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.debug-hardcoded-dependency",
+      "moduleId": "architecture-patterns",
+      "order": 4,
+      "title": "Hata Avcısı: sabit bağımlılığı ayır",
+      "summary": "Bir servisin somut adapter'ı kendi içinde oluşturması test edilebilirliği düşürür ve değişiklik maliyetini artırır.",
+      "levelLabel": "Architecture Debugging",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "Tight Coupling",
+        "symptom": "RaporServisi her zaman DosyaKaynak kullanıyor; testte sahte kaynak enjekte edilemiyor.",
+        "workflow": [
+          "RaporServisi constructor'ına kaynak parametresi ekle.",
+          "self.kaynak = kaynak ile bağımlılığı sakla.",
+          "rapor() içinde yalnız enjekte edilen kaynağı kullan.",
+          "rapor_uret(veriler) fonksiyonunda somut adapter'ı dışarıda oluştur."
+        ]
+      },
+      "task": {
+        "title": "RaporServisi'ni gevşek bağlı hâle getir",
+        "instructions": [
+          "RaporServisi içindeki DosyaKaynak() üretimini kaldır.",
+          "Constructor'dan kaynak nesnesi kabul et.",
+          "rapor() metodunu self.kaynak.oku() üzerinden çalıştır.",
+          "rapor_uret(veriler) fonksiyonunu composition root olarak bırak."
+        ],
+        "requirements": [
+          "Service katmanı somut adapter oluşturmamalı.",
+          "Bağımlılık constructor injection ile gelmeli.",
+          "Boş ve farklı veri kümeleri gizli testlerden geçmeli."
+        ],
+        "sampleOutput": "{\"kayit_sayisi\": 2, \"toplam\": 30}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from adapter import DosyaKaynak\nfrom service import RaporServisi\n\n\ndef rapor_uret(veriler):\n    return RaporServisi(DosyaKaynak(veriler)).rapor()\n\n\nif __name__ == \"__main__\":\n    print(rapor_uret([10, 20]))\n"
+          },
+          {
+            "path": "adapter.py",
+            "starterCode": "class DosyaKaynak:\n    def __init__(self, veriler):\n        self._veriler = list(veriler)\n\n    def oku(self):\n        return list(self._veriler)\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from adapter import DosyaKaynak\n\n\nclass RaporServisi:\n    def __init__(self, kaynak):\n        # HATA: dışarıdan gelen kaynak yerine somut adapter oluşturuluyor.\n        self.kaynak = DosyaKaynak([])\n\n    def rapor(self):\n        veriler = self.kaynak.oku()\n        return {\"kayit_sayisi\": len(veriler), \"toplam\": sum(veriler)}\n"
+          }
+        ],
+        "starterCode": "from adapter import DosyaKaynak\nfrom service import RaporServisi\n\n\ndef rapor_uret(veriler):\n    return RaporServisi(DosyaKaynak(veriler)).rapor()\n"
+      },
+      "hints": [
+        {
+          "title": "Tek satırlık çekirdek düzeltme",
+          "body": "self.kaynak = kaynak yazınca servis dışarıdan verilen adapter ile çalışır."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.debug-hardcoded-dependency",
+        "title": "RaporServisi'ni gevşek bağlı hâle getir",
+        "xpReward": 140,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "injected-source",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.kaynak\\s*=\\s*kaynak",
+            "flags": "m",
+            "label": "Kaynak bağımlılığı enjekte edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-uses-source",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "veriler\\s*=\\s*self\\.kaynak\\.oku\\(\\)",
+            "flags": "m",
+            "label": "Service yalnız enjekte edilen kaynağı kullanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "rapor_uret",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    10,
+                    20
+                  ]
+                ],
+                "expected": {
+                  "kayit_sayisi": 2,
+                  "toplam": 30
+                }
+              },
+              {
+                "args": [
+                  [
+                    5,
+                    -2,
+                    7
+                  ]
+                ],
+                "expected": {
+                  "kayit_sayisi": 3,
+                  "toplam": 10
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "kayit_sayisi": 0,
+                  "toplam": 0
+                }
+              }
+            ],
+            "label": "Gizli gevşek bağlılık senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.factory-adapter",
+      "moduleId": "architecture-patterns",
+      "order": 5,
+      "title": "Factory ve Adapter ile dış sistemi sar",
+      "summary": "Adapter dış sistemin biçimini uygulama sözleşmesine çevirir; Factory ise doğru adapter'ın oluşturulmasını tek noktada toplar.",
+      "levelLabel": "Advanced Patterns",
+      "mode": "code",
+      "task": {
+        "title": "Bildirim adapter factory'sini tamamla",
+        "instructions": [
+          "EmailAdapter ve SmsAdapter sınıfları gonder(alici, mesaj) metodunu sağlasın.",
+          "adapter_olustur(kanal) factory fonksiyonu email ve sms seçimlerini yapsın.",
+          "bildirim_raporu(kanal, alici, mesaj) adapter çıktısını normalize etsin.",
+          "Bilinmeyen kanalda ValueError üret."
+        ],
+        "requirements": [
+          "Factory seçimi tek fonksiyonda olmalı.",
+          "Adapter'lar dış biçimi ortak sözleşmeye çevirmeli.",
+          "Kanal karşılaştırması küçük harfe normalize edilmeli."
+        ],
+        "sampleOutput": "{\"kanal\": \"sms\", \"hedef\": \"555\", \"icerik\": \"Hazır\"}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from factory import adapter_olustur\n\n\ndef bildirim_raporu(kanal, alici, mesaj):\n    adapter = adapter_olustur(kanal)\n    return adapter.gonder(alici, mesaj)\n\n\nif __name__ == \"__main__\":\n    print(bildirim_raporu(\"sms\", \"555\", \"Hazır\"))\n"
+          },
+          {
+            "path": "adapters.py",
+            "starterCode": "class EmailAdapter:\n    def gonder(self, alici, mesaj):\n        return {\"kanal\": \"email\", \"hedef\": alici.lower(), \"icerik\": mesaj}\n\n\nclass SmsAdapter:\n    def gonder(self, alici, mesaj):\n        return {\"kanal\": \"sms\", \"hedef\": str(alici), \"icerik\": mesaj}\n"
+          },
+          {
+            "path": "factory.py",
+            "starterCode": "from adapters import EmailAdapter, SmsAdapter\n\n\ndef adapter_olustur(kanal):\n    # email ve sms için doğru adapter nesnesini döndür.\n    pass\n"
+          }
+        ],
+        "starterCode": "from factory import adapter_olustur\n\n\ndef bildirim_raporu(kanal, alici, mesaj):\n    adapter = adapter_olustur(kanal)\n    return adapter.gonder(alici, mesaj)\n"
+      },
+      "hints": [
+        {
+          "title": "Factory",
+          "body": "normalize = kanal.lower() ile seçim yap; bilinmeyen değerde ValueError üret."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.factory-adapter",
+        "title": "Bildirim adapter factory'sini tamamla",
+        "xpReward": 165,
+        "timeoutMs": 7000,
+        "checks": [
+          {
+            "id": "factory-function",
+            "kind": "function_definition",
+            "name": "adapter_olustur",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "factory.py",
+            "label": "Adapter factory fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "email-import",
+            "kind": "import_statement",
+            "module": "adapters",
+            "name": "EmailAdapter",
+            "file": "factory.py",
+            "label": "Email adapter importu",
+            "visibility": "visible"
+          },
+          {
+            "id": "sms-import",
+            "kind": "import_statement",
+            "module": "adapters",
+            "name": "SmsAdapter",
+            "file": "factory.py",
+            "label": "SMS adapter importu",
+            "visibility": "visible"
+          },
+          {
+            "id": "factory-branches",
+            "kind": "node_count",
+            "nodeName": "If",
+            "min": 2,
+            "file": "factory.py",
+            "label": "Factory seçim dalları",
+            "visibility": "visible"
+          },
+          {
+            "id": "adapter-cases",
+            "kind": "function_cases",
+            "name": "bildirim_raporu",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  "sms",
+                  "555",
+                  "Hazır"
+                ],
+                "expected": {
+                  "kanal": "sms",
+                  "hedef": "555",
+                  "icerik": "Hazır"
+                }
+              },
+              {
+                "args": [
+                  "EMAIL",
+                  "ADA@EXAMPLE.COM",
+                  "Merhaba"
+                ],
+                "expected": {
+                  "kanal": "email",
+                  "hedef": "ada@example.com",
+                  "icerik": "Merhaba"
+                }
+              }
+            ],
+            "label": "Gizli factory ve adapter senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.service-layer",
+      "moduleId": "architecture-patterns",
+      "order": 6,
+      "title": "Service layer ile iş akışını orkestre et",
+      "summary": "Service layer, repository ve strategy gibi bileşenleri tek bir iş senaryosunda koordine eder; domain kurallarını adapter ayrıntılarından ayırır.",
+      "levelLabel": "Architecture Refactoring",
+      "mode": "refactoring",
+      "refactoring": {
+        "problem": "Sipariş hesabı, stok güncelleme ve bildirim davranışı somut bağımlılıklarla karışmış durumda.",
+        "goal": "Repository, indirim strategy'si ve bildirim adapter'ını SiparisServisi içinde constructor injection ile orkestre et.",
+        "workflow": [
+          "Bağımlılıkları servis constructor'ına taşı.",
+          "Sipariş toplamını strategy üzerinden hesapla.",
+          "Stok güncellemesini repository üzerinden yap.",
+          "Başarılı işlemden sonra adapter'a bildirim gönder."
+        ]
+      },
+      "task": {
+        "title": "Sipariş iş akışını service layer'a taşı",
+        "instructions": [
+          "SiparisServisi constructor'ında repository, strategy ve bildirim bağımlılıklarını kabul et.",
+          "siparis_ver() stokları kontrol edip toplamı hesaplasın.",
+          "İndirim strategy.indirimli() üzerinden uygulansın.",
+          "service_raporu(...) composition root olarak bağımlılıkları kurup sonuç döndürsün."
+        ],
+        "requirements": [
+          "Service somut bağımlılıkları kendi içinde üretmemeli.",
+          "Başarısız siparişte stok değişmemeli.",
+          "Bildirim yalnız başarılı siparişte gönderilmeli."
+        ],
+        "sampleOutput": "{\"toplam_kurus\": 2700, \"stok\": 2, \"bildirim\": \"Ada:2700\"}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from dependencies import BellekRepository, IndirimStrategy, KayitBildirim\nfrom service import SiparisServisi\n\n\ndef service_raporu(stok, fiyat_kurus, adet, oran, musteri):\n    repository = BellekRepository(stok)\n    strategy = IndirimStrategy(oran)\n    bildirim = KayitBildirim()\n    servis = SiparisServisi(repository, strategy, bildirim)\n    toplam = servis.siparis_ver(fiyat_kurus, adet, musteri)\n    return {\"toplam_kurus\": toplam, \"stok\": repository.stok, \"bildirim\": bildirim.son_mesaj}\n\n\nif __name__ == \"__main__\":\n    print(service_raporu(5, 1000, 3, 10, \"Ada\"))\n"
+          },
+          {
+            "path": "dependencies.py",
+            "starterCode": "class BellekRepository:\n    def __init__(self, stok):\n        self.stok = stok\n\n    def yeterli_mi(self, adet):\n        return adet > 0 and self.stok >= adet\n\n    def azalt(self, adet):\n        self.stok -= adet\n\n\nclass IndirimStrategy:\n    def __init__(self, oran):\n        self.oran = oran\n\n    def indirimli(self, tutar):\n        return tutar * (100 - self.oran) // 100\n\n\nclass KayitBildirim:\n    def __init__(self):\n        self.son_mesaj = None\n\n    def gonder(self, musteri, toplam):\n        self.son_mesaj = f\"{musteri}:{toplam}\"\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "class SiparisServisi:\n    def __init__(self, repository, strategy, bildirim):\n        # Üç bağımlılığı sakla.\n        pass\n\n    def siparis_ver(self, fiyat_kurus, adet, musteri):\n        # Stok kontrolü, strategy hesabı, stok azaltma ve bildirimi sırayla uygula.\n        pass\n"
+          }
+        ],
+        "starterCode": "from dependencies import BellekRepository, IndirimStrategy, KayitBildirim\nfrom service import SiparisServisi\n\n\ndef service_raporu(stok, fiyat_kurus, adet, oran, musteri):\n    repository = BellekRepository(stok)\n    strategy = IndirimStrategy(oran)\n    bildirim = KayitBildirim()\n    servis = SiparisServisi(repository, strategy, bildirim)\n    toplam = servis.siparis_ver(fiyat_kurus, adet, musteri)\n    return {\"toplam_kurus\": toplam, \"stok\": repository.stok, \"bildirim\": bildirim.son_mesaj}\n"
+      },
+      "hints": [
+        {
+          "title": "Constructor injection",
+          "body": "self.repository, self.strategy ve self.bildirim alanlarını oluştur."
+        },
+        {
+          "title": "Başarı sırası",
+          "body": "Önce yeterli_mi, sonra toplam, ardından azalt ve gonder."
+        }
+      ],
+      "validation": {
+        "id": "advanced.arch.service-layer",
+        "title": "Sipariş iş akışını service layer'a taşı",
+        "xpReward": 185,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "service-function",
+            "kind": "function_definition",
+            "name": "service_raporu",
+            "minParams": 5,
+            "maxParams": 5,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Composition root fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "repo-injection",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\s*=\\s*repository",
+            "flags": "m",
+            "label": "Repository bağımlılığı saklanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "strategy-injection",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.strategy\\s*=\\s*strategy",
+            "flags": "m",
+            "label": "Strategy bağımlılığı saklanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "notification-injection",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.bildirim\\s*=\\s*bildirim",
+            "flags": "m",
+            "label": "Bildirim bağımlılığı saklanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "strategy-call",
+            "kind": "call",
+            "name": "indirimli",
+            "file": "service.py",
+            "label": "Strategy kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "notification-call",
+            "kind": "call",
+            "name": "gonder",
+            "file": "service.py",
+            "label": "Adapter kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-cases",
+            "kind": "function_cases",
+            "name": "service_raporu",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  5,
+                  1000,
+                  3,
+                  10,
+                  "Ada"
+                ],
+                "expected": {
+                  "toplam_kurus": 2700,
+                  "stok": 2,
+                  "bildirim": "Ada:2700"
+                }
+              },
+              {
+                "args": [
+                  10,
+                  750,
+                  2,
+                  20,
+                  "Mert"
+                ],
+                "expected": {
+                  "toplam_kurus": 1200,
+                  "stok": 8,
+                  "bildirim": "Mert:1200"
+                }
+              },
+              {
+                "args": [
+                  1,
+                  500,
+                  1,
+                  0,
+                  "Ece"
+                ],
+                "expected": {
+                  "toplam_kurus": 500,
+                  "stok": 0,
+                  "bildirim": "Ece:500"
+                }
+              }
+            ],
+            "label": "Gizli service layer senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.arch.layered-application-project",
+      "moduleId": "architecture-patterns",
+      "order": 7,
+      "title": "Final proje: Katmanlı sipariş uygulaması",
+      "summary": "Domain, port, adapter, strategy, factory ve service layer bileşenlerini bağımlılık yönü kontrollü tek bir uygulamada birleştir.",
+      "levelLabel": "Advanced Architecture Project",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Altı dosyalı katmanlı sipariş sistemini tamamla",
+        "instructions": [
+          "domain.py içinde Urun modelini oluştur.",
+          "ports.py içinde repository ve bildirim sözleşmelerini tanımla.",
+          "adapters.py içinde bellek repository ve kayıt bildirim adapter'ını uygula.",
+          "strategies.py içinde standart/premium strategy'leri ve factory fonksiyonunu tamamla.",
+          "service.py içinde SiparisServisi ve uygulama_raporu(...) composition root'unu yaz."
+        ],
+        "requirements": [
+          "Domain katmanı adapter'ları import etmemeli.",
+          "Service bağımlılıkları constructor injection ile almalı.",
+          "Strategy seçimi factory fonksiyonunda yapılmalı.",
+          "Yetersiz stokta sipariş reddedilip diğer siparişler işlenmeye devam etmeli.",
+          "Gizli veri kümeleri görünür çıktıyı ezberleyen çözümleri reddetmeli."
+        ],
+        "sampleOutput": "{\"siparis_sayisi\": 2, \"reddedilen\": 0, \"toplam_kurus\": 4700, \"stoklar\": {\"Defter\": 4, \"Kalem\": 5}, \"bildirimler\": [\"Ada:3000\", \"Mert:1700\"]}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import uygulama_raporu\n\n\nif __name__ == \"__main__\":\n    print(uygulama_raporu(\n        [\n            {\"id\": 1, \"ad\": \"Defter\", \"fiyat_kurus\": 2500, \"stok\": 5},\n            {\"id\": 2, \"ad\": \"Kalem\", \"fiyat_kurus\": 500, \"stok\": 10},\n        ],\n        [\n            {\"musteri\": \"Ada\", \"kanal\": \"standart\", \"satirlar\": [{\"urun_id\": 1, \"adet\": 1}, {\"urun_id\": 2, \"adet\": 1}]},\n            {\"musteri\": \"Mert\", \"kanal\": \"premium\", \"satirlar\": [{\"urun_id\": 2, \"adet\": 4}]},\n        ],\n    ))\n"
+          },
+          {
+            "path": "domain.py",
+            "starterCode": "class Urun:\n    def __init__(self, urun_id, ad, fiyat_kurus, stok):\n        self.id = urun_id\n        self.ad = ad\n        self.fiyat_kurus = fiyat_kurus\n        self.stok = stok\n"
+          },
+          {
+            "path": "ports.py",
+            "starterCode": "class UrunRepositoryPort:\n    def getir(self, urun_id):\n        raise NotImplementedError\n\n    def stok_azalt(self, urun_id, adet):\n        raise NotImplementedError\n\n    def stok_ozeti(self):\n        raise NotImplementedError\n\n\nclass BildirimPortu:\n    def gonder(self, musteri, toplam_kurus):\n        raise NotImplementedError\n"
+          },
+          {
+            "path": "adapters.py",
+            "starterCode": "from domain import Urun\n\n\nclass BellekUrunRepository:\n    def __init__(self, veriler):\n        self._urunler = {veri[\"id\"]: Urun(veri[\"id\"], veri[\"ad\"], veri[\"fiyat_kurus\"], veri[\"stok\"]) for veri in veriler}\n\n    def getir(self, urun_id):\n        # Ürünü getir; yoksa ValueError üret.\n        pass\n\n    def stok_azalt(self, urun_id, adet):\n        # Stok yeterliyse azalt, değilse ValueError üret.\n        pass\n\n    def stok_ozeti(self):\n        # Ürün adına göre sıralı stok sözlüğü döndür.\n        pass\n\n\nclass KayitBildirimAdapter:\n    def __init__(self):\n        self.mesajlar = []\n\n    def gonder(self, musteri, toplam_kurus):\n        self.mesajlar.append(f\"{musteri}:{toplam_kurus}\")\n"
+          },
+          {
+            "path": "strategies.py",
+            "starterCode": "class StandartIndirim:\n    def uygula(self, tutar):\n        return tutar\n\n\nclass PremiumIndirim:\n    def uygula(self, tutar):\n        return tutar * 85 // 100\n\n\ndef strategy_olustur(kanal):\n    # standart ve premium kanalları için doğru strategy nesnesini döndür.\n    pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from adapters import BellekUrunRepository, KayitBildirimAdapter\nfrom strategies import strategy_olustur\n\n\nclass SiparisServisi:\n    def __init__(self, repository, bildirim):\n        # Bağımlılıkları sakla.\n        pass\n\n    def siparis_ver(self, musteri, strategy, satirlar):\n        # Önce bütün satırları doğrula, ardından stokları azalt ve bildirimi gönder.\n        pass\n\n\ndef uygulama_raporu(urunler, siparisler):\n    # Composition root: adapter'ları kur, siparişleri işle ve özet döndür.\n    pass\n"
+          }
+        ],
+        "starterCode": "from service import uygulama_raporu\n\n\nif __name__ == \"__main__\":\n    print(uygulama_raporu([], []))\n"
+      },
+      "hints": [
+        {
+          "title": "Bağımlılık yönü",
+          "body": "SiparisServisi constructor'da hazır nesneler alır; somut adapter'lar composition root'ta kurulur."
+        },
+        {
+          "title": "Atomik sipariş",
+          "body": "Her satırı önce kontrol et; stok azaltmaya ancak tüm satırlar geçerliyse başla."
+        },
+        {
+          "title": "Rapor",
+          "body": "Başarılı sayısı, reddedilen, toplam, stok özeti ve bildirim listesini döndür."
+        }
+      ],
+      "dataTransformation": {
+        "sourceShape": "Ürün ve sipariş sözlüklerinden oluşan iki liste",
+        "targetShape": "Katmanlı uygulama tarafından üretilen deterministik özet sözlük",
+        "rules": [
+          "Her sipariş strategy kanalına göre hesaplanır.",
+          "Yetersiz stoklu sipariş reddedilir ve stok değiştirmez.",
+          "Stoklar ürün adına göre sıralanır.",
+          "Bildirimler yalnız başarılı siparişler için üretilir."
+        ],
+        "workflow": [
+          "Domain ve port sözleşmelerini kur.",
+          "Adapter ve strategy uygulamalarını tamamla.",
+          "Service layer ile iş akışını orkestre et.",
+          "Composition root üzerinden gizli senaryoları çalıştır."
+        ]
+      },
+      "validation": {
+        "id": "advanced.arch.layered-application-project",
+        "title": "Altı dosyalı katmanlı sipariş sistemini tamamla",
+        "xpReward": 270,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "domain-file",
+            "kind": "file_exists",
+            "path": "domain.py",
+            "label": "Domain katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "ports-file",
+            "kind": "file_exists",
+            "path": "ports.py",
+            "label": "Port sözleşmeleri",
+            "visibility": "visible"
+          },
+          {
+            "id": "adapters-file",
+            "kind": "file_exists",
+            "path": "adapters.py",
+            "label": "Adapter katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "strategies-file",
+            "kind": "file_exists",
+            "path": "strategies.py",
+            "label": "Strategy katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-file",
+            "kind": "file_exists",
+            "path": "service.py",
+            "label": "Service katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "domain-no-adapter-import",
+            "kind": "file_content_regex",
+            "path": "domain.py",
+            "pattern": "\\A(?:(?!from\\s+adapters|import\\s+adapters|from\\s+service|import\\s+service)[\\s\\S])*\\Z",
+            "flags": "m",
+            "label": "Domain dış katmanlardan bağımsız",
+            "visibility": "visible"
+          },
+          {
+            "id": "repository-class",
+            "kind": "file_content_regex",
+            "path": "adapters.py",
+            "pattern": "class\\s+BellekUrunRepository\\s*:",
+            "flags": "m",
+            "label": "Repository adapter sınıfı",
+            "visibility": "visible"
+          },
+          {
+            "id": "notification-adapter",
+            "kind": "file_content_regex",
+            "path": "adapters.py",
+            "pattern": "class\\s+KayitBildirimAdapter\\s*:",
+            "flags": "m",
+            "label": "Bildirim adapter sınıfı",
+            "visibility": "visible"
+          },
+          {
+            "id": "strategy-factory",
+            "kind": "function_definition",
+            "name": "strategy_olustur",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "strategies.py",
+            "label": "Strategy factory fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-function",
+            "kind": "function_definition",
+            "name": "uygulama_raporu",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "service.py",
+            "label": "Uygulama composition root",
+            "visibility": "visible"
+          },
+          {
+            "id": "order-loops",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 2,
+            "file": "service.py",
+            "label": "Sipariş ve satır döngüleri",
+            "visibility": "visible"
+          },
+          {
+            "id": "constructor-injection",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\s*=\\s*repository[\\s\\S]*?self\\.bildirim\\s*=\\s*bildirim",
+            "flags": "m",
+            "label": "Service constructor injection",
+            "visibility": "visible"
+          },
+          {
+            "id": "application-cases",
+            "kind": "function_cases",
+            "name": "uygulama_raporu",
+            "module": "service",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Defter",
+                      "fiyat_kurus": 2500,
+                      "stok": 5
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Kalem",
+                      "fiyat_kurus": 500,
+                      "stok": 10
+                    }
+                  ],
+                  [
+                    {
+                      "musteri": "Ada",
+                      "kanal": "standart",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 1
+                        },
+                        {
+                          "urun_id": 2,
+                          "adet": 1
+                        }
+                      ]
+                    },
+                    {
+                      "musteri": "Mert",
+                      "kanal": "premium",
+                      "satirlar": [
+                        {
+                          "urun_id": 2,
+                          "adet": 4
+                        }
+                      ]
+                    }
+                  ]
+                ],
+                "expected": {
+                  "siparis_sayisi": 2,
+                  "reddedilen": 0,
+                  "toplam_kurus": 4700,
+                  "stoklar": {
+                    "Defter": 4,
+                    "Kalem": 5
+                  },
+                  "bildirimler": [
+                    "Ada:3000",
+                    "Mert:1700"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Kitap",
+                      "fiyat_kurus": 3000,
+                      "stok": 2
+                    }
+                  ],
+                  [
+                    {
+                      "musteri": "Ece",
+                      "kanal": "standart",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 3
+                        }
+                      ]
+                    },
+                    {
+                      "musteri": "Can",
+                      "kanal": "premium",
+                      "satirlar": [
+                        {
+                          "urun_id": 1,
+                          "adet": 1
+                        }
+                      ]
+                    }
+                  ]
+                ],
+                "expected": {
+                  "siparis_sayisi": 1,
+                  "reddedilen": 1,
+                  "toplam_kurus": 2550,
+                  "stoklar": {
+                    "Kitap": 1
+                  },
+                  "bildirimler": [
+                    "Can:2550"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [],
+                  []
+                ],
+                "expected": {
+                  "siparis_sayisi": 0,
+                  "reddedilen": 0,
+                  "toplam_kurus": 0,
+                  "stoklar": {},
+                  "bildirimler": []
+                }
+              }
+            ],
+            "label": "Gizli katmanlı uygulama senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}

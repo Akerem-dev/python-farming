@@ -23,6 +23,7 @@
     "/content/modules/generators-coroutines.json",
     "/content/modules/async-await.json",
     "/content/modules/networking-http.json",
-    "/content/modules/databases-advanced.json"
+    "/content/modules/databases-advanced.json",
+    "/content/modules/architecture-patterns.json"
   ]
 }
