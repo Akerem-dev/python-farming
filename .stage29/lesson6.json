@@ -1,0 +1,87 @@
+{
+  "id": "advanced.arch.service-layer",
+  "moduleId": "architecture-patterns",
+  "order": 6,
+  "title": "Service layer ile iş akışını orkestre et",
+  "summary": "Service layer, repository ve strategy gibi bileşenleri tek bir iş senaryosunda koordine eder; domain kurallarını adapter ayrıntılarından ayırır.",
+  "levelLabel": "Architecture Refactoring",
+  "mode": "refactoring",
+  "refactoring": {
+    "problem": "Sipariş hesabı, stok güncelleme ve bildirim davranışı somut bağımlılıklarla karışmış durumda.",
+    "goal": "Repository, indirim strategy'si ve bildirim adapter'ını SiparisServisi içinde constructor injection ile orkestre et.",
+    "workflow": [
+      "Bağımlılıkları servis constructor'ına taşı.",
+      "Sipariş toplamını strategy üzerinden hesapla.",
+      "Stok güncellemesini repository üzerinden yap.",
+      "Başarılı işlemden sonra adapter'a bildirim gönder."
+    ]
+  },
+  "task": {
+    "title": "Sipariş iş akışını service layer'a taşı",
+    "instructions": [
+      "SiparisServisi constructor'ında repository, strategy ve bildirim bağımlılıklarını kabul et.",
+      "siparis_ver() stokları kontrol edip toplamı hesaplasın.",
+      "İndirim strategy.indirimli() üzerinden uygulansın.",
+      "service_raporu(...) composition root olarak bağımlılıkları kurup sonuç döndürsün."
+    ],
+    "requirements": [
+      "Service somut bağımlılıkları kendi içinde üretmemeli.",
+      "Başarısız siparişte stok değişmemeli.",
+      "Bildirim yalnız başarılı siparişte gönderilmeli."
+    ],
+    "sampleOutput": "{\"toplam_kurus\": 2700, \"stok\": 2, \"bildirim\": \"Ada:2700\"}",
+    "stdinEnabled": false,
+    "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+    "defaultStdin": ""
+  },
+  "editor": {
+    "filename": "main.py",
+    "entrypoint": "main.py",
+    "files": [
+      {
+        "path": "main.py",
+        "starterCode": "from dependencies import BellekRepository, IndirimStrategy, KayitBildirim\nfrom service import SiparisServisi\n\n\ndef service_raporu(stok, fiyat_kurus, adet, oran, musteri):\n    repository = BellekRepository(stok)\n    strategy = IndirimStrategy(oran)\n    bildirim = KayitBildirim()\n    servis = SiparisServisi(repository, strategy, bildirim)\n    toplam = servis.siparis_ver(fiyat_kurus, adet, musteri)\n    return {\"toplam_kurus\": toplam, \"stok\": repository.stok, \"bildirim\": bildirim.son_mesaj}\n\n\nif __name__ == \"__main__\":\n    print(service_raporu(5, 1000, 3, 10, \"Ada\"))\n"
+      },
+      {
+        "path": "dependencies.py",
+        "starterCode": "class BellekRepository:\n    def __init__(self, stok):\n        self.stok = stok\n\n    def yeterli_mi(self, adet):\n        return adet > 0 and self.stok >= adet\n\n    def azalt(self, adet):\n        self.stok -= adet\n\n\nclass IndirimStrategy:\n    def __init__(self, oran):\n        self.oran = oran\n\n    def indirimli(self, tutar):\n        return tutar * (100 - self.oran) // 100\n\n\nclass KayitBildirim:\n    def __init__(self):\n        self.son_mesaj = None\n\n    def gonder(self, musteri, toplam):\n        self.son_mesaj = f\"{musteri}:{toplam}\"\n"
+      },
+      {
+        "path": "service.py",
+        "starterCode": "class SiparisServisi:\n    def __init__(self, repository, strategy, bildirim):\n        # Üç bağımlılığı sakla.\n        pass\n\n    def siparis_ver(self, fiyat_kurus, adet, musteri):\n        # Stok kontrolü, strategy hesabı, stok azaltma ve bildirimi sırayla uygula.\n        pass\n"
+      }
+    ],
+    "starterCode": "from dependencies import BellekRepository, IndirimStrategy, KayitBildirim\nfrom service import SiparisServisi\n\n\ndef service_raporu(stok, fiyat_kurus, adet, oran, musteri):\n    repository = BellekRepository(stok)\n    strategy = IndirimStrategy(oran)\n    bildirim = KayitBildirim()\n    servis = SiparisServisi(repository, strategy, bildirim)\n    toplam = servis.siparis_ver(fiyat_kurus, adet, musteri)\n    return {\"toplam_kurus\": toplam, \"stok\": repository.stok, \"bildirim\": bildirim.son_mesaj}\n"
+  },
+  "hints": [
+    {"title": "Constructor injection", "body": "self.repository, self.strategy ve self.bildirim alanlarını oluştur."},
+    {"title": "Başarı sırası", "body": "Önce yeterli_mi, sonra toplam, ardından azalt ve gonder."}
+  ],
+  "validation": {
+    "id": "advanced.arch.service-layer",
+    "title": "Sipariş iş akışını service layer'a taşı",
+    "xpReward": 185,
+    "timeoutMs": 8000,
+    "checks": [
+      {"id": "service-function", "kind": "function_definition", "name": "service_raporu", "minParams": 5, "maxParams": 5, "requireReturn": true, "file": "main.py", "label": "Composition root fonksiyonu", "visibility": "visible"},
+      {"id": "repo-injection", "kind": "file_content_regex", "path": "service.py", "pattern": "self\\.repository\\s*=\\s*repository", "flags": "m", "label": "Repository bağımlılığı saklanıyor", "visibility": "visible"},
+      {"id": "strategy-injection", "kind": "file_content_regex", "path": "service.py", "pattern": "self\\.strategy\\s*=\\s*strategy", "flags": "m", "label": "Strategy bağımlılığı saklanıyor", "visibility": "visible"},
+      {"id": "notification-injection", "kind": "file_content_regex", "path": "service.py", "pattern": "self\\.bildirim\\s*=\\s*bildirim", "flags": "m", "label": "Bildirim bağımlılığı saklanıyor", "visibility": "visible"},
+      {"id": "strategy-call", "kind": "call", "name": "indirimli", "file": "service.py", "label": "Strategy kullanıldı", "visibility": "visible"},
+      {"id": "notification-call", "kind": "call", "name": "gonder", "file": "service.py", "label": "Adapter kullanıldı", "visibility": "visible"},
+      {
+        "id": "service-cases",
+        "kind": "function_cases",
+        "name": "service_raporu",
+        "module": "main",
+        "cases": [
+          {"args": [5, 1000, 3, 10, "Ada"], "expected": {"toplam_kurus": 2700, "stok": 2, "bildirim": "Ada:2700"}},
+          {"args": [10, 750, 2, 20, "Mert"], "expected": {"toplam_kurus": 1200, "stok": 8, "bildirim": "Mert:1200"}},
+          {"args": [1, 500, 1, 0, "Ece"], "expected": {"toplam_kurus": 500, "stok": 0, "bildirim": "Ece:500"}}
+        ],
+        "label": "Gizli service layer senaryoları",
+        "visibility": "hidden"
+      }
+    ]
+  }
+}
