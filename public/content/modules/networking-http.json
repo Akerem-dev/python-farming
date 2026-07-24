@@ -1,0 +1,1049 @@
+{
+  "moduleId": "networking-http",
+  "lessons": [
+    {
+      "id": "advanced.http.query-url",
+      "moduleId": "networking-http",
+      "order": 1,
+      "title": "Query parametreleriyle URL oluştur",
+      "summary": "urllib.parse araçlarıyla parametreleri güvenli ve deterministik biçimde URL'ye ekle.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Filtreli API adresini hazırla",
+        "instructions": [
+          "url_hazirla(temel, parametreler) fonksiyonunu tamamla.",
+          "Parametreleri anahtar adına göre sırala ve urllib.parse.urlencode ile kodla.",
+          "Temel adreste mevcut query varsa yeni parametrelerle birleştir."
+        ],
+        "requirements": [
+          "urlencode() kullanılmalı.",
+          "Boş parametre sözlüğünde temel URL korunmalı.",
+          "Boşluk ve Türkçe karakterler güvenli kodlanmalı."
+        ],
+        "sampleOutput": "https://api.local/urunler?page=2&q=python+kitabı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit\n\n\ndef url_hazirla(temel, parametreler):\n    # Mevcut query değerlerini yeni parametrelerle birleştir.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(url_hazirla(\n        \"https://api.local/urunler\",\n        {\"q\": \"python kitabı\", \"page\": 2},\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "URL parçaları",
+          "body": "urlsplit() ile mevcut query bölümünü ayırıp parse_qsl() ile sözlüğe dönüştürebilirsin."
+        },
+        {
+          "title": "Deterministik sıra",
+          "body": "urlencode(sorted(birlesik.items())) aynı girdide her zaman aynı query sırasını üretir."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.query-url",
+        "title": "Filtreli API adresini hazırla",
+        "xpReward": 95,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "url-function",
+            "kind": "function_definition",
+            "name": "url_hazirla",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "URL hazırlama fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "url-import",
+            "kind": "import_statement",
+            "module": "urllib.parse",
+            "name": "urlencode",
+            "file": "main.py",
+            "label": "urlencode import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "url-call",
+            "kind": "call",
+            "name": "urlencode",
+            "file": "main.py",
+            "label": "urlencode kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "url-cases",
+            "kind": "function_cases",
+            "name": "url_hazirla",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  "https://api.local/urunler",
+                  {
+                    "q": "python kitabı",
+                    "page": 2
+                  }
+                ],
+                "expected": "https://api.local/urunler?page=2&q=python+kitab%C4%B1"
+              },
+              {
+                "args": [
+                  "https://api.local/urunler?lang=tr",
+                  {
+                    "page": 1
+                  }
+                ],
+                "expected": "https://api.local/urunler?lang=tr&page=1"
+              },
+              {
+                "args": [
+                  "https://api.local/urunler",
+                  {}
+                ],
+                "expected": "https://api.local/urunler"
+              }
+            ],
+            "label": "Gizli URL senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.status-families",
+      "moduleId": "networking-http",
+      "order": 2,
+      "title": "HTTP durum kodunu yorumla",
+      "summary": "2xx, 4xx ve 5xx ailelerinin istemci akışındaki anlamını çıktı tahminiyle pekiştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Durum kodu sınıflandırmasını seç",
+        "instructions": [
+          "durum_ailesi() fonksiyonunun üç çağrısını incele.",
+          "Her kodun başarı, istemci hatası veya sunucu hatası olduğunu belirle."
+        ],
+        "requirements": [
+          "Tek seçenek işaretlenmeli.",
+          "200 başarı, 404 istemci hatası, 503 sunucu hatasıdır."
+        ],
+        "sampleOutput": "başarı / istemci-hatası / sunucu-hatası",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def durum_ailesi(kod):\n    if 200 <= kod < 300:\n        return \"başarı\"\n    if 400 <= kod < 500:\n        return \"istemci-hatası\"\n    if 500 <= kod < 600:\n        return \"sunucu-hatası\"\n    return \"diğer\"\n\n\nprint(durum_ailesi(200))\nprint(durum_ailesi(404))\nprint(durum_ailesi(503))\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.http.status-families",
+        "title": "Durum kodu sınıflandırmasını seç",
+        "xpReward": 65,
+        "timeoutMs": 8000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      },
+      "choice": {
+        "prompt": "Program hangi üç satırı yazdırır?",
+        "options": [
+          {
+            "id": "a",
+            "label": "başarı / istemci-hatası / sunucu-hatası"
+          },
+          {
+            "id": "b",
+            "label": "başarı / sunucu-hatası / istemci-hatası"
+          },
+          {
+            "id": "c",
+            "label": "200 / 404 / 503"
+          },
+          {
+            "id": "d",
+            "label": "başarı / diğer / diğer"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.request-builder",
+      "moduleId": "networking-http",
+      "order": 3,
+      "title": "JSON POST isteği oluştur",
+      "summary": "urllib.request.Request ile method, header ve UTF-8 JSON body sözleşmesini kur.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code-completion",
+      "task": {
+        "title": "Yetkilendirilmiş JSON isteğini hazırla",
+        "instructions": [
+          "json_istegi(url, veri, token) fonksiyonunu tamamla.",
+          "json.dumps ile UTF-8 body üret ve urllib.request.Request oluştur.",
+          "Fonksiyon, oluşturulan isteğin method, URL, header ve body özetini döndürsün."
+        ],
+        "requirements": [
+          "POST method kullanılmalı.",
+          "Authorization Bearer header eklenmeli.",
+          "Content-Type application/json olmalı.",
+          "JSON anahtarları deterministik sıralanmalı."
+        ],
+        "sampleOutput": "POST / Authorization: Bearer demo / application/json",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import json\nfrom urllib.request import Request\n\n\ndef json_istegi(url, veri, token):\n    # Request nesnesi oluştur ve normalize edilmiş özetini döndür.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(json_istegi(\n        \"https://api.local/urunler\",\n        {\"ad\": \"Defter\", \"stok\": 3},\n        \"demo\",\n    ))\n"
+      },
+      "hints": [
+        {
+          "title": "Body",
+          "body": "json.dumps(..., ensure_ascii=False, sort_keys=True).encode('utf-8') kullan."
+        },
+        {
+          "title": "Header normalizasyonu",
+          "body": "request.header_items() sonucundaki anahtarları lower() ile küçültebilirsin."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.request-builder",
+        "title": "Yetkilendirilmiş JSON isteğini hazırla",
+        "xpReward": 125,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "request-function",
+            "kind": "function_definition",
+            "name": "json_istegi",
+            "minParams": 3,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Request builder fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "request-import",
+            "kind": "import_statement",
+            "module": "urllib.request",
+            "name": "Request",
+            "file": "main.py",
+            "label": "Request import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "request-call",
+            "kind": "call",
+            "name": "Request",
+            "file": "main.py",
+            "label": "Request nesnesi oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "json-dumps",
+            "kind": "call",
+            "name": "dumps",
+            "file": "main.py",
+            "label": "JSON body üretildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "request-cases",
+            "kind": "function_cases",
+            "name": "json_istegi",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  "https://api.local/urunler",
+                  {
+                    "stok": 3,
+                    "ad": "Defter"
+                  },
+                  "demo"
+                ],
+                "expected": {
+                  "method": "POST",
+                  "url": "https://api.local/urunler",
+                  "headers": {
+                    "authorization": "Bearer demo",
+                    "content-type": "application/json"
+                  },
+                  "body": {
+                    "ad": "Defter",
+                    "stok": 3
+                  }
+                }
+              },
+              {
+                "args": [
+                  "https://api.local/login",
+                  {
+                    "kullanici": "Ada"
+                  },
+                  "abc"
+                ],
+                "expected": {
+                  "method": "POST",
+                  "url": "https://api.local/login",
+                  "headers": {
+                    "authorization": "Bearer abc",
+                    "content-type": "application/json"
+                  },
+                  "body": {
+                    "kullanici": "Ada"
+                  }
+                }
+              }
+            ],
+            "label": "Gizli Request senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.error-debugging",
+      "moduleId": "networking-http",
+      "order": 4,
+      "title": "Hata Avcısı: HTTP hatasını yutma",
+      "summary": "HTTPError ayrıntılarını kaybetmeden uygulama alanına uygun ApiHatasi üret.",
+      "levelLabel": "Advanced Learning",
+      "mode": "debugging",
+      "task": {
+        "title": "404 gövdesini anlamlı hataya dönüştür",
+        "instructions": [
+          "Programı çalıştır ve çıplak except nedeniyle kaybolan hata bilgisini incele.",
+          "Yalnız HTTPError yakala; status kodunu ve JSON mesajını oku.",
+          "ApiHatasi içinde kod ve mesajı koruyarak yeniden raise et."
+        ],
+        "requirements": [
+          "Çıplak except kullanılmamalı.",
+          "HTTPError açıkça yakalanmalı.",
+          "ApiHatasi, Exception tabanından türemeli.",
+          "404 mesajı kullanıcıya taşınmalı."
+        ],
+        "sampleOutput": "ApiHatasi: 404 - ürün bulunamadı",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import json\nfrom io import BytesIO\nfrom urllib.error import HTTPError\n\n\nclass ApiHatasi(Exception):\n    pass\n\n\ndef yanit_coz(kod, govde):\n    try:\n        if kod >= 400:\n            raise HTTPError(\n                \"https://api.local/urunler/99\",\n                kod,\n                \"HTTP error\",\n                {},\n                BytesIO(govde.encode(\"utf-8\")),\n            )\n        return json.loads(govde)\n    except:\n        return {}\n\n\nif __name__ == \"__main__\":\n    try:\n        yanit_coz(404, '{\"mesaj\": \"ürün bulunamadı\"}')\n    except ApiHatasi as hata:\n        print(f\"ApiHatasi: {hata}\")\n"
+      },
+      "hints": [
+        {
+          "title": "HTTPError gövdesi",
+          "body": "HTTPError nesnesinin read() metodu response body bytes değerini verir."
+        },
+        {
+          "title": "Mesajı koru",
+          "body": "json.loads(hata.read().decode('utf-8')) ile mesajı alıp ApiHatasi(f'{hata.code} - {mesaj}') raise et."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.error-debugging",
+        "title": "404 gövdesini anlamlı hataya dönüştür",
+        "xpReward": 125,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "api-error-class",
+            "kind": "exception_class",
+            "name": "ApiHatasi",
+            "base": "Exception",
+            "file": "main.py",
+            "label": "ApiHatasi sınıfı",
+            "visibility": "visible"
+          },
+          {
+            "id": "http-handler",
+            "kind": "exception_handling",
+            "requiredTypes": [
+              "HTTPError"
+            ],
+            "minHandlers": 1,
+            "maxHandlers": 1,
+            "disallowBareExcept": true,
+            "file": "main.py",
+            "label": "HTTPError kontrollü yakalandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "api-raise",
+            "kind": "raise_exception",
+            "name": "ApiHatasi",
+            "min": 1,
+            "file": "main.py",
+            "label": "ApiHatasi yeniden fırlatıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "raise-cases",
+            "kind": "function_raises",
+            "name": "yanit_coz",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  404,
+                  "{\"mesaj\": \"ürün bulunamadı\"}"
+                ],
+                "exception": "ApiHatasi",
+                "messagePattern": "404.*ürün bulunamadı"
+              },
+              {
+                "args": [
+                  500,
+                  "{\"mesaj\": \"sunucu geçici olarak kapalı\"}"
+                ],
+                "exception": "ApiHatasi",
+                "messagePattern": "500.*sunucu"
+              }
+            ],
+            "label": "Gizli HTTP hata senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "HTTP error swallowing",
+        "symptom": "404 yanıtı boş sözlüğe dönüşüyor ve hata nedeni kayboluyor.",
+        "workflow": [
+          "Çıplak except bloğunu kaldır.",
+          "HTTPError nesnesinden kod ve gövdeyi oku.",
+          "ApiHatasi ile anlamlı mesajı yeniden fırlat."
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.retry-timeout",
+      "moduleId": "networking-http",
+      "order": 5,
+      "title": "Timeout ve retry politikası kur",
+      "summary": "Gerçek ağ yerine sahte transport kullanarak timeout, deneme sınırı ve üstel geri çekilme davranışını geliştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Geçici timeout sonrasında isteği yeniden dene",
+        "instructions": [
+          "guvenli_get(senaryo, url, max_deneme=3) fonksiyonunu tamamla.",
+          "FakeTransport.get() çağrısını try/except TimeoutError içinde çalıştır.",
+          "Başarılı yanıtta JSON verisini, deneme sayısını ve bekleme planını döndür."
+        ],
+        "requirements": [
+          "En fazla max_deneme kadar istek yapılmalı.",
+          "Timeout sonrası 0.1, 0.2, 0.4 biçiminde geri çekilme hesaplanmalı.",
+          "Başarısızlıkta ok=False sonucu dönmeli.",
+          "Kaynak transport.py değiştirilmemeli."
+        ],
+        "sampleOutput": "{\"ok\": true, \"veri\": {\"ad\": \"Defter\"}, \"deneme\": 2, \"beklemeler\": [0.1]}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from retry_client import guvenli_get\n\n\nif __name__ == \"__main__\":\n    senaryo = [\n        {\"kind\": \"timeout\"},\n        {\"status\": 200, \"body\": '{\"ad\": \"Defter\"}'},\n    ]\n    print(guvenli_get(senaryo, \"https://api.local/urunler/1\"))\n"
+          },
+          {
+            "path": "retry_client.py",
+            "starterCode": "import json\nfrom transport import FakeTransport\n\n\ndef guvenli_get(senaryo, url, max_deneme=3):\n    # Timeout sonrasında 0.1, 0.2... geri çekilme planı üret.\n    pass\n"
+          },
+          {
+            "path": "transport.py",
+            "starterCode": "class FakeTransport:\n    def __init__(self, senaryo):\n        self._senaryo = list(senaryo)\n        self.calls = []\n\n    def get(self, url, timeout=2, headers=None):\n        self.calls.append({\n            \"url\": url,\n            \"timeout\": timeout,\n            \"headers\": dict(headers or {}),\n        })\n        if not self._senaryo:\n            raise RuntimeError(\"Sahte transport yanıtı kalmadı.\")\n\n        sonuc = self._senaryo.pop(0)\n        if sonuc.get(\"kind\") == \"timeout\":\n            raise TimeoutError(\"İstek zaman aşımına uğradı.\")\n\n        return {\n            \"status\": int(sonuc.get(\"status\", 200)),\n            \"headers\": dict(sonuc.get(\"headers\", {})),\n            \"body\": sonuc.get(\"body\", \"{}\"),\n        }\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Deneme sayısı",
+          "body": "range(max_deneme) ile her denemede transport.get çağır."
+        },
+        {
+          "title": "Geri çekilme",
+          "body": "Timeout sonrası son deneme değilse round(0.1 * (2 ** deneme), 2) değerini listeye ekle."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.retry-timeout",
+        "title": "Geçici timeout sonrasında isteği yeniden dene",
+        "xpReward": 145,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "retry-file",
+            "kind": "file_exists",
+            "path": "retry_client.py",
+            "label": "Retry istemcisi dosyası",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-function",
+            "kind": "function_definition",
+            "name": "guvenli_get",
+            "minParams": 2,
+            "maxParams": 3,
+            "minDefaults": 1,
+            "requireReturn": true,
+            "file": "retry_client.py",
+            "label": "Retry fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "retry_client.py",
+            "label": "Deneme döngüsü",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-try",
+            "kind": "node_count",
+            "nodeName": "Try",
+            "min": 1,
+            "file": "retry_client.py",
+            "label": "Timeout kontrolü",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-get",
+            "kind": "call",
+            "name": "get",
+            "file": "retry_client.py",
+            "label": "Transport get çağrısı",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-cases",
+            "kind": "function_cases",
+            "name": "guvenli_get",
+            "module": "retry_client",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "kind": "timeout"
+                    },
+                    {
+                      "status": 200,
+                      "body": "{\"ad\":\"Defter\"}"
+                    }
+                  ],
+                  "https://api.local/urunler/1"
+                ],
+                "expected": {
+                  "ok": true,
+                  "veri": {
+                    "ad": "Defter"
+                  },
+                  "deneme": 2,
+                  "beklemeler": [
+                    0.1
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "kind": "timeout"
+                    },
+                    {
+                      "kind": "timeout"
+                    },
+                    {
+                      "kind": "timeout"
+                    }
+                  ],
+                  "https://api.local/yavas",
+                  3
+                ],
+                "expected": {
+                  "ok": false,
+                  "veri": null,
+                  "deneme": 3,
+                  "beklemeler": [
+                    0.1,
+                    0.2
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "status": 200,
+                      "body": "{\"deger\":42}"
+                    }
+                  ],
+                  "https://api.local/deger"
+                ],
+                "expected": {
+                  "ok": true,
+                  "veri": {
+                    "deger": 42
+                  },
+                  "deneme": 1,
+                  "beklemeler": []
+                }
+              }
+            ],
+            "label": "Gizli retry senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "transport-unchanged",
+            "kind": "file_unchanged",
+            "path": "transport.py",
+            "label": "Sahte transport korundu",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.pagination",
+      "moduleId": "networking-http",
+      "order": 6,
+      "title": "Sayfalanmış API verisini birleştir",
+      "summary": "next bağlantılarını güvenli biçimde takip ederek bütün sayfalardaki kayıtları tek sonuçta topla.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Pagination zincirini sonuna kadar işle",
+        "instructions": [
+          "tum_urunleri_getir(sayfalar, baslangic_url) fonksiyonunu tamamla.",
+          "Her response body içindeki items listesini sonuçlara ekle.",
+          "next değeri varsa urljoin ile yeni URL oluştur; null olduğunda dur."
+        ],
+        "requirements": [
+          "While döngüsü kullanılmalı.",
+          "urljoin() kullanılmalı.",
+          "İstek sırası sonuçta korunmalı.",
+          "Boş ilk sayfa güvenli işlenmeli."
+        ],
+        "sampleOutput": "{\"items\": [{\"ad\": \"Defter\"}, {\"ad\": \"Kalem\"}], \"istekler\": [\"...page=1\", \"...page=2\"]}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from pagination import tum_urunleri_getir\n\n\nif __name__ == \"__main__\":\n    sayfalar = [\n        {\"status\": 200, \"body\": '{\"items\": [{\"ad\": \"Defter\"}], \"next\": \"/urunler?page=2\"}'},\n        {\"status\": 200, \"body\": '{\"items\": [{\"ad\": \"Kalem\"}], \"next\": null}'},\n    ]\n    print(tum_urunleri_getir(sayfalar, \"https://api.local/urunler\"))\n"
+          },
+          {
+            "path": "pagination.py",
+            "starterCode": "import json\nfrom urllib.parse import urljoin\n\nfrom transport import FakeTransport\n\n\ndef tum_urunleri_getir(sayfalar, baslangic_url):\n    # next bağlantısı bitene kadar sayfaları dolaş.\n    pass\n"
+          },
+          {
+            "path": "transport.py",
+            "starterCode": "class FakeTransport:\n    def __init__(self, senaryo):\n        self._senaryo = list(senaryo)\n        self.calls = []\n\n    def get(self, url, timeout=2, headers=None):\n        self.calls.append({\n            \"url\": url,\n            \"timeout\": timeout,\n            \"headers\": dict(headers or {}),\n        })\n        if not self._senaryo:\n            raise RuntimeError(\"Sahte transport yanıtı kalmadı.\")\n\n        sonuc = self._senaryo.pop(0)\n        if sonuc.get(\"kind\") == \"timeout\":\n            raise TimeoutError(\"İstek zaman aşımına uğradı.\")\n\n        return {\n            \"status\": int(sonuc.get(\"status\", 200)),\n            \"headers\": dict(sonuc.get(\"headers\", {})),\n            \"body\": sonuc.get(\"body\", \"{}\"),\n        }\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Başlangıç",
+          "body": "url = baslangic_url ve items = [] ile başla."
+        },
+        {
+          "title": "Sonraki sayfa",
+          "body": "url = urljoin(url, veri.get('next')) yalnız next değeri varsa çalışmalı."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.pagination",
+        "title": "Pagination zincirini sonuna kadar işle",
+        "xpReward": 155,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "pagination-function",
+            "kind": "function_definition",
+            "name": "tum_urunleri_getir",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "pagination.py",
+            "label": "Pagination fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "pagination-while",
+            "kind": "node_count",
+            "nodeName": "While",
+            "min": 1,
+            "file": "pagination.py",
+            "label": "Sayfa döngüsü",
+            "visibility": "visible"
+          },
+          {
+            "id": "pagination-urljoin",
+            "kind": "call",
+            "name": "urljoin",
+            "file": "pagination.py",
+            "label": "next URL birleştirildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "pagination-cases",
+            "kind": "function_cases",
+            "name": "tum_urunleri_getir",
+            "module": "pagination",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[{\"id\":1}],\"next\":\"/urunler?page=2\"}"
+                    },
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[{\"id\":2},{\"id\":3}],\"next\":null}"
+                    }
+                  ],
+                  "https://api.local/urunler?page=1"
+                ],
+                "expected": {
+                  "items": [
+                    {
+                      "id": 1
+                    },
+                    {
+                      "id": 2
+                    },
+                    {
+                      "id": 3
+                    }
+                  ],
+                  "istekler": [
+                    "https://api.local/urunler?page=1",
+                    "https://api.local/urunler?page=2"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[],\"next\":null}"
+                    }
+                  ],
+                  "https://api.local/urunler"
+                ],
+                "expected": {
+                  "items": [],
+                  "istekler": [
+                    "https://api.local/urunler"
+                  ]
+                }
+              }
+            ],
+            "label": "Gizli pagination senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "pagination-transport",
+            "kind": "file_unchanged",
+            "path": "transport.py",
+            "label": "Transport değişmedi",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.http.final-client",
+      "moduleId": "networking-http",
+      "order": 7,
+      "title": "Final proje: Offline HTTP istemcisi",
+      "summary": "URL oluşturma, header, timeout retry, JSON ayrıştırma ve pagination katmanlarını çok dosyalı bir API istemcisinde birleştir.",
+      "levelLabel": "Advanced Learning",
+      "mode": "code",
+      "task": {
+        "title": "Dayanıklı ürün API raporunu üret",
+        "instructions": [
+          "request_builder.py içinde URL ve header fonksiyonlarını tamamla.",
+          "client.py içinde timeout retry yapan json_getir ve pagination yapan sayfalari_getir fonksiyonlarını yaz.",
+          "service.py içinde kategori filtresi, stok toplamı ve istek ölçümlerini döndüren api_raporu fonksiyonunu tamamla."
+        ],
+        "requirements": [
+          "Doğrudan gerçek ağ çağrısı yapılmamalı.",
+          "FakeTransport üzerinden ilerlenmeli.",
+          "Timeout için üstel geri çekilme kaydı tutulmalı.",
+          "Pagination next bitene kadar sürmeli.",
+          "Sonuç kategorileri alfabetik ve benzersiz olmalı."
+        ],
+        "sampleOutput": "{\"urun_sayisi\": 2, \"toplam_stok\": 7, \"kategoriler\": [\"Aksesuar\", \"Kırtasiye\"], \"istek_sayisi\": 3, \"beklemeler\": [0.1]}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from service import api_raporu\n\n\nif __name__ == \"__main__\":\n    senaryo = [\n        {\"kind\": \"timeout\"},\n        {\n            \"status\": 200,\n            \"body\": '{\"items\": [{\"ad\": \"Defter\", \"kategori\": \"Kırtasiye\", \"stok\": 5}], \"next\": \"/urunler?page=2\"}',\n        },\n        {\n            \"status\": 200,\n            \"body\": '{\"items\": [{\"ad\": \"Çanta\", \"kategori\": \"Aksesuar\", \"stok\": 2}], \"next\": null}',\n        },\n    ]\n    print(api_raporu(senaryo, \"https://api.local\", \"demo\"))\n"
+          },
+          {
+            "path": "request_builder.py",
+            "starterCode": "from urllib.parse import urlencode, urljoin\n\n\ndef url_olustur(temel_url, yol, parametreler=None):\n    pass\n\n\ndef header_olustur(token):\n    pass\n"
+          },
+          {
+            "path": "client.py",
+            "starterCode": "import json\n\nfrom request_builder import header_olustur, url_olustur\nfrom transport import FakeTransport\n\n\ndef json_getir(transport, beklemeler, temel_url, yol, token, parametreler=None, max_deneme=3):\n    pass\n\n\ndef sayfalari_getir(transport, beklemeler, temel_url, yol, token, parametreler=None):\n    pass\n"
+          },
+          {
+            "path": "service.py",
+            "starterCode": "from client import sayfalari_getir\nfrom transport import FakeTransport\n\n\ndef api_raporu(senaryo, temel_url, token, kategori=None):\n    pass\n"
+          },
+          {
+            "path": "transport.py",
+            "starterCode": "class FakeTransport:\n    def __init__(self, senaryo):\n        self._senaryo = list(senaryo)\n        self.calls = []\n\n    def get(self, url, timeout=2, headers=None):\n        self.calls.append({\n            \"url\": url,\n            \"timeout\": timeout,\n            \"headers\": dict(headers or {}),\n        })\n        if not self._senaryo:\n            raise RuntimeError(\"Sahte transport yanıtı kalmadı.\")\n\n        sonuc = self._senaryo.pop(0)\n        if sonuc.get(\"kind\") == \"timeout\":\n            raise TimeoutError(\"İstek zaman aşımına uğradı.\")\n\n        return {\n            \"status\": int(sonuc.get(\"status\", 200)),\n            \"headers\": dict(sonuc.get(\"headers\", {})),\n            \"body\": sonuc.get(\"body\", \"{}\"),\n        }\n",
+            "readOnly": true
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Katmanlar",
+          "body": "request_builder yalnız URL/header; client yalnız transport/retry/pagination; service yalnız iş kuralı üretmeli."
+        },
+        {
+          "title": "Retry",
+          "body": "json_getir timeout aldığında son deneme değilse beklemeler listesine 0.1 * 2**deneme eklesin."
+        },
+        {
+          "title": "Rapor",
+          "body": "sayfalari_getir sonucunu kategoriye göre filtreleyip stok toplamı ve sorted(set(...)) kategorileri üret."
+        }
+      ],
+      "validation": {
+        "id": "advanced.http.final-client",
+        "title": "Dayanıklı ürün API raporunu üret",
+        "xpReward": 220,
+        "timeoutMs": 8000,
+        "checks": [
+          {
+            "id": "final-request-file",
+            "kind": "file_exists",
+            "path": "request_builder.py",
+            "label": "Request builder katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-client-file",
+            "kind": "file_exists",
+            "path": "client.py",
+            "label": "HTTP istemci katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-service-file",
+            "kind": "file_exists",
+            "path": "service.py",
+            "label": "Servis katmanı",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-url-function",
+            "kind": "function_definition",
+            "name": "url_olustur",
+            "minParams": 2,
+            "maxParams": 3,
+            "minDefaults": 1,
+            "requireReturn": true,
+            "file": "request_builder.py",
+            "label": "URL builder fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-header-function",
+            "kind": "function_definition",
+            "name": "header_olustur",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "request_builder.py",
+            "label": "Header builder fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-json-function",
+            "kind": "function_definition",
+            "name": "json_getir",
+            "minParams": 5,
+            "maxParams": 7,
+            "minDefaults": 2,
+            "requireReturn": true,
+            "file": "client.py",
+            "label": "Retry yapan JSON istemcisi",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-pages-function",
+            "kind": "function_definition",
+            "name": "sayfalari_getir",
+            "minParams": 5,
+            "maxParams": 6,
+            "minDefaults": 1,
+            "requireReturn": true,
+            "file": "client.py",
+            "label": "Pagination istemcisi",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-report-function",
+            "kind": "function_definition",
+            "name": "api_raporu",
+            "minParams": 3,
+            "maxParams": 4,
+            "minDefaults": 1,
+            "requireReturn": true,
+            "file": "service.py",
+            "label": "API raporu fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-urlencoded",
+            "kind": "call",
+            "name": "urlencode",
+            "file": "request_builder.py",
+            "label": "Query güvenli kodlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-get",
+            "kind": "call_count",
+            "name": "get",
+            "min": 1,
+            "file": "client.py",
+            "label": "Transport üzerinden istek yapıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "final-cases",
+            "kind": "function_cases",
+            "name": "api_raporu",
+            "module": "service",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "kind": "timeout"
+                    },
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[{\"ad\":\"Defter\",\"kategori\":\"Kırtasiye\",\"stok\":5}],\"next\":\"/urunler?page=2\"}"
+                    },
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[{\"ad\":\"Çanta\",\"kategori\":\"Aksesuar\",\"stok\":2}],\"next\":null}"
+                    }
+                  ],
+                  "https://api.local",
+                  "demo"
+                ],
+                "expected": {
+                  "urun_sayisi": 2,
+                  "toplam_stok": 7,
+                  "kategoriler": [
+                    "Aksesuar",
+                    "Kırtasiye"
+                  ],
+                  "istek_sayisi": 3,
+                  "beklemeler": [
+                    0.1
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[{\"ad\":\"Kalem\",\"kategori\":\"Kırtasiye\",\"stok\":10},{\"ad\":\"Suluk\",\"kategori\":\"Aksesuar\",\"stok\":4}],\"next\":null}"
+                    }
+                  ],
+                  "https://api.local",
+                  "abc",
+                  "Kırtasiye"
+                ],
+                "expected": {
+                  "urun_sayisi": 1,
+                  "toplam_stok": 10,
+                  "kategoriler": [
+                    "Kırtasiye"
+                  ],
+                  "istek_sayisi": 1,
+                  "beklemeler": []
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "status": 200,
+                      "body": "{\"items\":[],\"next\":null}"
+                    }
+                  ],
+                  "https://api.local",
+                  "abc"
+                ],
+                "expected": {
+                  "urun_sayisi": 0,
+                  "toplam_stok": 0,
+                  "kategoriler": [],
+                  "istek_sayisi": 1,
+                  "beklemeler": []
+                }
+              }
+            ],
+            "label": "Gizli offline API senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "final-transport-unchanged",
+            "kind": "file_unchanged",
+            "path": "transport.py",
+            "label": "Sahte transport korundu",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
