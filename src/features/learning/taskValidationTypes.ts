@@ -268,6 +268,31 @@ export type TaskCheck =
       }>;
     })
   | (TaskCheckBase & {
+      kind: "async_programming";
+      requiredFiles: string[];
+      asyncFunctions?: Array<{
+        name: string;
+        file?: string;
+        minAwaitCount?: number;
+        minAsyncForCount?: number;
+        minAsyncWithCount?: number;
+        requiredCalls?: string[];
+        disallowCalls?: string[];
+      }>;
+      scenarios?: Array<{
+        module: string;
+        name: string;
+        args: TaskCaseValue[];
+        kwargs?: { [key: string]: TaskCaseValue };
+        action: "call" | "collect" | "cancel";
+        expected?: TaskCaseValue;
+        expectedException?: string;
+        maxDurationMs?: number;
+        cancelAfterMs?: number;
+        observeArgIndex?: number;
+      }>;
+    })
+  | (TaskCheckBase & {
       kind: "file_exists";
       path: string;
     })
