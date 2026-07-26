@@ -65,6 +65,15 @@ describe("release readiness contract", () => {
     expect(ciWorkflow).not.toContain("Generate deterministic lockfiles");
   });
 
+  it("builds and verifies a real Linux Tauri installer in CI", () => {
+    expect(ciWorkflow).toContain("Linux Tauri bundle smoke");
+    expect(ciWorkflow).toContain("npm run tauri:build -- --bundles deb");
+    expect(ciWorkflow).toContain("src-tauri/target/release/bundle/deb/*.deb");
+    expect(ciWorkflow).toContain("Expected exactly one .deb bundle");
+    expect(ciWorkflow).toContain("patchelf");
+    expect(ciWorkflow).toContain("xdg-utils");
+  });
+
   it("documents the real completed product and clean install", () => {
     expect(readme).toContain("31/31 ana geliştirme aşaması tamamlandı");
     expect(readme).toContain("npm ci");
