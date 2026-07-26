@@ -35,6 +35,20 @@ jobs:
         with:
           components: rustfmt
 
+      - name: Install Tauri Linux dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils >/dev/null
+
       - name: Extract and run deterministic finalizer
         id: materialize
         shell: bash
