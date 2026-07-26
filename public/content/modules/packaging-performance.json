@@ -1,0 +1,924 @@
+{
+  "moduleId": "packaging-performance",
+  "lessons": [
+    {
+      "id": "advanced.performance.timeit",
+      "moduleId": "packaging-performance",
+      "order": 1,
+      "title": "timeit ile güvenilir benchmark özeti çıkar",
+      "summary": "Tek bir ölçüme güvenmek yerine repeat sonuçlarını en iyi süre, medyan ve tekrar sayısıyla özetle.",
+      "levelLabel": "Advanced Performance",
+      "mode": "code",
+      "task": {
+        "title": "timeit ile güvenilir benchmark özeti çıkar",
+        "instructions": [
+          "benchmark_ozeti(ornekler) fonksiyonunu tamamla.",
+          "Boş ölçüm listesini güvenli işle.",
+          "Orijinal listeyi değiştirmeden sonucu sözlük olarak döndür."
+        ],
+        "requirements": [
+          "timeit.repeat importu korunmalı.",
+          "Medyan statistics.median ile hesaplanmalı.",
+          "Duvar saati değerleri sabit beklenen sonuç olarak kullanılmamalı."
+        ],
+        "sampleOutput": "{\"en_iyi\": 0.2, \"medyan\": 0.3, \"tekrar\": 3}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from statistics import median\nfrom timeit import repeat\n\n\ndef benchmark_ozeti(ornekler):\n    \"\"\"Ölçüm listesini küçükten büyüğe ve medyanla özetle.\"\"\"\n    pass\n\n\nif __name__ == \"__main__\":\n    sureler = repeat(\"sum(range(100))\", number=100, repeat=5)\n    print(benchmark_ozeti(sureler))\n"
+      },
+      "hints": [
+        {
+          "title": "Ölçüm özeti",
+          "body": "Boş listede None değerleri döndür; diğer durumda min() ve median() kullan."
+        }
+      ],
+      "validation": {
+        "id": "advanced.performance.timeit",
+        "title": "timeit ile güvenilir benchmark özeti çıkar",
+        "xpReward": 110,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "timeit-import",
+            "kind": "import_statement",
+            "module": "timeit",
+            "name": "repeat",
+            "file": "main.py",
+            "label": "timeit.repeat kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "median-import",
+            "kind": "import_statement",
+            "module": "statistics",
+            "name": "median",
+            "file": "main.py",
+            "label": "Medyan hesabı kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "benchmark-def",
+            "kind": "function_definition",
+            "name": "benchmark_ozeti",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Benchmark özet fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "benchmark-cases",
+            "kind": "function_cases",
+            "name": "benchmark_ozeti",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    0.4,
+                    0.2,
+                    0.3
+                  ]
+                ],
+                "expected": {
+                  "en_iyi": 0.2,
+                  "medyan": 0.3,
+                  "tekrar": 3
+                }
+              },
+              {
+                "args": [
+                  [
+                    5,
+                    1,
+                    4,
+                    2
+                  ]
+                ],
+                "expected": {
+                  "en_iyi": 1,
+                  "medyan": 3.0,
+                  "tekrar": 4
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "en_iyi": null,
+                  "medyan": null,
+                  "tekrar": 0
+                }
+              }
+            ],
+            "label": "Gizli benchmark özetleri",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.cache-prediction",
+      "moduleId": "packaging-performance",
+      "order": 2,
+      "title": "Önbellekli çağrı sayısını tahmin et",
+      "summary": "lru_cache aynı argümanla tekrar çağrılan fonksiyonun gövdesini yeniden çalıştırmaz.",
+      "levelLabel": "Advanced Performance",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Önbellekli çağrı sayısını tahmin et",
+        "instructions": [
+          "fibonacci(6) sonucunu belirle.",
+          "İlk çağrıdan sonra kaç farklı n değeri hesaplandığını say.",
+          "İkinci aynı çağrının sayacı değiştirip değiştirmediğini belirle."
+        ],
+        "requirements": [
+          "Dört çıktı satırı birlikte seçilmeli.",
+          "Önbellek anahtarı fonksiyon argümanıdır."
+        ],
+        "sampleOutput": "8 / 7 / 8 / 7",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from functools import lru_cache\n\n\nsayac = {\"hesap\": 0}\n\n\n@lru_cache(maxsize=None)\ndef fibonacci(n):\n    sayac[\"hesap\"] += 1\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\n\nprint(fibonacci(6))\nprint(sayac[\"hesap\"])\nprint(fibonacci(6))\nprint(sayac[\"hesap\"])\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.performance.cache-prediction",
+        "title": "Önbellekli çağrı sayısını tahmin et",
+        "xpReward": 75,
+        "timeoutMs": 10000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      },
+      "choice": {
+        "prompt": "Program hangi dört satırı yazdırır?",
+        "options": [
+          {
+            "id": "a",
+            "label": "8 / 7 / 8 / 7"
+          },
+          {
+            "id": "b",
+            "label": "8 / 25 / 8 / 50"
+          },
+          {
+            "id": "c",
+            "label": "8 / 7 / 8 / 8"
+          },
+          {
+            "id": "d",
+            "label": "13 / 7 / 13 / 7"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.cprofile",
+      "moduleId": "packaging-performance",
+      "order": 3,
+      "title": "cProfile ve pstats ile sıcak noktayı bul",
+      "summary": "Profiler çıktısını metin olarak ezberlemek yerine ölçülen fonksiyonun çalıştığını ve sonucunu raporla.",
+      "levelLabel": "Advanced Performance",
+      "mode": "code-completion",
+      "task": {
+        "title": "cProfile ve pstats ile sıcak noktayı bul",
+        "instructions": [
+          "profil_ozeti(veriler) fonksiyonunu tamamla.",
+          "cProfile.Profile ile is_yuku çağrısını ölç.",
+          "pstats.Stats çıktısında is_yuku adının bulunduğunu raporla."
+        ],
+        "requirements": [
+          "Fonksiyon gerçek sonucu döndürmeli.",
+          "Profiler her çağrıda yeni oluşturulmalı.",
+          "Standart çıktı gizli testleri bozmamalı."
+        ],
+        "sampleOutput": "{\"sonuc\": 14, \"is_yuku_var\": true}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import cProfile\nimport io\nimport pstats\n\n\ndef is_yuku(veriler):\n    return sum(deger * deger for deger in veriler)\n\n\ndef profil_ozeti(veriler):\n    profiler = cProfile.Profile()\n    # Profili başlat, is_yuku fonksiyonunu çalıştır ve durdur.\n    # pstats.Stats ile toplam çağrı sayısını ve is_yuku görünürlüğünü döndür.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(profil_ozeti([1, 2, 3, 4]))\n"
+      },
+      "hints": [
+        {
+          "title": "Stats akışı",
+          "body": "io.StringIO oluşturup pstats.Stats(profiler, stream=akış).print_stats() kullanabilirsin."
+        }
+      ],
+      "validation": {
+        "id": "advanced.performance.cprofile",
+        "title": "cProfile ve pstats ile sıcak noktayı bul",
+        "xpReward": 145,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "cprofile-import",
+            "kind": "import_statement",
+            "module": "cProfile",
+            "file": "main.py",
+            "label": "cProfile import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "pstats-import",
+            "kind": "import_statement",
+            "module": "pstats",
+            "file": "main.py",
+            "label": "pstats import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "profile-enable",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "profiler\\.(enable|runcall)\\s*\\(",
+            "flags": "m",
+            "label": "Profiler başlatılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "profile-disable",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "profiler\\.disable\\s*\\(",
+            "flags": "m",
+            "label": "Profiler durduruluyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "profile-cases",
+            "kind": "function_cases",
+            "name": "profil_ozeti",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    2,
+                    3
+                  ]
+                ],
+                "expected": {
+                  "sonuc": 14,
+                  "is_yuku_var": true
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "sonuc": 0,
+                  "is_yuku_var": true
+                }
+              },
+              {
+                "args": [
+                  [
+                    -2,
+                    5
+                  ]
+                ],
+                "expected": {
+                  "sonuc": 29,
+                  "is_yuku_var": true
+                }
+              }
+            ],
+            "label": "Gizli profil senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.quadratic-debug",
+      "moduleId": "packaging-performance",
+      "order": 4,
+      "title": "Hata Avcısı: O(n²) üyelik aramasını kaldır",
+      "summary": "İç içe tarama yerine set üyeliği kullanarak aynı davranışı daha iyi ölçeklenebilir hâle getir.",
+      "levelLabel": "Advanced Performance",
+      "mode": "debugging",
+      "task": {
+        "title": "Hata Avcısı: O(n²) üyelik aramasını kaldır",
+        "instructions": [
+          "İkinci for döngüsünü kaldır.",
+          "sag verisini bir kez set'e dönüştür.",
+          "Benzersiz ve alfabetik çıktıyı koru."
+        ],
+        "requirements": [
+          "En fazla bir for döngüsü olmalı.",
+          "set() gerçekten kullanılmalı.",
+          "Girdi listeleri değiştirilmemeli."
+        ],
+        "sampleOutput": "[\"A\", \"B\"]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def ortak_kodlar(sol, sag):\n    sonuc = []\n    for kod in sol:\n        for diger in sag:\n            if kod == diger and kod not in sonuc:\n                sonuc.append(kod)\n    return sorted(sonuc)\n\n\nif __name__ == \"__main__\":\n    print(ortak_kodlar([\"A\", \"B\", \"A\"], [\"B\", \"C\", \"A\"]))\n"
+      },
+      "hints": [
+        {
+          "title": "Hızlı üyelik",
+          "body": "sag_kodlari = set(sag) oluşturup tek döngüde kod in sag_kodlari kontrolü yap."
+        }
+      ],
+      "validation": {
+        "id": "advanced.performance.quadratic-debug",
+        "title": "Hata Avcısı: O(n²) üyelik aramasını kaldır",
+        "xpReward": 150,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "one-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "İç içe döngü kaldırıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "set-call",
+            "kind": "call",
+            "name": "set",
+            "file": "main.py",
+            "label": "Set tabanlı üyelik kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "common-cases",
+            "kind": "function_cases",
+            "name": "ortak_kodlar",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    "A",
+                    "B",
+                    "A"
+                  ],
+                  [
+                    "B",
+                    "C",
+                    "A"
+                  ]
+                ],
+                "expected": [
+                  "A",
+                  "B"
+                ]
+              },
+              {
+                "args": [
+                  [],
+                  [
+                    "A"
+                  ]
+                ],
+                "expected": []
+              },
+              {
+                "args": [
+                  [
+                    "X",
+                    "X"
+                  ],
+                  [
+                    "X"
+                  ]
+                ],
+                "expected": [
+                  "X"
+                ]
+              }
+            ],
+            "label": "Gizli ortak kod senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "debugging": {
+        "errorType": "PerformanceSmell",
+        "symptom": "Her sol eleman için sag listesi baştan taranıyor; veri büyüdükçe karşılaştırma sayısı çarpılıyor.",
+        "workflow": [
+          "İç içe döngüleri ve üyelik kontrolünü belirle.",
+          "Tekrarlı aranan koleksiyonu set'e dönüştür.",
+          "Davranışı gizli veri kümeleriyle yeniden doğrula."
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.tracemalloc",
+      "moduleId": "packaging-performance",
+      "order": 5,
+      "title": "tracemalloc ile bellek farkını gözlemle",
+      "summary": "İki snapshot arasındaki tahsis farkını ölçerken ara liste üretmeden hesap yap.",
+      "levelLabel": "Advanced Performance",
+      "mode": "code",
+      "task": {
+        "title": "tracemalloc ile bellek farkını gözlemle",
+        "instructions": [
+          "toplam değerini karelerin toplamı olarak hesapla.",
+          "Generator expression kullan.",
+          "Snapshot karşılaştırmasını ve stop çağrısını koru."
+        ],
+        "requirements": [
+          "En az iki snapshot alınmalı.",
+          "Ara liste yerine GeneratorExp kullanılmalı.",
+          "Boş veri çalışmalı."
+        ],
+        "sampleOutput": "{\"adet\": 3, \"toplam\": 14, \"olcum_yapildi\": true}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import tracemalloc\n\n\ndef bellek_ozeti(degerler):\n    tracemalloc.start()\n    once = tracemalloc.take_snapshot()\n    # Ara liste yerine generator expression kullanarak toplamı hesapla.\n    toplam = 0\n    sonra = tracemalloc.take_snapshot()\n    fark = sum(stat.size_diff for stat in sonra.compare_to(once, \"lineno\"))\n    tracemalloc.stop()\n    return {\n        \"adet\": len(degerler),\n        \"toplam\": toplam,\n        \"olcum_yapildi\": isinstance(fark, int),\n    }\n\n\nif __name__ == \"__main__\":\n    print(bellek_ozeti([1, 2, 3]))\n"
+      },
+      "hints": [
+        {
+          "title": "Lazy toplam",
+          "body": "sum(deger * deger for deger in degerler) ara liste oluşturmaz."
+        }
+      ],
+      "validation": {
+        "id": "advanced.performance.tracemalloc",
+        "title": "tracemalloc ile bellek farkını gözlemle",
+        "xpReward": 160,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "tracemalloc-import",
+            "kind": "import_statement",
+            "module": "tracemalloc",
+            "file": "main.py",
+            "label": "tracemalloc import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "snapshots",
+            "kind": "call_count",
+            "name": "take_snapshot",
+            "min": 2,
+            "max": 2,
+            "file": "main.py",
+            "label": "İki bellek anlık görüntüsü alınıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "generator",
+            "kind": "node_count",
+            "nodeName": "GeneratorExp",
+            "min": 1,
+            "file": "main.py",
+            "label": "Lazy toplam kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "memory-cases",
+            "kind": "function_cases",
+            "name": "bellek_ozeti",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    2,
+                    3
+                  ]
+                ],
+                "expected": {
+                  "adet": 3,
+                  "toplam": 14,
+                  "olcum_yapildi": true
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "adet": 0,
+                  "toplam": 0,
+                  "olcum_yapildi": true
+                }
+              },
+              {
+                "args": [
+                  [
+                    -2,
+                    5
+                  ]
+                ],
+                "expected": {
+                  "adet": 2,
+                  "toplam": 29,
+                  "olcum_yapildi": true
+                }
+              }
+            ],
+            "label": "Gizli bellek senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.package-api",
+      "moduleId": "packaging-performance",
+      "order": 6,
+      "title": "Paketin kamuya açık API sözleşmesini kur",
+      "summary": "`__init__.py`, `__all__` ve `__version__` ile dağıtılabilir paketin dış arayüzünü açıkça tanımla.",
+      "levelLabel": "Advanced Performance",
+      "mode": "code",
+      "task": {
+        "title": "Paketin kamuya açık API sözleşmesini kur",
+        "instructions": [
+          "hizli_rapor/__init__.py içinde raporla fonksiyonunu dışa aktar.",
+          "__version__ değerini 1.0.0 yap.",
+          "__all__ ile yalnız kamuya açık isimleri tanımla."
+        ],
+        "requirements": [
+          "Göreli import kullanılmalı.",
+          "main.py paket iç modülüne doğrudan bağlanmamalı.",
+          "Gizli veriler aynı API ile çalışmalı."
+        ],
+        "sampleOutput": "{\"surum\": \"1.0.0\", \"rapor\": {\"adet\": 3, \"toplam\": 6, \"sirali\": [1, 2, 3]}}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from hizli_rapor import __version__, raporla\n\n\ndef paket_ozeti(veriler):\n    return {\"surum\": __version__, \"rapor\": raporla(veriler)}\n\n\nif __name__ == \"__main__\":\n    print(paket_ozeti([3, 1, 2]))\n"
+          },
+          {
+            "path": "hizli_rapor/__init__.py",
+            "starterCode": "# Kamuya açık API ve sürüm bilgisini tanımla.\n"
+          },
+          {
+            "path": "hizli_rapor/core.py",
+            "starterCode": "def raporla(veriler):\n    return {\"adet\": len(veriler), \"toplam\": sum(veriler), \"sirali\": sorted(veriler)}\n"
+          }
+        ],
+        "starterCode": "from hizli_rapor import __version__, raporla\n\n\ndef paket_ozeti(veriler):\n    return {\"surum\": __version__, \"rapor\": raporla(veriler)}\n\n\nif __name__ == \"__main__\":\n    print(paket_ozeti([3, 1, 2]))\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.performance.package-api",
+        "title": "Paketin kamuya açık API sözleşmesini kur",
+        "xpReward": 170,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "init-file",
+            "kind": "file_exists",
+            "path": "hizli_rapor/__init__.py",
+            "label": "Paket başlangıç dosyası",
+            "visibility": "visible"
+          },
+          {
+            "id": "public-import",
+            "kind": "file_content_regex",
+            "path": "hizli_rapor/__init__.py",
+            "pattern": "from\\s+\\.core\\s+import\\s+raporla",
+            "flags": "m",
+            "label": "Kamuya açık fonksiyon dışa aktarılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "version",
+            "kind": "file_content_regex",
+            "path": "hizli_rapor/__init__.py",
+            "pattern": "__version__\\s*=\\s*[\"']1\\.0\\.0[\"']",
+            "flags": "m",
+            "label": "Sürüm metadata'sı",
+            "visibility": "visible"
+          },
+          {
+            "id": "all",
+            "kind": "file_content_regex",
+            "path": "hizli_rapor/__init__.py",
+            "pattern": "__all__\\s*=\\s*\\[[\\s\\S]*?[\"']raporla[\"'][\\s\\S]*?[\"']__version__[\"'][\\s\\S]*?\\]",
+            "flags": "m",
+            "label": "Kamuya açık API listesi",
+            "visibility": "visible"
+          },
+          {
+            "id": "package-cases",
+            "kind": "function_cases",
+            "name": "paket_ozeti",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    3,
+                    1,
+                    2
+                  ]
+                ],
+                "expected": {
+                  "surum": "1.0.0",
+                  "rapor": {
+                    "adet": 3,
+                    "toplam": 6,
+                    "sirali": [
+                      1,
+                      2,
+                      3
+                    ]
+                  }
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "surum": "1.0.0",
+                  "rapor": {
+                    "adet": 0,
+                    "toplam": 0,
+                    "sirali": []
+                  }
+                }
+              }
+            ],
+            "label": "Gizli paket API senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "advanced.performance.final",
+      "moduleId": "packaging-performance",
+      "order": 7,
+      "title": "Final proje: Paketlenmiş performans laboratuvarı",
+      "summary": "Yavaş ve optimize algoritmayı aynı davranış sözleşmesi altında karşılaştır; paket API'si, profil ve bellek ölçümü üret.",
+      "levelLabel": "Advanced Performance",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Final proje: Paketlenmiş performans laboratuvarı",
+        "instructions": [
+          "performans_lab paketinin kamuya açık API'sini oluştur.",
+          "ortak_hizli fonksiyonunu set tabanlı tek geçişle tamamla.",
+          "profil_kontrolu içinde cProfile, tracemalloc ve repeat çalıştır.",
+          "performans_raporu iki sonucu ve deterministik işlem sayılarını karşılaştırsın."
+        ],
+        "requirements": [
+          "Yavaş ve hızlı sonuçlar aynı olmalı.",
+          "Hızlı algoritma iç içe döngü kullanmamalı.",
+          "Duvar saati değeri gizli testin doğruluk koşulu yapılmamalı.",
+          "Boş veri ve normalize edilen kodlar çalışmalı."
+        ],
+        "sampleOutput": "{\"sonuc\": [\"A\", \"B\"], \"esit\": true, \"yavas_islem\": 9, \"hizli_islem\": 3, \"iyilesti\": true, \"profil_var\": true}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from performans_lab.app import performans_raporu\n\nif __name__ == \"__main__\":\n    print(performans_raporu([\"A\", \"B\", \"A\"], [\"B\", \"C\", \"A\"]))\n"
+          },
+          {
+            "path": "performans_lab/__init__.py",
+            "starterCode": "# Paket API'sini ve sürümünü tanımla.\n"
+          },
+          {
+            "path": "performans_lab/baseline.py",
+            "starterCode": "def ortak_yavas(sol, sag):\n    sonuc = []\n    karsilastirma = 0\n    for kod in sol:\n        sol_kod = str(kod).strip().upper()\n        for diger in sag:\n            karsilastirma += 1\n            sag_kod = str(diger).strip().upper()\n            if sol_kod == sag_kod and sol_kod not in sonuc:\n                sonuc.append(sol_kod)\n    return sorted(sonuc), karsilastirma\n"
+          },
+          {
+            "path": "performans_lab/optimized.py",
+            "starterCode": "from functools import lru_cache\n\n@lru_cache(maxsize=128)\ndef normalize(kod):\n    return str(kod).strip().upper()\n\n\ndef ortak_hizli(sol, sag):\n    # sag için bir set indeksi kur ve tek geçişte sonucu üret.\n    pass\n"
+          },
+          {
+            "path": "performans_lab/profiling.py",
+            "starterCode": "import cProfile\nimport io\nimport pstats\nimport tracemalloc\nfrom timeit import repeat\n\n\ndef profil_kontrolu(fonksiyon, *args):\n    # cProfile ve tracemalloc ölçümünü çalıştır; süreyi repeat ile birden fazla kez örnekle.\n    pass\n"
+          },
+          {
+            "path": "performans_lab/app.py",
+            "starterCode": "from .baseline import ortak_yavas\nfrom .optimized import ortak_hizli\nfrom .profiling import profil_kontrolu\n\n\ndef performans_raporu(sol, sag):\n    # İki uygulamanın aynı sonucu ürettiğini ve hızlı sürümün daha az üyelik işi yaptığını raporla.\n    pass\n"
+          }
+        ],
+        "starterCode": "from performans_lab.app import performans_raporu\n\nif __name__ == \"__main__\":\n    print(performans_raporu([\"A\", \"B\", \"A\"], [\"B\", \"C\", \"A\"]))\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "advanced.performance.final",
+        "title": "Final proje: Paketlenmiş performans laboratuvarı",
+        "xpReward": 250,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "report-def",
+            "kind": "function_definition",
+            "name": "performans_raporu",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "performans_lab/app.py",
+            "label": "Performans raporu fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "package-init",
+            "kind": "file_content_regex",
+            "path": "performans_lab/__init__.py",
+            "pattern": "__version__\\s*=\\s*[\"']1\\.0\\.0[\"']",
+            "flags": "m",
+            "label": "Paket sürümü",
+            "visibility": "visible"
+          },
+          {
+            "id": "package-api",
+            "kind": "file_content_regex",
+            "path": "performans_lab/__init__.py",
+            "pattern": "from\\s+\\.app\\s+import\\s+performans_raporu",
+            "flags": "m",
+            "label": "Final API dışa aktarımı",
+            "visibility": "visible"
+          },
+          {
+            "id": "set-index",
+            "kind": "file_content_regex",
+            "path": "performans_lab/optimized.py",
+            "pattern": "set\\s*\\(",
+            "flags": "m",
+            "label": "Set indeksi",
+            "visibility": "visible"
+          },
+          {
+            "id": "single-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "max": 1,
+            "file": "performans_lab/optimized.py",
+            "label": "Tek geçişli optimize algoritma",
+            "visibility": "visible"
+          },
+          {
+            "id": "cache",
+            "kind": "file_content_regex",
+            "path": "performans_lab/optimized.py",
+            "pattern": "@lru_cache\\s*\\(",
+            "flags": "m",
+            "label": "Normalize önbelleği",
+            "visibility": "visible"
+          },
+          {
+            "id": "cprofile",
+            "kind": "file_content_regex",
+            "path": "performans_lab/profiling.py",
+            "pattern": "cProfile\\.Profile\\s*\\(",
+            "flags": "m",
+            "label": "cProfile ölçümü",
+            "visibility": "visible"
+          },
+          {
+            "id": "tracemalloc",
+            "kind": "file_content_regex",
+            "path": "performans_lab/profiling.py",
+            "pattern": "tracemalloc\\.start\\s*\\(",
+            "flags": "m",
+            "label": "Bellek ölçümü",
+            "visibility": "visible"
+          },
+          {
+            "id": "repeat",
+            "kind": "file_content_regex",
+            "path": "performans_lab/profiling.py",
+            "pattern": "repeat\\s*\\(",
+            "flags": "m",
+            "label": "Tekrarlı süre ölçümü",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "performans_raporu",
+            "module": "performans_lab.app",
+            "cases": [
+              {
+                "args": [
+                  [
+                    "A",
+                    "B",
+                    "A"
+                  ],
+                  [
+                    "B",
+                    "C",
+                    "A"
+                  ]
+                ],
+                "expected": {
+                  "sonuc": [
+                    "A",
+                    "B"
+                  ],
+                  "esit": true,
+                  "yavas_islem": 9,
+                  "hizli_islem": 3,
+                  "iyilesti": true,
+                  "profil_var": true
+                }
+              },
+              {
+                "args": [
+                  [],
+                  [
+                    "A"
+                  ]
+                ],
+                "expected": {
+                  "sonuc": [],
+                  "esit": true,
+                  "yavas_islem": 0,
+                  "hizli_islem": 0,
+                  "iyilesti": false,
+                  "profil_var": true
+                }
+              },
+              {
+                "args": [
+                  [
+                    " x ",
+                    "Y",
+                    "x"
+                  ],
+                  [
+                    "X",
+                    "Z"
+                  ]
+                ],
+                "expected": {
+                  "sonuc": [
+                    "X"
+                  ],
+                  "esit": true,
+                  "yavas_islem": 6,
+                  "hizli_islem": 3,
+                  "iyilesti": true,
+                  "profil_var": true
+                }
+              }
+            ],
+            "label": "Gizli performans raporları",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "İki kod koleksiyonu ve yavaş referans uygulaması",
+        "targetShape": "Paketlenmiş, profillenmiş ve deterministik performans raporu",
+        "rules": [
+          "Davranış eşitliği korunur.",
+          "Optimizasyon set indeksi ve tek geçiş kullanır.",
+          "Profil sonuçları doğruluk yerine gözlem amacıyla raporlanır."
+        ],
+        "workflow": [
+          "Referans sonucu üret.",
+          "Optimize sonucu üret.",
+          "cProfile, tracemalloc ve repeat ölçümlerini çalıştır.",
+          "Sonuçları ve işlem sayılarını karşılaştır."
+        ]
+      }
+    }
+  ]
+}
