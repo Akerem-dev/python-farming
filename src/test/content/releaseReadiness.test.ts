@@ -88,12 +88,13 @@ describe("release readiness contract", () => {
     expect(releaseWorkflow).toContain("tauri-apps/tauri-action@v1");
     expect(releaseWorkflow).toContain("npm ci");
     expect(releaseWorkflow).toContain("releaseDraft: true");
-    expect(releaseWorkflow).toContain("prerelease: true");
+    expect(releaseWorkflow).toContain("prerelease: false");
     expect(releaseWorkflow).toContain("aarch64-apple-darwin");
     expect(releaseWorkflow).toContain("x86_64-apple-darwin");
     expect(releaseWorkflow).toContain("ubuntu-22.04");
     expect(releaseWorkflow).toContain("windows-latest");
     expect(releaseWorkflow).toContain("APPLE_SIGNING_IDENTITY");
+    expect(releaseWorkflow).toContain("Build dry-run Tauri bundles");
   });
 
   it("rejects release tags that do not match all manifest versions", () => {
@@ -104,8 +105,7 @@ describe("release readiness contract", () => {
     expect(releaseWorkflow).toContain('expected_tag="v${package_version}"');
     expect(releaseWorkflow).toContain("GITHUB_REF_TYPE");
     expect(releaseWorkflow).toContain("GITHUB_REF_NAME");
-    expect(releaseWorkflow).toContain(
-      "tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}",
-    );
+    expect(releaseWorkflow).toContain("tagName: ${{ github.ref_name }}");
+    expect(releaseWorkflow).not.toContain("v__VERSION__");
   });
 });
