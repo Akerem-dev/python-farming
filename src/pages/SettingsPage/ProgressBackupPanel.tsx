@@ -122,7 +122,7 @@ export function ProgressBackupPanel() {
         </div>
       </dl>
 
-      <div className={styles.panelActions}>
+      <div className={styles.actions}>
         <Button variant="secondary" onClick={createBackup} disabled={actionDisabled}>
           {status === "creating" ? "Yedekleniyor…" : "Şimdi yedekle"}
         </Button>
@@ -132,7 +132,7 @@ export function ProgressBackupPanel() {
       </div>
 
       {error ? (
-        <div className={styles.inlineError} role="alert">
+        <div className={styles.errorBanner} role="alert">
           {error}
         </div>
       ) : null}
