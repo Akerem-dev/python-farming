@@ -36,6 +36,7 @@ jobs:
           components: rustfmt
 
       - name: Extract and run deterministic finalizer
+        id: materialize
         shell: bash
         run: |
           python3 - <<'PY'
@@ -57,16 +58,46 @@ jobs:
               lines.append(line)
           Path('/tmp/finalize-v1.mjs').write_text('\n'.join(lines) + '\n', encoding='utf-8')
           PY
-          node /tmp/finalize-v1.mjs
-          rm -f .github/workflows/finalize-v1-pr.yml
+
+          set +e
+          node /tmp/finalize-v1.mjs > /tmp/finalizer.log 2>&1
+          status=$?
+          set -e
+
+          if [ "$status" -ne 0 ]; then
+            git reset --hard HEAD
+            mkdir -p docs
+            cp /tmp/finalizer.log docs/FINALIZER_ERROR.log
+            echo "success=false" >> "$GITHUB_OUTPUT"
+          else
+            rm -f .github/workflows/finalize-v1-pr.yml
+            echo "success=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit finalizer diagnostics
+        if: steps.materialize.outputs.success == 'false'
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/FINALIZER_ERROR.log
+          git commit -m "Aşama 41: finalizer tanılama çıktısı [finalize-v1-diagnostic]"
+          git push origin HEAD:stage/41-final-qa-v1
+
+      - name: Stop after recorded finalizer failure
+        if: steps.materialize.outputs.success == 'false'
+        run: exit 1
 
       - name: Install locked dependencies
+        if: steps.materialize.outputs.success == 'true'
         run: npm ci
 
       - name: Run complete quality gate
+        if: steps.materialize.outputs.success == 'true'
         run: npm run verify
 
       - name: Commit finalized v1 files
+        if: steps.materialize.outputs.success == 'true'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
