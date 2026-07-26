@@ -1,0 +1,33 @@
+name: Materialize Stage 29
+
+on:
+  push:
+    branches:
+      - stage/29-advanced-design-patterns
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: stage/29-advanced-design-patterns
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Materialize package
+        run: python scripts/materialize_stage29.py
+      - name: Remove temporary tools
+        run: rm scripts/materialize_stage29.py .github/workflows/materialize-stage29.yml
+      - name: Commit product changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: harden architecture pattern lessons"
+          git push origin HEAD:stage/29-advanced-design-patterns
