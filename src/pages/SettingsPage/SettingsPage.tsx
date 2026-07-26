@@ -9,6 +9,7 @@ import { runtimeProtocolVersion } from "../../runtime/runtimeProtocol";
 import { AppShell } from "../../layouts/AppShell";
 import { ProgressBackupPanel } from "./ProgressBackupPanel";
 import { ProgressDataPanel } from "./ProgressDataPanel";
+import { ApplicationUpdatePanel } from "./ApplicationUpdatePanel";
 import styles from "./SettingsPage.module.css";
 
 async function copyText(value: string) {
@@ -376,6 +377,7 @@ export function SettingsPage() {
 
           <ProgressBackupPanel />
           <ProgressDataPanel />
+          <ApplicationUpdatePanel />
         </section>
 
         {snapshot?.diagnostics.length ? (
