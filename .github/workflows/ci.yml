@@ -9,43 +9,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  stage31-patch:
-    name: Apply Stage 31 integration
-    if: github.event_name == 'push' && github.ref_name == 'stage/31-advanced-capstone-graduation' && github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v4
-        with:
-          ref: stage/31-advanced-capstone-graduation
-          fetch-depth: 1
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Apply integration patch
-        run: python scripts/patch_stage31_v2.py
-      - name: Restore CI and remove temporary tools
-        run: |
-          git fetch origin main --depth=1
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/patch_stage31.py scripts/patch_stage31_v2.py .github/workflows/patch-stage31.yml
-      - name: Commit product integration
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "feat: connect advanced graduation and validator"
-          git push origin HEAD:stage/31-advanced-capstone-graduation
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
