@@ -16,7 +16,10 @@ function rustConstant(source: string, name: string) {
     throw new Error(`${name} Rust sabiti bulunamadı.`);
   }
 
-  return Number(value.replaceAll("_", "").replaceAll(" * ", "*"));
+  return value
+    .split("*")
+    .map((part) => Number(part.replaceAll("_", "").trim()))
+    .reduce((product, part) => product * part, 1);
 }
 
 const routes = read("src/app/routes.ts");
