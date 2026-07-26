@@ -32,4 +32,5 @@ test-results/
 npm-debug.log*
 
 # Downloaded portable Python bundle
-src-tauri/python-runtime/
+src-tauri/python-runtime/*
+!src-tauri/python-runtime/README.md
