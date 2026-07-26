@@ -97,11 +97,35 @@ jobs:
         run: npm ci
 
       - name: Run complete quality gate
+        id: quality
         if: steps.materialize.outputs.success == 'true'
-        run: npm run verify
+        shell: bash
+        run: |
+          set +e
+          npm run verify > /tmp/final-quality.log 2>&1
+          status=$?
+          set -e
+          if [ "$status" -eq 0 ]; then
+            echo "success=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "success=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Upload final quality diagnostics
+        if: steps.quality.outputs.success == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: final-quality-error
+          path: /tmp/final-quality.log
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: Stop after recorded quality failure
+        if: steps.quality.outputs.success == 'false'
+        run: exit 1
 
       - name: Commit finalized v1 files
-        if: steps.materialize.outputs.success == 'true'
+        if: steps.materialize.outputs.success == 'true' && steps.quality.outputs.success == 'true'
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
