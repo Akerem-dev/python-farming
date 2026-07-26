@@ -1,0 +1,138 @@
+name: Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    name: Release preflight
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils >/dev/null
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Run complete quality gate
+        run: npm run verify
+
+  publish:
+    name: Build ${{ matrix.label }}
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            label: macOS Apple Silicon
+            args: --target aarch64-apple-darwin
+            rustTargets: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: macos-latest
+            label: macOS Intel
+            args: --target x86_64-apple-darwin
+            rustTargets: aarch64-apple-darwin,x86_64-apple-darwin
+          - platform: ubuntu-22.04
+            label: Linux x64
+            args: ""
+            rustTargets: ""
+          - platform: windows-latest
+            label: Windows x64
+            args: ""
+            rustTargets: ""
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils >/dev/null
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rustTargets }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Build and upload Tauri bundles
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.platform, 'macos') && '-' || '' }}
+        with:
+          tagName: v__VERSION__
+          releaseName: Python Farming v__VERSION__
+          releaseBody: |
+            Python Farming geliştirme ön izlemesi.
+
+            Bu taslak paketler yayınlanmadan önce RELEASE_CHECKLIST.md adımlarıyla doğrulanmalıdır. Windows paketi imzasızdır; macOS paketleri ad-hoc imzalıdır ve notarize edilmemiştir.
+          releaseDraft: true
+          prerelease: true
+          generateReleaseNotes: true
+          args: ${{ matrix.args }}
