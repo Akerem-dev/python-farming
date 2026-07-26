@@ -58,10 +58,14 @@ describe("accessibility and first-run UX contract", () => {
     expect(progressBar).toContain('aria-hidden="true"');
   });
 
-  it("marks current navigation and disables unfinished destinations", () => {
+  it("marks current navigation and exposes every primary destination", () => {
     expect(primaryRail).toContain('aria-current={active ? "page" : undefined}');
-    expect(primaryRail).toContain("disabled={unavailable}");
-    expect(primaryRail).toContain("henüz kullanıma açılmadı");
+    expect(primaryRail).toContain("route: routes.tasks");
+    expect(primaryRail).toContain("route: routes.projects");
+    expect(primaryRail).toContain("route: routes.progress");
+    expect(primaryRail).toContain("route: routes.settings");
+    expect(primaryRail).not.toContain("disabled={");
+    expect(primaryRail).not.toContain("henüz kullanıma açılmadı");
     expect(curriculumSidebar).toContain('aria-label="Python müfredatı"');
     expect(curriculumSidebar).toContain('aria-current={state === "active" ? "step" : undefined}');
     expect(curriculumSidebar).toContain("stateLabels[state]");
