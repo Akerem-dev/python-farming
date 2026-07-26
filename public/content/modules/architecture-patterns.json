@@ -12,11 +12,14 @@
       "task": {
         "title": "Dependency injection ile bağımlılığı dışarıdan al",
         "instructions": [
-          "Dependency injection ile bağımlılığı dışarıdan al"
+          "SiparisServisi içindeki doğrudan Bildirimci oluşturma işlemini kaldır.",
+          "Bildirimci bağımlılığını __init__ üzerinden dışarıdan al.",
+          "Sahte bildirimciyle çalışan gizli senaryoları geçir."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "SiparisServisi(bildirimci) biçiminde kurulmalı.",
+          "tamamla() yalnız enjekte edilen gonder() metodunu kullanmalı.",
+          "Sabit çıktı üretilmemeli."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -25,7 +28,7 @@
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "class Bildirimci:\n    def gonder(self, mesaj): return f\"Gönderildi: {mesaj}\"\nclass SiparisServisi:\n    def __init__(self, bildirimci): self.bildirimci = bildirimci\n    def tamamla(self, siparis_id): return self.bildirimci.gonder(f\"Sipariş {siparis_id} tamamlandı\")\n"
+        "starterCode": "class Bildirimci:\n    def gonder(self, mesaj):\n        return f\"Gönderildi: {mesaj}\"\n\n\nclass SiparisServisi:\n    def __init__(self):\n        self.bildirimci = Bildirimci()\n\n    def tamamla(self, siparis_id):\n        mesaj = f\"Sipariş {siparis_id} tamamlandı\"\n        return self.bildirimci.gonder(mesaj)\n\n\ndef bildirim_senaryosu(siparis_id):\n    class SahteBildirimci:\n        def __init__(self):\n            self.mesajlar = []\n\n        def gonder(self, mesaj):\n            self.mesajlar.append(mesaj)\n            return f\"TEST:{mesaj}\"\n\n    sahte = SahteBildirimci()\n    servis = SiparisServisi(sahte)\n    sonuc = servis.tamamla(siparis_id)\n    return {\"sonuc\": sonuc, \"mesajlar\": sahte.mesajlar}\n"
       },
       "hints": [],
       "validation": {
@@ -35,15 +38,52 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "c",
-            "kind": "class_definition",
-            "name": "SiparisServisi",
-            "methods": [
-              "__init__",
-              "tamamla"
-            ],
-            "label": "Servis sınıfı",
+            "id": "constructor",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*bildirimci\\s*\\)",
+            "flags": "m",
+            "label": "Bağımlılık constructor'dan alınır",
             "visibility": "visible"
+          },
+          {
+            "id": "assign",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "self\\.bildirimci\\s*=\\s*bildirimci",
+            "label": "Enjekte edilen bağımlılık saklanır",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "bildirim_senaryosu",
+            "cases": [
+              {
+                "args": [
+                  17
+                ],
+                "expected": {
+                  "sonuc": "TEST:Sipariş 17 tamamlandı",
+                  "mesajlar": [
+                    "Sipariş 17 tamamlandı"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "A-42"
+                ],
+                "expected": {
+                  "sonuc": "TEST:Sipariş A-42 tamamlandı",
+                  "mesajlar": [
+                    "Sipariş A-42 tamamlandı"
+                  ]
+                }
+              }
+            ],
+            "label": "Sahte bağımlılık senaryoları",
+            "visibility": "hidden"
           }
         ]
       }
@@ -59,20 +99,21 @@
       "task": {
         "title": "Strategy seçiminin çıktısını tahmin et",
         "instructions": [
-          "Strategy seçiminin çıktısını tahmin et"
+          "İki strategy nesnesinin aynı hesapla() arayüzünü nasıl farklı uyguladığını incele.",
+          "Program çıktısını çalıştırmadan tahmin et."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "Satır sırası korunmalı.",
+          "Ondalıklı sonuç doğru yorumlanmalı."
         ],
-        "sampleOutput": "Görev çıktısı",
+        "sampleOutput": "100\n80.0",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "class Standart:\n    def hesapla(self,t): return t\nclass Indirimli:\n    def hesapla(self,t): return t*0.8\nprint(Standart().hesapla(100))\nprint(Indirimli().hesapla(100))\n"
+        "starterCode": "class Standart:\n    def hesapla(self, tutar):\n        return tutar\n\n\nclass Indirimli:\n    def hesapla(self, tutar):\n        return tutar * 0.8\n\n\nfor strateji in [Standart(), Indirimli()]:\n    print(strateji.hesapla(100))\n"
       },
       "hints": [],
       "validation": {
@@ -87,19 +128,19 @@
         }
       },
       "choice": {
-        "prompt": "Çıktı nedir?",
+        "prompt": "Programın iki satırlık çıktısı nedir?",
         "options": [
           {
             "id": "a",
-            "label": "100 / 80.0"
+            "label": "100\\n80.0"
           },
           {
             "id": "b",
-            "label": "100 / 100"
+            "label": "100\\n100"
           },
           {
             "id": "c",
-            "label": "80 / 100"
+            "label": "80.0\\n100"
           }
         ]
       }
@@ -115,11 +156,14 @@
       "task": {
         "title": "Factory ile doğru nesneyi üret",
         "instructions": [
-          "Factory ile doğru nesneyi üret"
+          "odeme_olustur() fonksiyonunu tamamla.",
+          "kart ve havale türleri için doğru sınıf örneğini döndür.",
+          "komisyon_hesapla() yardımcısını değiştirme."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "Factory bir sınıf değil, nesne döndürmeli.",
+          "Kart ve Havale sonuçları farklı gizli tutarlarda doğrulanacak.",
+          "return None ile görev geçilemez."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -128,7 +172,7 @@
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "class Kart:\n    def komisyon(self,t): return t*0.03\nclass Havale:\n    def komisyon(self,t): return 0\ndef odeme_olustur(tur):\n    pass\n"
+        "starterCode": "class Kart:\n    def komisyon(self, tutar):\n        return tutar * 0.03\n\n\nclass Havale:\n    def komisyon(self, tutar):\n        return 0\n\n\ndef odeme_olustur(tur):\n    # \"kart\" için Kart, \"havale\" için Havale nesnesi döndür.\n    pass\n\n\ndef komisyon_hesapla(tur, tutar):\n    odeme = odeme_olustur(tur)\n    return {\n        \"sinif\": type(odeme).__name__,\n        \"komisyon\": odeme.komisyon(tutar),\n    }\n"
       },
       "hints": [],
       "validation": {
@@ -138,14 +182,59 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "f",
-            "kind": "function_definition",
-            "name": "odeme_olustur",
-            "minParams": 1,
-            "maxParams": 1,
-            "requireReturn": true,
-            "label": "Factory fonksiyonu",
+            "id": "kart-return",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "return\\s+Kart\\s*\\(",
+            "label": "Kart nesnesi üretilir",
             "visibility": "visible"
+          },
+          {
+            "id": "havale-return",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "return\\s+Havale\\s*\\(",
+            "label": "Havale nesnesi üretilir",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "komisyon_hesapla",
+            "cases": [
+              {
+                "args": [
+                  "kart",
+                  1000
+                ],
+                "expected": {
+                  "sinif": "Kart",
+                  "komisyon": 30.0
+                }
+              },
+              {
+                "args": [
+                  "havale",
+                  275
+                ],
+                "expected": {
+                  "sinif": "Havale",
+                  "komisyon": 0
+                }
+              },
+              {
+                "args": [
+                  "kart",
+                  250
+                ],
+                "expected": {
+                  "sinif": "Kart",
+                  "komisyon": 7.5
+                }
+              }
+            ],
+            "label": "Factory dönüş davranışı",
+            "visibility": "hidden"
           }
         ]
       }
@@ -161,11 +250,14 @@
       "task": {
         "title": "Hata Avcısı: sıkı bağlılığı kır",
         "instructions": [
-          "Hata Avcısı: sıkı bağlılığı kır"
+          "RaporServisi içindeki Repository() oluşturma işlemini kaldır.",
+          "Repository bağımlılığını constructor injection ile al.",
+          "rapor_senaryosu() fonksiyonunu değiştirmeden gizli testleri geçir."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "RaporServisi doğrudan Repository() çağırmamalı.",
+          "Sahte repository değerleri rapora aynen yansımalı.",
+          "Hata Avcısı rehberi takip edilmeli."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -174,7 +266,7 @@
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "class Repository:\n    def say(self): return 3\nclass RaporServisi:\n    def __init__(self):\n        self.repository = Repository()\n    def rapor(self): return {\"kayit\": self.repository.say()}\n"
+        "starterCode": "class Repository:\n    def say(self):\n        return 3\n\n\nclass RaporServisi:\n    def __init__(self):\n        self.repository = Repository()\n\n    def rapor(self):\n        return {\"kayit\": self.repository.say()}\n\n\ndef rapor_senaryosu(kayit_sayisi):\n    class SahteRepository:\n        def say(self):\n            return kayit_sayisi\n\n    servis = RaporServisi(SahteRepository())\n    return servis.rapor()\n"
       },
       "hints": [],
       "validation": {
@@ -184,15 +276,64 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "c",
-            "kind": "class_definition",
-            "name": "RaporServisi",
-            "methods": [
-              "__init__",
-              "rapor"
-            ],
-            "label": "Rapor servisi",
+            "id": "constructor",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "def\\s+__init__\\s*\\(\\s*self\\s*,\\s*repository\\s*\\)",
+            "flags": "m",
+            "label": "Repository dışarıdan alınır",
             "visibility": "visible"
+          },
+          {
+            "id": "assign",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "self\\.repository\\s*=\\s*repository",
+            "label": "Enjekte edilen repository saklanır",
+            "visibility": "visible"
+          },
+          {
+            "id": "no-direct",
+            "kind": "call_count",
+            "name": "Repository",
+            "min": 0,
+            "max": 0,
+            "file": "main.py",
+            "label": "Servis Repository oluşturmuyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "rapor_senaryosu",
+            "cases": [
+              {
+                "args": [
+                  7
+                ],
+                "expected": {
+                  "kayit": 7
+                }
+              },
+              {
+                "args": [
+                  0
+                ],
+                "expected": {
+                  "kayit": 0
+                }
+              },
+              {
+                "args": [
+                  21
+                ],
+                "expected": {
+                  "kayit": 21
+                }
+              }
+            ],
+            "label": "Sahte repository senaryoları",
+            "visibility": "hidden"
           }
         ]
       },
@@ -202,7 +343,7 @@
         "workflow": [
           "Bağımlılığın nerede oluşturulduğunu belirle.",
           "Repository nesnesini __init__ parametresi olarak dışarıdan al.",
-          "Servisi sahte repository ile yeniden çalıştır."
+          "Servisi farklı sahte repository değerleriyle yeniden çalıştır."
         ]
       }
     },
@@ -217,11 +358,14 @@
       "task": {
         "title": "Adapter ile eski sistemi ortak arayüze bağla",
         "instructions": [
-          "Adapter ile eski sistemi ortak arayüze bağla"
+          "SmsAdapter constructor'ında eski istemciyi ve telefonu sakla.",
+          "gonder(mesaj) çağrısını sms_yolla(telefon, mesaj) arayüzüne dönüştür.",
+          "adapter_senaryosu() yardımcısını değiştirme."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "Adapter eski istemciyi gerçekten çağırmalı.",
+          "Telefon ve mesaj doğru sırada aktarılmalı.",
+          "Sabit string döndürmek gizli senaryolarda başarısız olur."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -230,7 +374,7 @@
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "class EskiSms:\n    def sms_yolla(self,telefon,metin): return f\"{telefon}:{metin}\"\nclass SmsAdapter:\n    def __init__(self,istemci,telefon): pass\n    def gonder(self,mesaj): pass\n"
+        "starterCode": "class EskiSms:\n    def __init__(self):\n        self.cagrilar = []\n\n    def sms_yolla(self, telefon, metin):\n        self.cagrilar.append([telefon, metin])\n        return f\"{telefon}:{metin}\"\n\n\nclass SmsAdapter:\n    def __init__(self, istemci, telefon):\n        pass\n\n    def gonder(self, mesaj):\n        pass\n\n\ndef adapter_senaryosu(telefon, mesaj):\n    eski = EskiSms()\n    adapter = SmsAdapter(eski, telefon)\n    sonuc = adapter.gonder(mesaj)\n    return {\"sonuc\": sonuc, \"cagrilar\": eski.cagrilar}\n"
       },
       "hints": [],
       "validation": {
@@ -240,15 +384,67 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "a",
-            "kind": "class_definition",
-            "name": "SmsAdapter",
-            "methods": [
-              "__init__",
-              "gonder"
-            ],
-            "label": "Adapter sınıfı",
+            "id": "client",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "self\\.(istemci|client)\\s*=\\s*istemci",
+            "label": "Eski istemci saklanır",
             "visibility": "visible"
+          },
+          {
+            "id": "phone",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "self\\.telefon\\s*=\\s*telefon",
+            "label": "Telefon bilgisi saklanır",
+            "visibility": "visible"
+          },
+          {
+            "id": "delegate",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "\\.sms_yolla\\s*\\(",
+            "label": "Eski arayüze delege edilir",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "adapter_senaryosu",
+            "cases": [
+              {
+                "args": [
+                  "555-10",
+                  "Merhaba"
+                ],
+                "expected": {
+                  "sonuc": "555-10:Merhaba",
+                  "cagrilar": [
+                    [
+                      "555-10",
+                      "Merhaba"
+                    ]
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "0212",
+                  "Sipariş hazır"
+                ],
+                "expected": {
+                  "sonuc": "0212:Sipariş hazır",
+                  "cagrilar": [
+                    [
+                      "0212",
+                      "Sipariş hazır"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "label": "Adapter delegasyon senaryoları",
+            "visibility": "hidden"
           }
         ]
       }
@@ -264,11 +460,14 @@
       "task": {
         "title": "Repository ve service layer'ı ayır",
         "instructions": [
-          "Repository ve service layer'ı ayır"
+          "BellekUrunRepository içindeki kaydet, getir ve listele metotlarını tamamla.",
+          "UrunServisi'nin işi repository'ye delege etmesini sağla.",
+          "main.py içindeki senaryo yardımcısını değiştirme."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "Service veri yapısına doğrudan erişmemeli.",
+          "Repository ürünleri id alanıyla saklamalı.",
+          "Boş ve farklı kimlik tipleri gizli testlerde çalışmalı."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -277,19 +476,19 @@
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "from service import UrunServisi\n",
+        "starterCode": "from main import senaryo\n",
         "files": [
           {
             "path": "main.py",
-            "starterCode": "from service import UrunServisi\n"
+            "starterCode": "from repository import BellekUrunRepository\nfrom service import UrunServisi\n\n\ndef senaryo(urunler, aranacak_id):\n    repository = BellekUrunRepository()\n    servis = UrunServisi(repository)\n    for urun in urunler:\n        servis.urun_ekle(urun)\n    return {\n        \"bulunan\": servis.urun_getir(aranacak_id),\n        \"adet\": len(repository.listele()),\n    }\n"
           },
           {
             "path": "repository.py",
-            "starterCode": "class BellekUrunRepository:\n    def __init__(self): self._urunler={}\n    def kaydet(self,urun): pass\n    def getir(self,urun_id): pass\n"
+            "starterCode": "class BellekUrunRepository:\n    def __init__(self):\n        self._urunler = {}\n\n    def kaydet(self, urun):\n        pass\n\n    def getir(self, urun_id):\n        pass\n\n    def listele(self):\n        pass\n"
           },
           {
             "path": "service.py",
-            "starterCode": "class UrunServisi:\n    def __init__(self,repository): self.repository=repository\n    def urun_ekle(self,urun): pass\n    def urun_getir(self,urun_id): pass\n"
+            "starterCode": "from repository import BellekUrunRepository\n\n\nclass UrunServisi:\n    def __init__(self, repository):\n        self.repository = repository\n\n    def urun_ekle(self, urun):\n        pass\n\n    def urun_getir(self, urun_id):\n        pass\n"
           }
         ],
         "entrypoint": "main.py"
@@ -302,28 +501,96 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "r",
-            "kind": "class_definition",
-            "name": "BellekUrunRepository",
-            "methods": [
-              "kaydet",
-              "getir"
-            ],
-            "file": "repository.py",
-            "label": "Repository",
+            "id": "repo-save",
+            "kind": "file_content_regex",
+            "path": "repository.py",
+            "pattern": "self\\._urunler\\s*\\[\\s*urun\\s*\\[\\s*[\\\"']id[\\\"']\\s*\\]\\s*\\]\\s*=\\s*urun",
+            "label": "Repository ürünü kimlikle saklar",
             "visibility": "visible"
           },
           {
-            "id": "s",
-            "kind": "class_definition",
-            "name": "UrunServisi",
-            "methods": [
-              "urun_ekle",
-              "urun_getir"
-            ],
-            "file": "service.py",
-            "label": "Service",
+            "id": "repo-get",
+            "kind": "file_content_regex",
+            "path": "repository.py",
+            "pattern": "(return\\s+self\\._urunler\\.(get|__getitem__)|return\\s+self\\._urunler\\s*\\[)",
+            "label": "Repository ürün getirir",
             "visibility": "visible"
+          },
+          {
+            "id": "service-delegate-save",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\.kaydet\\s*\\(\\s*urun\\s*\\)",
+            "label": "Service kaydetmeyi repository'ye delege eder",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-delegate-get",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\.getir\\s*\\(\\s*urun_id\\s*\\)",
+            "label": "Service okumayı repository'ye delege eder",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "senaryo",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": 1,
+                      "ad": "Defter"
+                    },
+                    {
+                      "id": 2,
+                      "ad": "Kalem"
+                    }
+                  ],
+                  2
+                ],
+                "expected": {
+                  "bulunan": {
+                    "id": 2,
+                    "ad": "Kalem"
+                  },
+                  "adet": 2
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "A",
+                      "ad": "Klavye"
+                    }
+                  ],
+                  "A"
+                ],
+                "expected": {
+                  "bulunan": {
+                    "id": "A",
+                    "ad": "Klavye"
+                  },
+                  "adet": 1
+                }
+              },
+              {
+                "args": [
+                  [],
+                  99
+                ],
+                "expected": {
+                  "bulunan": null,
+                  "adet": 0
+                }
+              }
+            ],
+            "label": "Repository ve service davranışı",
+            "visibility": "hidden"
           }
         ]
       }
@@ -339,11 +606,16 @@
       "task": {
         "title": "Final proje: Çok katmanlı katalog uygulaması",
         "instructions": [
-          "Final proje: Çok katmanlı katalog uygulaması"
+          "Eksik adapter, service, factory ve app metotlarını tamamla.",
+          "Factory bağımlılıkları gerçekten oluştursun ve KatalogServisi'ne versin.",
+          "App katmanı her ürün sözlüğünü Urun nesnesine çevirip service'e eklesin.",
+          "Gizli normal, indirimli ve boş katalog senaryolarını geçir."
         ],
         "requirements": [
-          "Tasarım sözleşmesi korunmalı.",
-          "Gizli senaryolar geçmeli."
+          "Sekiz dosyalı katman ayrımı korunmalı.",
+          "App doğrudan rapor hesaplamamalı; factory ve service kullanmalı.",
+          "Service repository ve strategy bağımlılıklarına delege etmeli.",
+          "Sabit görünür çıktı üretmek kabul edilmez."
         ],
         "sampleOutput": "Görev çıktısı",
         "stdinEnabled": false,
@@ -360,31 +632,31 @@
           },
           {
             "path": "domain.py",
-            "starterCode": "from dataclasses import dataclass\n@dataclass(frozen=True)\nclass Urun:\n    id:int\n    ad:str\n    fiyat:int\n"
+            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Urun:\n    id: int\n    ad: str\n    fiyat: int\n"
           },
           {
             "path": "ports.py",
-            "starterCode": "from typing import Protocol\nclass UrunRepository(Protocol):\n    def kaydet(self,urun): ...\n    def listele(self): ...\n"
+            "starterCode": "from typing import Protocol\n\n\nclass UrunRepository(Protocol):\n    def kaydet(self, urun):\n        ...\n\n    def listele(self):\n        ...\n"
           },
           {
             "path": "adapters.py",
-            "starterCode": "class BellekRepository:\n    def __init__(self): self._urunler=[]\n    def kaydet(self,urun): pass\n    def listele(self): pass\n"
+            "starterCode": "class BellekRepository:\n    def __init__(self):\n        self._urunler = []\n\n    def kaydet(self, urun):\n        pass\n\n    def listele(self):\n        pass\n"
           },
           {
             "path": "strategies.py",
-            "starterCode": "class StandartFiyat:\n    def uygula(self,fiyat): return fiyat\nclass IndirimliFiyat:\n    def uygula(self,fiyat): return int(fiyat*0.8)\n"
+            "starterCode": "class StandartFiyat:\n    def uygula(self, fiyat):\n        return fiyat\n\n\nclass IndirimliFiyat:\n    def uygula(self, fiyat):\n        return int(fiyat * 0.8)\n"
           },
           {
             "path": "service.py",
-            "starterCode": "class KatalogServisi:\n    def __init__(self,repository,fiyat_stratejisi): pass\n    def urun_ekle(self,urun): pass\n    def rapor(self): pass\n"
+            "starterCode": "class KatalogServisi:\n    def __init__(self, repository, fiyat_stratejisi):\n        pass\n\n    def urun_ekle(self, urun):\n        pass\n\n    def rapor(self):\n        pass\n"
           },
           {
             "path": "factory.py",
-            "starterCode": "def servis_olustur(indirimli=False):\n    pass\n"
+            "starterCode": "from adapters import BellekRepository\nfrom service import KatalogServisi\nfrom strategies import IndirimliFiyat, StandartFiyat\n\n\ndef servis_olustur(indirimli=False):\n    pass\n"
           },
           {
             "path": "app.py",
-            "starterCode": "def senaryo_calistir(urunler,indirimli=False):\n    pass\n"
+            "starterCode": "from domain import Urun\nfrom factory import servis_olustur\n\n\ndef senaryo_calistir(urunler, indirimli=False):\n    pass\n"
           }
         ],
         "entrypoint": "main.py"
@@ -397,47 +669,95 @@
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "p",
-            "kind": "file_exists",
+            "id": "port",
+            "kind": "file_content_regex",
             "path": "ports.py",
-            "label": "Port katmanı",
+            "pattern": "class\\s+UrunRepository\\s*\\(\\s*Protocol\\s*\\)",
+            "label": "Repository portu",
             "visibility": "visible"
           },
           {
-            "id": "s",
-            "kind": "class_definition",
-            "name": "KatalogServisi",
-            "methods": [
-              "__init__",
-              "urun_ekle",
-              "rapor"
-            ],
-            "file": "service.py",
-            "label": "Service",
+            "id": "adapter-save",
+            "kind": "file_content_regex",
+            "path": "adapters.py",
+            "pattern": "self\\._urunler\\.append\\s*\\(\\s*urun\\s*\\)",
+            "label": "Adapter kayıt yapar",
             "visibility": "visible"
           },
           {
-            "id": "f",
+            "id": "adapter-list",
+            "kind": "file_content_regex",
+            "path": "adapters.py",
+            "pattern": "return\\s+list\\s*\\(\\s*self\\._urunler\\s*\\)",
+            "label": "Adapter kopya liste döndürür",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-init",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\s*=\\s*repository[\\s\\S]*self\\.fiyat_stratejisi\\s*=\\s*fiyat_stratejisi",
+            "flags": "s",
+            "label": "Service bağımlılıkları saklar",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-delegate",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.repository\\.kaydet\\s*\\(\\s*urun\\s*\\)",
+            "label": "Service repository'ye delege eder",
+            "visibility": "visible"
+          },
+          {
+            "id": "service-strategy",
+            "kind": "file_content_regex",
+            "path": "service.py",
+            "pattern": "self\\.fiyat_stratejisi\\.uygula\\s*\\(",
+            "label": "Service strategy kullanır",
+            "visibility": "visible"
+          },
+          {
+            "id": "factory-wiring",
+            "kind": "file_content_regex",
+            "path": "factory.py",
+            "pattern": "repository\\s*=\\s*BellekRepository\\s*\\(\\s*\\)[\\s\\S]*strateji\\s*=\\s*IndirimliFiyat\\s*\\(\\s*\\)\\s*if\\s*indirimli\\s*else\\s*StandartFiyat\\s*\\(\\s*\\)[\\s\\S]*return\\s+KatalogServisi\\s*\\(\\s*repository\\s*,\\s*strateji\\s*\\)",
+            "flags": "s",
+            "label": "Factory katmanları bağlar",
+            "visibility": "visible"
+          },
+          {
+            "id": "app-wiring",
+            "kind": "file_content_regex",
+            "path": "app.py",
+            "pattern": "servis\\s*=\\s*servis_olustur\\s*\\(\\s*indirimli\\s*\\)[\\s\\S]*for\\s+veri\\s+in\\s+urunler\\s*:[\\s\\S]*servis\\.urun_ekle\\s*\\(\\s*Urun\\s*\\(\\s*\\*\\*veri\\s*\\)\\s*\\)[\\s\\S]*return\\s+servis\\.rapor\\s*\\(\\s*\\)",
+            "flags": "s",
+            "label": "Uygulama factory ve service akışını kullanır",
+            "visibility": "visible"
+          },
+          {
+            "id": "factory-def",
             "kind": "function_definition",
             "name": "servis_olustur",
             "minParams": 0,
             "maxParams": 1,
+            "minDefaults": 1,
             "requireReturn": true,
             "file": "factory.py",
-            "label": "Factory",
+            "label": "Factory imzası",
             "visibility": "visible"
           },
           {
-            "id": "l",
+            "id": "app-loop",
             "kind": "node_count",
             "nodeName": "For",
             "min": 1,
             "file": "app.py",
-            "label": "Dönüşüm",
+            "label": "Ürün dönüşümü",
             "visibility": "visible"
           },
           {
-            "id": "c",
+            "id": "cases",
             "kind": "function_cases",
             "name": "senaryo_calistir",
             "module": "app",
@@ -485,9 +805,45 @@
                     "Kalem"
                   ]
                 }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": 3,
+                      "ad": "Silgi",
+                      "fiyat": 125
+                    },
+                    {
+                      "id": 4,
+                      "ad": "Ajanda",
+                      "fiyat": 375
+                    }
+                  ],
+                  false
+                ],
+                "expected": {
+                  "urun_sayisi": 2,
+                  "toplam_fiyat": 500,
+                  "urunler": [
+                    "Ajanda",
+                    "Silgi"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [],
+                  true
+                ],
+                "expected": {
+                  "urun_sayisi": 0,
+                  "toplam_fiyat": 0,
+                  "urunler": []
+                }
               }
             ],
-            "label": "Gizli senaryolar",
+            "label": "Katmanlı uygulama senaryoları",
             "visibility": "hidden"
           }
         ]
@@ -496,13 +852,15 @@
         "sourceShape": "Ürün sözlükleri",
         "targetShape": "Katmanlı servis raporu",
         "rules": [
-          "Factory bağımlılıkları kurar.",
-          "Repository ayrıntısı service dışına sızmaz."
+          "Factory repository, strategy ve service bağımlılıklarını kurar.",
+          "App katmanı ürün sözlüklerini domain nesnelerine dönüştürür.",
+          "Service repository ve strategy portları üzerinden çalışır."
         ],
         "workflow": [
-          "Factory kurar.",
-          "Service işler.",
-          "Rapor döner."
+          "Factory bağımlılıkları kurar.",
+          "App ürünleri domain modeline çevirir.",
+          "Service kayıt ve fiyatlandırmayı uygular.",
+          "Rapor dışarı döner."
         ]
       }
     }
