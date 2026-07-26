@@ -17,11 +17,13 @@ export function StatusBar() {
       ? "Python kontrol ediliyor"
       : status === "ready"
         ? "Python hazır"
-        : status === "offline"
-          ? "Python bulunamadı"
-          : status === "error"
-            ? "Runtime hatası"
-            : "Runtime bekliyor";
+        : status === "unavailable"
+          ? "Tarayıcı ön izlemesi"
+          : status === "offline"
+            ? "Python bulunamadı"
+            : status === "error"
+              ? "Runtime hatası"
+              : "Runtime bekliyor";
 
   return (
     <footer className={styles.root} aria-label="Uygulama durumu">
