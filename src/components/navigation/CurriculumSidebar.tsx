@@ -21,6 +21,14 @@ const stateSymbols = {
   "coming-soon": "—",
 } as const;
 
+const stateLabels = {
+  completed: "tamamlandı",
+  active: "şu an açık",
+  available: "kullanılabilir",
+  locked: "kilitli",
+  "coming-soon": "yakında",
+} as const;
+
 export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
   const catalog = useCurriculumStore((state) => state.catalog);
   const currentLessonId = useCurriculumStore((state) => state.currentLessonId);
@@ -78,15 +86,20 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
   );
 
   return (
-    <aside className={`${styles.root} ${compact ? styles.compact : ""}`.trim()}>
+    <aside
+      className={`${styles.root} ${compact ? styles.compact : ""}`.trim()}
+      aria-label="Python müfredatı"
+    >
       <div className={styles.headingRow}>
         <span>Müfredat</span>
         <span className={styles.count}>{modules.length || 8} bölüm</span>
       </div>
 
       {levelRows.map(({ level, modules: moduleRows }) => (
-        <div key={level.id}>
-          <div className={styles.levelLabel}>{level.title}</div>
+        <section key={level.id} aria-labelledby={`curriculum-level-${level.id}`}>
+          <div className={styles.levelLabel} id={`curriculum-level-${level.id}`}>
+            {level.title}
+          </div>
           <div className={styles.list}>
             {moduleRows.map(({ module, moduleProgress, state, targetLessonId }) => {
               const disabled = state === "locked" || state === "coming-soon" || !targetLessonId;
@@ -104,6 +117,8 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
                   key={module.id}
                   disabled={disabled}
                   onClick={() => targetLessonId && selectLesson(targetLessonId)}
+                  aria-current={state === "active" ? "step" : undefined}
+                  aria-label={`${module.number}. ${module.title}, ${stateLabels[state]}${statusLabel ? `, ${statusLabel} ders` : ""}`}
                   title={
                     state === "coming-soon"
                       ? "Bu modülün dersleri henüz yayımlanmadı."
@@ -124,7 +139,7 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
               );
             })}
           </div>
-        </div>
+        </section>
       ))}
 
       <div className={styles.progressBox}>
@@ -132,7 +147,7 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
           <span>Yayımlanan içerik</span>
           <strong>%{progress}</strong>
         </div>
-        <ProgressBar value={progress} />
+        <ProgressBar value={progress} accessibleLabel="Tamamlanan müfredat" />
         <p>{completedCount} / {totalLessons} ders tamamlandı</p>
       </div>
     </aside>
