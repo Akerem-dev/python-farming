@@ -3,6 +3,7 @@ use serde::Serialize;
 use std::{
     fs,
     path::{Path, PathBuf},
+    sync::atomic::{AtomicI64, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -13,6 +14,7 @@ const BACKUP_PREFIX: &str = "progress-";
 const BACKUP_EXTENSION: &str = "db";
 const MAX_BACKUP_COUNT: usize = 5;
 const MAX_BACKUP_TOTAL_BYTES: u64 = 25 * 1024 * 1024;
+static LAST_BACKUP_TIMESTAMP: AtomicI64 = AtomicI64::new(0);
 
 #[derive(Clone, Debug)]
 struct BackupCandidate {
@@ -78,40 +80,55 @@ fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupO
         .map_err(|error| format!("SQLite WAL verisi yedek öncesinde birleştirilemedi: {error}"))?;
 
     let backup_directory = backup_directory(app)?;
-    let created_at = unix_timestamp_millis();
+    let created_at = next_backup_timestamp(&backup_directory)?;
     let filename = format!(
         "{BACKUP_PREFIX}{created_at}-{}.{}",
         std::process::id(),
         BACKUP_EXTENSION
     );
     let backup_path = backup_directory.join(&filename);
-    let escaped_path = backup_path.to_string_lossy().replace('\'', "''");
+    let temporary_path = backup_path.with_extension("db.tmp");
+    let _ = fs::remove_file(&temporary_path);
+    let escaped_path = temporary_path.to_string_lossy().replace('\'', "''");
 
-    source
-        .execute_batch(&format!("VACUUM INTO '{escaped_path}';"))
-        .map_err(|error| format!("Tutarlı SQLite yedeği oluşturulamadı: {error}"))?;
+    let vacuum_result = source.execute_batch(&format!("VACUUM INTO '{escaped_path}';"));
     drop(source);
+    if let Err(error) = vacuum_result {
+        let _ = fs::remove_file(&temporary_path);
+        return Err(format!("Tutarlı SQLite yedeği oluşturulamadı: {error}"));
+    }
 
     let backup_connection =
-        Connection::open_with_flags(&backup_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
-            .map_err(|error| format!("Oluşturulan yedek doğrulama için açılamadı: {error}"))?;
+        Connection::open_with_flags(&temporary_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .map_err(|error| {
+                let _ = fs::remove_file(&temporary_path);
+                format!("Oluşturulan yedek doğrulama için açılamadı: {error}")
+            })?;
     if let Err(error) = ensure_integrity(&backup_connection, "Oluşturulan ilerleme yedeği") {
         drop(backup_connection);
-        let _ = fs::remove_file(&backup_path);
+        let _ = fs::remove_file(&temporary_path);
         return Err(error);
     }
     drop(backup_connection);
 
-    let backup_size = fs::metadata(&backup_path)
-        .map_err(|error| format!("Yedek dosyası boyutu okunamadı: {error}"))?
+    let backup_size = fs::metadata(&temporary_path)
+        .map_err(|error| {
+            let _ = fs::remove_file(&temporary_path);
+            format!("Yedek dosyası boyutu okunamadı: {error}")
+        })?
         .len();
     if backup_size > MAX_BACKUP_TOTAL_BYTES {
-        let _ = fs::remove_file(&backup_path);
+        let _ = fs::remove_file(&temporary_path);
         return Err(format!(
             "Yedek dosyası {} MB toplam saklama sınırını tek başına aşıyor.",
             MAX_BACKUP_TOTAL_BYTES / (1024 * 1024)
         ));
     }
+
+    fs::rename(&temporary_path, &backup_path).map_err(|error| {
+        let _ = fs::remove_file(&temporary_path);
+        format!("Doğrulanan yedek yayımlanamadı: {error}")
+    })?;
 
     prune_backups(&backup_directory)?;
     collect_overview(&backup_directory)
@@ -273,6 +290,35 @@ fn backup_candidates(directory: &Path) -> Result<Vec<BackupCandidate>, String> {
     Ok(candidates)
 }
 
+fn next_backup_timestamp(directory: &Path) -> Result<i64, String> {
+    let existing_max = backup_candidates(directory)?
+        .into_iter()
+        .map(|candidate| candidate.created_at)
+        .max()
+        .unwrap_or(0);
+    let minimum = existing_max
+        .checked_add(1)
+        .ok_or_else(|| "Yedek zaman damgası güvenli aralığı aştı.".to_string())?
+        .max(unix_timestamp_millis());
+
+    loop {
+        let previous = LAST_BACKUP_TIMESTAMP.load(Ordering::Acquire);
+        let after_previous = previous
+            .checked_add(1)
+            .ok_or_else(|| "Yedek zaman damgası güvenli aralığı aştı.".to_string())?;
+        let candidate = minimum.max(after_previous);
+        match LAST_BACKUP_TIMESTAMP.compare_exchange(
+            previous,
+            candidate,
+            Ordering::AcqRel,
+            Ordering::Acquire,
+        ) {
+            Ok(_) => return Ok(candidate),
+            Err(_) => continue,
+        }
+    }
+}
+
 fn backup_timestamp(filename: &str) -> Option<i64> {
     filename
         .strip_prefix(BACKUP_PREFIX)?
@@ -305,6 +351,7 @@ mod tests {
             Some(1_722_000_000_123)
         );
         assert_eq!(backup_timestamp("notes.db"), None);
+        assert_eq!(backup_timestamp("progress-1722000000123-42.db.tmp"), Some(1_722_000_000_123));
     }
 
     #[test]
@@ -338,5 +385,43 @@ mod tests {
         ];
         let removals = retention_removal_plan(candidates);
         assert_eq!(removals, vec![PathBuf::from("progress-1-1.db")]);
+    }
+
+    #[test]
+    fn rejected_large_candidates_do_not_consume_count_slots() {
+        let candidates = vec![
+            BackupCandidate {
+                path: PathBuf::from("progress-7-1.db"),
+                created_at: 7,
+                size_bytes: 20 * 1024 * 1024,
+            },
+            BackupCandidate {
+                path: PathBuf::from("progress-6-1.db"),
+                created_at: 6,
+                size_bytes: 10 * 1024 * 1024,
+            },
+            BackupCandidate {
+                path: PathBuf::from("progress-5-1.db"),
+                created_at: 5,
+                size_bytes: 1024 * 1024,
+            },
+            BackupCandidate {
+                path: PathBuf::from("progress-4-1.db"),
+                created_at: 4,
+                size_bytes: 1024 * 1024,
+            },
+            BackupCandidate {
+                path: PathBuf::from("progress-3-1.db"),
+                created_at: 3,
+                size_bytes: 1024 * 1024,
+            },
+            BackupCandidate {
+                path: PathBuf::from("progress-2-1.db"),
+                created_at: 2,
+                size_bytes: 1024 * 1024,
+            },
+        ];
+        let removals = retention_removal_plan(candidates);
+        assert_eq!(removals, vec![PathBuf::from("progress-6-1.db")]);
     }
 }
