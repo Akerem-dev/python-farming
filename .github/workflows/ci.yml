@@ -29,12 +29,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply validator hardening
-        run: python scripts/harden_stage31_validator.py
-      - name: Restore CI and remove temporary tool
+        run: python scripts/harden_stage31_validator_v2.py
+      - name: Restore CI and remove temporary tools
         run: |
           git fetch origin main --depth=1
           git checkout origin/main -- .github/workflows/ci.yml
-          rm scripts/harden_stage31_validator.py
+          rm -f scripts/harden_stage31_validator.py scripts/harden_stage31_validator_v2.py
       - name: Commit hardened product code
         run: |
           git config user.name "github-actions[bot]"
