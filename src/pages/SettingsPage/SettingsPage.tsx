@@ -43,6 +43,13 @@ function formatCheckedAt(value: string | undefined) {
   }).format(new Date(value));
 }
 
+function runtimeSourceLabel(source: "bundled" | "custom" | "system" | undefined) {
+  if (source === "bundled") return "Uygulamaya gömülü";
+  if (source === "custom") return "Geliştirici override";
+  if (source === "system") return "Sistem Python'ı";
+  return "—";
+}
+
 export function SettingsPage() {
   const diagnosticsStatus = useDiagnosticsStore((state) => state.status);
   const snapshot = useDiagnosticsStore((state) => state.snapshot);
@@ -134,7 +141,7 @@ export function SettingsPage() {
             <span className={styles.eyebrow}>Sistem Tanılama</span>
             <h1>Python ortamını ve uygulama sağlığını kontrol et</h1>
             <p>
-              Bu ekran kullanıcı kodunu çalıştırmadan yerel Python yorumlayıcısını,
+              Bu ekran kullanıcı kodunu çalıştırmadan gömülü veya sistem Python yorumlayıcısını,
               uygulama sürümünü, güvenlik limitlerini ve ilerleme kaydını inceler.
             </p>
           </div>
@@ -202,6 +209,10 @@ export function SettingsPage() {
                 <dd><code>{snapshot?.runtime?.executable ?? "—"}</code></dd>
               </div>
               <div>
+                <dt>Kaynak</dt>
+                <dd>{runtimeSourceLabel(snapshot?.runtime?.source)}</dd>
+              </div>
+              <div>
                 <dt>Son kontrol</dt>
                 <dd>{formatCheckedAt(snapshot?.checkedAt)}</dd>
               </div>
@@ -210,9 +221,10 @@ export function SettingsPage() {
               <div className={styles.helpBox}>
                 <strong>Python bulunamıyorsa</strong>
                 <p>
+                  Production installer gömülü Python içermelidir. Geliştirme build'inde
                   Windows'ta <code>py -3 --version</code>, macOS/Linux'ta
-                  <code> python3 --version</code> komutunu kontrol et. Özel yorumlayıcı için
-                  <code> PYTHON_FARMING_PYTHON</code> ortam değişkeni kullanılabilir.
+                  <code> python3 --version</code> kontrol edilebilir; özel yorumlayıcı için
+                  <code> PYTHON_FARMING_PYTHON</code> kullanılabilir.
                 </p>
               </div>
             ) : browserPreview ? (

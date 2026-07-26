@@ -121,10 +121,13 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Build Debian bundle
+      - name: Build Debian bundle with portable Python
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FARMING_RUNTIME_TARGET: x86_64-unknown-linux-gnu
         run: npm run tauri:build -- --bundles deb
 
-      - name: Verify Debian artifact
+      - name: Verify Debian artifact and embedded Python
         shell: bash
         run: |
           shopt -s nullglob
@@ -134,4 +137,27 @@ jobs:
             exit 1
           fi
           test -s "${bundles[0]}"
-          echo "Verified bundle: ${bundles[0]}"
+          extract_dir="${RUNNER_TEMP}/python-farming-deb"
+          rm -rf "$extract_dir"
+          mkdir -p "$extract_dir"
+          dpkg-deb -x "${bundles[0]}" "$extract_dir"
+          manifest="$(find "$extract_dir" -type f -path '*/python-runtime/runtime-manifest.json' -print -quit)"
+          test -s "$manifest"
+          relative="$(node -e '
+            const fs = require("fs");
+            const manifest = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            const value = manifest.executableRelativePath;
+            if (typeof value !== "string" || !value || value.startsWith("/") || value.split(/[\\/]+/).some((part) => !part || part === "." || part === "..")) {
+              process.exit(2);
+            }
+            process.stdout.write(value);
+          ' "$manifest")"
+          runtime_root="$(realpath "$(dirname "$manifest")")"
+          runtime="$(realpath -m "$runtime_root/$relative")"
+          case "$runtime" in
+            "$runtime_root"/*) ;;
+            *) echo "Runtime path escaped resource root: $runtime"; exit 1 ;;
+          esac
+          test -x "$runtime"
+          "$runtime" -I -X utf8 -c "import asyncio, json, sqlite3; print('portable-runtime-ok')"
+          echo "Verified bundle and portable runtime: ${bundles[0]} ($relative)"

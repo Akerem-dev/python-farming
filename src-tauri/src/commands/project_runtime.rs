@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+
+use super::python_interpreter::find_python_interpreter;
 use std::{
     collections::HashSet,
     env, fs,
@@ -100,12 +102,6 @@ pub struct ExecuteCodeResult {
     truncated: bool,
 }
 
-#[derive(Clone, Debug)]
-struct PythonInterpreter {
-    executable: String,
-    prefix_args: Vec<String>,
-}
-
 #[derive(Debug)]
 struct CapturedOutput {
     text: String,
@@ -114,18 +110,20 @@ struct CapturedOutput {
 
 #[tauri::command]
 pub async fn execute_python_project(
+    app: tauri::AppHandle,
     request: ExecutePythonProjectRequest,
 ) -> Result<RuntimeResponse<ExecuteCodeResult>, String> {
-    tauri::async_runtime::spawn_blocking(move || execute_python_project_sync(request))
+    tauri::async_runtime::spawn_blocking(move || execute_python_project_sync(&app, request))
         .await
         .map_err(|error| format!("Python proje görevi tamamlanamadı: {error}"))?
 }
 
 fn execute_python_project_sync(
+    app: &tauri::AppHandle,
     request: ExecutePythonProjectRequest,
 ) -> Result<RuntimeResponse<ExecuteCodeResult>, String> {
     let validated_files = validate_request(&request)?;
-    let interpreter = find_python_interpreter()
+    let interpreter = find_python_interpreter(app)
         .ok_or_else(|| "Python 3 yorumlayıcısı bulunamadı.".to_string())?;
     let timeout_ms = request.timeout_ms.clamp(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS);
     let started_at = Instant::now();
@@ -347,57 +345,6 @@ fn validate_relative_project_path(value: &str) -> Result<PathBuf, String> {
         return Err("Proje dosya yolu boş olamaz.".to_string());
     }
     Ok(safe_path)
-}
-
-fn find_python_interpreter() -> Option<PythonInterpreter> {
-    for (executable, prefix_args) in interpreter_candidates() {
-        let mut command = Command::new(&executable);
-        command.args(&prefix_args).arg("--version");
-        hide_console_window(&mut command);
-
-        let Ok(output) = command.output() else {
-            continue;
-        };
-        if !output.status.success() {
-            continue;
-        }
-
-        let mut version = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        if version.is_empty() {
-            version = String::from_utf8_lossy(&output.stderr).trim().to_string();
-        }
-        if version.starts_with("Python 3") {
-            return Some(PythonInterpreter {
-                executable,
-                prefix_args,
-            });
-        }
-    }
-    None
-}
-
-fn interpreter_candidates() -> Vec<(String, Vec<String>)> {
-    let mut candidates = Vec::new();
-    if let Ok(custom_python) = env::var("PYTHON_FARMING_PYTHON") {
-        if !custom_python.trim().is_empty() {
-            candidates.push((custom_python, Vec::new()));
-        }
-    }
-
-    #[cfg(target_os = "windows")]
-    {
-        candidates.push(("py".to_string(), vec!["-3".to_string()]));
-        candidates.push(("python".to_string(), Vec::new()));
-        candidates.push(("python3".to_string(), Vec::new()));
-    }
-
-    #[cfg(not(target_os = "windows"))]
-    {
-        candidates.push(("python3".to_string(), Vec::new()));
-        candidates.push(("python".to_string(), Vec::new()));
-    }
-
-    candidates
 }
 
 fn create_workspace(request_id: &str) -> Result<PathBuf, String> {
