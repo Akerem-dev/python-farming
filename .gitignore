@@ -30,3 +30,6 @@ test-results/
 # Logs
 *.log
 npm-debug.log*
+
+# Downloaded portable Python bundle
+src-tauri/python-runtime/

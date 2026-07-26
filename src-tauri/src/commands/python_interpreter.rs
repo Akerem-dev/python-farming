@@ -127,7 +127,10 @@ fn bundled_executables(root: &Path) -> Vec<PathBuf> {
     #[cfg(not(target_os = "windows"))]
     {
         let binary_directory = root.join("python").join("install").join("bin");
-        vec![binary_directory.join("python3"), binary_directory.join("python")]
+        vec![
+            binary_directory.join("python3"),
+            binary_directory.join("python"),
+        ]
     }
 }
 

@@ -4,7 +4,7 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 
 ## Proje durumu
 
-**37 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
+**38 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
 
 Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
@@ -14,7 +14,8 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - Tauri 2 masaüstü kabuğu ve Rust çalışma motoru
 - CodeMirror 6 tabanlı Python editörü
 - Tek ve çok dosyalı Python çalışma alanları
-- Yerel Python 3 yorumlayıcısını otomatik bulma
+- Installer'a gömülü, SHA-256 doğrulamalı taşınabilir Python 3 runtime'ı
+- Geliştirme için özel yorumlayıcı ve sistem Python fallback'i
 - Gerçek `stdout`, `stderr`, traceback, çıkış kodu ve çalışma süresi
 - `stdin`, seçim, sıralama, kod tamamlama ve hata ayıklama görevleri
 - AST, type hint, sınıf, protokol, async, SQLite ve davranış tabanlı doğrulayıcılar
@@ -45,9 +46,15 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - npm `10` veya üzeri
 - Rust stable
 - Tauri'nin işletim sistemine özel geliştirme ön koşulları
-- PATH üzerinde Python 3
+- Geliştirme modunda PATH üzerinde Python 3 veya `PYTHON_FARMING_PYTHON`; production installer'lar Python runtime'ını içerir
 
 Python yorumlayıcısı şu sırayla aranır:
+
+- `PYTHON_FARMING_PYTHON` geliştirici override'ı
+- Installer'a gömülü ve build sırasında SHA-256 doğrulanan runtime
+- Geliştirme fallback'i olarak sistem Python'ı
+
+Sistem fallback adayları:
 
 - Windows: `py -3`, ardından `python`
 - macOS/Linux: `python3`, ardından `python`
@@ -124,7 +131,7 @@ Normal `git pull`, `npm ci` veya uygulama güncellemesi ilerleme verisini ve yed
 
 Öğrenci kodu ayrı geçici klasörlerde, izole Python bayraklarıyla ve süre/çıktı/dosya boyutu sınırlarıyla çalıştırılır. Doğrulayıcılar eğitim amaçlı güvenlik katmanları sağlar; bu yapı kötü niyetli kodu işletim sistemi seviyesinde tamamen izole eden genel amaçlı bir sandbox değildir.
 
-Son kullanıcıya açık geniş dağıtım öncesinde gömülü ve imzalı Python runtime'ı, daha sıkı süreç izolasyonu, kod imzalama ve platform güvenlik kontrolleri ayrıca tamamlanmalıdır.
+Gömülü Python runtime installer'a dahil edilir ve build sırasında GitHub asset özetiyle doğrulanır. Daha sıkı süreç izolasyonu, kod imzalama, notarizasyon ve platform güvenlik kontrolleri sonraki sağlamlaştırma aşamalarında tamamlanacaktır.
 
 ## Sürümleme
 

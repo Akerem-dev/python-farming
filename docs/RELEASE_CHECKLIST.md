@@ -44,7 +44,8 @@ npm run tauri:dev
 
 En az şu akışlar elle denenmelidir:
 
-- Uygulamanın ilk açılışı
+- Uygulamanın Python kurulmamış temiz profilde ilk açılışı
+- Ayarlar ekranında Python kaynağının `Uygulamaya gömülü` görünmesi
 - Mevcut SQLite ilerlemesinin yüklenmesi
 - Tek dosyalı Python görevi
 - Çok dosyalı Python projesi
@@ -59,7 +60,7 @@ En az şu akışlar elle denenmelidir:
 npm run tauri:build
 ```
 
-`src-tauri/target/release/bundle` altındaki installer açılmalı ve en az bir temiz kullanıcı profili üzerinde denenmelidir.
+`src-tauri/target/release/bundle` altındaki installer açılmalı ve Python kurulu olmayan en az bir temiz kullanıcı profili üzerinde denenmelidir. Tek dosya, çok dosya, `sqlite3`, `asyncio` ve JSON import smoke testleri gömülü runtime ile çalışmalıdır.
 
 ## 6. Veri uyumluluğu
 

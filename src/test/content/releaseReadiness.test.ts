@@ -75,7 +75,7 @@ describe("release readiness contract", () => {
   });
 
   it("documents the real completed product and clean install", () => {
-    expect(readme).toContain("37 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
+    expect(readme).toContain("38 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
     expect(readme).toContain("npm ci");
     expect(readme).toContain("npm run verify");
     expect(readme).toContain("docs/RELEASE_CHECKLIST.md");

@@ -1,4 +1,6 @@
 use serde::{Deserialize, Serialize};
+
+use super::python_interpreter::{find_python_interpreter, PythonInterpreterSource};
 use std::{
     env, fs,
     io::{Read, Write},
@@ -49,6 +51,8 @@ pub struct RuntimeHealthResult {
     status: String,
     version: Option<String>,
     executable: Option<String>,
+    source: Option<String>,
+    managed: bool,
     message: String,
 }
 
@@ -62,13 +66,6 @@ pub struct ExecuteCodeResult {
     truncated: bool,
 }
 
-#[derive(Clone, Debug)]
-struct PythonInterpreter {
-    executable: String,
-    prefix_args: Vec<String>,
-    version: String,
-}
-
 #[derive(Debug)]
 struct CapturedOutput {
     text: String,
@@ -77,38 +74,50 @@ struct CapturedOutput {
 
 #[tauri::command]
 pub async fn runtime_health_check(
+    app: tauri::AppHandle,
     request_id: String,
 ) -> Result<RuntimeResponse<RuntimeHealthResult>, String> {
-    tauri::async_runtime::spawn_blocking(move || runtime_health_check_sync(request_id))
+    tauri::async_runtime::spawn_blocking(move || runtime_health_check_sync(&app, request_id))
         .await
         .map_err(|error| format!("Runtime sağlık kontrolü tamamlanamadı: {error}"))?
 }
 
 #[tauri::command]
 pub async fn execute_python(
+    app: tauri::AppHandle,
     request: ExecutePythonRequest,
 ) -> Result<RuntimeResponse<ExecuteCodeResult>, String> {
-    tauri::async_runtime::spawn_blocking(move || execute_python_sync(request))
+    tauri::async_runtime::spawn_blocking(move || execute_python_sync(&app, request))
         .await
         .map_err(|error| format!("Python çalışma görevi tamamlanamadı: {error}"))?
 }
 
 fn runtime_health_check_sync(
+    app: &tauri::AppHandle,
     request_id: String,
 ) -> Result<RuntimeResponse<RuntimeHealthResult>, String> {
-    match find_python_interpreter() {
-        Some(interpreter) => Ok(RuntimeResponse {
+    match find_python_interpreter(app) {
+        Some(interpreter) => {
+            let message = match interpreter.source {
+                PythonInterpreterSource::Bundled => "Uygulamaya gömülü Python çalışma motoru kullanıma hazır.",
+                PythonInterpreterSource::Custom => "PYTHON_FARMING_PYTHON ile seçilen yorumlayıcı kullanıma hazır.",
+                PythonInterpreterSource::System => "Sistemde bulunan Python yorumlayıcısı kullanıma hazır.",
+            };
+            Ok(RuntimeResponse {
             request_id,
             protocol_version: PROTOCOL_VERSION,
             status: "ok".to_string(),
             payload: Some(RuntimeHealthResult {
                 status: "ready".to_string(),
                 version: Some(interpreter.version),
-                executable: Some(interpreter.executable),
-                message: "Yerel Python yorumlayıcısı kullanıma hazır.".to_string(),
+                executable: Some(interpreter.executable.to_string_lossy().to_string()),
+                source: Some(interpreter.source.as_str().to_string()),
+                managed: interpreter.source.is_managed(),
+                message: message.to_string(),
             }),
             diagnostics: Vec::new(),
-        }),
+        })
+        }
         None => Ok(RuntimeResponse {
             request_id,
             protocol_version: PROTOCOL_VERSION,
@@ -117,7 +126,9 @@ fn runtime_health_check_sync(
                 status: "offline".to_string(),
                 version: None,
                 executable: None,
-                message: "Python 3 bulunamadı. Geliştirme sürümünde kod çalıştırmak için Python 3 kurulmalıdır."
+                source: None,
+                managed: false,
+                message: "Bu build içinde gömülü Python bulunamadı ve sistem Python 3 yorumlayıcısı da kullanılamıyor."
                     .to_string(),
             }),
             diagnostics: vec![RuntimeDiagnostic {
@@ -130,11 +141,12 @@ fn runtime_health_check_sync(
 }
 
 fn execute_python_sync(
+    app: &tauri::AppHandle,
     request: ExecutePythonRequest,
 ) -> Result<RuntimeResponse<ExecuteCodeResult>, String> {
     validate_request(&request)?;
 
-    let interpreter = find_python_interpreter()
+    let interpreter = find_python_interpreter(app)
         .ok_or_else(|| "Python 3 yorumlayıcısı bulunamadı.".to_string())?;
     let timeout_ms = request.timeout_ms.clamp(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS);
     let started_at = Instant::now();
@@ -261,62 +273,6 @@ fn validate_request(request: &ExecutePythonRequest) -> Result<(), String> {
     }
 
     Ok(())
-}
-
-fn find_python_interpreter() -> Option<PythonInterpreter> {
-    for (executable, prefix_args) in interpreter_candidates() {
-        let mut command = Command::new(&executable);
-        command.args(&prefix_args).arg("--version");
-        hide_console_window(&mut command);
-
-        let Ok(output) = command.output() else {
-            continue;
-        };
-
-        if !output.status.success() {
-            continue;
-        }
-
-        let mut version = String::from_utf8_lossy(&output.stdout).trim().to_string();
-        if version.is_empty() {
-            version = String::from_utf8_lossy(&output.stderr).trim().to_string();
-        }
-
-        if version.starts_with("Python 3") {
-            return Some(PythonInterpreter {
-                executable,
-                prefix_args,
-                version,
-            });
-        }
-    }
-
-    None
-}
-
-fn interpreter_candidates() -> Vec<(String, Vec<String>)> {
-    let mut candidates = Vec::new();
-
-    if let Ok(custom_python) = env::var("PYTHON_FARMING_PYTHON") {
-        if !custom_python.trim().is_empty() {
-            candidates.push((custom_python, Vec::new()));
-        }
-    }
-
-    #[cfg(target_os = "windows")]
-    {
-        candidates.push(("py".to_string(), vec!["-3".to_string()]));
-        candidates.push(("python".to_string(), Vec::new()));
-        candidates.push(("python3".to_string(), Vec::new()));
-    }
-
-    #[cfg(not(target_os = "windows"))]
-    {
-        candidates.push(("python3".to_string(), Vec::new()));
-        candidates.push(("python".to_string(), Vec::new()));
-    }
-
-    candidates
 }
 
 fn create_workspace(request_id: &str) -> Result<PathBuf, String> {
