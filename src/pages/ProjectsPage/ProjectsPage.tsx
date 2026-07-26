@@ -78,7 +78,7 @@ export function ProjectsPage() {
     navigate(routes.workspace);
   };
 
-  if (!catalog) {
+  if (!catalog || progressStatus !== "ready") {
     const message =
       curriculumStatus === "error"
         ? curriculumError
