@@ -242,8 +242,8 @@ fn retention_removal_plan(mut candidates: Vec<BackupCandidate>) -> Vec<PathBuf> 
 
 fn backup_candidates(directory: &Path) -> Result<Vec<BackupCandidate>, String> {
     let mut candidates = Vec::new();
-    let entries = fs::read_dir(directory)
-        .map_err(|error| format!("Yedek klasörü okunamadı: {error}"))?;
+    let entries =
+        fs::read_dir(directory).map_err(|error| format!("Yedek klasörü okunamadı: {error}"))?;
 
     for entry in entries {
         let entry = entry.map_err(|error| format!("Yedek klasörü girdisi okunamadı: {error}"))?;
