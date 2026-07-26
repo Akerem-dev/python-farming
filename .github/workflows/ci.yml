@@ -14,55 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # STAGE38_APPLY_START
-  apply-stage-38:
-    name: Apply stage 38 integration
-    if: github.event_name == 'pull_request' && github.head_ref == 'stage/38-portable-python-runtime'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source branch
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      - name: Apply remaining product patch
-        shell: bash
-        run: |
-          if [ -f scripts/apply-stage-38-remaining.mjs ]; then
-            sed -i '/await patchWorkflows();/d' scripts/apply-stage-38-remaining.mjs
-            node scripts/apply-stage-38-remaining.mjs
-          else
-            echo "Stage 38 product patch already applied."
-          fi
-
-      - name: Validate preparer syntax
-        run: node --check scripts/prepare-portable-python.mjs
-
-      - name: Format Rust
-        working-directory: src-tauri
-        run: cargo fmt --all
-
-      - name: Remove one-time non-workflow scripts
-        run: |
-          rm -f scripts/apply-stage-38.mjs
-          rm -f scripts/apply-stage-38-remaining.mjs
-
-      - name: Commit integrated product code when changed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No integration changes remain."
-            exit 0
-          fi
-          git commit -m "feat(runtime): bundle verified portable Python"
-          git push origin HEAD:${{ github.head_ref }}
-  # STAGE38_APPLY_END
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
@@ -170,10 +121,13 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Build Debian bundle
+      - name: Build Debian bundle with portable Python
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FARMING_RUNTIME_TARGET: x86_64-unknown-linux-gnu
         run: npm run tauri:build -- --bundles deb
 
-      - name: Verify Debian artifact
+      - name: Verify Debian artifact and embedded Python
         shell: bash
         run: |
           shopt -s nullglob
@@ -183,4 +137,14 @@ jobs:
             exit 1
           fi
           test -s "${bundles[0]}"
-          echo "Verified bundle: ${bundles[0]}"
+          extract_dir="${RUNNER_TEMP}/python-farming-deb"
+          rm -rf "$extract_dir"
+          mkdir -p "$extract_dir"
+          dpkg-deb -x "${bundles[0]}" "$extract_dir"
+          runtime="$(find "$extract_dir" \( -type f -o -type l \) -path '*/python-runtime/python/install/bin/python3' -print -quit)"
+          manifest="$(find "$extract_dir" -type f -path '*/python-runtime/runtime-manifest.json' -print -quit)"
+          test -n "$runtime"
+          test -x "$runtime"
+          test -s "$manifest"
+          "$runtime" -I -X utf8 -c "import asyncio, json, sqlite3; print('portable-runtime-ok')"
+          echo "Verified bundle and portable runtime: ${bundles[0]}"
