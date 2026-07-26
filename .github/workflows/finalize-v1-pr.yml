@@ -63,6 +63,11 @@ jobs:
           if unsafe not in script:
               raise SystemExit('Final test içindeki GitHub ifade satırı bulunamadı.')
           script = script.replace(unsafe, safe)
+          manifest_unsafe = 'expect(workflow).toContain("release-manifest.json");'
+          manifest_safe = 'expect(workflow).toContain("release-manifests/");'
+          if manifest_unsafe not in script:
+              raise SystemExit('Final test içindeki release manifest beklentisi bulunamadı.')
+          script = script.replace(manifest_unsafe, manifest_safe)
           Path('/tmp/finalize-v1.mjs').write_text(script, encoding='utf-8')
           PY
 
