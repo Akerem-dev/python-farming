@@ -45,7 +45,12 @@ function runValidator(files: Record<string, string>, spec: TaskValidationSpec) {
   }
   const execution = spawnSync("python3", [validatorFilename], {
     cwd: workspace,
-    input: JSON.stringify({ files: [validatorFilename, ...Object.keys(files)], entrypoint: "main.py", stdin: [], spec }),
+    input: JSON.stringify({
+      files: [validatorFilename, ...Object.keys(files)],
+      entrypoint: "main.py",
+      stdin: [],
+      spec,
+    }),
     encoding: "utf-8",
   });
   if (execution.status !== 0) throw new Error(execution.stderr || "Architecture validator failed.");
@@ -59,6 +64,7 @@ afterEach(() => {
 const referenceFiles = {
   "main.py": "from app import senaryo_calistir\n",
   "domain.py": `from dataclasses import dataclass
+
 @dataclass(frozen=True)
 class Urun:
     id: int
@@ -66,31 +72,43 @@ class Urun:
     fiyat: int
 `,
   "ports.py": `from typing import Protocol
+
 class UrunRepository(Protocol):
     def kaydet(self, urun): ...
     def listele(self): ...
 `,
   "adapters.py": `class BellekRepository:
-    def __init__(self): self._urunler = []
-    def kaydet(self, urun): self._urunler.append(urun)
-    def listele(self): return list(self._urunler)
+    def __init__(self):
+        self._urunler = []
+
+    def kaydet(self, urun):
+        self._urunler.append(urun)
+
+    def listele(self):
+        return list(self._urunler)
 `,
   "strategies.py": `class StandartFiyat:
-    def uygula(self, fiyat): return fiyat
+    def uygula(self, fiyat):
+        return fiyat
+
 class IndirimliFiyat:
-    def uygula(self, fiyat): return int(fiyat * 0.8)
+    def uygula(self, fiyat):
+        return int(fiyat * 0.8)
 `,
   "service.py": `class KatalogServisi:
     def __init__(self, repository, fiyat_stratejisi):
         self.repository = repository
         self.fiyat_stratejisi = fiyat_stratejisi
-    def urun_ekle(self, urun): self.repository.kaydet(urun)
+
+    def urun_ekle(self, urun):
+        self.repository.kaydet(urun)
+
     def rapor(self):
         urunler = self.repository.listele()
         return {
             "urun_sayisi": len(urunler),
-            "toplam_fiyat": sum(self.fiyat_stratejisi.uygula(u.fiyat) for u in urunler),
-            "urunler": sorted(u.ad for u in urunler),
+            "toplam_fiyat": sum(self.fiyat_stratejisi.uygula(urun.fiyat) for urun in urunler),
+            "urunler": sorted(urun.ad for urun in urunler),
         }
 `,
   "factory.py": `from adapters import BellekRepository
@@ -98,7 +116,9 @@ from service import KatalogServisi
 from strategies import IndirimliFiyat, StandartFiyat
 
 def servis_olustur(indirimli=False):
-    return KatalogServisi(BellekRepository(), IndirimliFiyat() if indirimli else StandartFiyat())
+    repository = BellekRepository()
+    strateji = IndirimliFiyat() if indirimli else StandartFiyat()
+    return KatalogServisi(repository, strateji)
 `,
   "app.py": `from domain import Urun
 from factory import servis_olustur
@@ -123,6 +143,41 @@ describe("architecture patterns project integration", () => {
       ...referenceFiles,
       "app.py": `def senaryo_calistir(urunler, indirimli=False):
     return {"urun_sayisi": 1, "toplam_fiyat": 1000, "urunler": ["Defter"]}
+`,
+    };
+    expect(runValidator(weakFiles, finalSpec()).passed).toBe(false);
+  });
+
+  it("rejects a factory that does not wire the layers", () => {
+    const weakFiles = {
+      ...referenceFiles,
+      "factory.py": `from adapters import BellekRepository
+from service import KatalogServisi
+from strategies import IndirimliFiyat, StandartFiyat
+
+def servis_olustur(indirimli=False):
+    return None
+`,
+    };
+    expect(runValidator(weakFiles, finalSpec()).passed).toBe(false);
+  });
+
+  it("rejects an app layer that bypasses the service", () => {
+    const weakFiles = {
+      ...referenceFiles,
+      "app.py": `from domain import Urun
+from factory import servis_olustur
+
+def senaryo_calistir(urunler, indirimli=False):
+    servis = servis_olustur(indirimli)
+    for veri in urunler:
+        Urun(**veri)
+    oran = 0.8 if indirimli else 1
+    return {
+        "urun_sayisi": len(urunler),
+        "toplam_fiyat": sum(int(veri["fiyat"] * oran) for veri in urunler),
+        "urunler": sorted(veri["ad"] for veri in urunler),
+    }
 `,
     };
     expect(runValidator(weakFiles, finalSpec()).passed).toBe(false);
