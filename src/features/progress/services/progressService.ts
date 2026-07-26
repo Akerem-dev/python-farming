@@ -3,6 +3,7 @@ import { isTauriEnvironment } from "../../../runtime/runtimeClient";
 import type {
   CompleteLessonRequest,
   ProgressBackupOverview,
+  ProgressRestoreResult,
   ProgressSnapshot,
 } from "../types";
 
@@ -15,6 +16,11 @@ const emptySnapshot: ProgressSnapshot = {
   completedLessonIds: [],
   totalXp: 0,
   lastLessonId: null,
+};
+
+type DesktopBackupOverview = Omit<ProgressBackupOverview, "available">;
+type DesktopRestoreResult = Omit<ProgressRestoreResult, "backups"> & {
+  backups: DesktopBackupOverview;
 };
 
 function readBrowserSnapshot(): ProgressSnapshot {
@@ -39,6 +45,16 @@ function browserBackupOverview(): ProgressBackupOverview {
     totalBytes: 0,
     available: false,
   };
+}
+
+function desktopOverview(overview: DesktopBackupOverview): ProgressBackupOverview {
+  return { ...overview, available: true };
+}
+
+function requireDesktopBackups(action: string) {
+  if (!isTauriEnvironment()) {
+    throw new Error(`${action} yalnız Tauri masaüstü uygulamasında kullanılabilir.`);
+  }
 }
 
 export async function loadProgressSnapshot() {
@@ -77,19 +93,31 @@ export async function listProgressBackups(): Promise<ProgressBackupOverview> {
     return browserBackupOverview();
   }
 
-  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
-    "list_progress_backups",
-  );
-  return { ...overview, available: true };
+  const overview = await invoke<DesktopBackupOverview>("list_progress_backups");
+  return desktopOverview(overview);
 }
 
 export async function createProgressBackup(): Promise<ProgressBackupOverview> {
-  if (!isTauriEnvironment()) {
-    throw new Error("İlerleme yedekleri yalnız Tauri masaüstü uygulamasında oluşturulabilir.");
-  }
+  requireDesktopBackups("İlerleme yedeği oluşturma");
+  const overview = await invoke<DesktopBackupOverview>("create_progress_backup");
+  return desktopOverview(overview);
+}
 
-  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
-    "create_progress_backup",
-  );
-  return { ...overview, available: true };
+export async function restoreProgressBackup(backupId: string): Promise<ProgressRestoreResult> {
+  requireDesktopBackups("İlerleme yedeği geri yükleme");
+  const result = await invoke<DesktopRestoreResult>("restore_progress_backup", {
+    request: { backupId },
+  });
+  return {
+    ...result,
+    backups: desktopOverview(result.backups),
+  };
+}
+
+export async function deleteProgressBackup(backupId: string): Promise<ProgressBackupOverview> {
+  requireDesktopBackups("İlerleme yedeği silme");
+  const overview = await invoke<DesktopBackupOverview>("delete_progress_backup", {
+    request: { backupId },
+  });
+  return desktopOverview(overview);
 }
