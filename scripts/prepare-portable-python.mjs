@@ -4,12 +4,13 @@ import { createWriteStream, existsSync } from "node:fs";
 import {
   mkdir,
   readFile,
+  readdir,
   rename,
   rm,
   writeFile,
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { basename, join, resolve } from "node:path";
+import { basename, isAbsolute, join, relative, resolve, sep } from "node:path";
 import { Readable } from "node:stream";
 import { finished } from "node:stream/promises";
 
@@ -34,12 +35,6 @@ function hostTarget() {
     throw new Error(`Desteklenmeyen portable Python build platformu: ${key}`);
   }
   return target;
-}
-
-function runtimeExecutable(target, directory = runtimeDirectory) {
-  return target.includes("windows")
-    ? join(directory, "python", "install", "python.exe")
-    : join(directory, "python", "install", "bin", "python3");
 }
 
 function githubHeaders() {
@@ -131,23 +126,94 @@ async function downloadAsset(asset) {
   return archivePath;
 }
 
+function safeManifestExecutable(value) {
+  if (typeof value !== "string" || !value || isAbsolute(value)) {
+    return null;
+  }
+  const parts = value.split(/[\\/]+/);
+  if (parts.some((part) => !part || part === "." || part === "..")) {
+    return null;
+  }
+  const executable = join(runtimeDirectory, ...parts);
+  return existsSync(executable) ? executable : null;
+}
+
 async function existingRuntimeMatches(target, asset) {
-  if (!existsSync(manifestPath) || !existsSync(runtimeExecutable(target))) {
+  if (!existsSync(manifestPath)) {
     return false;
   }
   try {
     const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-    return manifest.target === target && manifest.asset === asset.name && manifest.digest === asset.digest;
+    return (
+      manifest.target === target &&
+      manifest.asset === asset.name &&
+      manifest.digest === asset.digest &&
+      safeManifestExecutable(manifest.executableRelativePath) !== null
+    );
   } catch {
     return false;
   }
 }
 
-function validateHostRuntime(target) {
+async function discoverRuntimeExecutable(target) {
+  const windows = target.includes("windows");
+  const directories = windows
+    ? [
+        join(runtimeDirectory, "python"),
+        join(runtimeDirectory, "python", "install"),
+        runtimeDirectory,
+      ]
+    : [
+        join(runtimeDirectory, "python", "bin"),
+        join(runtimeDirectory, "python", "install", "bin"),
+        join(runtimeDirectory, "bin"),
+        join(runtimeDirectory, "install", "bin"),
+      ];
+  const matches = [];
+  for (const directory of directories) {
+    let entries;
+    try {
+      entries = await readdir(directory, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const entry of entries) {
+      if (!entry.isFile() && !entry.isSymbolicLink()) {
+        continue;
+      }
+      const valid = windows
+        ? entry.name.toLowerCase() === "python.exe"
+        : /^python3(?:\.\d+)*$/.test(entry.name) || entry.name === "python";
+      if (valid) {
+        matches.push(join(directory, entry.name));
+      }
+    }
+  }
+  matches.sort((left, right) => {
+    const leftName = basename(left);
+    const rightName = basename(right);
+    const leftRank = leftName === "python3" || leftName.toLowerCase() === "python.exe" ? 0 : 1;
+    const rightRank = rightName === "python3" || rightName.toLowerCase() === "python.exe" ? 0 : 1;
+    return leftRank - rightRank || left.length - right.length || left.localeCompare(right);
+  });
+  if (matches.length === 0) {
+    throw new Error(`Arşiv ${target} için kullanılabilir Python executable'ı üretmedi.`);
+  }
+  return matches[0];
+}
+
+function relativeExecutablePath(executable) {
+  const value = relative(runtimeDirectory, executable);
+  if (!value || isAbsolute(value) || value.split(sep).includes("..")) {
+    throw new Error(`Python executable runtime klasörünün dışında: ${executable}`);
+  }
+  return value.split(sep).join("/");
+}
+
+function validateHostRuntime(target, executable) {
   if (target !== hostTarget()) {
     return null;
   }
-  const executable = runtimeExecutable(target);
   const version = execFileSync(executable, ["-I", "-X", "utf8", "--version"], {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -174,11 +240,9 @@ async function main() {
   await mkdir(runtimeDirectory, { recursive: true });
   execFileSync("tar", ["-xzf", archivePath, "-C", runtimeDirectory], { stdio: "inherit" });
 
-  const executable = runtimeExecutable(target);
-  if (!existsSync(executable)) {
-    throw new Error(`Arşiv beklenen Python executable'ını üretmedi: ${executable}`);
-  }
-  const version = validateHostRuntime(target);
+  const executable = await discoverRuntimeExecutable(target);
+  const executableRelativePath = relativeExecutablePath(executable);
+  const version = validateHostRuntime(target, executable);
   const manifest = {
     schemaVersion: 1,
     provider: repository,
@@ -188,11 +252,12 @@ async function main() {
     asset: asset.name,
     digest: asset.digest,
     archive: basename(archivePath),
+    executableRelativePath,
     verifiedAt: new Date().toISOString(),
     hostValidatedVersion: version,
   };
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-  console.log(`Portable Python hazırlandı: ${target} (${asset.name})`);
+  console.log(`Portable Python hazırlandı: ${target} (${asset.name}, ${executableRelativePath})`);
 }
 
 main().catch((error) => {
