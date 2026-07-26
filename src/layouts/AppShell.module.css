@@ -42,3 +42,7 @@
 .content:focus {
   outline: none;
 }
+
+.onboardingSlot {
+  padding: var(--space-4) var(--space-4) 0;
+}
