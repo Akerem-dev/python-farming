@@ -9,6 +9,7 @@ use std::{
 use tauri::Manager;
 
 const DATABASE_FILENAME: &str = "python-farming.db";
+const DATABASE_SCHEMA_VERSION: i64 = 1;
 static PROGRESS_OPERATION_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Debug, Serialize)]
@@ -77,24 +78,61 @@ pub(super) fn database_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
 }
 
 pub(super) fn open_database(app: &tauri::AppHandle) -> Result<Connection, String> {
-    let connection = Connection::open(database_path(app)?)
+    let mut connection = Connection::open(database_path(app)?)
         .map_err(|error| format!("SQLite veritabanı açılamadı: {error}"))?;
+    configure_database(&connection)?;
+    migrate_database(&mut connection)?;
+    Ok(connection)
+}
+
+fn configure_database(connection: &Connection) -> Result<(), String> {
     connection
         .execute_batch(
             "PRAGMA journal_mode = WAL;
-             PRAGMA foreign_keys = ON;
-             CREATE TABLE IF NOT EXISTS lesson_progress (
-               lesson_id TEXT PRIMARY KEY,
-               completed_at INTEGER NOT NULL,
-               xp_awarded INTEGER NOT NULL CHECK (xp_awarded >= 0)
-             );
-             CREATE TABLE IF NOT EXISTS app_state (
-               key TEXT PRIMARY KEY,
-               value TEXT NOT NULL
-             );",
+             PRAGMA foreign_keys = ON;",
         )
-        .map_err(|error| format!("SQLite şeması hazırlanamadı: {error}"))?;
-    Ok(connection)
+        .map_err(|error| format!("SQLite çalışma ayarları uygulanamadı: {error}"))
+}
+
+fn migrate_database(connection: &mut Connection) -> Result<(), String> {
+    let current_version = connection
+        .query_row("PRAGMA user_version", [], |row| row.get::<_, i64>(0))
+        .map_err(|error| format!("SQLite şema sürümü okunamadı: {error}"))?;
+
+    if current_version > DATABASE_SCHEMA_VERSION {
+        return Err(format!(
+            "İlerleme veritabanı bu uygulamadan daha yeni bir şema kullanıyor: {current_version} > {DATABASE_SCHEMA_VERSION}."
+        ));
+    }
+
+    if current_version == DATABASE_SCHEMA_VERSION {
+        return Ok(());
+    }
+
+    let transaction = connection
+        .transaction()
+        .map_err(|error| format!("SQLite migration işlemi başlatılamadı: {error}"))?;
+
+    if current_version < 1 {
+        transaction
+            .execute_batch(
+                "CREATE TABLE IF NOT EXISTS lesson_progress (
+                   lesson_id TEXT PRIMARY KEY,
+                   completed_at INTEGER NOT NULL,
+                   xp_awarded INTEGER NOT NULL CHECK (xp_awarded >= 0)
+                 );
+                 CREATE TABLE IF NOT EXISTS app_state (
+                   key TEXT PRIMARY KEY,
+                   value TEXT NOT NULL
+                 );
+                 PRAGMA user_version = 1;",
+            )
+            .map_err(|error| format!("SQLite şema migration'ı uygulanamadı: {error}"))?;
+    }
+
+    transaction
+        .commit()
+        .map_err(|error| format!("SQLite migration işlemi tamamlanamadı: {error}"))
 }
 
 fn load_progress_sync(app: &tauri::AppHandle) -> Result<ProgressSnapshot, String> {
@@ -197,7 +235,8 @@ pub(super) fn read_snapshot(connection: &Connection) -> Result<ProgressSnapshot,
 
 #[cfg(test)]
 mod tests {
-    use super::CompleteLessonRequest;
+    use super::{migrate_database, CompleteLessonRequest, DATABASE_SCHEMA_VERSION};
+    use rusqlite::{params, Connection};
 
     #[test]
     fn complete_lesson_request_uses_expected_values() {
@@ -207,5 +246,73 @@ mod tests {
         };
         assert_eq!(request.lesson_id, "beginner.variables.introduction");
         assert_eq!(request.xp_reward, 40);
+    }
+
+    #[test]
+    fn migration_initializes_empty_database() {
+        let mut connection = Connection::open_in_memory().expect("in-memory sqlite");
+        migrate_database(&mut connection).expect("migration");
+
+        let version: i64 = connection
+            .query_row("PRAGMA user_version", [], |row| row.get(0))
+            .expect("schema version");
+        assert_eq!(version, DATABASE_SCHEMA_VERSION);
+
+        let table_count: i64 = connection
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master
+                 WHERE type = 'table' AND name IN ('lesson_progress', 'app_state')",
+                [],
+                |row| row.get(0),
+            )
+            .expect("table count");
+        assert_eq!(table_count, 2);
+    }
+
+    #[test]
+    fn migration_preserves_existing_progress_from_unversioned_database() {
+        let mut connection = Connection::open_in_memory().expect("in-memory sqlite");
+        connection
+            .execute_batch(
+                "CREATE TABLE lesson_progress (
+                   lesson_id TEXT PRIMARY KEY,
+                   completed_at INTEGER NOT NULL,
+                   xp_awarded INTEGER NOT NULL CHECK (xp_awarded >= 0)
+                 );
+                 CREATE TABLE app_state (
+                   key TEXT PRIMARY KEY,
+                   value TEXT NOT NULL
+                 );",
+            )
+            .expect("legacy schema");
+        connection
+            .execute(
+                "INSERT INTO lesson_progress (lesson_id, completed_at, xp_awarded)
+                 VALUES (?1, ?2, ?3)",
+                params!["beginner.variables.introduction", 1_i64, 40_i64],
+            )
+            .expect("legacy progress");
+
+        migrate_database(&mut connection).expect("migration");
+
+        let xp: i64 = connection
+            .query_row(
+                "SELECT xp_awarded FROM lesson_progress WHERE lesson_id = ?1",
+                params!["beginner.variables.introduction"],
+                |row| row.get(0),
+            )
+            .expect("preserved progress");
+        assert_eq!(xp, 40);
+    }
+
+    #[test]
+    fn migration_rejects_database_from_newer_application() {
+        let mut connection = Connection::open_in_memory().expect("in-memory sqlite");
+        connection
+            .execute_batch("PRAGMA user_version = 999;")
+            .expect("newer schema marker");
+
+        let error = migrate_database(&mut connection).expect_err("must reject newer schema");
+        assert!(error.contains("daha yeni bir şema"));
     }
 }
