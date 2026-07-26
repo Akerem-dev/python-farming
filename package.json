@@ -11,7 +11,10 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "typecheck": "tsc -b --pretty false",
-    "test": "vitest run"
+    "test": "vitest run",
+    "verify:frontend": "npm run typecheck && npm test && npm run build",
+    "verify:rust": "cd src-tauri && cargo fmt --all -- --check && cargo test --all-targets --locked",
+    "verify": "npm run verify:frontend && npm run verify:rust"
   },
   "dependencies": {
     "@codemirror/commands": "^6.10.4",
@@ -37,6 +40,7 @@
     "vitest": "^4.1.10"
   },
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=20.19.0",
+    "npm": ">=10.0.0"
   }
 }
