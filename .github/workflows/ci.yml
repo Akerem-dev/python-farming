@@ -44,16 +44,16 @@ jobs:
       - name: Generate Cargo lockfile
         run: cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
 
-      - name: Activate locked CI configuration
+      - name: Commit generated lockfiles
         run: |
-          cp scripts/ci-stage32-final.yml .github/workflows/ci.yml
-          rm scripts/ci-stage32-final.yml
-
-      - name: Commit lockfiles and final CI
-        run: |
+          if git diff --quiet -- package-lock.json src-tauri/Cargo.lock && \
+             git ls-files --error-unmatch package-lock.json src-tauri/Cargo.lock >/dev/null 2>&1; then
+            echo "Lockfiles are already current."
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package-lock.json src-tauri/Cargo.lock .github/workflows/ci.yml scripts/ci-stage32-final.yml
+          git add package-lock.json src-tauri/Cargo.lock
           git commit -m "build: lock npm and Cargo dependencies"
           git push origin HEAD:stage/32-release-readiness
 
