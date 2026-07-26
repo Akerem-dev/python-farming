@@ -70,10 +70,14 @@ export interface RuntimeResponse<TPayload = unknown> {
   diagnostics: RuntimeDiagnostic[];
 }
 
+export type RuntimeInterpreterSource = "bundled" | "custom" | "system";
+
 export interface RuntimeHealthResult {
   status: "ready" | "offline";
   version?: string;
   executable?: string;
+  source?: RuntimeInterpreterSource;
+  managed?: boolean;
   message: string;
 }
 
