@@ -17,6 +17,16 @@ Bu belge 1.0.0 kaynak sürümünün kapanış kapılarını ve genel dağıtımd
 - [x] Release workflow dry-run ve etiketli release ayrımı
 - [x] Dört platform hedefi ve SHA-256 manifest sözleşmesi
 
+## Finalizasyon kanıtı
+
+- Tek kullanımlık finalizasyon job'u sürüm kaynaklarını ve iki lockfile'ı repository içinde güncelledi.
+- `npm ci` kilitli bağımlılıklarla başarılı oldu.
+- `npm run verify` tam kalite kapısı başarılı oldu.
+- 64 Vitest dosyasında toplam 271 test geçti.
+- Rust format kontrolü ve `cargo test --all-targets --locked` aynı final çalışma alanında geçti.
+- Geçici finalizasyon workflow'ları ürün commit'inden çıkarıldı.
+- Merge kararı ayrıca son head commit üzerindeki bağımsız PR CI sonucuna bağlıdır.
+
 ## Taslak release oluşturulmadan önce
 
 - [ ] Actions → Release dry-run çalıştırması dört platformda yeşil
