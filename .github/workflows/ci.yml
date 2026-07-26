@@ -14,52 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  runtime-prepare-diagnostic:
-    name: Capture runtime preparation diagnostic
-    if: github.event_name == 'pull_request' && github.head_ref == 'stage/38-portable-python-runtime'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source branch
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-          cache: npm
-
-      - name: Capture runtime preparation once
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYTHON_FARMING_RUNTIME_TARGET: x86_64-unknown-linux-gnu
-        run: |
-          if [ -f runtime-prepare-diagnostic.txt ]; then
-            echo "Diagnostic already captured."
-            exit 0
-          fi
-          set +e
-          npm run prepare:runtime > runtime-prepare-diagnostic.txt 2>&1
-          code=$?
-          set -e
-          find src-tauri/python-runtime -maxdepth 6 \( -type f -o -type l \) \
-            -printf '%y %p -> %l\n' 2>/dev/null | sort > "${RUNNER_TEMP}/runtime-tree.txt" || true
-          {
-            printf '\n--- extracted tree ---\n'
-            sed -n '1,300p' "${RUNNER_TEMP}/runtime-tree.txt"
-            printf '\nexit_code=%s\n' "$code"
-          } >> runtime-prepare-diagnostic.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add runtime-prepare-diagnostic.txt
-          git commit -m "chore(runtime): capture extracted runtime tree"
-          git push origin HEAD:${{ github.head_ref }}
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
@@ -187,10 +141,23 @@ jobs:
           rm -rf "$extract_dir"
           mkdir -p "$extract_dir"
           dpkg-deb -x "${bundles[0]}" "$extract_dir"
-          runtime="$(find "$extract_dir" \( -type f -o -type l \) -path '*/python-runtime/python/install/bin/python3' -print -quit)"
           manifest="$(find "$extract_dir" -type f -path '*/python-runtime/runtime-manifest.json' -print -quit)"
-          test -n "$runtime"
-          test -x "$runtime"
           test -s "$manifest"
+          relative="$(node -e '
+            const fs = require("fs");
+            const manifest = JSON.parse(fs.readFileSync(process.argv[1], "utf8"));
+            const value = manifest.executableRelativePath;
+            if (typeof value !== "string" || !value || value.startsWith("/") || value.split(/[\\/]+/).some((part) => !part || part === "." || part === "..")) {
+              process.exit(2);
+            }
+            process.stdout.write(value);
+          ' "$manifest")"
+          runtime_root="$(realpath "$(dirname "$manifest")")"
+          runtime="$(realpath -m "$runtime_root/$relative")"
+          case "$runtime" in
+            "$runtime_root"/*) ;;
+            *) echo "Runtime path escaped resource root: $runtime"; exit 1 ;;
+          esac
+          test -x "$runtime"
           "$runtime" -I -X utf8 -c "import asyncio, json, sqlite3; print('portable-runtime-ok')"
-          echo "Verified bundle and portable runtime: ${bundles[0]}"
+          echo "Verified bundle and portable runtime: ${bundles[0]} ($relative)"
