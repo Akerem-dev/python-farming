@@ -38,12 +38,13 @@ def inside(path, directory):
     return path == directory or path.startswith(directory + os.sep)
 
 
-runtime_roots = []
-for candidate in (sys.prefix, sys.base_prefix, sys.exec_prefix, sys.base_exec_prefix):
-    if candidate:
-        resolved = os.path.realpath(candidate)
-        if resolved not in runtime_roots:
-            runtime_roots.append(resolved)
+runtime_read_roots = []
+for candidate in sys.path:
+    if not candidate:
+        continue
+    resolved = os.path.realpath(candidate)
+    if resolved != root and resolved not in runtime_read_roots:
+        runtime_read_roots.append(resolved)
 
 system_read_roots = []
 if os.name == 'nt':
@@ -70,7 +71,7 @@ def readable_path(value):
     path = normalized_path(value)
     if path is None or inside(path, root) or path in allowed_special_files:
         return True
-    return any(inside(path, directory) for directory in runtime_roots + system_read_roots)
+    return any(inside(path, directory) for directory in runtime_read_roots + system_read_roots)
 
 
 def require_workspace(value, message):
@@ -102,7 +103,7 @@ def audit(event, args):
 
     if event in {
         'os.remove', 'os.unlink', 'os.rmdir', 'os.mkdir', 'os.chdir',
-        'os.chmod', 'os.chown', 'os.truncate', 'os.utime', 'os.symlink'
+        'os.chmod', 'os.chown', 'os.truncate', 'os.utime'
     } and args:
         require_workspace(args[0], 'Çalışma alanı dışında dosya sistemi işlemi yapılamaz.')
         return
@@ -111,6 +112,9 @@ def audit(event, args):
         require_workspace(args[0], 'Çalışma alanı dışından dosya taşınamaz.')
         require_workspace(args[1], 'Çalışma alanı dışına dosya taşınamaz.')
         return
+
+    if event == 'os.symlink':
+        raise PermissionError('Ders çalışma alanında sembolik bağlantı oluşturma kapalıdır.')
 
     if event in {
         'subprocess.Popen', 'os.system', 'os.posix_spawn', 'os.posix_spawnp',
@@ -240,7 +244,6 @@ pub(super) fn wait_for_sandboxed_child(
     loop {
         match child.try_wait() {
             Ok(Some(status)) => {
-                terminate_process_tree(child.id());
                 return Ok(SandboxWaitOutcome {
                     exit_status: Some(status),
                     timed_out: false,
@@ -336,7 +339,7 @@ fn configure_process_group(_command: &mut Command) {}
 
 #[cfg(unix)]
 fn terminate_process_tree(process_id: u32) {
-    unsafe extern "C" {
+    extern "C" {
         fn kill(process_id: i32, signal: i32) -> i32;
     }
     const SIGKILL: i32 = 9;
@@ -351,9 +354,10 @@ fn terminate_process_tree(process_id: u32) {
 fn terminate_process_tree(process_id: u32) {
     use std::os::windows::process::CommandExt;
     const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    let process_id = process_id.to_string();
     let mut command = Command::new("taskkill");
     command
-        .args(["/PID", &process_id.to_string(), "/T", "/F"])
+        .args(["/PID", process_id.as_str(), "/T", "/F"])
         .creation_flags(CREATE_NO_WINDOW);
     let _ = command.status();
 }
@@ -388,7 +392,10 @@ fn restrict_file_permissions(_path: &Path) -> Result<(), String> {
 #[cfg(test)]
 mod tests {
     use super::{security_profile, workspace_usage, write_workspace_file, MAX_WORKSPACE_FILES};
-    use std::{fs, time::SystemTime};
+    use std::{
+        fs,
+        time::{SystemTime, UNIX_EPOCH},
+    };
 
     #[test]
     fn security_profile_reports_enforced_controls() {
@@ -404,7 +411,7 @@ mod tests {
     #[test]
     fn workspace_usage_stops_after_file_limit() {
         let nonce = SystemTime::now()
-            .duration_since(SystemTime::UNIX_EPOCH)
+            .duration_since(UNIX_EPOCH)
             .unwrap_or_default()
             .as_nanos();
         let root = std::env::temp_dir().join(format!("python-farming-quota-{nonce}"));
