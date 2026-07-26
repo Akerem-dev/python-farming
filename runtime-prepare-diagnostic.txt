@@ -1,8 +1,0 @@
-
-> python-farming@0.1.0 prepare:runtime
-> node scripts/prepare-portable-python.mjs
-
-Error: Arşiv beklenen Python executable'ını üretmedi: /home/runner/work/python-farming/python-farming/src-tauri/python-runtime/python/install/bin/python3
-    at main (file:///home/runner/work/python-farming/python-farming/scripts/prepare-portable-python.mjs:179:11)
-
-exit_code=1
