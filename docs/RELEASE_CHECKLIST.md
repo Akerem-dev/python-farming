@@ -72,6 +72,19 @@ En az şu akışlar elle denenmelidir:
 - Mevcut SQLite ilerlemesinin yüklenmesi
 - Uygulamayı kapatıp yeniden açınca ilerlemenin korunması
 
+### Güvenli çalışma motoru denemeleri
+
+Tek ve çok dosyalı görevlerde ayrı ayrı şu kaçış denemeleri yapılmalıdır:
+
+- çalışma alanındaki normal dosya okuma/yazma başarılı olur,
+- çalışma alanı dışındaki dosya okuma ve yazma `PermissionError` üretir,
+- dış klasör listeleme reddedilir,
+- `socket.socket()` ve bağlantı denemesi reddedilir,
+- `subprocess.Popen`, `os.system` ve spawn/fork reddedilir,
+- `ctypes.CDLL` ve sembolik bağlantı oluşturma reddedilir,
+- sonsuz döngü timeout olur ve çocuk süreç bırakmaz,
+- 16 MB veya 512 dosya kotası aşımı `WORKSPACE_LIMIT_EXCEEDED` üretir.
+
 ## 7. Uygulama içi güncelleme testi
 
 - [ ] Ayarlar ekranı kendiliğinden ağ isteği başlatmaz.

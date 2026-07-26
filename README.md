@@ -4,7 +4,7 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 
 ## Proje durumu
 
-**39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
+**40 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
 
 Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
@@ -29,7 +29,7 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - Sürümlü JSON ile ilerleme dışa aktarma, içe alma ve güvenli sıfırlama
 - Başlangıç, Orta Seviye ve İleri Seviye bitirme projeleri
 - GitHub Actions üzerinde frontend ve Rust CI
-- Windows, Linux ve macOS için taslak release üretim akışı
+- Windows, Linux ve macOS için imzalı uygulama içi güncelleme ve production release kapıları
 
 ## Teknoloji yığını
 
@@ -120,7 +120,7 @@ Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçi
 - macOS Apple Silicon
 - macOS Intel
 
-Workflow önce bütün kalite kontrollerini çalıştırır, ardından GitHub üzerinde **taslak ve ön sürüm** release oluşturur. macOS paketleri sertifika bulunmadığında ad-hoc imzalanır. Windows kod imzası ve macOS notarizasyonu henüz yapılandırılmadığı için taslak release incelenmeden yayımlanmamalıdır.
+Manuel workflow çalıştırmaları yalnız **taslak preview** release üretir. Production yayınları tam sürüm etiketiyle çalışır; updater private key, Windows code-signing sertifikası ve Apple Developer ID/notarizasyon sırlarından biri eksikse workflow daha build başlamadan durur. Uygulama içindeki güncelleme denetimi yalnız kullanıcı isteğiyle başlar; kurulumdan önce yerel ilerleme yedeği alınır ve Tauri artifact imzası doğrulanır.
 
 Ayrıntılı adımlar için [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) dosyasını kullanın.
 
@@ -136,7 +136,7 @@ Normal `git pull`, `npm ci` veya uygulama güncellemesi ilerleme verisini ve yed
 
 Timeout veya çalışma alanı kotası aşıldığında yalnız ana Python süreci değil, Unix process group ya da Windows process tree bütünü sonlandırılır. Çalışma alanı toplam 16 MB ve 512 dosyayla sınırlıdır; stdout ve stderr de ayrı ayrı sınırlandırılır. Ayrıntılı tehdit modeli ve doğrulama adımları için [`docs/RUNTIME_SECURITY.md`](docs/RUNTIME_SECURITY.md) dosyasına bakın.
 
-Bu katman eğitim uygulamasındaki kazara veya basit kötüye kullanımlara karşı savunma derinliği sağlar. Python audit hook'u tek başına işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama genel amaçlı, düşmanca kod barındırma servisi olarak kullanılmamalıdır. Kod imzalama, notarizasyon ve platform paket güvenliği sonraki sağlamlaştırma aşamalarında tamamlanacaktır.
+Bu katman eğitim uygulamasındaki kazara veya basit kötüye kullanımlara karşı savunma derinliği sağlar. Python audit hook'u tek başına işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama genel amaçlı, düşmanca kod barındırma servisi olarak kullanılmamalıdır. Platform release hattı updater artifact imzasını zorunlu tutar; production etiketi Windows Authenticode ve macOS notarizasyon sırları olmadan yayımlanamaz.
 
 ## Sürümleme
 
