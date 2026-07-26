@@ -20,6 +20,7 @@ describe("advanced capstone module content", () => {
     expect(modulePackage.lessons).toHaveLength(1);
     expect(modulePackage.lessons[0]?.id).toBe("advanced.project.final-platform");
     expect(modulePackage.lessons[0]?.validation.xpReward).toBe(500);
+    expect(modulePackage.lessons[0]?.validation.timeoutMs).toBe(10_000);
   });
 
   it("ships an eleven-file production workspace", () => {
