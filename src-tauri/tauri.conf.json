@@ -44,6 +44,15 @@
     ],
     "resources": [
       "python-runtime/**/*"
-    ]
+    ],
+    "createUpdaterArtifacts": true
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDQ2QzZDRDhBNTk1MDM0NjYKUldSbU5GQlppczNHUnRtYTd4b3hWL3pqNlNoSC9Ja1pmVGRaMFU2eFNjaTRoNElNSmZJV3NKa0IK",
+      "endpoints": [
+        "https://github.com/Akerem-dev/python-farming/releases/latest/download/latest.json"
+      ]
+    }
   }
 }
