@@ -14,6 +14,46 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  runtime-prepare-diagnostic:
+    name: Capture runtime preparation diagnostic
+    if: github.event_name == 'pull_request' && github.head_ref == 'stage/38-portable-python-runtime'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Capture runtime preparation once
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FARMING_RUNTIME_TARGET: x86_64-unknown-linux-gnu
+        run: |
+          if [ -f runtime-prepare-diagnostic.txt ]; then
+            echo "Diagnostic already captured."
+            exit 0
+          fi
+          set +e
+          npm run prepare:runtime > runtime-prepare-diagnostic.txt 2>&1
+          code=$?
+          set -e
+          printf '\nexit_code=%s\n' "$code" >> runtime-prepare-diagnostic.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add runtime-prepare-diagnostic.txt
+          git commit -m "chore(runtime): capture preparation diagnostic"
+          git push origin HEAD:${{ github.head_ref }}
+
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
