@@ -78,11 +78,14 @@ export function ProgressBackupPanel() {
 
   const available = overview?.available ?? false;
   const latestBackup = overview?.backups[0];
-  const integrityLabel = latestBackup
-    ? latestBackup.integrityStatus === "ok"
-      ? "Sağlam"
-      : "Bozuk"
-    : "—";
+  const corruptBackupCount =
+    overview?.backups.filter((backup) => backup.integrityStatus === "corrupt").length ?? 0;
+  const integrityLabel =
+    !overview || overview.backups.length === 0
+      ? "—"
+      : corruptBackupCount === 0
+        ? "Tümü sağlam"
+        : `${corruptBackupCount} bozuk yedek`;
   const actionDisabled =
     !available || progressStatus !== "ready" || status === "loading" || status === "creating";
 
@@ -109,11 +112,11 @@ export function ProgressBackupPanel() {
           <dd>{formatBackupDate(latestBackup?.createdAt)}</dd>
         </div>
         <div>
-          <dt>Bütünlük</dt>
+          <dt>Tüm yedeklerin bütünlüğü</dt>
           <dd>{integrityLabel}</dd>
         </div>
         <div>
-          <dt>Yedekteki ilerleme</dt>
+          <dt>Son yedekteki ilerleme</dt>
           <dd>
             {latestBackup?.completedLessonCount == null
               ? "—"
@@ -134,6 +137,13 @@ export function ProgressBackupPanel() {
       {error ? (
         <div className={styles.errorBanner} role="alert">
           {error}
+        </div>
+      ) : null}
+
+      {corruptBackupCount > 0 ? (
+        <div className={styles.errorBanner} role="alert">
+          {corruptBackupCount} yerel yedek bütünlük kontrolünden geçemedi. Bu dosyalar geri
+          yükleme için güvenilir kabul edilmemelidir.
         </div>
       ) : null}
 
