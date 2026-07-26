@@ -1,0 +1,77 @@
+.root {
+  min-width: 840px;
+  min-height: 680px;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6);
+  background:
+    radial-gradient(circle at top, rgba(224, 108, 117, 0.08), transparent 42%),
+    var(--color-background);
+}
+
+.card {
+  width: min(560px, 100%);
+  padding: var(--space-7);
+  border: 1px solid rgba(224, 108, 117, 0.38);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+}
+
+.code {
+  color: #f19a9f;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+}
+
+.card h1 {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-primary);
+  font-size: 26px;
+  letter-spacing: -0.035em;
+}
+
+.card p {
+  margin: var(--space-3) 0 var(--space-6);
+  color: var(--color-text-muted);
+  line-height: 1.65;
+}
+
+.card button {
+  min-height: 42px;
+  padding: 0 var(--space-5);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+  color: var(--color-background);
+  font: inherit;
+  font-weight: 760;
+  cursor: pointer;
+}
+
+.card details {
+  margin-top: var(--space-5);
+  color: var(--color-text-dim);
+  font-size: var(--font-size-sm);
+}
+
+.card summary {
+  cursor: pointer;
+}
+
+.card code {
+  display: block;
+  margin-top: var(--space-3);
+  padding: var(--space-3);
+  overflow-wrap: anywhere;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-raised);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+  line-height: 1.5;
+}
