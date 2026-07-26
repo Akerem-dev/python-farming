@@ -46,6 +46,7 @@ En az şu akışlar elle denenmelidir:
 
 - Uygulamanın Python kurulmamış temiz profilde ilk açılışı
 - Ayarlar ekranında Python kaynağının `Uygulamaya gömülü` görünmesi
+- Ayarlar ekranında dosya sistemi, ağ, alt süreç ve süreç ağacı güvenlik profilinin görünmesi
 - Mevcut SQLite ilerlemesinin yüklenmesi
 - Tek dosyalı Python görevi
 - Çok dosyalı Python projesi
@@ -53,6 +54,21 @@ En az şu akışlar elle denenmelidir:
 - Hata Avcısı görevi
 - Async veya SQLite doğrulayıcısı
 - Uygulamayı kapatıp yeniden açınca ilerlemenin korunması
+
+### Güvenli çalışma motoru denemeleri
+
+Tek ve çok dosyalı görevlerde ayrı ayrı şu kaçış denemeleri yapılmalıdır:
+
+- çalışma alanındaki normal dosya okuma/yazma başarılı olur,
+- çalışma alanı dışındaki dosya okuma ve yazma `PermissionError` üretir,
+- dış klasör listeleme reddedilir,
+- `socket.socket()` ve bağlantı denemesi reddedilir,
+- `subprocess.Popen`, `os.system` ve spawn/fork reddedilir,
+- `ctypes.CDLL` ve sembolik bağlantı oluşturma reddedilir,
+- sonsuz döngü timeout olur ve çocuk süreç bırakmaz,
+- 16 MB veya 512 dosya kotası aşımı `WORKSPACE_LIMIT_EXCEEDED` üretir.
+
+Ayrıntılı tehdit modeli için `docs/RUNTIME_SECURITY.md` kullanılmalıdır.
 
 ## 5. Yerel production paketi
 
