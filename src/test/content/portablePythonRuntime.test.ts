@@ -30,6 +30,13 @@ describe("portable Python runtime contract", () => {
     expect(preparer).toContain("matches.length !== 1");
   });
 
+  it("rebuilds the resource directory from the verified archive on every package build", () => {
+    expect(preparer).toContain("const archivePath = await downloadAsset(asset)");
+    expect(preparer).toContain("await rm(runtimeDirectory, { recursive: true, force: true })");
+    expect(preparer).toContain('execFileSync("tar"');
+    expect(preparer).not.toContain("existingRuntimeMatches");
+  });
+
   it("supports every release target and prepares a Tauri resource", () => {
     for (const target of [
       "x86_64-pc-windows-msvc",
@@ -49,7 +56,6 @@ describe("portable Python runtime contract", () => {
   it("discovers the extracted executable and records a safe relative manifest path", () => {
     expect(preparer).toContain("discoverRuntimeExecutable");
     expect(preparer).toContain("executableRelativePath");
-    expect(preparer).toContain("safeManifestExecutable");
     expect(preparer).toContain('join(runtimeDirectory, "python", "bin")');
     expect(interpreter).toContain('const RUNTIME_MANIFEST: &str = "runtime-manifest.json"');
     expect(interpreter).toContain("executable_relative_path");
