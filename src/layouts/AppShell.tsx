@@ -20,11 +20,21 @@ export function AppShell({
 }: PropsWithChildren<AppShellProps>) {
   return (
     <div className={styles.root}>
+      <a className={styles.skipLink} href="#main-content">
+        Ana içeriğe geç
+      </a>
       <TitleBar context={context} />
       <div className={styles.body}>
         <PrimaryRail activeRoute={activeRoute} />
         <CurriculumSidebar compact={compactCurriculum} />
-        <main className={styles.content}>{children}</main>
+        <main
+          id="main-content"
+          className={styles.content}
+          aria-label={context}
+          tabIndex={-1}
+        >
+          {children}
+        </main>
       </div>
       <StatusBar />
     </div>
