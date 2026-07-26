@@ -2,7 +2,13 @@ import { create } from "zustand";
 import { collectDiagnostics } from "../services/diagnosticsService";
 import type { DiagnosticsSnapshot } from "../types";
 
-export type DiagnosticsStatus = "idle" | "checking" | "ready" | "offline" | "error";
+export type DiagnosticsStatus =
+  | "idle"
+  | "checking"
+  | "ready"
+  | "offline"
+  | "unavailable"
+  | "error";
 
 interface DiagnosticsState {
   status: DiagnosticsStatus;
@@ -12,9 +18,15 @@ interface DiagnosticsState {
 }
 
 function getErrorMessage(error: unknown) {
-  return error instanceof Error
-    ? error.message
-    : "Sistem tanılama kontrolü tamamlanamadı.";
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
+
+  return "Sistem tanılama kontrolü tamamlanamadı.";
 }
 
 export const useDiagnosticsStore = create<DiagnosticsState>((set, get) => ({
@@ -35,17 +47,16 @@ export const useDiagnosticsStore = create<DiagnosticsState>((set, get) => ({
 
     try {
       const snapshot = await collectDiagnostics();
-      const status =
-        snapshot.runtimeStatus === "ready"
-          ? "ready"
-          : snapshot.runtimeStatus === "offline"
-            ? "offline"
-            : "error";
+      const status = snapshot.runtimeStatus;
 
       set({ snapshot, status, errorMessage: null });
       return snapshot;
     } catch (error) {
-      set({ status: "error", errorMessage: getErrorMessage(error) });
+      set({
+        snapshot: null,
+        status: "error",
+        errorMessage: getErrorMessage(error),
+      });
       return null;
     }
   },
