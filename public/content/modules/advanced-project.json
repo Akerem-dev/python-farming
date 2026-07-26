@@ -106,7 +106,7 @@
         "id": "advanced.project.final-platform",
         "title": "Yerel Veri Platformu kalite kapısını tamamla",
         "xpReward": 500,
-        "timeoutMs": 20000,
+        "timeoutMs": 10000,
         "checks": [
           {
             "id": "advanced-capstone",
