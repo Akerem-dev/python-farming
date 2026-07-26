@@ -45,18 +45,18 @@ jobs:
       - name: Capture compiler output once
         shell: bash
         run: |
-          if [ -f rust-diagnostic.log ]; then
+          if [ -f rust-diagnostic.txt ]; then
             echo "Diagnostic already captured."
             exit 0
           fi
           set +e
-          (cd src-tauri && cargo test --all-targets --locked) > rust-diagnostic.log 2>&1
+          (cd src-tauri && cargo test --all-targets --locked) > rust-diagnostic.txt 2>&1
           code=$?
           set -e
-          printf '\nexit_code=%s\n' "$code" >> rust-diagnostic.log
+          printf '\nexit_code=%s\n' "$code" >> rust-diagnostic.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rust-diagnostic.log
+          git add rust-diagnostic.txt
           git commit -m "chore(runtime): capture Rust diagnostic"
           git push origin HEAD:${{ github.head_ref }}
 
