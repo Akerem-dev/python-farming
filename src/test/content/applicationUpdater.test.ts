@@ -1,9 +1,13 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
+function pathOf(path: string) {
+  return resolve(process.cwd(), path);
+}
+
 function read(path: string) {
-  return readFileSync(resolve(process.cwd(), path), "utf-8");
+  return readFileSync(pathOf(path), "utf-8");
 }
 
 const service = read("src/features/updater/services/updateService.ts");
@@ -20,6 +24,13 @@ describe("signed application updater", () => {
     expect(capability).toContain('"updater:default"');
     expect(capability).toContain('"process:allow-restart"');
     expect(capability).not.toContain('"process:allow-exit"');
+  });
+
+  it("commits only the updater public key", () => {
+    expect(existsSync(pathOf("src-tauri/updater.pub"))).toBe(true);
+    expect(existsSync(pathOf("src-tauri/python-farming-updater.key"))).toBe(false);
+    expect(existsSync(pathOf("python-farming-updater.key"))).toBe(false);
+    expect(read("src-tauri/updater.pub").trim()).not.toBe("");
   });
 
   it("does not automatically check, download or install updates", () => {
