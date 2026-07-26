@@ -1,0 +1,34 @@
+name: Stage 37 review fixes
+
+on:
+  push:
+    branches:
+      - stage/37-data-export-import-reset
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: stage/37-data-export-import-reset
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+      - name: Apply review fixes
+        run: node scripts/apply-stage37-review-fixes.mjs
+      - name: Format Rust
+        run: cargo fmt --all --manifest-path src-tauri/Cargo.toml
+      - name: Remove temporary files
+        run: rm scripts/apply-stage37-review-fixes.mjs .github/workflows/stage37-review-fixes.yml
+      - name: Commit product fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src src-tauri scripts .github/workflows
+          git commit -m "fix: serialize progress operations and export fallback"
+          git push origin HEAD:stage/37-data-export-import-reset
