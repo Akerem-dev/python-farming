@@ -1,84 +1,133 @@
 # Python Farming
 
-Python Farming, başlangıç seviyesinden uzman Python geliştiriciliğine uzanan assetsiz ve masaüstü odaklı bir öğrenme oyunudur.
+Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı görevler, hata ayıklama laboratuvarları ve çok dosyalı projelerle öğreten Tauri tabanlı masaüstü uygulamasıdır.
 
-## Mevcut aşama
+## Proje durumu
 
-**Aşama 3 — Yerel Python çalışma motoru**
+**31/31 ana geliştirme aşaması tamamlandı.**
 
-Bu sürümde şunlar çalışır:
+Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
-- Vite + React + TypeScript ön yüzü
-- Tauri 2 masaüstü uygulama yapılandırması
-- Ana müfredat ve çalışma ekranları
-- CodeMirror 6 tabanlı gerçek Python editörü
-- Python sözdizimi renklendirmesi
-- Satır, sütun ve kaydetme durumu takibi
-- Kademeli ders ipuçları
+## Çalışan sistemler
+
+- React 19 + TypeScript + Vite arayüzü
+- Tauri 2 masaüstü kabuğu ve Rust çalışma motoru
+- CodeMirror 6 tabanlı Python editörü
+- Tek ve çok dosyalı Python çalışma alanları
 - Yerel Python 3 yorumlayıcısını otomatik bulma
-- Tauri IPC üzerinden gerçek Python kodu çalıştırma
 - Gerçek `stdout`, `stderr`, traceback, çıkış kodu ve çalışma süresi
-- Sonsuz döngülere karşı dört saniyelik ders çalışma sınırı
-- Kaynak kod, stdin ve terminal çıktısı için güvenli boyut sınırları
-- Her çalıştırmada geçici ve ayrı çalışma klasörü
-- TypeScript ve Rust birim testleri
+- `stdin`, seçim, sıralama, kod tamamlama ve hata ayıklama görevleri
+- AST, type hint, sınıf, protokol, async, SQLite ve davranış tabanlı doğrulayıcılar
+- Gizli senaryolar ve zayıf/bypass çözümlerini reddeden kalite kapıları
+- JSON tabanlı müfredat paketleri
+- Yerel SQLite ilerleme, XP, rozet ve mezuniyet kaydı
+- Başlangıç, Orta Seviye ve İleri Seviye bitirme projeleri
 - GitHub Actions üzerinde frontend ve Rust CI
+- Windows, Linux ve macOS için taslak release üretim akışı
 
-Henüz bağlanmayan sistemler:
+## Teknoloji yığını
 
-- Uygulamayla paketlenen gömülü CPython dağıtımı
-- İşletim sistemi seviyesinde üretim sandbox'ı
-- İnteraktif stdin formu
-- Gizli test ve görev doğrulama motoru
-- SQLite ilerleme kaydı
-- JSON tabanlı ders içerik motoru
+| Katman | Teknoloji |
+| --- | --- |
+| Masaüstü | Tauri 2 |
+| Arayüz | React 19, TypeScript, Vite |
+| Editör | CodeMirror 6 |
+| Durum yönetimi | Zustand |
+| Yerel çalışma motoru | Rust + sistem Python 3 |
+| Kalıcılık | SQLite / rusqlite |
+| Test | Vitest + Rust testleri + gerçek Python entegrasyon testleri |
 
 ## Gereksinimler
 
-- Node.js 20.19 veya üzeri
-- npm 10 veya üzeri
-- Rust stable ve Tauri işletim sistemi ön koşulları
-- Aşama 3 geliştirme runtime'ı için PATH üzerinde Python 3
+- Node.js `20.19` veya üzeri
+- npm `10` veya üzeri
+- Rust stable
+- Tauri'nin işletim sistemine özel geliştirme ön koşulları
+- PATH üzerinde Python 3
 
-Windows'ta Python Launcher (`py -3`) veya `python`; macOS/Linux'ta `python3` veya `python` otomatik olarak aranır. Özel bir yorumlayıcı kullanmak için `PYTHON_FARMING_PYTHON` ortam değişkeni ayarlanabilir.
+Python yorumlayıcısı şu sırayla aranır:
 
-## İlk kurulum
+- Windows: `py -3`, ardından `python`
+- macOS/Linux: `python3`, ardından `python`
 
-```bash
-npm install
-```
+Özel yorumlayıcı kullanmak için `PYTHON_FARMING_PYTHON` ortam değişkeni ayarlanabilir.
 
-Oluşan `package-lock.json` dosyası repository'ye eklenmelidir.
+## Temiz kurulum
 
-## Çalıştırma
-
-Tarayıcı arayüz ön izlemesi:
+Repository'yi klonladıktan sonra:
 
 ```bash
-npm run dev
+npm ci
 ```
 
-Tarayıcı ön izlemesinde güvenlik gereği Python çalıştırılmaz. Gerçek masaüstü runtime için:
+Masaüstü uygulamasını geliştirme modunda çalıştırmak için:
 
 ```bash
 npm run tauri:dev
 ```
 
-## Kontroller
+Yalnız web arayüzünü ön izlemek için:
 
 ```bash
-npm run typecheck
-npm test
-npm run build
-cd src-tauri
-cargo fmt --all -- --check
-cargo test --all-targets
+npm run dev
 ```
 
-## Runtime güvenlik sınırı
+Tarayıcı ön izlemesinde Tauri komutları ve gerçek Python çalışma motoru kullanılamaz; tam deneyim için `tauri:dev` gerekir.
 
-Aşama 3, eğitim akışını doğrulamak için sistemde kurulu Python'u `-I -B` bayraklarıyla ayrı geçici klasörde çalıştırır; süreyi ve çıktı boyutunu sınırlar. Bu yapı henüz kötü niyetli kodu işletim sistemi seviyesinde izole eden tam bir güvenlik sandbox'ı değildir. Son kullanıcı sürümünde imzalı gömülü CPython, daha sıkı dosya izinleri ve platforma özel süreç kısıtlamaları kullanılacaktır.
+## Kalite kontrolleri
 
-## Sonraki aşama
+Bütün frontend ve Rust kontrollerini tek komutla çalıştırmak için:
 
-Aşama 4'te stdin kullanıcı arayüzü, görev testleri, AST tabanlı gereksinim doğrulaması ve başarı/başarısızlık geri bildirimi eklenecektir.
+```bash
+npm run verify
+```
+
+Ayrı çalıştırmak gerekirse:
+
+```bash
+npm run verify:frontend
+npm run verify:rust
+```
+
+`verify:frontend` typecheck, bütün Vitest testleri ve production frontend build'ini çalıştırır. `verify:rust`, rustfmt ve kilitli bağımlılıklarla bütün Rust hedef testlerini çalıştırır.
+
+## Yerel production build
+
+```bash
+npm run tauri:build
+```
+
+Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçimi işletim sistemine göre değişir.
+
+## Release akışı
+
+`.github/workflows/release.yml` workflow'u manuel çalıştırıldığında şu paketleri üretir:
+
+- Windows x64
+- Linux x64
+- macOS Apple Silicon
+- macOS Intel
+
+Workflow önce bütün kalite kontrollerini çalıştırır, ardından GitHub üzerinde **taslak ve ön sürüm** release oluşturur. macOS paketleri sertifika bulunmadığında ad-hoc imzalanır. Windows kod imzası ve macOS notarizasyonu henüz yapılandırılmadığı için taslak release incelenmeden yayımlanmamalıdır.
+
+Ayrıntılı adımlar için [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) dosyasını kullanın.
+
+## Yerel veri
+
+İlerleme, tamamlanan dersler, XP, rozetler ve son açık ders masaüstü uygulamasının yerel SQLite veritabanında tutulur. Normal `git pull`, `npm ci` veya uygulama güncellemesi bu veriyi silmez. Geliştirme sırasında uygulama veri klasörünü elle temizlemek ilerlemeyi sıfırlar.
+
+## Çalışma motoru güvenliği
+
+Öğrenci kodu ayrı geçici klasörlerde, izole Python bayraklarıyla ve süre/çıktı/dosya boyutu sınırlarıyla çalıştırılır. Doğrulayıcılar eğitim amaçlı güvenlik katmanları sağlar; bu yapı kötü niyetli kodu işletim sistemi seviyesinde tamamen izole eden genel amaçlı bir sandbox değildir.
+
+Son kullanıcıya açık geniş dağıtım öncesinde gömülü ve imzalı Python runtime'ı, daha sıkı süreç izolasyonu, kod imzalama ve platform güvenlik kontrolleri ayrıca tamamlanmalıdır.
+
+## Sürümleme
+
+Uygulama sürümü aşağıdaki üç dosyada aynı tutulmalıdır:
+
+- `package.json`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/Cargo.toml`
+
+Release workflow'u GitHub etiketini Tauri uygulama sürümünden üretir.
