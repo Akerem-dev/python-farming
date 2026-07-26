@@ -92,8 +92,9 @@ fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupO
         .map_err(|error| format!("Tutarlı SQLite yedeği oluşturulamadı: {error}"))?;
     drop(source);
 
-    let backup_connection = Connection::open_with_flags(&backup_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
-        .map_err(|error| format!("Oluşturulan yedek doğrulama için açılamadı: {error}"))?;
+    let backup_connection =
+        Connection::open_with_flags(&backup_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
+            .map_err(|error| format!("Oluşturulan yedek doğrulama için açılamadı: {error}"))?;
     if let Err(error) = ensure_integrity(&backup_connection, "Oluşturulan ilerleme yedeği") {
         drop(backup_connection);
         let _ = fs::remove_file(&backup_path);
@@ -171,7 +172,9 @@ fn inspect_backup(path: &Path) -> (String, Option<i64>, Option<i64>) {
     }
 
     let completed_lesson_count = connection
-        .query_row("SELECT COUNT(*) FROM lesson_progress", [], |row| row.get::<_, i64>(0))
+        .query_row("SELECT COUNT(*) FROM lesson_progress", [], |row| {
+            row.get::<_, i64>(0)
+        })
         .ok();
     let total_xp = connection
         .query_row(
@@ -202,7 +205,10 @@ fn ensure_integrity(connection: &Connection, label: &str) -> Result<(), String> 
 fn prune_backups(directory: &Path) -> Result<(), String> {
     for path in retention_removal_plan(backup_candidates(directory)?) {
         fs::remove_file(&path).map_err(|error| {
-            format!("Eski ilerleme yedeği silinemedi ({}): {error}", path.display())
+            format!(
+                "Eski ilerleme yedeği silinemedi ({}): {error}",
+                path.display()
+            )
         })?;
     }
     Ok(())
@@ -216,14 +222,16 @@ fn retention_removal_plan(mut candidates: Vec<BackupCandidate>) -> Vec<PathBuf> 
             .then_with(|| right.path.cmp(&left.path))
     });
 
+    let mut retained_count = 0_usize;
     let mut retained_bytes = 0_u64;
     let mut removals = Vec::new();
-    for (index, candidate) in candidates.into_iter().enumerate() {
-        let fits_count = index < MAX_BACKUP_COUNT;
+    for candidate in candidates {
+        let fits_count = retained_count < MAX_BACKUP_COUNT;
         let fits_size = retained_bytes
             .checked_add(candidate.size_bytes)
             .is_some_and(|value| value <= MAX_BACKUP_TOTAL_BYTES);
         if fits_count && fits_size {
+            retained_count += 1;
             retained_bytes += candidate.size_bytes;
         } else {
             removals.push(candidate.path);
@@ -240,7 +248,8 @@ fn backup_candidates(directory: &Path) -> Result<Vec<BackupCandidate>, String> {
     for entry in entries {
         let entry = entry.map_err(|error| format!("Yedek klasörü girdisi okunamadı: {error}"))?;
         let path = entry.path();
-        if !path.is_file() || path.extension().and_then(|value| value.to_str()) != Some(BACKUP_EXTENSION)
+        if !path.is_file()
+            || path.extension().and_then(|value| value.to_str()) != Some(BACKUP_EXTENSION)
         {
             continue;
         }
