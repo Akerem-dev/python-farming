@@ -1,0 +1,102 @@
+name: Stage 40 signed updater bootstrap
+
+on:
+  push:
+    branches:
+      - stage/40-signed-updater
+    paths:
+      - ".github/workflows/stage40-signed-updater-bootstrap.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: stage/40-signed-updater
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install official updater dependencies
+        run: |
+          npm install --save-exact \
+            @tauri-apps/plugin-updater@2.10.1 \
+            @tauri-apps/plugin-process@2.3.1
+          cd src-tauri
+          cargo add tauri-plugin-updater@2.10.1 tauri-plugin-process@2.3.1
+
+      - name: Generate updater signing key pair
+        shell: bash
+        run: |
+          password="$(openssl rand -base64 36 | tr -d '\n')"
+          echo "::add-mask::$password"
+          key_path="$RUNNER_TEMP/python-farming-updater.key"
+          npm run tauri signer generate -- -w "$key_path" -p "$password"
+          test -s "$key_path"
+          test -s "$key_path.pub"
+          mkdir -p stage40-private-key
+          cp "$key_path" stage40-private-key/python-farming-updater.key
+          printf '%s' "$password" > stage40-private-key/python-farming-updater-password.txt
+          cp "$key_path.pub" src-tauri/updater.pub
+
+      - name: Configure signed updater and key metadata
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const configPath = 'src-tauri/tauri.conf.json';
+          const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+          const pubkey = fs.readFileSync('src-tauri/updater.pub', 'utf8').trim();
+          config.bundle.createUpdaterArtifacts = true;
+          config.plugins = {
+            ...(config.plugins ?? {}),
+            updater: {
+              pubkey,
+              endpoints: [
+                'https://github.com/Akerem-dev/python-farming/releases/latest/download/latest.json'
+              ]
+            }
+          };
+          fs.writeFileSync(configPath, `${JSON.stringify(config, null, 2)}\n`);
+          const metadata = {
+            schemaVersion: 1,
+            runId: Number(process.env.GITHUB_RUN_ID),
+            artifactName: 'python-farming-updater-private-key',
+            generatedAt: new Date().toISOString(),
+            publicKeySha256: crypto.createHash('sha256').update(pubkey).digest('hex')
+          };
+          fs.writeFileSync('src-tauri/updater-key-metadata.json', `${JSON.stringify(metadata, null, 2)}\n`);
+          NODE
+
+      - name: Upload private updater key once
+        uses: actions/upload-artifact@v6
+        with:
+          name: python-farming-updater-private-key
+          path: stage40-private-key/
+          retention-days: 1
+          if-no-files-found: error
+
+      - name: Commit generated locks and public key
+        shell: bash
+        run: |
+          rm -rf stage40-private-key
+          git rm .github/workflows/stage40-signed-updater-bootstrap.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package.json package-lock.json src-tauri/Cargo.toml src-tauri/Cargo.lock \
+            src-tauri/tauri.conf.json src-tauri/updater.pub src-tauri/updater-key-metadata.json
+          git commit -m "build: configure signed Tauri updater"
+          git push origin HEAD:stage/40-signed-updater
