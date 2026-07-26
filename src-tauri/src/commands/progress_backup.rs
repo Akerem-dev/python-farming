@@ -1,9 +1,13 @@
 use rusqlite::{Connection, OpenFlags};
 use serde::Serialize;
 use std::{
+    ffi::OsString,
     fs,
     path::{Path, PathBuf},
-    sync::atomic::{AtomicI64, Ordering},
+    sync::{
+        atomic::{AtomicI64, Ordering},
+        Mutex,
+    },
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -15,6 +19,7 @@ const BACKUP_EXTENSION: &str = "db";
 const MAX_BACKUP_COUNT: usize = 5;
 const MAX_BACKUP_TOTAL_BYTES: u64 = 25 * 1024 * 1024;
 static LAST_BACKUP_TIMESTAMP: AtomicI64 = AtomicI64::new(0);
+static BACKUP_OPERATION_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Clone, Debug)]
 struct BackupCandidate {
@@ -47,18 +52,53 @@ pub struct ProgressBackupOverview {
 pub async fn list_progress_backups(
     app: tauri::AppHandle,
 ) -> Result<ProgressBackupOverview, String> {
-    tauri::async_runtime::spawn_blocking(move || list_progress_backups_sync(&app))
-        .await
-        .map_err(|error| format!("İlerleme yedekleri listelenemedi: {error}"))?
+    tauri::async_runtime::spawn_blocking(move || {
+        with_backup_lock(|| list_progress_backups_sync(&app))
+    })
+    .await
+    .map_err(|error| format!("İlerleme yedekleri listelenemedi: {error}"))?
 }
 
 #[tauri::command]
 pub async fn create_progress_backup(
     app: tauri::AppHandle,
 ) -> Result<ProgressBackupOverview, String> {
-    tauri::async_runtime::spawn_blocking(move || create_progress_backup_sync(&app))
-        .await
-        .map_err(|error| format!("İlerleme yedeği oluşturulamadı: {error}"))?
+    tauri::async_runtime::spawn_blocking(move || {
+        with_backup_lock(|| create_progress_backup_sync(&app))
+    })
+    .await
+    .map_err(|error| format!("İlerleme yedeği oluşturulamadı: {error}"))?
+}
+
+#[tauri::command]
+pub async fn restore_progress_backup(
+    app: tauri::AppHandle,
+    backup_id: String,
+) -> Result<ProgressBackupOverview, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        with_backup_lock(|| restore_progress_backup_sync(&app, &backup_id))
+    })
+    .await
+    .map_err(|error| format!("İlerleme yedeği geri yüklenemedi: {error}"))?
+}
+
+#[tauri::command]
+pub async fn delete_progress_backup(
+    app: tauri::AppHandle,
+    backup_id: String,
+) -> Result<ProgressBackupOverview, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        with_backup_lock(|| delete_progress_backup_sync(&app, &backup_id))
+    })
+    .await
+    .map_err(|error| format!("İlerleme yedeği silinemedi: {error}"))?
+}
+
+fn with_backup_lock<T>(operation: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
+    let _guard = BACKUP_OPERATION_LOCK
+        .lock()
+        .map_err(|_| "Yedek işlem kilidi kullanılamıyor.".to_string())?;
+    operation()
 }
 
 fn backup_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
@@ -74,7 +114,7 @@ fn backup_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
 
 fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupOverview, String> {
     let source = progress::open_database(app)?;
-    ensure_integrity(&source, "Ana ilerleme veritabanı")?;
+    ensure_compatible_database(&source, "Ana ilerleme veritabanı")?;
     source
         .execute_batch("PRAGMA wal_checkpoint(FULL);")
         .map_err(|error| format!("SQLite WAL verisi yedek öncesinde birleştirilemedi: {error}"))?;
@@ -98,19 +138,10 @@ fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupO
         return Err(format!("Tutarlı SQLite yedeği oluşturulamadı: {error}"));
     }
 
-    let backup_connection =
-        Connection::open_with_flags(&temporary_path, OpenFlags::SQLITE_OPEN_READ_ONLY).map_err(
-            |error| {
-                let _ = fs::remove_file(&temporary_path);
-                format!("Oluşturulan yedek doğrulama için açılamadı: {error}")
-            },
-        )?;
-    if let Err(error) = ensure_integrity(&backup_connection, "Oluşturulan ilerleme yedeği") {
-        drop(backup_connection);
+    if let Err(error) = verify_database_file(&temporary_path, "Oluşturulan ilerleme yedeği") {
         let _ = fs::remove_file(&temporary_path);
         return Err(error);
     }
-    drop(backup_connection);
 
     let backup_size = fs::metadata(&temporary_path)
         .map_err(|error| {
@@ -132,6 +163,116 @@ fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupO
     })?;
 
     prune_backups(&backup_directory)?;
+    collect_overview(&backup_directory)
+}
+
+fn restore_progress_backup_sync(
+    app: &tauri::AppHandle,
+    backup_id: &str,
+) -> Result<ProgressBackupOverview, String> {
+    let backup_directory = backup_directory(app)?;
+    let backup_path = validated_backup_path(&backup_directory, backup_id)?;
+    verify_database_file(&backup_path, "Seçilen ilerleme yedeği")?;
+
+    let database_path = progress::database_path(app)?;
+    let staged_path = database_path.with_extension("db.restore.tmp");
+    let rollback_path = database_path.with_extension("db.restore.previous");
+    cleanup_file(&staged_path);
+    cleanup_file(&rollback_path);
+
+    fs::copy(&backup_path, &staged_path)
+        .map_err(|error| format!("Seçilen yedek geri yükleme alanına kopyalanamadı: {error}"))?;
+    if let Err(error) = verify_database_file(&staged_path, "Geri yükleme için hazırlanan yedek") {
+        cleanup_file(&staged_path);
+        return Err(error);
+    }
+
+    create_progress_backup_sync(app).map_err(|error| {
+        cleanup_file(&staged_path);
+        format!("Geri yükleme öncesi güvenlik yedeği oluşturulamadı: {error}")
+    })?;
+
+    remove_sqlite_sidecars(&database_path);
+    let had_database = database_path.exists();
+    if had_database {
+        fs::rename(&database_path, &rollback_path).map_err(|error| {
+            cleanup_file(&staged_path);
+            format!("Mevcut ilerleme veritabanı güvenli alana taşınamadı: {error}")
+        })?;
+    }
+
+    if let Err(error) = fs::rename(&staged_path, &database_path) {
+        if had_database {
+            let _ = fs::rename(&rollback_path, &database_path);
+        }
+        cleanup_file(&staged_path);
+        return Err(format!("Hazırlanan yedek etkin veritabanı yapılamadı: {error}"));
+    }
+
+    if let Err(error) = verify_database_file(&database_path, "Geri yüklenen ilerleme veritabanı") {
+        cleanup_file(&database_path);
+        if had_database {
+            fs::rename(&rollback_path, &database_path).map_err(|rollback_error| {
+                format!("{error} Ayrıca önceki veritabanı geri alınamadı: {rollback_error}")
+            })?;
+        }
+        remove_sqlite_sidecars(&database_path);
+        return Err(error);
+    }
+
+    let reopened = match progress::open_database(app) {
+        Ok(connection) => connection,
+        Err(error) => {
+            return Err(restore_previous_database(
+                &database_path,
+                &rollback_path,
+                had_database,
+                error,
+            ));
+        }
+    };
+    if let Err(error) =
+        ensure_compatible_database(&reopened, "Geri yüklenen ilerleme veritabanı")
+    {
+        drop(reopened);
+        return Err(restore_previous_database(
+            &database_path,
+            &rollback_path,
+            had_database,
+            error,
+        ));
+    }
+    drop(reopened);
+
+    cleanup_file(&rollback_path);
+    prune_backups(&backup_directory)?;
+    collect_overview(&backup_directory)
+}
+
+fn restore_previous_database(
+    database_path: &Path,
+    rollback_path: &Path,
+    had_database: bool,
+    error: String,
+) -> String {
+    cleanup_file(database_path);
+    remove_sqlite_sidecars(database_path);
+    if had_database {
+        if let Err(rollback_error) = fs::rename(rollback_path, database_path) {
+            return format!("{error} Ayrıca önceki veritabanı geri alınamadı: {rollback_error}");
+        }
+    }
+    error
+}
+
+fn delete_progress_backup_sync(
+    app: &tauri::AppHandle,
+    backup_id: &str,
+) -> Result<ProgressBackupOverview, String> {
+    let backup_directory = backup_directory(app)?;
+    let backup_path = validated_backup_path(&backup_directory, backup_id)?;
+    fs::remove_file(&backup_path)
+        .map_err(|error| format!("Seçilen ilerleme yedeği silinemedi: {error}"))?;
     collect_overview(&backup_directory)
 }
 
@@ -185,7 +326,7 @@ fn inspect_backup(path: &Path) -> (String, Option<i64>, Option<i64>) {
         Err(_) => return ("corrupt".to_string(), None, None),
     };
 
-    if ensure_integrity(&connection, "İlerleme yedeği").is_err() {
+    if ensure_compatible_database(&connection, "İlerleme yedeği").is_err() {
         return ("corrupt".to_string(), None, None);
     }
 
@@ -209,6 +350,34 @@ fn inspect_backup(path: &Path) -> (String, Option<i64>, Option<i64>) {
     }
 }
 
+fn verify_database_file(path: &Path, label: &str) -> Result<(), String> {
+    let connection = Connection::open_with_flags(path, OpenFlags::SQLITE_OPEN_READ_ONLY)
+        .map_err(|error| format!("{label} doğrulama için açılamadı: {error}"))?;
+    ensure_compatible_database(&connection, label)
+}
+
+fn ensure_compatible_database(connection: &Connection, label: &str) -> Result<(), String> {
+    ensure_integrity(connection, label)?;
+    for table in ["lesson_progress", "app_state"] {
+        let exists = connection
+            .query_row(
+                "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = ?1",
+                [table],
+                |row| row.get::<_, i64>(0),
+            )
+            .map_err(|error| format!("{label} şeması denetlenemedi: {error}"))?;
+        if exists != 1 {
+            return Err(format!("{label} gerekli {table} tablosunu içermiyor."));
+        }
+    }
+    connection
+        .query_row("SELECT COUNT(*) FROM lesson_progress", [], |row| {
+            row.get::<_, i64>(0)
+        })
+        .map_err(|error| format!("{label} ders ilerlemesi okunamıyor: {error}"))?;
+    Ok(())
+}
+
 fn ensure_integrity(connection: &Connection, label: &str) -> Result<(), String> {
     let result = connection
         .query_row("PRAGMA quick_check", [], |row| row.get::<_, String>(0))
@@ -218,6 +387,25 @@ fn ensure_integrity(connection: &Connection, label: &str) -> Result<(), String> 
     } else {
         Err(format!("{label} bütünlük kontrolünden geçemedi: {result}"))
     }
+}
+
+fn validated_backup_path(directory: &Path, backup_id: &str) -> Result<PathBuf, String> {
+    if backup_id.is_empty() || backup_id.trim() != backup_id {
+        return Err("Yedek kimliği geçersiz.".to_string());
+    }
+    let relative = Path::new(backup_id);
+    if relative.components().count() != 1
+        || relative.file_name().and_then(|value| value.to_str()) != Some(backup_id)
+        || backup_timestamp(backup_id).is_none()
+    {
+        return Err("Yedek kimliği uygulamaya ait güvenli dosya biçiminde değil.".to_string());
+    }
+
+    let path = directory.join(backup_id);
+    if !path.is_file() {
+        return Err("Seçilen ilerleme yedeği bulunamadı.".to_string());
+    }
+    Ok(path)
 }
 
 fn prune_backups(directory: &Path) -> Result<(), String> {
@@ -321,12 +509,33 @@ fn next_backup_timestamp(directory: &Path) -> Result<i64, String> {
 }
 
 fn backup_timestamp(filename: &str) -> Option<i64> {
-    filename
+    let body = filename
         .strip_prefix(BACKUP_PREFIX)?
-        .split('-')
-        .next()?
-        .parse::<i64>()
-        .ok()
+        .strip_suffix(&format!(".{BACKUP_EXTENSION}"))?;
+    let mut parts = body.split('-');
+    let timestamp = parts.next()?.parse::<i64>().ok()?;
+    parts.next()?.parse::<u32>().ok()?;
+    if parts.next().is_some() {
+        return None;
+    }
+    Some(timestamp)
+}
+
+fn sqlite_sidecar_path(database_path: &Path, suffix: &str) -> PathBuf {
+    let mut value = OsString::from(database_path.as_os_str());
+    value.push(suffix);
+    PathBuf::from(value)
+}
+
+fn remove_sqlite_sidecars(database_path: &Path) {
+    cleanup_file(&sqlite_sidecar_path(database_path, "-wal"));
+    cleanup_file(&sqlite_sidecar_path(database_path, "-shm"));
+}
+
+fn cleanup_file(path: &Path) {
+    if path.exists() {
+        let _ = fs::remove_file(path);
+    }
 }
 
 fn unix_timestamp_millis() -> i64 {
@@ -340,22 +549,60 @@ fn unix_timestamp_millis() -> i64 {
 #[cfg(test)]
 mod tests {
     use super::{
-        backup_timestamp, retention_removal_plan, BackupCandidate, MAX_BACKUP_COUNT,
-        MAX_BACKUP_TOTAL_BYTES,
+        backup_timestamp, retention_removal_plan, validated_backup_path, BackupCandidate,
+        MAX_BACKUP_COUNT, MAX_BACKUP_TOTAL_BYTES,
     };
-    use std::path::PathBuf;
+    use std::{
+        fs,
+        path::PathBuf,
+        time::{SystemTime, UNIX_EPOCH},
+    };
+
+    fn temporary_directory(label: &str) -> PathBuf {
+        let nonce = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_nanos();
+        let path = std::env::temp_dir().join(format!(
+            "python-farming-{label}-{}-{nonce}",
+            std::process::id()
+        ));
+        fs::create_dir_all(&path).expect("temporary directory should be created");
+        path
+    }
 
     #[test]
-    fn parses_timestamp_from_owned_backup_names() {
+    fn parses_only_owned_backup_names() {
         assert_eq!(
             backup_timestamp("progress-1722000000123-42.db"),
             Some(1_722_000_000_123)
         );
         assert_eq!(backup_timestamp("notes.db"), None);
+        assert_eq!(backup_timestamp("progress-1722000000123-42.db.tmp"), None);
+        assert_eq!(backup_timestamp("progress-1722000000123-x.db"), None);
         assert_eq!(
-            backup_timestamp("progress-1722000000123-42.db.tmp"),
-            Some(1_722_000_000_123)
+            backup_timestamp("progress-1722000000123-42-extra.db"),
+            None
         );
+    }
+
+    #[test]
+    fn rejects_path_traversal_and_unowned_backup_ids() {
+        let directory = temporary_directory("backup-id");
+        let valid_name = "progress-1722000000123-42.db";
+        fs::write(directory.join(valid_name), b"database").expect("backup fixture should be written");
+
+        assert!(validated_backup_path(&directory, valid_name).is_ok());
+        for invalid in [
+            "../progress-1722000000123-42.db",
+            "nested/progress-1722000000123-42.db",
+            "progress-1722000000123-x.db",
+            " progress-1722000000123-42.db",
+        ] {
+            assert!(validated_backup_path(&directory, invalid).is_err());
+        }
+
+        fs::remove_dir_all(directory).expect("temporary directory should be removed");
     }
 
     #[test]
