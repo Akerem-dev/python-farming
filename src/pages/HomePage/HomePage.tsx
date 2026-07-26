@@ -14,6 +14,11 @@ import {
 } from "../../features/curriculum/curriculumProgress";
 import { useCurriculumStore } from "../../features/curriculum/store/curriculumStore";
 import {
+  advancedGraduationLessonId,
+  getAdvancedGraduationLesson,
+  getAdvancedGraduationSnapshot,
+} from "../../features/mastery/advancedGraduation";
+import {
   beginnerGraduationLessonId,
   getBeginnerGraduationLesson,
   getBeginnerGraduationSnapshot,
@@ -68,8 +73,13 @@ export function HomePage() {
     () => getIntermediateGraduationSnapshot(catalog, completedLessonIds),
     [catalog, completedLessonIds],
   );
+  const advancedGraduation = useMemo(
+    () => getAdvancedGraduationSnapshot(catalog, completedLessonIds),
+    [catalog, completedLessonIds],
+  );
   const beginnerGraduationLesson = getBeginnerGraduationLesson(catalog);
   const intermediateGraduationLesson = getIntermediateGraduationLesson(catalog);
+  const advancedGraduationLesson = getAdvancedGraduationLesson(catalog);
   const resumeLesson = useMemo(
     () => getResumeLesson(catalog, completedLessonIds, lastLessonId),
     [catalog, completedLessonIds, lastLessonId],
@@ -122,6 +132,7 @@ export function HomePage() {
     const isBeginner = level.id === "beginner";
     const isIntermediate = level.id === "intermediate";
     const isAdvanced = level.id === "advanced";
+    const isExpert = level.id === "expert";
     return {
       ...level,
       completedModules: isBeginner
@@ -144,10 +155,13 @@ export function HomePage() {
           ? !beginnerGraduation.intermediateUnlocked
           : isAdvanced
             ? !intermediateGraduation.advancedUnlocked
-            : true,
+            : isExpert
+              ? !advancedGraduation.expertUnlocked
+              : true,
       unlocked:
         (isIntermediate && beginnerGraduation.intermediateUnlocked) ||
-        (isAdvanced && intermediateGraduation.advancedUnlocked),
+        (isAdvanced && intermediateGraduation.advancedUnlocked) ||
+        (isExpert && advancedGraduation.expertUnlocked),
     };
   });
 
@@ -189,7 +203,7 @@ export function HomePage() {
   const currentLevelLabel =
     resumeModule.id === "beginner-graduation"
       ? "Sınav"
-      : resumeModule.id === "intermediate-project"
+      : resumeModule.id === "intermediate-project" || resumeModule.id === "advanced-project"
         ? "Bitirme Projesi"
         : resumeLevel?.id === "intermediate"
           ? "Orta Seviye"
@@ -197,44 +211,64 @@ export function HomePage() {
             ? "İleri Seviye"
             : "Başlangıç";
 
+  const showingAdvancedGraduation = intermediateGraduation.graduated;
   const showingIntermediateGraduation = beginnerGraduation.graduated;
-  const graduationView = showingIntermediateGraduation
+  const graduationView = showingAdvancedGraduation
     ? {
-        graduated: intermediateGraduation.graduated,
-        unlocked: intermediateGraduation.projectUnlocked,
-        masteryScore: intermediateGraduation.masteryScore,
-        badgeName: intermediateGraduation.badgeName,
-        completedCoreLessons: intermediateGraduation.completedCoreLessons,
-        totalCoreLessons: intermediateGraduation.totalCoreLessons,
-        completedCoreModules: intermediateGraduation.completedCoreModules,
-        totalCoreModules: intermediateGraduation.totalCoreModules,
-        weakTopics: intermediateGraduation.weakTopics,
-        lesson: intermediateGraduationLesson,
-        lessonId: intermediateGraduationLessonId,
-        levelName: "Orta Seviye",
-        nextLevel: "İleri Seviye",
-        readyTitle: "Dokuz modülü üretim kalitesinde tek projede kanıtla",
+        graduated: advancedGraduation.graduated,
+        unlocked: advancedGraduation.projectUnlocked,
+        masteryScore: advancedGraduation.masteryScore,
+        badgeName: advancedGraduation.badgeName,
+        completedCoreLessons: advancedGraduation.completedCoreLessons,
+        totalCoreLessons: advancedGraduation.totalCoreLessons,
+        completedCoreModules: advancedGraduation.completedCoreModules,
+        totalCoreModules: advancedGraduation.totalCoreModules,
+        weakTopics: advancedGraduation.weakTopics,
+        lesson: advancedGraduationLesson,
+        lessonId: advancedGraduationLessonId,
+        levelName: "İleri Seviye",
+        nextLevel: "Uzman Seviye",
+        readyTitle: "Yedi ileri modülü tek üretim platformunda kanıtla",
         readyDescription:
-          "Sipariş Yönetim Sistemi bitirme projesini tamamlayarak Orta Seviye rozetini kazan ve İleri Seviye yolunu aç.",
+          "Yerel Veri Platformu bitirme projesini tamamlayarak İleri Seviye rozetini kazan ve Uzman Seviye yolunu aç.",
       }
-    : {
-        graduated: beginnerGraduation.graduated,
-        unlocked: beginnerGraduation.examUnlocked,
-        masteryScore: beginnerGraduation.masteryScore,
-        badgeName: beginnerGraduation.badgeName,
-        completedCoreLessons: beginnerGraduation.completedCoreLessons,
-        totalCoreLessons: beginnerGraduation.totalCoreLessons,
-        completedCoreModules: beginnerGraduation.completedCoreModules,
-        totalCoreModules: beginnerGraduation.totalCoreModules,
-        weakTopics: beginnerGraduation.weakTopics,
-        lesson: beginnerGraduationLesson,
-        lessonId: beginnerGraduationLessonId,
-        levelName: "Başlangıç",
-        nextLevel: "Orta Seviye",
-        readyTitle: "Sekiz modülü tek projede kanıtla",
-        readyDescription:
-          "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır.",
-      };
+    : showingIntermediateGraduation
+      ? {
+          graduated: intermediateGraduation.graduated,
+          unlocked: intermediateGraduation.projectUnlocked,
+          masteryScore: intermediateGraduation.masteryScore,
+          badgeName: intermediateGraduation.badgeName,
+          completedCoreLessons: intermediateGraduation.completedCoreLessons,
+          totalCoreLessons: intermediateGraduation.totalCoreLessons,
+          completedCoreModules: intermediateGraduation.completedCoreModules,
+          totalCoreModules: intermediateGraduation.totalCoreModules,
+          weakTopics: intermediateGraduation.weakTopics,
+          lesson: intermediateGraduationLesson,
+          lessonId: intermediateGraduationLessonId,
+          levelName: "Orta Seviye",
+          nextLevel: "İleri Seviye",
+          readyTitle: "Dokuz modülü üretim kalitesinde tek projede kanıtla",
+          readyDescription:
+            "Sipariş Yönetim Sistemi bitirme projesini tamamlayarak Orta Seviye rozetini kazan ve İleri Seviye yolunu aç.",
+        }
+      : {
+          graduated: beginnerGraduation.graduated,
+          unlocked: beginnerGraduation.examUnlocked,
+          masteryScore: beginnerGraduation.masteryScore,
+          badgeName: beginnerGraduation.badgeName,
+          completedCoreLessons: beginnerGraduation.completedCoreLessons,
+          totalCoreLessons: beginnerGraduation.totalCoreLessons,
+          completedCoreModules: beginnerGraduation.completedCoreModules,
+          totalCoreModules: beginnerGraduation.totalCoreModules,
+          weakTopics: beginnerGraduation.weakTopics,
+          lesson: beginnerGraduationLesson,
+          lessonId: beginnerGraduationLessonId,
+          levelName: "Başlangıç",
+          nextLevel: "Orta Seviye",
+          readyTitle: "Sekiz modülü tek projede kanıtla",
+          readyDescription:
+            "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır.",
+        };
 
   return (
     <AppShell activeRoute={routes.home} context="Ana Sayfa / Müfredat">

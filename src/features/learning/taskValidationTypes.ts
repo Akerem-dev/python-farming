@@ -236,6 +236,13 @@ export type TaskCheck =
       minAssertions: number;
     })
   | (TaskCheckBase & {
+      kind: "advanced_capstone";
+      requiredFiles: string[];
+      testFiles: string[];
+      minTests: number;
+      minAssertions: number;
+    })
+  | (TaskCheckBase & {
       kind: "advanced_patterns";
       requiredFiles: string[];
       decorators?: Array<{
