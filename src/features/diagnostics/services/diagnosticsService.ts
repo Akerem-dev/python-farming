@@ -37,6 +37,7 @@ export async function collectDiagnostics(): Promise<DiagnosticsSnapshot> {
       runtimeStatus: "unavailable",
       runtime: {
         status: "offline",
+        managed: false,
         message:
           "Tarayıcı ön izlemesinde yerel Python çalışma motoruna erişilemez. Tam kontrol için masaüstü uygulamasını açın.",
       },
@@ -96,6 +97,8 @@ export function createDiagnosticsReport(snapshot: DiagnosticsSnapshot) {
     `Python durumu: ${snapshot.runtimeStatus}`,
     `Python sürümü: ${snapshot.runtime?.version ?? "bulunamadı"}`,
     `Python executable: ${snapshot.runtime?.executable ?? "bulunamadı"}`,
+    `Python kaynağı: ${snapshot.runtime?.source ?? "bulunamadı"}`,
+    `Python uygulama tarafından yönetiliyor: ${snapshot.runtime?.managed ? "evet" : "hayır"}`,
     `Python mesajı: ${snapshot.runtime?.message ?? "yanıt yok"}`,
     "Çalıştırma sözleşmesi:",
     `- Tek dosya kaynak kodu: ${runtimeLimits.maxSingleFileSourceBytes} bayt`,
