@@ -95,4 +95,17 @@ describe("release readiness contract", () => {
     expect(releaseWorkflow).toContain("windows-latest");
     expect(releaseWorkflow).toContain("APPLE_SIGNING_IDENTITY");
   });
+
+  it("rejects release tags that do not match all manifest versions", () => {
+    expect(releaseWorkflow).toContain("Validate manifest versions and triggering tag");
+    expect(releaseWorkflow).toContain("package_version");
+    expect(releaseWorkflow).toContain("tauri_version");
+    expect(releaseWorkflow).toContain("cargo_version");
+    expect(releaseWorkflow).toContain('expected_tag="v${package_version}"');
+    expect(releaseWorkflow).toContain("GITHUB_REF_TYPE");
+    expect(releaseWorkflow).toContain("GITHUB_REF_NAME");
+    expect(releaseWorkflow).toContain(
+      "tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}",
+    );
+  });
 });
