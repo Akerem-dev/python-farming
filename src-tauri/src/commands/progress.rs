@@ -82,7 +82,7 @@ pub(super) fn open_database(app: &tauri::AppHandle) -> Result<Connection, String
     Ok(connection)
 }
 
-fn load_progress_sync(app: &tauri::AppHandle) -> Result<ProgressSnapshot, String> {
+pub(super) fn load_progress_sync(app: &tauri::AppHandle) -> Result<ProgressSnapshot, String> {
     let connection = open_database(app)?;
     read_snapshot(&connection)
 }
@@ -147,7 +147,7 @@ fn set_last_lesson_sync(
     read_snapshot(&connection)
 }
 
-fn read_snapshot(connection: &Connection) -> Result<ProgressSnapshot, String> {
+pub(super) fn read_snapshot(connection: &Connection) -> Result<ProgressSnapshot, String> {
     let mut statement = connection
         .prepare("SELECT lesson_id FROM lesson_progress ORDER BY completed_at, lesson_id")
         .map_err(|error| format!("Ders ilerlemesi sorgulanamadı: {error}"))?;
