@@ -14,7 +14,7 @@ const items: RailItem[] = [
   { label: "Görevler", symbol: "✓" },
   { label: "Projeler", symbol: "□" },
   { label: "İlerleme", symbol: "◒" },
-  { label: "Ayarlar", symbol: "⚙" },
+  { label: "Ayarlar", symbol: "⚙", route: routes.settings },
 ];
 
 interface PrimaryRailProps {
