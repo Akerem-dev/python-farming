@@ -1,6 +1,6 @@
 # Python Farming Release Kontrol Listesi
 
-Bu liste her masaüstü sürümünden önce uygulanmalıdır. Mevcut `0.1.x` hattı geliştirme ön izlemesidir.
+Bu liste her masaüstü sürümünden önce uygulanmalıdır. `1.0.0`, ilk kararlı kaynak sürümüdür; platform installer'ları imzalama ve temiz makine kontrolleri tamamlanana kadar taslak tutulur.
 
 ## 1. Sürüm numarası
 
@@ -10,7 +10,7 @@ Aşağıdaki üç dosyada aynı SemVer değeri bulunmalıdır:
 - `src-tauri/tauri.conf.json`
 - `src-tauri/Cargo.toml`
 
-Örnek: `0.1.0`.
+Örnek: `1.0.0`.
 
 ## 2. Temiz çalışma alanı
 
@@ -86,17 +86,19 @@ npm run tauri:build
 
 ## 7. GitHub release workflow
 
-GitHub üzerinde **Actions → Release → Run workflow** seçilir.
+### Dry-run
 
-Workflow:
+GitHub üzerinde **Actions → Release → Run workflow** seçilir. Manuel çalışma:
 
 - kalite kontrollerini tekrar çalıştırır,
-- Windows x64 paketi üretir,
-- Linux x64 paketi üretir,
-- macOS Apple Silicon paketi üretir,
-- macOS Intel paketi üretir,
-- Tauri sürümünden `v__VERSION__` etiketi oluşturur,
-- taslak ve ön sürüm GitHub Release hazırlar.
+- Windows x64, Linux x64, macOS Apple Silicon ve macOS Intel paketlerini üretir,
+- her paket için SHA-256 manifesti oluşturur,
+- çıktıları workflow artifact olarak saklar,
+- GitHub Release veya sürüm etiketi oluşturmaz.
+
+### Etiketli taslak release
+
+Bütün manifestler `1.0.0` olduğunda `v1.0.0` etiketi oluşturulur. Etiket uyuşmazsa preflight işi yayını durdurur. Uyumlu etiket çalışması paketleri taslak, kararlı ve ön sürüm olmayan GitHub Release'e yükler.
 
 ## 8. İmzalama durumu
 
@@ -110,7 +112,7 @@ Bu nedenle taslak release herkese açık yayımlanmadan önce platform uyarılar
 
 Genel kullanıma açık kararlı sürüm öncesinde Apple Developer ID/notarizasyon ve Windows kod imzalama sırları GitHub Actions'a eklenmelidir.
 
-## 9. Taslak release incelemesi
+## 9. Taslak release ve artifact incelemesi
 
 - Sürüm adı ve etiketi doğru mu?
 - Dört platform çıktısı yüklendi mi?
@@ -118,7 +120,7 @@ Genel kullanıma açık kararlı sürüm öncesinde Apple Developer ID/notarizas
 - Release notları gerçek değişiklikleri anlatıyor mu?
 - Bilinen sorunlar açıkça yazıldı mı?
 - Installer boyutları makul mü?
-- İndirilen paketlerin hash değerleri kaydedildi mi?
+- Her paketin SHA-256 manifesti mevcut ve yeniden hesaplanan değerle aynı mı?
 
 ## 10. Yayın ve geri dönüş
 

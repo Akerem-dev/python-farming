@@ -1,6 +1,6 @@
 [package]
 name = "python-farming"
-version = "0.1.0"
+version = "1.0.0"
 description = "Python Farming desktop learning application"
 authors = ["Python Farming"]
 edition = "2021"
