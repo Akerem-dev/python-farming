@@ -1,0 +1,139 @@
+{
+  "moduleId": "advanced-project",
+  "lessons": [
+    {
+      "id": "advanced.project.final-platform",
+      "moduleId": "advanced-project",
+      "order": 1,
+      "title": "İleri Seviye Bitirme Projesi: Yerel Veri Platformu",
+      "summary": "Mimari, async akış, SQLite transaction, offline transport, profiling, paket API’si ve testleri tek üretim kalitesinde projede birleştir.",
+      "levelLabel": "Advanced Graduation",
+      "mode": "code",
+      "task": {
+        "title": "Yerel Veri Platformu kalite kapısını tamamla",
+        "instructions": [
+          "farming_platform paketinde frozen Event modeli ve EventRepository Protocol sözleşmesini kur.",
+          "SQLiteEventRepository içinde parametrik ve atomik save_all/list_all davranışını tamamla.",
+          "collect_remote fonksiyonunu Semaphore, create_task ve gather ile eşzamanlı çalıştır.",
+          "PlatformService katmanında yerel ve uzak olayları senkronize edip deterministik rapor üret.",
+          "profile_call ile cProfile, tracemalloc ve timeit.repeat ölçümlerini uygula.",
+          "platform_raporu fonksiyonunda bütün katmanları dependency injection ile bağla.",
+          "tests/test_platform.py içinde en az 6 test fonksiyonu ve 8 gerçek assert yaz."
+        ],
+        "requirements": [
+          "Gerçek dış ağ erişimi açılmamalı; yalnız FakeTransport kullanılmalı.",
+          "Event @dataclass(frozen=True) olmalı ve value Decimal taşımalı.",
+          "Repository başarısız toplu kayıtta rollback yapmalı.",
+          "Async collector time.sleep kullanmamalı ve eşzamanlılık limitini korumalı.",
+          "Paket API’si __version__ = 1.0.0 ve platform_raporu dışa aktarımını içermeli.",
+          "Gizli rapor, rollback, async ve test senaryolarının tamamı geçmeli."
+        ],
+        "sampleOutput": "{\"event_count\": 4, \"total\": \"25.00\", \"sources\": [\"api\", \"local\"], \"top_category\": \"sales\", \"version\": \"1.0.0\", \"profiled\": true}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu proje dışarıdan terminal girdisi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from farming_platform import platform_raporu\n\n\nif __name__ == \"__main__\":\n    local = [\n        {\"event_id\": \"L1\", \"source\": \"local\", \"category\": \"sales\", \"value\": \"10.00\"},\n        {\"event_id\": \"L2\", \"source\": \"local\", \"category\": \"ops\", \"value\": \"5.00\"},\n    ]\n    remote = [\n        [{\"event_id\": \"R1\", \"source\": \"api\", \"category\": \"sales\", \"value\": \"7.50\"}],\n        [{\"event_id\": \"R2\", \"source\": \"api\", \"category\": \"sales\", \"value\": \"2.50\"}],\n    ]\n    print(platform_raporu(local, remote))\n"
+          },
+          {
+            "path": "farming_platform/__init__.py",
+            "starterCode": "# Paket sürümünü ve platform_raporu kamuya açık API'sini tanımla.\n"
+          },
+          {
+            "path": "farming_platform/models.py",
+            "starterCode": "from dataclasses import dataclass\nfrom decimal import Decimal\n\n\n# Event modelini frozen dataclass olarak tamamla.\n"
+          },
+          {
+            "path": "farming_platform/ports.py",
+            "starterCode": "from typing import Protocol, runtime_checkable\n\n\n# EventRepository portunu runtime_checkable Protocol olarak tanımla.\n"
+          },
+          {
+            "path": "farming_platform/repository.py",
+            "starterCode": "import sqlite3\nfrom decimal import Decimal\n\nfrom .models import Event\n\n\nclass SQLiteEventRepository:\n    def __init__(self, path=\":memory:\"):\n        self.connection = sqlite3.connect(path)\n        self.connection.execute(\n            \"\"\"\n            CREATE TABLE IF NOT EXISTS events (\n                event_id TEXT PRIMARY KEY,\n                source TEXT NOT NULL,\n                category TEXT NOT NULL,\n                value TEXT NOT NULL\n            )\n            \"\"\"\n        )\n        self.connection.commit()\n\n    def save_all(self, events):\n        # Tek transaction içinde parametrik INSERT uygula.\n        pass\n\n    def list_all(self):\n        # event_id sırasıyla Event nesneleri döndür.\n        pass\n\n    def close(self):\n        self.connection.close()\n"
+          },
+          {
+            "path": "farming_platform/transport.py",
+            "starterCode": "import asyncio\n\n\nclass FakeTransport:\n    def __init__(self, pages):\n        self.pages = [list(page) for page in pages]\n        self.active = 0\n        self.max_active = 0\n\n    @property\n    def page_count(self):\n        return len(self.pages)\n\n    async def fetch(self, page_index):\n        self.active += 1\n        self.max_active = max(self.max_active, self.active)\n        try:\n            await asyncio.sleep(0)\n            return list(self.pages[page_index])\n        finally:\n            self.active -= 1\n"
+          },
+          {
+            "path": "farming_platform/collector.py",
+            "starterCode": "import asyncio\n\n\nasync def collect_remote(transport, limit=2):\n    # Semaphore, create_task, gather ve await ile sayfaları sırayla birleştir.\n    pass\n"
+          },
+          {
+            "path": "farming_platform/service.py",
+            "starterCode": "from collections import Counter\nfrom decimal import Decimal\n\nfrom .collector import collect_remote\nfrom .models import Event\n\n\nclass PlatformService:\n    def __init__(self, repository, transport):\n        self.repository = repository\n        self.transport = transport\n\n    async def synchronize(self, local_events):\n        # Yerel ve uzak kayıtları Event nesnelerine dönüştürüp repository'ye yaz.\n        pass\n\n    def report(self):\n        # event_count, total, sources ve top_category alanlarını üret.\n        pass\n"
+          },
+          {
+            "path": "farming_platform/profiling.py",
+            "starterCode": "import cProfile\nimport io\nimport pstats\nimport tracemalloc\nfrom timeit import repeat\n\n\ndef profile_call(function, *args):\n    # Fonksiyonu bir kez profille; bellek snapshot'ı ve iki repeat ölçümü al.\n    pass\n"
+          },
+          {
+            "path": "farming_platform/app.py",
+            "starterCode": "import asyncio\n\nfrom . import __version__\nfrom .profiling import profile_call\nfrom .repository import SQLiteEventRepository\nfrom .service import PlatformService\nfrom .transport import FakeTransport\n\n\ndef platform_raporu(local_events, remote_pages):\n    # Katmanları kur, async senkronizasyonu çalıştır ve profillenmiş raporu döndür.\n    pass\n"
+          },
+          {
+            "path": "tests/test_platform.py",
+            "starterCode": "from decimal import Decimal\n\nfrom farming_platform.app import platform_raporu\nfrom farming_platform.models import Event\nfrom farming_platform.repository import SQLiteEventRepository\n\n\ndef test_event_modeli():\n    pass\n\n\ndef test_repository_roundtrip():\n    pass\n\n\ndef test_repository_rollback():\n    pass\n\n\ndef test_bos_rapor():\n    pass\n\n\ndef test_dolu_rapor():\n    pass\n\n\ndef test_kategori_esitliginde_alfabetik_secim():\n    pass\n"
+          }
+        ],
+        "starterCode": "from farming_platform import platform_raporu\n\n\nif __name__ == \"__main__\":\n    local = [\n        {\"event_id\": \"L1\", \"source\": \"local\", \"category\": \"sales\", \"value\": \"10.00\"},\n        {\"event_id\": \"L2\", \"source\": \"local\", \"category\": \"ops\", \"value\": \"5.00\"},\n    ]\n    remote = [\n        [{\"event_id\": \"R1\", \"source\": \"api\", \"category\": \"sales\", \"value\": \"7.50\"}],\n        [{\"event_id\": \"R2\", \"source\": \"api\", \"category\": \"sales\", \"value\": \"2.50\"}],\n    ]\n    print(platform_raporu(local, remote))\n"
+      },
+      "hints": [
+        {
+          "title": "Event dönüşümü",
+          "body": "Decimal(str(veri[\"value\"])) kullanarak ikili kayan nokta sapmasını önle."
+        },
+        {
+          "title": "Transaction",
+          "body": "with self.connection: bloğunda executemany kullan; duplicate id bütün grubun rollback olmasını sağlar."
+        },
+        {
+          "title": "Async collector",
+          "body": "Her sayfa için create_task üret; fetch çağrısını async with semaphore içinde await et."
+        },
+        {
+          "title": "Kategori seçimi",
+          "body": "Counter sonuçlarını (-adet, kategori) anahtarıyla sıralarsan eşitlikte alfabetik seçim yaparsın."
+        }
+      ],
+      "validation": {
+        "id": "advanced.project.final-platform",
+        "title": "Yerel Veri Platformu kalite kapısını tamamla",
+        "xpReward": 500,
+        "timeoutMs": 20000,
+        "checks": [
+          {
+            "id": "advanced-capstone",
+            "kind": "advanced_capstone",
+            "requiredFiles": [
+              "main.py",
+              "farming_platform/__init__.py",
+              "farming_platform/models.py",
+              "farming_platform/ports.py",
+              "farming_platform/repository.py",
+              "farming_platform/transport.py",
+              "farming_platform/collector.py",
+              "farming_platform/service.py",
+              "farming_platform/profiling.py",
+              "farming_platform/app.py",
+              "tests/test_platform.py"
+            ],
+            "testFiles": [
+              "tests/test_platform.py"
+            ],
+            "minTests": 6,
+            "minAssertions": 8,
+            "label": "İleri Seviye üretim kalite kapısı",
+            "visibility": "visible"
+          }
+        ]
+      }
+    }
+  ]
+}
