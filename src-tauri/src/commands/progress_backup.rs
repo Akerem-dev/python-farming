@@ -99,11 +99,12 @@ fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupO
     }
 
     let backup_connection =
-        Connection::open_with_flags(&temporary_path, OpenFlags::SQLITE_OPEN_READ_ONLY)
-            .map_err(|error| {
+        Connection::open_with_flags(&temporary_path, OpenFlags::SQLITE_OPEN_READ_ONLY).map_err(
+            |error| {
                 let _ = fs::remove_file(&temporary_path);
                 format!("Oluşturulan yedek doğrulama için açılamadı: {error}")
-            })?;
+            },
+        )?;
     if let Err(error) = ensure_integrity(&backup_connection, "Oluşturulan ilerleme yedeği") {
         drop(backup_connection);
         let _ = fs::remove_file(&temporary_path);
@@ -351,7 +352,10 @@ mod tests {
             Some(1_722_000_000_123)
         );
         assert_eq!(backup_timestamp("notes.db"), None);
-        assert_eq!(backup_timestamp("progress-1722000000123-42.db.tmp"), Some(1_722_000_000_123));
+        assert_eq!(
+            backup_timestamp("progress-1722000000123-42.db.tmp"),
+            Some(1_722_000_000_123)
+        );
     }
 
     #[test]
