@@ -14,45 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  apply-stage-39:
-    name: Apply stage 39 settings
-    if: github.event_name == 'pull_request' && github.head_ref == 'stage/39-process-isolation'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source branch
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      - name: Apply settings patch when present
-        shell: bash
-        run: |
-          if [ -f scripts/apply-stage-39-settings.mjs ]; then
-            node scripts/apply-stage-39-settings.mjs
-            rm scripts/apply-stage-39-settings.mjs
-          else
-            echo "Stage 39 settings patch already applied."
-          fi
-
-      - name: Format Rust
-        working-directory: src-tauri
-        run: cargo fmt --all
-
-      - name: Commit integrated product code when changed
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if git diff --cached --quiet; then
-            echo "No integration changes remain."
-            exit 0
-          fi
-          git commit -m "feat(security): expose runtime isolation profile"
-          git push origin HEAD:${{ github.head_ref }}
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
