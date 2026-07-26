@@ -25,6 +25,7 @@
     "/content/modules/networking-http.json",
     "/content/modules/databases-advanced.json",
     "/content/modules/architecture-patterns.json",
-    "/content/modules/packaging-performance.json"
+    "/content/modules/packaging-performance.json",
+    "/content/modules/advanced-project.json"
   ]
 }
