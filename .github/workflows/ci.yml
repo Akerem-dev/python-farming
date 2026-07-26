@@ -42,6 +42,11 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
       - name: Capture compiler output once
         shell: bash
         run: |
@@ -50,9 +55,10 @@ jobs:
             exit 0
           fi
           set +e
-          (cd src-tauri && cargo test --all-targets --locked) > rust-diagnostic.txt 2>&1
+          (cd src-tauri && cargo test --all-targets --locked) > "${RUNNER_TEMP}/rust-full.txt" 2>&1
           code=$?
           set -e
+          tail -n 200 "${RUNNER_TEMP}/rust-full.txt" > rust-diagnostic.txt
           printf '\nexit_code=%s\n' "$code" >> rust-diagnostic.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
