@@ -1,8 +1,16 @@
 import { invoke } from "@tauri-apps/api/core";
 import { isTauriEnvironment } from "../../../runtime/runtimeClient";
-import type { CompleteLessonRequest, ProgressSnapshot } from "../types";
+import type {
+  CompleteLessonRequest,
+  ProgressBackupOverview,
+  ProgressSnapshot,
+} from "../types";
 
 const browserStorageKey = "python-farming-progress-v1";
+const backupPolicy = {
+  maxBackupCount: 5,
+  maxTotalBytes: 25 * 1024 * 1024,
+} as const;
 const emptySnapshot: ProgressSnapshot = {
   completedLessonIds: [],
   totalXp: 0,
@@ -21,6 +29,16 @@ function readBrowserSnapshot(): ProgressSnapshot {
 function writeBrowserSnapshot(snapshot: ProgressSnapshot) {
   window.localStorage.setItem(browserStorageKey, JSON.stringify(snapshot));
   return snapshot;
+}
+
+function browserBackupOverview(): ProgressBackupOverview {
+  return {
+    backups: [],
+    maxBackupCount: backupPolicy.maxBackupCount,
+    maxTotalBytes: backupPolicy.maxTotalBytes,
+    totalBytes: 0,
+    available: false,
+  };
 }
 
 export async function loadProgressSnapshot() {
@@ -52,4 +70,26 @@ export async function saveLastLesson(lessonId: string) {
   }
 
   return writeBrowserSnapshot({ ...readBrowserSnapshot(), lastLessonId: lessonId });
+}
+
+export async function listProgressBackups(): Promise<ProgressBackupOverview> {
+  if (!isTauriEnvironment()) {
+    return browserBackupOverview();
+  }
+
+  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
+    "list_progress_backups",
+  );
+  return { ...overview, available: true };
+}
+
+export async function createProgressBackup(): Promise<ProgressBackupOverview> {
+  if (!isTauriEnvironment()) {
+    throw new Error("İlerleme yedekleri yalnız Tauri masaüstü uygulamasında oluşturulabilir.");
+  }
+
+  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
+    "create_progress_backup",
+  );
+  return { ...overview, available: true };
 }
