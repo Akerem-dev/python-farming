@@ -23,30 +23,39 @@ describe("local progress backup contract", () => {
     expect(rustLib).not.toContain("delete_progress_backup");
   });
 
-  it("creates a consistent SQLite snapshot and verifies both databases", () => {
+  it("creates, verifies and atomically publishes a consistent SQLite snapshot", () => {
     expect(rustProgress).toContain("pub(super) fn database_path");
     expect(rustProgress).toContain("pub(super) fn open_database");
     expect(rustBackup).toContain('execute_batch("PRAGMA wal_checkpoint(FULL);")');
     expect(rustBackup).toContain("VACUUM INTO");
     expect(rustBackup).toContain('query_row("PRAGMA quick_check"');
     expect(rustBackup).toContain("Oluşturulan ilerleme yedeği");
-    expect(rustBackup).toContain("fs::remove_file(&backup_path)");
+    expect(rustBackup).toContain('with_extension("db.tmp")');
+    expect(rustBackup).toContain("fs::remove_file(&temporary_path)");
+    expect(rustBackup).toContain("fs::rename(&temporary_path, &backup_path)");
   });
 
-  it("enforces bounded local retention", () => {
+  it("enforces bounded retention without deleting the new backup after clock rollback", () => {
     expect(rustBackup).toContain("const MAX_BACKUP_COUNT: usize = 5");
     expect(rustBackup).toContain("const MAX_BACKUP_TOTAL_BYTES: u64 = 25 * 1024 * 1024");
     expect(rustBackup).toContain("retention_removal_plan");
+    expect(rustBackup).toContain("retained_count");
+    expect(rustBackup).toContain("next_backup_timestamp");
+    expect(rustBackup).toContain("LAST_BACKUP_TIMESTAMP.compare_exchange");
+    expect(rustBackup).toContain("existing_max");
     expect(rustBackup).toContain("prune_backups");
     expect(progressService).toContain("maxBackupCount: 5");
     expect(progressService).toContain("maxTotalBytes: 25 * 1024 * 1024");
   });
 
-  it("keeps browser preview read-only and gates backups on loaded progress", () => {
+  it("keeps browser preview read-only and exposes every integrity failure", () => {
     expect(progressService).toContain("available: false");
     expect(progressService).toContain("yalnız Tauri masaüstü uygulamasında");
     expect(backupPanel).toContain('progressStatus !== "ready"');
     expect(backupPanel).toContain("İlerleme yedeği oluşturuldu ve bütünlük kontrolünden geçti");
+    expect(backupPanel).toContain("corruptBackupCount");
+    expect(backupPanel).toContain("Tüm yedeklerin bütünlüğü");
+    expect(backupPanel).toContain("yerel yedek bütünlük kontrolünden geçemedi");
     expect(backupPanel).toContain('role="alert"');
     expect(settingsPage).toContain("<ProgressBackupPanel />");
   });
