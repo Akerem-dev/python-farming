@@ -1,0 +1,77 @@
+name: Finalize v1 pull request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-v1-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    name: Materialize and verify 1.0.0
+    if: github.head_ref == 'stage/41-final-qa-v1'
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout final branch
+        uses: actions/checkout@v7
+        with:
+          ref: stage/41-final-qa-v1
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Extract and run deterministic finalizer
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          source = Path('.github/workflows/finalize-v1.yml').read_text(encoding='utf-8').splitlines()
+          start_marker = "          node --input-type=module <<'NODE'"
+          end_marker = "          NODE"
+          try:
+              start = source.index(start_marker) + 1
+              end = source.index(end_marker, start)
+          except ValueError as error:
+              raise SystemExit(f'Finalizer Node bölümü bulunamadı: {error}')
+
+          lines = []
+          for line in source[start:end]:
+              if line.startswith('          '):
+                  line = line[10:]
+              lines.append(line)
+          Path('/tmp/finalize-v1.mjs').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+          PY
+          node /tmp/finalize-v1.mjs
+          rm -f .github/workflows/finalize-v1-pr.yml
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run complete quality gate
+        run: npm run verify
+
+      - name: Commit finalized v1 files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Aşama 41: Final QA ve 1.0 sürüm hazırlığı [finalize-v1]"
+          git push origin HEAD:stage/41-final-qa-v1
