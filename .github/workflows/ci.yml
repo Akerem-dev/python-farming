@@ -121,11 +121,11 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Build Debian bundle with portable Python
+      - name: Build unsigned Debian smoke bundle with portable Python
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYTHON_FARMING_RUNTIME_TARGET: x86_64-unknown-linux-gnu
-        run: npm run tauri:build -- --bundles deb
+        run: npm run tauri:build -- --bundles deb --no-sign
 
       - name: Verify Debian artifact and embedded Python
         shell: bash
