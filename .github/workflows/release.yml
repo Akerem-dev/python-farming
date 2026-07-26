@@ -17,11 +17,14 @@ jobs:
   preflight:
     name: Release preflight
     runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.versions.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
 
       - name: Validate manifest versions and triggering tag
+        id: versions
         shell: bash
         run: |
           package_version="$(node -p "require('./package.json').version")"
@@ -40,6 +43,8 @@ jobs:
               exit 1
             fi
           fi
+
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
 
       - name: Install Linux dependencies
         run: |
@@ -77,7 +82,7 @@ jobs:
       - name: Run complete quality gate
         run: npm run verify
 
-  publish:
+  build:
     name: Build ${{ matrix.label }}
     needs: preflight
     strategy:
@@ -89,21 +94,25 @@ jobs:
             args: --target aarch64-apple-darwin
             rustTargets: aarch64-apple-darwin,x86_64-apple-darwin
             runtimeTarget: aarch64-apple-darwin
+            bundleRoot: src-tauri/target/aarch64-apple-darwin/release/bundle
           - platform: macos-latest
             label: macOS Intel
             args: --target x86_64-apple-darwin
             rustTargets: aarch64-apple-darwin,x86_64-apple-darwin
             runtimeTarget: x86_64-apple-darwin
+            bundleRoot: src-tauri/target/x86_64-apple-darwin/release/bundle
           - platform: ubuntu-22.04
             label: Linux x64
             args: ""
             rustTargets: ""
             runtimeTarget: x86_64-unknown-linux-gnu
+            bundleRoot: src-tauri/target/release/bundle
           - platform: windows-latest
             label: Windows x64
             args: ""
             rustTargets: ""
             runtimeTarget: x86_64-pc-windows-msvc
+            bundleRoot: src-tauri/target/release/bundle
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -144,20 +153,55 @@ jobs:
       - name: Install frontend dependencies
         run: npm ci
 
-      - name: Build and upload Tauri bundles
+      - name: Build dry-run Tauri bundles
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PYTHON_FARMING_RUNTIME_TARGET: ${{ matrix.runtimeTarget }}
+          APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.platform, 'macos') && '-' || '' }}
+        run: npm run tauri:build -- ${{ matrix.args }}
+
+      - name: Build and upload tagged Tauri release
+        if: github.ref_type == 'tag'
         uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PYTHON_FARMING_RUNTIME_TARGET: ${{ matrix.runtimeTarget }}
           APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.platform, 'macos') && '-' || '' }}
         with:
-          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
-          releaseName: Python Farming v__VERSION__
+          tagName: ${{ github.ref_name }}
+          releaseName: Python Farming ${{ github.ref_name }}
           releaseBody: |
-            Python Farming geliştirme ön izlemesi.
+            Python Farming ${{ github.ref_name }} paketleri.
 
-            Bu taslak paketler yayınlanmadan önce RELEASE_CHECKLIST.md adımlarıyla doğrulanmalıdır. Windows paketi imzasızdır; macOS paketleri ad-hoc imzalıdır ve notarize edilmemiştir.
+            Paketler taşınabilir Python çalışma zamanı içerir. Windows paketi imzasızdır; macOS paketleri ad-hoc imzalıdır ve notarize edilmemiştir. Yayın taslak olarak oluşturulur ve RELEASE_CHECKLIST.md tamamlanmadan son kullanıcıya açılmamalıdır.
           releaseDraft: true
-          prerelease: true
+          prerelease: false
           generateReleaseNotes: true
           args: ${{ matrix.args }}
+
+      - name: Create SHA-256 release manifest
+        shell: bash
+        run: |
+          npm run release:manifest -- \
+            --root "${{ matrix.bundleRoot }}" \
+            --platform "${{ matrix.runtimeTarget }}" \
+            --version "${{ needs.preflight.outputs.version }}" \
+            --output "release-manifests/${{ matrix.runtimeTarget }}.json"
+
+      - name: Upload dry-run bundles and manifest
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-farming-${{ matrix.runtimeTarget }}-${{ needs.preflight.outputs.version }}
+          if-no-files-found: error
+          path: |
+            ${{ matrix.bundleRoot }}/**/*
+            release-manifests/${{ matrix.runtimeTarget }}.json
+
+      - name: Attach manifest to tagged draft release
+        if: github.ref_type == 'tag'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" "release-manifests/${{ matrix.runtimeTarget }}.json" --clobber
