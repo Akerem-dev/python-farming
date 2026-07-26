@@ -56,7 +56,14 @@ jobs:
               if line.startswith('          '):
                   line = line[10:]
               lines.append(line)
-          Path('/tmp/finalize-v1.mjs').write_text('\n'.join(lines) + '\n', encoding='utf-8')
+
+          script = '\n'.join(lines) + '\n'
+          unsafe = 'expect(workflow).toContain("tagName: $' + '{{ github.ref_name }}");'
+          safe = 'expect(workflow).toContain("tagName: $" + "{{ github.ref_name }}");'
+          if unsafe not in script:
+              raise SystemExit('Final test içindeki GitHub ifade satırı bulunamadı.')
+          script = script.replace(unsafe, safe)
+          Path('/tmp/finalize-v1.mjs').write_text(script, encoding='utf-8')
           PY
 
           set +e
