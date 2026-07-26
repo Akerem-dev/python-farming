@@ -1,0 +1,31 @@
+name: Rustfmt Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  format-preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Format Rust sources
+        run: cd src-tauri && cargo fmt --all
+
+      - name: Upload formatted backup module
+        uses: actions/upload-artifact@v4
+        with:
+          name: rustfmt-progress-backup
+          path: src-tauri/src/commands/progress_backup.rs
+          if-no-files-found: error
+          retention-days: 1
