@@ -27,3 +27,10 @@ export interface ProgressBackupOverview {
   totalBytes: number;
   available: boolean;
 }
+
+export interface ProgressRestoreResult {
+  progress: ProgressSnapshot;
+  backups: ProgressBackupOverview;
+  restoredBackupId: string;
+  safetyBackupId: string;
+}
