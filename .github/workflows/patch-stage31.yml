@@ -1,9 +1,10 @@
 name: Patch Stage 31
 
 on:
-  push:
+  pull_request:
     branches:
-      - stage/31-advanced-capstone-graduation
+      - main
+    types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
 
 jobs:
   patch:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && github.head_ref == 'stage/31-advanced-capstone-graduation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
