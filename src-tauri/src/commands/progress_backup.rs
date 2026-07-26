@@ -182,7 +182,8 @@ fn restore_progress_backup_sync(
 
     fs::copy(&backup_path, &staged_path)
         .map_err(|error| format!("Seçilen yedek geri yükleme alanına kopyalanamadı: {error}"))?;
-    if let Err(error) = verify_database_file(&staged_path, "Geri yükleme için hazırlanan yedek") {
+    if let Err(error) = verify_database_file(&staged_path, "Geri yükleme için hazırlanan yedek")
+    {
         cleanup_file(&staged_path);
         return Err(error);
     }
@@ -206,10 +207,13 @@ fn restore_progress_backup_sync(
             let _ = fs::rename(&rollback_path, &database_path);
         }
         cleanup_file(&staged_path);
-        return Err(format!("Hazırlanan yedek etkin veritabanı yapılamadı: {error}"));
+        return Err(format!(
+            "Hazırlanan yedek etkin veritabanı yapılamadı: {error}"
+        ));
     }
 
-    if let Err(error) = verify_database_file(&database_path, "Geri yüklenen ilerleme veritabanı") {
+    if let Err(error) = verify_database_file(&database_path, "Geri yüklenen ilerleme veritabanı")
+    {
         cleanup_file(&database_path);
         if had_database {
             fs::rename(&rollback_path, &database_path).map_err(|rollback_error| {
@@ -231,8 +235,7 @@ fn restore_progress_backup_sync(
             ));
         }
     };
-    if let Err(error) =
-        ensure_compatible_database(&reopened, "Geri yüklenen ilerleme veritabanı")
+    if let Err(error) = ensure_compatible_database(&reopened, "Geri yüklenen ilerleme veritabanı")
     {
         drop(reopened);
         return Err(restore_previous_database(
@@ -580,17 +583,15 @@ mod tests {
         assert_eq!(backup_timestamp("notes.db"), None);
         assert_eq!(backup_timestamp("progress-1722000000123-42.db.tmp"), None);
         assert_eq!(backup_timestamp("progress-1722000000123-x.db"), None);
-        assert_eq!(
-            backup_timestamp("progress-1722000000123-42-extra.db"),
-            None
-        );
+        assert_eq!(backup_timestamp("progress-1722000000123-42-extra.db"), None);
     }
 
     #[test]
     fn rejects_path_traversal_and_unowned_backup_ids() {
         let directory = temporary_directory("backup-id");
         let valid_name = "progress-1722000000123-42.db";
-        fs::write(directory.join(valid_name), b"database").expect("backup fixture should be written");
+        fs::write(directory.join(valid_name), b"database")
+            .expect("backup fixture should be written");
 
         assert!(validated_backup_path(&directory, valid_name).is_ok());
         for invalid in [
