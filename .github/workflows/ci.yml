@@ -9,54 +9,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  lockfiles:
-    name: Generate deterministic lockfiles
-    if: >-
-      github.actor != 'github-actions[bot]' &&
-      ((github.event_name == 'pull_request' && github.head_ref == 'stage/32-release-readiness') ||
-      (github.event_name == 'push' && github.ref_name == 'stage/32-release-readiness'))
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout release-readiness branch
-        uses: actions/checkout@v7
-        with:
-          ref: stage/32-release-readiness
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Generate npm lockfile
-        run: npm install --package-lock-only --ignore-scripts
-
-      - name: Generate Cargo lockfile
-        run: cargo generate-lockfile --manifest-path src-tauri/Cargo.toml
-
-      - name: Commit generated lockfiles
-        run: |
-          if git diff --quiet -- package-lock.json src-tauri/Cargo.lock && \
-             git ls-files --error-unmatch package-lock.json src-tauri/Cargo.lock >/dev/null 2>&1; then
-            echo "Lockfiles are already current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add package-lock.json src-tauri/Cargo.lock
-          git commit -m "build: lock npm and Cargo dependencies"
-          git push origin HEAD:stage/32-release-readiness
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
@@ -68,9 +25,10 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install locked dependencies
+        run: npm ci
 
       - name: Frontend quality gate
         run: npm run verify:frontend
@@ -113,6 +71,11 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
 
-      - name: Run Rust tests
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Run locked Rust tests
         working-directory: src-tauri
-        run: cargo test --all-targets -q
+        run: cargo test --all-targets --locked -q
