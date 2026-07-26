@@ -26,14 +26,21 @@ export function PrimaryRail({ activeRoute }: PrimaryRailProps) {
     <nav className={styles.root} aria-label="Ana navigasyon">
       {items.map((item) => {
         const active = item.route === activeRoute;
+        const unavailable = !item.route;
+
         return (
           <button
             className={`${styles.item} ${active ? styles.active : ""}`.trim()}
             key={item.label}
             onClick={() => item.route && navigate(item.route)}
             type="button"
+            disabled={unavailable}
+            aria-current={active ? "page" : undefined}
+            title={unavailable ? `${item.label} bölümü henüz kullanıma açılmadı.` : undefined}
           >
-            <span className={styles.symbol} aria-hidden="true">{item.symbol}</span>
+            <span className={styles.symbol} aria-hidden="true">
+              {item.symbol}
+            </span>
             <span>{item.label}</span>
           </button>
         );
