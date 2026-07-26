@@ -30,6 +30,7 @@ const settingsPage = read("src/pages/SettingsPage/SettingsPage.tsx");
 const diagnosticsService = read("src/features/diagnostics/services/diagnosticsService.ts");
 const diagnosticsStore = read("src/features/diagnostics/store/diagnosticsStore.ts");
 const runtimeRust = read("src-tauri/src/commands/runtime.rs");
+const projectRuntimeRust = read("src-tauri/src/commands/project_runtime.rs");
 
 describe("settings and system diagnostics", () => {
   it("publishes a real lazy-loaded Settings route", () => {
@@ -45,15 +46,34 @@ describe("settings and system diagnostics", () => {
     expect(diagnosticsService).toContain('kind: "health_check"');
     expect(diagnosticsService).toContain("protocolVersion: runtimeProtocolVersion");
     expect(diagnosticsService).toContain('environment: "browser-preview"');
+    expect(diagnosticsService).toContain('runtimeStatus: "unavailable"');
     expect(diagnosticsStore).toContain("collectDiagnostics()");
     expect(diagnosticsStore).toContain("checkDiagnostics: async");
   });
 
-  it("keeps displayed safety limits equal to the Rust runtime", () => {
+  it("keeps displayed safety limits equal to both Rust execution paths", () => {
     expect(runtimeLimits.protocolVersion).toBe(runtimeProtocolVersion);
-    expect(runtimeLimits.maxSourceBytes).toBe(rustConstant(runtimeRust, "MAX_SOURCE_BYTES"));
-    expect(runtimeLimits.maxStdinBytes).toBe(rustConstant(runtimeRust, "MAX_STDIN_BYTES"));
-    expect(runtimeLimits.maxOutputBytes).toBe(rustConstant(runtimeRust, "MAX_OUTPUT_BYTES"));
+    expect(runtimeLimits.maxSingleFileSourceBytes).toBe(
+      rustConstant(runtimeRust, "MAX_SOURCE_BYTES"),
+    );
+    expect(runtimeLimits.maxProjectSourceBytes).toBe(
+      rustConstant(projectRuntimeRust, "MAX_PROJECT_BYTES"),
+    );
+    expect(runtimeLimits.maxStdinContentBytes).toBe(
+      rustConstant(runtimeRust, "MAX_STDIN_BYTES"),
+    );
+    expect(runtimeLimits.maxStdinContentBytes).toBe(
+      rustConstant(projectRuntimeRust, "MAX_STDIN_BYTES"),
+    );
+    expect(runtimeLimits.maxOutputBytesPerStream).toBe(
+      rustConstant(runtimeRust, "MAX_OUTPUT_BYTES"),
+    );
+    expect(runtimeLimits.maxOutputBytesPerStream).toBe(
+      rustConstant(projectRuntimeRust, "MAX_OUTPUT_BYTES"),
+    );
+    expect(runtimeLimits.maxCombinedOutputBytes).toBe(
+      runtimeLimits.maxOutputBytesPerStream * 2,
+    );
     expect(runtimeLimits.minTimeoutMs).toBe(rustConstant(runtimeRust, "MIN_TIMEOUT_MS"));
     expect(runtimeLimits.maxTimeoutMs).toBe(rustConstant(runtimeRust, "MAX_TIMEOUT_MS"));
   });
@@ -67,6 +87,38 @@ describe("settings and system diagnostics", () => {
     expect(settingsPage).toContain("Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez");
     expect(settingsPage).not.toContain("deleteProgress");
     expect(settingsPage).not.toContain("İlerlemeyi sıfırla");
+  });
+
+  it("does not confuse browser preview with a missing Python installation", () => {
+    expect(statusBar).toContain("Tarayıcı ön izlemesi");
+    expect(settingsPage).toContain("Masaüstü kontrolü gerekli");
+    expect(settingsPage).toContain("const browserPreview");
+    expect(settingsPage).toContain("const runtimeOffline");
+    expect(settingsPage).toContain("{runtimeOffline ? (");
+  });
+
+  it("clears stale snapshots and preserves string errors after failed refreshes", () => {
+    expect(diagnosticsStore).toContain('typeof error === "string"');
+    expect(diagnosticsStore).toContain("snapshot: null");
+    expect(diagnosticsStore).toContain('status: "error"');
+  });
+
+  it("waits for real progress data before creating a support report", () => {
+    expect(settingsPage).toContain('progressStatus !== "ready"');
+    expect(settingsPage).toContain('progressStatus === "idle"');
+    expect(settingsPage).toContain("void loadProgress()");
+    expect(settingsPage).toContain("İlerleme kaydı yüklenemedi.");
+    expect(settingsPage).toContain("progressError");
+  });
+
+  it("describes source, input and output limits without overstating enforcement", () => {
+    expect(diagnosticsService).toContain("Tek dosya kaynak kodu");
+    expect(diagnosticsService).toContain("Çok dosyalı proje kaynak kodu");
+    expect(diagnosticsService).toContain("satır ayraçları ayrıca eklenir");
+    expect(diagnosticsService).toContain("Stdout sınırı");
+    expect(diagnosticsService).toContain("Stderr sınırı");
+    expect(diagnosticsService).toContain("Birleşik azami çıktı");
+    expect(settingsPage).toContain("Çıktı / akış");
   });
 
   it("feeds the same diagnostics state into the global status bar", () => {
