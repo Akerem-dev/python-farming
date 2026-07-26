@@ -11,6 +11,7 @@
     "tauri:dev": "tauri dev",
     "tauri:build": "tauri build",
     "prepare:runtime": "node scripts/prepare-portable-python.mjs",
+    "release:manifest": "node scripts/create-release-manifest.mjs",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run",
     "verify:frontend": "npm run typecheck && npm test && npm run build",
