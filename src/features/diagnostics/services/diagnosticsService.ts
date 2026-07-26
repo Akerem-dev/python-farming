@@ -5,8 +5,20 @@ import { runtimeLimits } from "../../../runtime/runtimeLimits";
 import {
   runtimeProtocolVersion,
   type RuntimeHealthResult,
+  type RuntimeSecurityProfile,
 } from "../../../runtime/runtimeProtocol";
 import type { DiagnosticsSnapshot } from "../types";
+
+const documentedSecurityProfile: RuntimeSecurityProfile = {
+  policyVersion: 1,
+  filesystemScope: "workspace-only",
+  networkAccess: "blocked",
+  subprocessAccess: "blocked",
+  environmentIsolated: true,
+  processTreeTermination: true,
+  maxWorkspaceBytes: 16 * 1024 * 1024,
+  maxWorkspaceFiles: 512,
+};
 
 function createRequestId() {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -38,8 +50,9 @@ export async function collectDiagnostics(): Promise<DiagnosticsSnapshot> {
       runtime: {
         status: "offline",
         managed: false,
+        security: documentedSecurityProfile,
         message:
-          "Tarayıcı ön izlemesinde yerel Python çalışma motoruna erişilemez. Tam kontrol için masaüstü uygulamasını açın.",
+          "Tarayıcı ön izlemesinde yerel Python çalışma motoruna erişilemez. Güvenlik profili masaüstü build sözleşmesini gösterir; tam kontrol için masaüstü uygulamasını açın.",
       },
       diagnostics: [
         {
@@ -86,6 +99,7 @@ export function createDiagnosticsReport(snapshot: DiagnosticsSnapshot) {
           `- [${diagnostic.severity.toUpperCase()}] ${diagnostic.code}: ${diagnostic.message}`,
       )
     : ["- Tanılama mesajı yok."];
+  const security = snapshot.runtime?.security ?? documentedSecurityProfile;
 
   return [
     "Python Farming Sistem Tanılama Raporu",
@@ -100,6 +114,15 @@ export function createDiagnosticsReport(snapshot: DiagnosticsSnapshot) {
     `Python kaynağı: ${snapshot.runtime?.source ?? "bulunamadı"}`,
     `Python uygulama tarafından yönetiliyor: ${snapshot.runtime?.managed ? "evet" : "hayır"}`,
     `Python mesajı: ${snapshot.runtime?.message ?? "yanıt yok"}`,
+    "Güvenli çalışma profili:",
+    `- Politika sürümü: ${security.policyVersion}`,
+    `- Dosya sistemi kapsamı: ${security.filesystemScope}`,
+    `- Ağ erişimi: ${security.networkAccess}`,
+    `- Alt süreç erişimi: ${security.subprocessAccess}`,
+    `- Çevre değişkenleri izole: ${security.environmentIsolated ? "evet" : "hayır"}`,
+    `- Süreç ağacı sonlandırma: ${security.processTreeTermination ? "evet" : "hayır"}`,
+    `- Çalışma alanı boyutu: ${security.maxWorkspaceBytes} bayt`,
+    `- Çalışma alanı dosyası: ${security.maxWorkspaceFiles}`,
     "Çalıştırma sözleşmesi:",
     `- Tek dosya kaynak kodu: ${runtimeLimits.maxSingleFileSourceBytes} bayt`,
     `- Çok dosyalı proje kaynak kodu: ${runtimeLimits.maxProjectSourceBytes} bayt`,
