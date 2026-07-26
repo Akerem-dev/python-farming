@@ -41,6 +41,25 @@ function browserBackupOverview(): ProgressBackupOverview {
   };
 }
 
+function requireDesktopBackups() {
+  if (!isTauriEnvironment()) {
+    throw new Error(
+      "İlerleme yedekleri yalnız Tauri masaüstü uygulamasında yönetilebilir.",
+    );
+  }
+}
+
+async function invokeBackupOverview(
+  command: string,
+  args?: Record<string, unknown>,
+): Promise<ProgressBackupOverview> {
+  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
+    command,
+    args,
+  );
+  return { ...overview, available: true };
+}
+
 export async function loadProgressSnapshot() {
   if (isTauriEnvironment()) {
     return invoke<ProgressSnapshot>("load_progress");
@@ -77,19 +96,24 @@ export async function listProgressBackups(): Promise<ProgressBackupOverview> {
     return browserBackupOverview();
   }
 
-  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
-    "list_progress_backups",
-  );
-  return { ...overview, available: true };
+  return invokeBackupOverview("list_progress_backups");
 }
 
 export async function createProgressBackup(): Promise<ProgressBackupOverview> {
-  if (!isTauriEnvironment()) {
-    throw new Error("İlerleme yedekleri yalnız Tauri masaüstü uygulamasında oluşturulabilir.");
-  }
+  requireDesktopBackups();
+  return invokeBackupOverview("create_progress_backup");
+}
 
-  const overview = await invoke<Omit<ProgressBackupOverview, "available">>(
-    "create_progress_backup",
-  );
-  return { ...overview, available: true };
+export async function restoreProgressBackup(
+  backupId: string,
+): Promise<ProgressBackupOverview> {
+  requireDesktopBackups();
+  return invokeBackupOverview("restore_progress_backup", { backupId });
+}
+
+export async function deleteProgressBackup(
+  backupId: string,
+): Promise<ProgressBackupOverview> {
+  requireDesktopBackups();
+  return invokeBackupOverview("delete_progress_backup", { backupId });
 }
