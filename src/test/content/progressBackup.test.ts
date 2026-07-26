@@ -45,7 +45,8 @@ describe("local progress backup contract", () => {
     expect(rustBackup).toContain("Geri yükleme öncesi güvenlik yedeği");
     expect(rustBackup).toContain("restore_previous_database");
     expect(rustBackup).toContain("remove_sqlite_sidecars");
-    expect(rustBackup).toContain("BACKUP_OPERATION_LOCK");
+    expect(rustProgress).toContain("PROGRESS_OPERATION_LOCK");
+    expect(rustBackup).toContain("progress::with_progress_lock(operation)");
     expect(rustBackup).toContain("relative.components().count() != 1");
   });
 

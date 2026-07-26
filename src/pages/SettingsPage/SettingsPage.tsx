@@ -8,6 +8,7 @@ import { formatBytes, runtimeLimits } from "../../runtime/runtimeLimits";
 import { runtimeProtocolVersion } from "../../runtime/runtimeProtocol";
 import { AppShell } from "../../layouts/AppShell";
 import { ProgressBackupPanel } from "./ProgressBackupPanel";
+import { ProgressDataPanel } from "./ProgressDataPanel";
 import styles from "./SettingsPage.module.css";
 
 async function copyText(value: string) {
@@ -328,6 +329,7 @@ export function SettingsPage() {
           </article>
 
           <ProgressBackupPanel />
+          <ProgressDataPanel />
         </section>
 
         {snapshot?.diagnostics.length ? (
