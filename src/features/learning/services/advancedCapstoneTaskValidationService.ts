@@ -170,7 +170,7 @@ def check_advanced_capstone(check):
         return False, f"{path} sözdizimi hatası: {error}"
 
     init_source = sources.get("farming_platform/__init__.py", "")
-    if not re.search(r"__version__\s*=\s*['"]1\.0\.0['"]", init_source):
+    if not re.search(r"""__version__\s*=\s*['"]1\.0\.0['"]""", init_source):
         return False, "Paket sürümü 1.0.0 olarak tanımlanmalıdır."
 
     event_node = class_node("farming_platform/models.py", "Event")

@@ -9,40 +9,11 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  finalize-stage31:
-    name: Finalize Stage 31 review fixes
-    if: github.event_name == 'push' && github.ref_name == 'stage/31-advanced-capstone-graduation' && github.actor != 'github-actions[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: stage/31-advanced-capstone-graduation
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Apply review finalizer
-        run: python scripts/finalize_stage31_review.py
-      - name: Restore CI and remove temporary tool
-        run: |
-          git fetch origin main --depth=1
-          git checkout origin/main -- .github/workflows/ci.yml
-          rm scripts/finalize_stage31_review.py
-      - name: Commit final review fixes
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "test: cover advanced capstone review cases"
-          git push origin HEAD:stage/31-advanced-capstone-graduation
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
