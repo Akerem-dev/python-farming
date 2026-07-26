@@ -1,14 +1,20 @@
 use serde::{Deserialize, Serialize};
-
-use super::python_interpreter::find_python_interpreter;
 use std::{
     collections::HashSet,
-    env, fs,
+    fs,
     io::{Read, Write},
     path::{Component, Path, PathBuf},
     process::{Command, ExitStatus, Stdio},
     thread,
-    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant},
+};
+
+use super::{
+    execution_sandbox::{
+        configure_sandbox_command, create_secure_workspace, wait_for_sandboxed_child,
+        write_workspace_file, PYTHON_SANDBOX_RUNNER,
+    },
+    python_interpreter::find_python_interpreter,
 };
 
 const PROTOCOL_VERSION: u8 = 1;
@@ -19,43 +25,6 @@ const MAX_FILE_COUNT: usize = 64;
 const MIN_TIMEOUT_MS: u64 = 250;
 const MAX_TIMEOUT_MS: u64 = 10_000;
 const ALLOWED_PROJECT_EXTENSIONS: [&str; 4] = ["py", "txt", "json", "csv"];
-const PROJECT_RUNNER: &str = r#"import os, runpy, sys
-root = os.path.realpath(sys.argv[1])
-entrypoint = sys.argv[2]
-os.chdir(root)
-sys.path.insert(0, root)
-sys.argv = [entrypoint]
-
-
-def inside_workspace(value):
-    try:
-        path = os.path.realpath(os.path.abspath(os.fspath(value)))
-    except TypeError:
-        return True
-    return path == root or path.startswith(root + os.sep)
-
-
-def audit(event, args):
-    if event == 'open' and args:
-        target = args[0]
-        mode = args[1] if len(args) > 1 and isinstance(args[1], str) else 'r'
-        flags = args[2] if len(args) > 2 and isinstance(args[2], int) else 0
-        write_flags = os.O_WRONLY | os.O_RDWR | os.O_CREAT | os.O_TRUNC | os.O_APPEND
-        wants_write = any(marker in mode for marker in ('w', 'a', 'x', '+')) or bool(flags & write_flags)
-        if wants_write and not inside_workspace(target):
-            raise PermissionError('Proje klasörü dışına dosya yazılamaz.')
-    elif event in {'os.remove', 'os.rmdir', 'os.mkdir', 'os.chdir', 'os.chmod'} and args:
-        if not inside_workspace(args[0]):
-            raise PermissionError('Proje klasörü dışında dosya sistemi işlemi yapılamaz.')
-    elif event in {'os.rename', 'os.replace'} and len(args) >= 2:
-        if not inside_workspace(args[0]) or not inside_workspace(args[1]):
-            raise PermissionError('Proje klasörü dışına dosya taşınamaz.')
-    elif event in {'subprocess.Popen', 'os.system', 'socket.connect', 'socket.bind'}:
-        raise PermissionError('Ders çalışma alanında dış süreç ve ağ erişimi kapalıdır.')
-
-
-sys.addaudithook(audit)
-runpy.run_path(os.path.join(root, entrypoint), run_name='__main__')"#;
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -127,16 +96,14 @@ fn execute_python_project_sync(
         .ok_or_else(|| "Python 3 yorumlayıcısı bulunamadı.".to_string())?;
     let timeout_ms = request.timeout_ms.clamp(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS);
     let started_at = Instant::now();
-    let workspace = create_workspace(&request.request_id)?;
+    let workspace = create_secure_workspace(&request.request_id)?;
 
     for (relative_path, content) in &validated_files {
         let target = workspace.join(relative_path);
-        if let Some(parent) = target.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|error| format!("Proje klasörü oluşturulamadı: {error}"))?;
+        if let Err(error) = write_workspace_file(&target, content.as_bytes()) {
+            let _ = fs::remove_dir_all(&workspace);
+            return Err(error);
         }
-        fs::write(&target, content.as_bytes())
-            .map_err(|error| format!("Proje dosyası yazılamadı: {error}"))?;
     }
 
     let entrypoint = validate_relative_python_path(&request.entrypoint)?;
@@ -145,7 +112,7 @@ fn execute_python_project_sync(
         .ok_or_else(|| "Giriş dosyası yolu UTF-8 değil.".to_string())?;
     let workspace_text = workspace
         .to_str()
-        .ok_or_else(|| "Geçici proje yolu UTF-8 değil.".to_string())?;
+        .ok_or_else(|| "Güvenli proje yolu UTF-8 değil.".to_string())?;
 
     let mut command = Command::new(&interpreter.executable);
     command
@@ -155,24 +122,25 @@ fn execute_python_project_sync(
         .arg("utf8")
         .arg("-B")
         .arg("-c")
-        .arg(PROJECT_RUNNER)
+        .arg(PYTHON_SANDBOX_RUNNER)
         .arg(workspace_text)
         .arg(entrypoint_text)
         .current_dir(&workspace)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .env_remove("PYTHONPATH")
-        .env_remove("PYTHONHOME")
-        .env("PYTHONIOENCODING", "utf-8")
-        .env("PYTHONUTF8", "1")
-        .env("PYTHONDONTWRITEBYTECODE", "1")
-        .env("PYTHON_FARMING_WORKSPACE", workspace_text);
-    hide_console_window(&mut command);
+        .stderr(Stdio::piped());
+    if let Err(error) = configure_sandbox_command(&mut command, &workspace) {
+        let _ = fs::remove_dir_all(&workspace);
+        return Err(error);
+    }
 
-    let mut child = command
-        .spawn()
-        .map_err(|error| format!("Python proje süreci başlatılamadı: {error}"))?;
+    let mut child = match command.spawn() {
+        Ok(child) => child,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&workspace);
+            return Err(format!("Python proje süreci başlatılamadı: {error}"));
+        }
+    };
     let stdout = child
         .stdout
         .take()
@@ -189,13 +157,17 @@ fn execute_python_project_sync(
         if !input.is_empty() && !input.ends_with('\n') {
             input.push('\n');
         }
-        stdin
-            .write_all(input.as_bytes())
-            .map_err(|error| format!("Python stdin verisi gönderilemedi: {error}"))?;
+        if let Err(error) = stdin.write_all(input.as_bytes()) {
+            let _ = fs::remove_dir_all(&workspace);
+            return Err(format!("Python stdin verisi gönderilemedi: {error}"));
+        }
     }
 
-    let timeout = Duration::from_millis(timeout_ms);
-    let (exit_status, timed_out) = wait_for_child(&mut child, timeout)?;
+    let wait_result = wait_for_sandboxed_child(
+        &mut child,
+        &workspace,
+        Duration::from_millis(timeout_ms),
+    );
     let stdout = stdout_reader.join().unwrap_or_else(|_| CapturedOutput {
         text: String::new(),
         truncated: false,
@@ -204,31 +176,58 @@ fn execute_python_project_sync(
         text: "Python stderr çıktısı okunamadı.".to_string(),
         truncated: false,
     });
+    let _ = fs::remove_dir_all(&workspace);
+    let outcome = wait_result?;
 
     let duration_ms = started_at.elapsed().as_millis().min(u64::MAX as u128) as u64;
     let truncated = stdout.truncated || stderr.truncated;
-    let _ = fs::remove_dir_all(&workspace);
-    let status = if timed_out {
+    let policy_violation = sandbox_policy_violation(&stderr.text);
+    let status = if outcome.timed_out {
         "timeout"
-    } else if exit_status.as_ref().is_some_and(ExitStatus::success) {
+    } else if outcome.workspace_limit_exceeded || policy_violation {
+        "error"
+    } else if outcome
+        .exit_status
+        .as_ref()
+        .is_some_and(ExitStatus::success)
+    {
         "ok"
     } else {
         "error"
     };
 
     let mut diagnostics = Vec::new();
-    if timed_out {
+    if outcome.timed_out {
         diagnostics.push(RuntimeDiagnostic {
             severity: "error".to_string(),
             code: "EXECUTION_TIMEOUT".to_string(),
-            message: format!("Proje {timeout_ms} ms içinde tamamlanmadığı için durduruldu."),
+            message: format!(
+                "Proje {timeout_ms} ms içinde tamamlanmadığı için bütün süreç ağacı durduruldu."
+            ),
+        });
+    }
+    if outcome.workspace_limit_exceeded {
+        diagnostics.push(RuntimeDiagnostic {
+            severity: "error".to_string(),
+            code: "WORKSPACE_LIMIT_EXCEEDED".to_string(),
+            message: "Proje çalışma alanı dosya veya boyut sınırını aştığı için durduruldu."
+                .to_string(),
+        });
+    }
+    if policy_violation {
+        diagnostics.push(RuntimeDiagnostic {
+            severity: "error".to_string(),
+            code: "SANDBOX_POLICY_VIOLATION".to_string(),
+            message: "Proje güvenli çalışma alanı politikasının engellediği bir işlem denedi."
+                .to_string(),
         });
     }
     if truncated {
         diagnostics.push(RuntimeDiagnostic {
             severity: "warning".to_string(),
             code: "OUTPUT_TRUNCATED".to_string(),
-            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı.".to_string(),
+            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı."
+                .to_string(),
         });
     }
 
@@ -239,7 +238,7 @@ fn execute_python_project_sync(
         payload: Some(ExecuteCodeResult {
             stdout: stdout.text,
             stderr: stderr.text,
-            exit_code: exit_status.and_then(|value| value.code()),
+            exit_code: outcome.exit_status.and_then(|value| value.code()),
             duration_ms,
             truncated,
         }),
@@ -347,27 +346,6 @@ fn validate_relative_project_path(value: &str) -> Result<PathBuf, String> {
     Ok(safe_path)
 }
 
-fn create_workspace(request_id: &str) -> Result<PathBuf, String> {
-    let timestamp = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_nanos();
-    let safe_request_id: String = request_id
-        .chars()
-        .filter(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '_'))
-        .take(80)
-        .collect();
-    let workspace = env::temp_dir().join(format!(
-        "python-farming-project-{}-{}-{}",
-        std::process::id(),
-        timestamp,
-        safe_request_id
-    ));
-    fs::create_dir_all(&workspace)
-        .map_err(|error| format!("Geçici proje klasörü oluşturulamadı: {error}"))?;
-    Ok(workspace)
-}
-
 fn capture_output<R: Read>(mut reader: R, limit: usize) -> CapturedOutput {
     let mut output = Vec::new();
     let mut buffer = [0_u8; 4096];
@@ -396,42 +374,20 @@ fn capture_output<R: Read>(mut reader: R, limit: usize) -> CapturedOutput {
     }
 }
 
-fn wait_for_child(
-    child: &mut std::process::Child,
-    timeout: Duration,
-) -> Result<(Option<ExitStatus>, bool), String> {
-    let started_at = Instant::now();
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok((Some(status), false)),
-            Ok(None) if started_at.elapsed() >= timeout => {
-                let _ = child.kill();
-                let status = child.wait().ok();
-                return Ok((status, true));
-            }
-            Ok(None) => thread::sleep(Duration::from_millis(10)),
-            Err(error) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                return Err(format!("Python proje süreci izlenemedi: {error}"));
-            }
-        }
-    }
+fn sandbox_policy_violation(stderr: &str) -> bool {
+    stderr.contains("Çalışma alanı dışındaki dosyalar okunamaz")
+        || stderr.contains("Çalışma alanı dışına dosya yazılamaz")
+        || stderr.contains("çalışma alanında dış süreç oluşturma kapalıdır")
+        || stderr.contains("çalışma alanında ağ erişimi kapalıdır")
+        || stderr.contains("çalışma alanında yerel kütüphane yükleme kapalıdır")
+        || stderr.contains("çalışma alanında sembolik bağlantı oluşturma kapalıdır")
 }
-
-#[cfg(target_os = "windows")]
-fn hide_console_window(command: &mut Command) {
-    use std::os::windows::process::CommandExt;
-    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-    command.creation_flags(CREATE_NO_WINDOW);
-}
-
-#[cfg(not(target_os = "windows"))]
-fn hide_console_window(_command: &mut Command) {}
 
 #[cfg(test)]
 mod tests {
-    use super::{validate_relative_project_path, validate_relative_python_path};
+    use super::{
+        sandbox_policy_violation, validate_relative_project_path, validate_relative_python_path,
+    };
     use std::path::PathBuf;
 
     #[test]
@@ -466,5 +422,13 @@ mod tests {
     #[test]
     fn entrypoint_must_be_python() {
         assert!(validate_relative_python_path("data.json").is_err());
+    }
+
+    #[test]
+    fn detects_known_sandbox_policy_messages() {
+        assert!(sandbox_policy_violation(
+            "PermissionError: Çalışma alanı dışındaki dosyalar okunamaz."
+        ));
+        assert!(!sandbox_policy_violation("PermissionError: kullanıcı hatası"));
     }
 }
