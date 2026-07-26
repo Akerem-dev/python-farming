@@ -141,6 +141,9 @@ export function ProjectsPage() {
             <div className={styles.list}>
               {projects.map(({ lesson, module, state }) => {
                 const fileCount = lesson.editor.files?.length ?? 1;
+                const hiddenCheckCount = lesson.validation.checks.filter(
+                  (check) => check.visibility === "hidden",
+                ).length;
                 const projectTitle =
                   lesson.dataTransformation?.projectTitle ||
                   lesson.fileSystem?.projectTitle ||
@@ -169,7 +172,7 @@ export function ProjectsPage() {
                     </div>
                     <div className={styles.itemFooter}>
                       <span className={styles.meta}>
-                        {fileCount} dosya · {lesson.validation.hiddenTests?.length ?? 0} gizli test
+                        {fileCount} dosya · {hiddenCheckCount} gizli kontrol
                       </span>
                       <button
                         className={styles.actionButton}
