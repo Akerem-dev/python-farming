@@ -99,6 +99,6 @@ describe("portable Python runtime contract", () => {
     expect(ciWorkflow).toContain("executableRelativePath");
     expect(ciWorkflow).toContain("import asyncio, json, sqlite3");
     expect(ciWorkflow).toContain("portable-runtime-ok");
-    expect(readme).toContain("38 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
+    expect(readme).toContain("39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
   });
 });

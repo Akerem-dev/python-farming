@@ -5,6 +5,16 @@ const health = {
   status: "ready" as const,
   version: "Python 3.12.4",
   executable: "python",
+  security: {
+    policyVersion: 1,
+    filesystemScope: "workspace-only" as const,
+    networkAccess: "blocked" as const,
+    subprocessAccess: "blocked" as const,
+    environmentIsolated: true,
+    processTreeTermination: true,
+    maxWorkspaceBytes: 16 * 1024 * 1024,
+    maxWorkspaceFiles: 512,
+  },
   message: "Hazır",
 };
 

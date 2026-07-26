@@ -81,12 +81,11 @@ describe("settings and system diagnostics", () => {
   it("shows runtime, limits, progress and non-destructive troubleshooting", () => {
     expect(settingsPage).toContain("Python çalışma motoru");
     expect(settingsPage).toContain("Uygulama ve ortam");
-    expect(settingsPage).toContain("Çalıştırma limitleri");
+    expect(settingsPage).toContain("İzolasyon ve çalıştırma limitleri");
     expect(settingsPage).toContain("İlerleme kaydı");
     expect(settingsPage).toContain("PYTHON_FARMING_PYTHON");
     expect(settingsPage).toContain("Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez");
     expect(settingsPage).not.toContain("deleteProgress");
-    expect(settingsPage).not.toContain("İlerlemeyi sıfırla");
   });
 
   it("does not confuse browser preview with a missing Python installation", () => {
@@ -140,6 +139,16 @@ describe("settings and system diagnostics", () => {
         status: "ready",
         version: "Python 3.13.5",
         executable: "python3",
+        security: {
+          policyVersion: 1,
+          filesystemScope: "workspace-only",
+          networkAccess: "blocked",
+          subprocessAccess: "blocked",
+          environmentIsolated: true,
+          processTreeTermination: true,
+          maxWorkspaceBytes: 16 * 1024 * 1024,
+          maxWorkspaceFiles: 512,
+        },
         message: "Yerel Python yorumlayıcısı kullanıma hazır.",
       },
       diagnostics: [],

@@ -1,13 +1,20 @@
 use serde::{Deserialize, Serialize};
-
-use super::python_interpreter::{find_python_interpreter, PythonInterpreterSource};
 use std::{
-    env, fs,
+    fs,
     io::{Read, Write},
-    path::{Path, PathBuf},
+    path::Path,
     process::{Command, ExitStatus, Stdio},
     thread,
-    time::{Duration, Instant, SystemTime, UNIX_EPOCH},
+    time::{Duration, Instant},
+};
+
+use super::{
+    execution_sandbox::{
+        configure_sandbox_command, create_secure_workspace, security_profile,
+        wait_for_sandboxed_child, write_workspace_file, RuntimeSecurityProfile,
+        PYTHON_SANDBOX_RUNNER,
+    },
+    python_interpreter::{find_python_interpreter, PythonInterpreterSource},
 };
 
 const PROTOCOL_VERSION: u8 = 1;
@@ -53,6 +60,7 @@ pub struct RuntimeHealthResult {
     executable: Option<String>,
     source: Option<String>,
     managed: bool,
+    security: RuntimeSecurityProfile,
     message: String,
 }
 
@@ -96,27 +104,35 @@ fn runtime_health_check_sync(
     app: &tauri::AppHandle,
     request_id: String,
 ) -> Result<RuntimeResponse<RuntimeHealthResult>, String> {
+    let security = security_profile();
     match find_python_interpreter(app) {
         Some(interpreter) => {
             let message = match interpreter.source {
-                PythonInterpreterSource::Bundled => "Uygulamaya gömülü Python çalışma motoru kullanıma hazır.",
-                PythonInterpreterSource::Custom => "PYTHON_FARMING_PYTHON ile seçilen yorumlayıcı kullanıma hazır.",
-                PythonInterpreterSource::System => "Sistemde bulunan Python yorumlayıcısı kullanıma hazır.",
+                PythonInterpreterSource::Bundled => {
+                    "Uygulamaya gömülü Python çalışma motoru güvenli çalışma profiliyle hazır."
+                }
+                PythonInterpreterSource::Custom => {
+                    "PYTHON_FARMING_PYTHON ile seçilen yorumlayıcı güvenli çalışma profiliyle hazır."
+                }
+                PythonInterpreterSource::System => {
+                    "Sistemde bulunan Python yorumlayıcısı güvenli çalışma profiliyle hazır."
+                }
             };
             Ok(RuntimeResponse {
-            request_id,
-            protocol_version: PROTOCOL_VERSION,
-            status: "ok".to_string(),
-            payload: Some(RuntimeHealthResult {
-                status: "ready".to_string(),
-                version: Some(interpreter.version),
-                executable: Some(interpreter.executable.to_string_lossy().to_string()),
-                source: Some(interpreter.source.as_str().to_string()),
-                managed: interpreter.source.is_managed(),
-                message: message.to_string(),
-            }),
-            diagnostics: Vec::new(),
-        })
+                request_id,
+                protocol_version: PROTOCOL_VERSION,
+                status: "ok".to_string(),
+                payload: Some(RuntimeHealthResult {
+                    status: "ready".to_string(),
+                    version: Some(interpreter.version),
+                    executable: Some(interpreter.executable.to_string_lossy().to_string()),
+                    source: Some(interpreter.source.as_str().to_string()),
+                    managed: interpreter.source.is_managed(),
+                    security,
+                    message: message.to_string(),
+                }),
+                diagnostics: Vec::new(),
+            })
         }
         None => Ok(RuntimeResponse {
             request_id,
@@ -128,13 +144,15 @@ fn runtime_health_check_sync(
                 executable: None,
                 source: None,
                 managed: false,
+                security,
                 message: "Bu build içinde gömülü Python bulunamadı ve sistem Python 3 yorumlayıcısı da kullanılamıyor."
                     .to_string(),
             }),
             diagnostics: vec![RuntimeDiagnostic {
                 severity: "error".to_string(),
                 code: "PYTHON_NOT_FOUND".to_string(),
-                message: "Sistemde kullanılabilir bir Python 3 yorumlayıcısı bulunamadı.".to_string(),
+                message: "Sistemde kullanılabilir bir Python 3 yorumlayıcısı bulunamadı."
+                    .to_string(),
             }],
         }),
     }
@@ -150,12 +168,16 @@ fn execute_python_sync(
         .ok_or_else(|| "Python 3 yorumlayıcısı bulunamadı.".to_string())?;
     let timeout_ms = request.timeout_ms.clamp(MIN_TIMEOUT_MS, MAX_TIMEOUT_MS);
     let started_at = Instant::now();
-    let workspace = create_workspace(&request.request_id)?;
+    let workspace = create_secure_workspace(&request.request_id)?;
     let filename = sanitize_filename(&request.filename);
-    let source_path = workspace.join(filename);
-
-    fs::write(&source_path, request.source.as_bytes())
-        .map_err(|error| format!("Geçici Python dosyası yazılamadı: {error}"))?;
+    let source_path = workspace.join(&filename);
+    if let Err(error) = write_workspace_file(&source_path, request.source.as_bytes()) {
+        let _ = fs::remove_dir_all(&workspace);
+        return Err(error);
+    }
+    let workspace_text = workspace
+        .to_str()
+        .ok_or_else(|| "Güvenli çalışma alanı yolu UTF-8 değil.".to_string())?;
 
     let mut command = Command::new(&interpreter.executable);
     command
@@ -164,22 +186,26 @@ fn execute_python_sync(
         .arg("-X")
         .arg("utf8")
         .arg("-B")
-        .arg(&source_path)
+        .arg("-c")
+        .arg(PYTHON_SANDBOX_RUNNER)
+        .arg(workspace_text)
+        .arg(&filename)
         .current_dir(&workspace)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
-        .stderr(Stdio::piped())
-        .env_remove("PYTHONPATH")
-        .env_remove("PYTHONHOME")
-        .env("PYTHONIOENCODING", "utf-8")
-        .env("PYTHONUTF8", "1")
-        .env("PYTHONDONTWRITEBYTECODE", "1");
-    hide_console_window(&mut command);
+        .stderr(Stdio::piped());
+    if let Err(error) = configure_sandbox_command(&mut command, &workspace) {
+        let _ = fs::remove_dir_all(&workspace);
+        return Err(error);
+    }
 
-    let mut child = command
-        .spawn()
-        .map_err(|error| format!("Python süreci başlatılamadı: {error}"))?;
-
+    let mut child = match command.spawn() {
+        Ok(child) => child,
+        Err(error) => {
+            let _ = fs::remove_dir_all(&workspace);
+            return Err(format!("Python süreci başlatılamadı: {error}"));
+        }
+    };
     let stdout = child
         .stdout
         .take()
@@ -188,7 +214,6 @@ fn execute_python_sync(
         .stderr
         .take()
         .ok_or_else(|| "Python stderr kanalı açılamadı.".to_string())?;
-
     let stdout_reader = thread::spawn(move || capture_output(stdout, MAX_OUTPUT_BYTES));
     let stderr_reader = thread::spawn(move || capture_output(stderr, MAX_OUTPUT_BYTES));
 
@@ -197,13 +222,14 @@ fn execute_python_sync(
         if !input.is_empty() && !input.ends_with('\n') {
             input.push('\n');
         }
-        stdin
-            .write_all(input.as_bytes())
-            .map_err(|error| format!("Python stdin verisi gönderilemedi: {error}"))?;
+        if let Err(error) = stdin.write_all(input.as_bytes()) {
+            let _ = fs::remove_dir_all(&workspace);
+            return Err(format!("Python stdin verisi gönderilemedi: {error}"));
+        }
     }
 
-    let timeout = Duration::from_millis(timeout_ms);
-    let (exit_status, timed_out) = wait_for_child(&mut child, timeout)?;
+    let wait_result =
+        wait_for_sandboxed_child(&mut child, &workspace, Duration::from_millis(timeout_ms));
     let stdout = stdout_reader.join().unwrap_or_else(|_| CapturedOutput {
         text: String::new(),
         truncated: false,
@@ -212,25 +238,50 @@ fn execute_python_sync(
         text: "Python stderr çıktısı okunamadı.".to_string(),
         truncated: false,
     });
+    let _ = fs::remove_dir_all(&workspace);
+    let outcome = wait_result?;
 
     let duration_ms = started_at.elapsed().as_millis().min(u64::MAX as u128) as u64;
     let truncated = stdout.truncated || stderr.truncated;
-    let _ = fs::remove_dir_all(&workspace);
-
-    let status = if timed_out {
+    let policy_violation = sandbox_policy_violation(&stderr.text);
+    let status = if outcome.timed_out {
         "timeout"
-    } else if exit_status.as_ref().is_some_and(ExitStatus::success) {
+    } else if outcome.workspace_limit_exceeded || policy_violation {
+        "error"
+    } else if outcome
+        .exit_status
+        .as_ref()
+        .is_some_and(ExitStatus::success)
+    {
         "ok"
     } else {
         "error"
     };
 
     let mut diagnostics = Vec::new();
-    if timed_out {
+    if outcome.timed_out {
         diagnostics.push(RuntimeDiagnostic {
             severity: "error".to_string(),
             code: "EXECUTION_TIMEOUT".to_string(),
-            message: format!("Kod {timeout_ms} ms içinde tamamlanmadığı için durduruldu."),
+            message: format!(
+                "Kod {timeout_ms} ms içinde tamamlanmadığı için bütün süreç ağacı durduruldu."
+            ),
+        });
+    }
+    if outcome.workspace_limit_exceeded {
+        diagnostics.push(RuntimeDiagnostic {
+            severity: "error".to_string(),
+            code: "WORKSPACE_LIMIT_EXCEEDED".to_string(),
+            message: "Kod çalışma alanı dosya veya boyut sınırını aştığı için durduruldu."
+                .to_string(),
+        });
+    }
+    if policy_violation {
+        diagnostics.push(RuntimeDiagnostic {
+            severity: "error".to_string(),
+            code: "SANDBOX_POLICY_VIOLATION".to_string(),
+            message: "Kod güvenli çalışma alanı politikasının engellediği bir işlem denedi."
+                .to_string(),
         });
     }
     if truncated {
@@ -248,7 +299,7 @@ fn execute_python_sync(
         payload: Some(ExecuteCodeResult {
             stdout: stdout.text,
             stderr: stderr.text,
-            exit_code: exit_status.and_then(|value| value.code()),
+            exit_code: outcome.exit_status.and_then(|value| value.code()),
             duration_ms,
             truncated,
         }),
@@ -273,24 +324,6 @@ fn validate_request(request: &ExecutePythonRequest) -> Result<(), String> {
     }
 
     Ok(())
-}
-
-fn create_workspace(request_id: &str) -> Result<PathBuf, String> {
-    let timestamp = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .unwrap_or_default()
-        .as_nanos();
-    let safe_request_id = sanitize_component(request_id);
-    let workspace = env::temp_dir().join(format!(
-        "python-farming-{}-{}-{}",
-        std::process::id(),
-        timestamp,
-        safe_request_id
-    ));
-
-    fs::create_dir_all(&workspace)
-        .map_err(|error| format!("Geçici çalışma alanı oluşturulamadı: {error}"))?;
-    Ok(workspace)
 }
 
 fn sanitize_filename(filename: &str) -> String {
@@ -348,43 +381,18 @@ fn capture_output<R: Read>(mut reader: R, limit: usize) -> CapturedOutput {
     }
 }
 
-fn wait_for_child(
-    child: &mut std::process::Child,
-    timeout: Duration,
-) -> Result<(Option<ExitStatus>, bool), String> {
-    let started_at = Instant::now();
-
-    loop {
-        match child.try_wait() {
-            Ok(Some(status)) => return Ok((Some(status), false)),
-            Ok(None) if started_at.elapsed() >= timeout => {
-                let _ = child.kill();
-                let status = child.wait().ok();
-                return Ok((status, true));
-            }
-            Ok(None) => thread::sleep(Duration::from_millis(10)),
-            Err(error) => {
-                let _ = child.kill();
-                let _ = child.wait();
-                return Err(format!("Python süreci izlenemedi: {error}"));
-            }
-        }
-    }
+fn sandbox_policy_violation(stderr: &str) -> bool {
+    stderr.contains("Çalışma alanı dışındaki dosyalar okunamaz")
+        || stderr.contains("Çalışma alanı dışına dosya yazılamaz")
+        || stderr.contains("çalışma alanında dış süreç oluşturma kapalıdır")
+        || stderr.contains("çalışma alanında ağ erişimi kapalıdır")
+        || stderr.contains("çalışma alanında yerel kütüphane yükleme kapalıdır")
+        || stderr.contains("çalışma alanında sembolik bağlantı oluşturma kapalıdır")
 }
-
-#[cfg(target_os = "windows")]
-fn hide_console_window(command: &mut Command) {
-    use std::os::windows::process::CommandExt;
-    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
-    command.creation_flags(CREATE_NO_WINDOW);
-}
-
-#[cfg(not(target_os = "windows"))]
-fn hide_console_window(_command: &mut Command) {}
 
 #[cfg(test)]
 mod tests {
-    use super::{sanitize_component, sanitize_filename};
+    use super::{sandbox_policy_violation, sanitize_component, sanitize_filename};
 
     #[test]
     fn filename_removes_parent_directory_segments() {
@@ -399,5 +407,15 @@ mod tests {
     #[test]
     fn request_component_allows_only_safe_characters() {
         assert_eq!(sanitize_component("run:01 / demo"), "run01demo");
+    }
+
+    #[test]
+    fn detects_known_sandbox_policy_messages() {
+        assert!(sandbox_policy_violation(
+            "PermissionError: Ders çalışma alanında ağ erişimi kapalıdır."
+        ));
+        assert!(!sandbox_policy_violation(
+            "PermissionError: kullanıcı hatası"
+        ));
     }
 }

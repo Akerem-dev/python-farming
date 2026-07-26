@@ -72,12 +72,24 @@ export interface RuntimeResponse<TPayload = unknown> {
 
 export type RuntimeInterpreterSource = "bundled" | "custom" | "system";
 
+export interface RuntimeSecurityProfile {
+  policyVersion: number;
+  filesystemScope: "workspace-only";
+  networkAccess: "blocked";
+  subprocessAccess: "blocked";
+  environmentIsolated: boolean;
+  processTreeTermination: boolean;
+  maxWorkspaceBytes: number;
+  maxWorkspaceFiles: number;
+}
+
 export interface RuntimeHealthResult {
   status: "ready" | "offline";
   version?: string;
   executable?: string;
   source?: RuntimeInterpreterSource;
   managed?: boolean;
+  security: RuntimeSecurityProfile;
   message: string;
 }
 

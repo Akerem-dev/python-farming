@@ -4,7 +4,7 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 
 ## Proje durumu
 
-**38 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
+**39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
 
 Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
@@ -16,6 +16,9 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - Tek ve çok dosyalı Python çalışma alanları
 - Installer'a gömülü, SHA-256 doğrulamalı taşınabilir Python 3 runtime'ı
 - Geliştirme için özel yorumlayıcı ve sistem Python fallback'i
+- Tek ve çok dosyalı görevlerde ortak Python audit güvenlik politikası
+- Çalışma alanı dışı dosya erişimi, ağ, alt süreç, fork ve yerel kütüphane yükleme engelleri
+- Temizlenmiş çevre değişkenleri, süreç ağacı sonlandırma ve çalışma alanı kotaları
 - Gerçek `stdout`, `stderr`, traceback, çıkış kodu ve çalışma süresi
 - `stdin`, seçim, sıralama, kod tamamlama ve hata ayıklama görevleri
 - AST, type hint, sınıf, protokol, async, SQLite ve davranış tabanlı doğrulayıcılar
@@ -36,7 +39,7 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 | Arayüz | React 19, TypeScript, Vite |
 | Editör | CodeMirror 6 |
 | Durum yönetimi | Zustand |
-| Yerel çalışma motoru | Rust + sistem Python 3 |
+| Yerel çalışma motoru | Rust + gömülü/sistem Python 3 |
 | Kalıcılık | SQLite / rusqlite |
 | Test | Vitest + Rust testleri + gerçek Python entegrasyon testleri |
 
@@ -129,9 +132,11 @@ Normal `git pull`, `npm ci` veya uygulama güncellemesi ilerleme verisini ve yed
 
 ## Çalışma motoru güvenliği
 
-Öğrenci kodu ayrı geçici klasörlerde, izole Python bayraklarıyla ve süre/çıktı/dosya boyutu sınırlarıyla çalıştırılır. Doğrulayıcılar eğitim amaçlı güvenlik katmanları sağlar; bu yapı kötü niyetli kodu işletim sistemi seviyesinde tamamen izole eden genel amaçlı bir sandbox değildir.
+Öğrenci kodu her çalıştırmada yalnız o isteğe ait izinleri daraltılmış geçici klasörde başlatılır. Tek dosyalı ve çok dosyalı görevler aynı Python audit politikasını kullanır. Çalışma alanı dışındaki dosya okuma/yazma ve dizin keşfi; ağ soketleri; `subprocess`, `os.system`, spawn/fork; sembolik bağlantı ve `ctypes` ile yerel kütüphane yükleme reddedilir. Çocuk süreç çevresi temizlenir; ev ve geçici klasörler çalışma alanına yönlendirilir; PATH boşaltılır.
 
-Gömülü Python runtime installer'a dahil edilir ve build sırasında GitHub asset özetiyle doğrulanır. Daha sıkı süreç izolasyonu, kod imzalama, notarizasyon ve platform güvenlik kontrolleri sonraki sağlamlaştırma aşamalarında tamamlanacaktır.
+Timeout veya çalışma alanı kotası aşıldığında yalnız ana Python süreci değil, Unix process group ya da Windows process tree bütünü sonlandırılır. Çalışma alanı toplam 16 MB ve 512 dosyayla sınırlıdır; stdout ve stderr de ayrı ayrı sınırlandırılır. Ayrıntılı tehdit modeli ve doğrulama adımları için [`docs/RUNTIME_SECURITY.md`](docs/RUNTIME_SECURITY.md) dosyasına bakın.
+
+Bu katman eğitim uygulamasındaki kazara veya basit kötüye kullanımlara karşı savunma derinliği sağlar. Python audit hook'u tek başına işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama genel amaçlı, düşmanca kod barındırma servisi olarak kullanılmamalıdır. Kod imzalama, notarizasyon ve platform paket güvenliği sonraki sağlamlaştırma aşamalarında tamamlanacaktır.
 
 ## Sürümleme
 
