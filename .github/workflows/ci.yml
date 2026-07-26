@@ -47,10 +47,11 @@ jobs:
           npm run prepare:runtime > runtime-prepare-diagnostic.txt 2>&1
           code=$?
           set -e
+          find src-tauri/python-runtime -maxdepth 6 \( -type f -o -type l \) \
+            -printf '%y %p -> %l\n' 2>/dev/null | sort > "${RUNNER_TEMP}/runtime-tree.txt" || true
           {
             printf '\n--- extracted tree ---\n'
-            find src-tauri/python-runtime -maxdepth 6 \( -type f -o -type l \) \
-              -printf '%y %p -> %l\n' 2>/dev/null | sort | head -n 300
+            sed -n '1,300p' "${RUNNER_TEMP}/runtime-tree.txt"
             printf '\nexit_code=%s\n' "$code"
           } >> runtime-prepare-diagnostic.txt
           git config user.name "github-actions[bot]"
