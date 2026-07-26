@@ -1,0 +1,277 @@
+name: Finalize v1 branch
+
+on:
+  push:
+    branches:
+      - stage/41-final-qa-v1
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-v1-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    name: Finalize version 1.0.0
+    if: github.event_name == 'workflow_dispatch' || !contains(github.event.head_commit.message, '[finalize-v1]')
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout final branch
+        uses: actions/checkout@v7
+        with:
+          ref: stage/41-final-qa-v1
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt
+
+      - name: Apply deterministic v1 finalization
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { existsSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
+
+          const VERSION = "1.0.0";
+          const read = (path) => readFileSync(path, "utf8");
+          const write = (path, content) => writeFileSync(path, content.endsWith("\n") ? content : `${content}\n`);
+
+          function replaceRequired(path, from, to) {
+            const source = read(path);
+            if (!source.includes(from)) {
+              throw new Error(`${path}: beklenen metin bulunamadı: ${from}`);
+            }
+            write(path, source.replace(from, to));
+          }
+
+          function replaceRegexRequired(path, pattern, replacement) {
+            const source = read(path);
+            if (!pattern.test(source)) {
+              throw new Error(`${path}: beklenen desen bulunamadı: ${pattern}`);
+            }
+            write(path, source.replace(pattern, replacement));
+          }
+
+          const packageJson = JSON.parse(read("package.json"));
+          packageJson.version = VERSION;
+          write("package.json", JSON.stringify(packageJson, null, 2));
+
+          const packageLock = JSON.parse(read("package-lock.json"));
+          packageLock.version = VERSION;
+          if (!packageLock.packages?.[""]) {
+            throw new Error("package-lock.json kök paket kaydı bulunamadı.");
+          }
+          packageLock.packages[""].version = VERSION;
+          write("package-lock.json", JSON.stringify(packageLock, null, 2));
+
+          const tauriConfig = JSON.parse(read("src-tauri/tauri.conf.json"));
+          tauriConfig.version = VERSION;
+          write("src-tauri/tauri.conf.json", JSON.stringify(tauriConfig, null, 2));
+
+          replaceRegexRequired(
+            "src-tauri/Cargo.toml",
+            /(\[package\][\s\S]*?\nversion = ")[^"]+(\")/,
+            `$1${VERSION}$2`,
+          );
+          replaceRegexRequired(
+            "src-tauri/Cargo.lock",
+            /(\[\[package\]\]\nname = "python-farming"\nversion = ")[^"]+(\")/,
+            `$1${VERSION}$2`,
+          );
+          replaceRegexRequired(
+            "src/app/appConfig.ts",
+            /version: "[^"]+"/,
+            `version: "${VERSION}"`,
+          );
+
+          replaceRequired(
+            "README.md",
+            "**39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**",
+            "**41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**",
+          );
+          replaceRequired(
+            "README.md",
+            "Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.",
+            "`1.0.0`, doğrulanmış yerel Python çalışma motoru, Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları, mezuniyet projeleri, güvenli yerel ilerleme yönetimi ve davranışsal görev doğrulama sistemiyle ilk kararlı kaynak sürümüdür. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.",
+          );
+          replaceRequired(
+            "README.md",
+            "- Windows, Linux ve macOS için taslak release üretim akışı",
+            "- Windows, Linux ve macOS için sürüm kontrollü dry-run ve taslak release üretim akışı",
+          );
+          replaceRegexRequired(
+            "README.md",
+            /## Release akışı[\s\S]*?## Yerel veri/,
+            `## Release akışı\n\n\`.github/workflows/release.yml\` iki güvenli mod sunar:\n\n- Manuel \`workflow_dispatch\` çalıştırması Windows x64, Linux x64, macOS Apple Silicon ve macOS Intel paketlerini dry-run artifact olarak üretir; GitHub Release oluşturmaz.\n- Yalnız bütün manifest sürümleriyle eşleşen \`vX.Y.Z\` etiketi taslak ve kararlı GitHub Release oluşturabilir.\n\nHer platform çıktısıyla birlikte dosya adı, boyut ve SHA-256 değerlerini içeren bir release manifesti üretilir. \`v1.0.0\` etiketi oluşturulmadan önce \`docs/RELEASE_CHECKLIST.md\` ve \`docs/FINAL_QA_1.0.md\` uygulanmalıdır. Windows Authenticode imzası ile macOS Developer ID/notarizasyon sırları bu repository'de yapılandırılmamıştır; bu nedenle installer'lar genel dağıtımdan önce platform uyarıları ve temiz makine davranışı açısından ayrıca doğrulanmalıdır.\n\n## Yerel veri`,
+          );
+          replaceRequired(
+            "README.md",
+            "Kod imzalama, notarizasyon ve platform paket güvenliği sonraki sağlamlaştırma aşamalarında tamamlanacaktır.",
+            "Windows Authenticode imzası ve macOS Developer ID/notarizasyonu dağıtım hesabına bağlı operasyonel adımlardır; kaynak kodu ve unsigned/ad-hoc installer üretimi doğrulanmış olsa da herkese açık dağıtım öncesinde bu imzalama adımları tamamlanmalıdır.",
+          );
+          replaceRegexRequired(
+            "README.md",
+            /## Sürümleme[\s\S]*$/,
+            `## Sürümleme\n\nUygulama sürümü aşağıdaki kaynaklarda aynı tutulur:\n\n- \`package.json\`\n- \`package-lock.json\`\n- \`src-tauri/tauri.conf.json\`\n- \`src-tauri/Cargo.toml\`\n- \`src-tauri/Cargo.lock\`\n- \`src/app/appConfig.ts\`\n\nRelease workflow'u sürüm uyuşmazlığında veya etiketi \`v<manifest-version>\` biçimiyle eşleşmediğinde yayını durdurur. 1.0 sürüm özeti için \`docs/RELEASE_NOTES_1.0.0.md\` dosyasına bakın.`,
+          );
+
+          replaceRequired(
+            "docs/RELEASE_CHECKLIST.md",
+            "Bu liste her masaüstü sürümünden önce uygulanmalıdır. Mevcut `0.1.x` hattı geliştirme ön izlemesidir.",
+            "Bu liste her masaüstü sürümünden önce uygulanmalıdır. `1.0.0`, ilk kararlı kaynak sürümüdür; platform installer'ları imzalama ve temiz makine kontrolleri tamamlanana kadar taslak tutulur.",
+          );
+          replaceRequired(
+            "docs/RELEASE_CHECKLIST.md",
+            "Örnek: `0.1.0`.",
+            "Örnek: `1.0.0`.",
+          );
+          replaceRegexRequired(
+            "docs/RELEASE_CHECKLIST.md",
+            /## 7\. GitHub release workflow[\s\S]*?## 8\. İmzalama durumu/,
+            `## 7. GitHub release workflow\n\n### Dry-run\n\nGitHub üzerinde **Actions → Release → Run workflow** seçilir. Manuel çalışma:\n\n- kalite kontrollerini tekrar çalıştırır,\n- Windows x64, Linux x64, macOS Apple Silicon ve macOS Intel paketlerini üretir,\n- her paket için SHA-256 manifesti oluşturur,\n- çıktıları workflow artifact olarak saklar,\n- GitHub Release veya sürüm etiketi oluşturmaz.\n\n### Etiketli taslak release\n\nBütün manifestler \`1.0.0\` olduğunda \`v1.0.0\` etiketi oluşturulur. Etiket uyuşmazsa preflight işi yayını durdurur. Uyumlu etiket çalışması paketleri taslak, kararlı ve ön sürüm olmayan GitHub Release'e yükler.\n\n## 8. İmzalama durumu`,
+          );
+          replaceRequired(
+            "docs/RELEASE_CHECKLIST.md",
+            "## 9. Taslak release incelemesi",
+            "## 9. Taslak release ve artifact incelemesi",
+          );
+          replaceRequired(
+            "docs/RELEASE_CHECKLIST.md",
+            "- İndirilen paketlerin hash değerleri kaydedildi mi?",
+            "- Her paketin SHA-256 manifesti mevcut ve yeniden hesaplanan değerle aynı mı?",
+          );
+
+          for (const path of [
+            "src/test/content/releaseReadiness.test.ts",
+            "src/test/content/runtimeIsolation.test.ts",
+            "src/test/content/portablePythonRuntime.test.ts",
+          ]) {
+            let source = read(path);
+            source = source.replaceAll(
+              "39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı",
+              "41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı",
+            );
+            if (path.endsWith("releaseReadiness.test.ts")) {
+              source = source.replace('expect(packageJson.version).toBe("0.1.0")', 'expect(packageJson.version).toBe("1.0.0")');
+            }
+            write(path, source);
+          }
+
+          const releaseNotes = [
+            "# Python Farming 1.0.0",
+            "",
+            "Python Farming 1.0.0, başlangıçtan ileri seviyeye kadar Python öğretmek için geliştirilen ilk kararlı kaynak sürümüdür.",
+            "",
+            "## Öne çıkanlar",
+            "",
+            "- React, TypeScript, Vite ve Tauri 2 tabanlı masaüstü deneyimi",
+            "- CodeMirror 6 üzerinde tek ve çok dosyalı Python çalışma alanları",
+            "- Installer'a gömülü, SHA-256 doğrulamalı taşınabilir Python runtime'ı",
+            "- Çalışma alanı dışı dosya erişimi, ağ, subprocess, fork/spawn, symlink ve ctypes yüklemelerini sınırlayan ortak audit sandbox",
+            "- Timeout sırasında Unix process group veya Windows process tree sonlandırması",
+            "- Davranışsal, AST tabanlı ve gerçek Python entegrasyon testleriyle görev doğrulama",
+            "- Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları ile mezuniyet projeleri",
+            "- SQLite ilerleme kaydı, yedekleme, geri yükleme, dışa/içe aktarma ve güvenli sıfırlama",
+            "- Sürümlü SQLite migration'ı ve eski ilerlemeyi koruyan uyumluluk testleri",
+            "- Windows, Linux ve iki macOS mimarisi için dry-run/tag ayrımlı release matrisi",
+            "- Installer başına SHA-256 release manifesti",
+            "",
+            "## Doğrulama",
+            "",
+            "- TypeScript typecheck",
+            "- Bütün Vitest unit, content ve integration testleri",
+            "- Production frontend build",
+            "- Rust format kontrolü",
+            "- Kilitli bağımlılıklarla bütün Rust hedef testleri",
+            "- Gerçek Linux .deb paketi ve gömülü Python smoke testi",
+            "",
+            "## Bilinen dağıtım sınırlamaları",
+            "",
+            "- Windows Authenticode imzası yapılandırılmamıştır.",
+            "- macOS Developer ID imzası ve notarizasyonu yapılandırılmamıştır; dry-run paketleri ad-hoc imzalı olabilir.",
+            "- Python audit hook'u işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama düşmanca genel amaçlı kod barındırma servisi olarak kullanılmamalıdır.",
+            "- Uzman Seviye içerikleri ayrı ürün yolunda geliştirilecektir.",
+            "",
+            "## Yükseltme",
+            "",
+            "0.1.x geliştirme ön izlemesinden yükseltmede mevcut SQLite ilerleme verisi korunur ve şema sürümü otomatik olarak 1'e taşınır. Güncelleme öncesinde Ayarlar ekranından ilerleme yedeği veya JSON dışa aktarması alınması önerilir.",
+          ].join("\n");
+          write("docs/RELEASE_NOTES_1.0.0.md", releaseNotes);
+
+          const finalQa = [
+            "# Python Farming 1.0 Final QA",
+            "",
+            "Bu belge 1.0.0 kaynak sürümünün kapanış kapılarını ve genel dağıtımdan önce kalan operasyonel kontrolleri ayırır.",
+            "",
+            "## Otomatik olarak doğrulanan kapılar",
+            "",
+            "- [x] package.json, package-lock.json, Tauri, Cargo, Cargo.lock ve arayüz sürümü 1.0.0",
+            "- [x] TypeScript typecheck",
+            "- [x] Bütün Vitest testleri",
+            "- [x] Production frontend build",
+            "- [x] Rust format kontrolü",
+            "- [x] cargo test --all-targets --locked",
+            "- [x] Eski SQLite ilerlemesini koruyan migration testi",
+            "- [x] Daha yeni ve desteklenmeyen şemayı reddetme testi",
+            "- [x] Gerçek Linux .deb paketi üretimi",
+            "- [x] .deb içindeki taşınabilir Python ile asyncio, json ve sqlite3 smoke testi",
+            "- [x] Release workflow dry-run ve etiketli release ayrımı",
+            "- [x] Dört platform hedefi ve SHA-256 manifest sözleşmesi",
+            "",
+            "## Taslak release oluşturulmadan önce",
+            "",
+            "- [ ] Actions → Release dry-run çalıştırması dört platformda yeşil",
+            "- [ ] Artifact dosya adları, mimarileri, boyutları ve SHA-256 değerleri kontrol edildi",
+            "- [ ] Windows installer temiz kullanıcı profilinde açıldı",
+            "- [ ] Linux installer temiz kullanıcı profilinde açıldı",
+            "- [ ] macOS Apple Silicon paketi temiz kullanıcı profilinde açıldı",
+            "- [ ] macOS Intel paketi temiz kullanıcı profilinde açıldı",
+            "- [ ] Uygulama Python kurulu olmayan profilde gömülü runtime ile çalıştı",
+            "- [ ] Tek dosya, çok dosya, stdin, asyncio, json ve sqlite3 smoke akışları geçti",
+            "- [ ] 0.1.x verisiyle yükseltme ve yeniden açılış ilerlemeyi korudu",
+            "",
+            "## Herkese açık installer dağıtımından önce",
+            "",
+            "- [ ] Windows Authenticode sertifikası ve imzalama sırrı yapılandırıldı",
+            "- [ ] Apple Developer ID sertifikası yapılandırıldı",
+            "- [ ] macOS notarizasyonu ve stapling tamamlandı",
+            "- [ ] İmzalı paketler temiz makinelerde tekrar doğrulandı",
+            "",
+            "Kaynak sürümü, testler ve unsigned/ad-hoc installer üretim hattı tamamlanmıştır. Yukarıdaki işaretlenmemiş maddeler erişim gerektiren gerçek cihaz, sertifika ve yayın operasyonlarıdır; tamamlanmadan imzalı installer desteği varmış gibi beyan edilmemelidir.",
+          ].join("\n");
+          write("docs/FINAL_QA_1.0.md", finalQa);
+
+          const finalContract = `import { readFileSync } from "node:fs";\nimport { resolve } from "node:path";\nimport { describe, expect, it } from "vitest";\n\nconst read = (path: string) => readFileSync(resolve(process.cwd(), path), "utf8");\n\ndescribe("Python Farming 1.0 final release contract", () => {\n  it("keeps every application version source aligned at 1.0.0", () => {\n    const packageJson = JSON.parse(read("package.json")) as { version: string };\n    const packageLock = JSON.parse(read("package-lock.json")) as { version: string; packages: Record<string, { version?: string }> };\n    const tauriConfig = JSON.parse(read("src-tauri/tauri.conf.json")) as { version: string };\n    const cargoToml = read("src-tauri/Cargo.toml");\n    const cargoLock = read("src-tauri/Cargo.lock");\n    const appConfig = read("src/app/appConfig.ts");\n\n    expect(packageJson.version).toBe("1.0.0");\n    expect(packageLock.version).toBe("1.0.0");\n    expect(packageLock.packages[""]?.version).toBe("1.0.0");\n    expect(tauriConfig.version).toBe("1.0.0");\n    expect(cargoToml).toMatch(/\\[package\\][\\s\\S]*?version = "1\\.0\\.0"/);\n    expect(cargoLock).toMatch(/\\[\\[package\\]\\]\\nname = "python-farming"\\nversion = "1\\.0\\.0"/);\n    expect(appConfig).toContain('version: "1.0.0"');\n  });\n\n  it("publishes honest completion, release notes and final QA boundaries", () => {\n    const readme = read("README.md");\n    const checklist = read("docs/RELEASE_CHECKLIST.md");\n    const notes = read("docs/RELEASE_NOTES_1.0.0.md");\n    const qa = read("docs/FINAL_QA_1.0.md");\n\n    expect(readme).toContain("41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");\n    expect(readme).toContain("1.0.0");\n    expect(readme).toContain("Windows Authenticode");\n    expect(checklist).toContain("Dry-run");\n    expect(checklist).toContain("v1.0.0");\n    expect(notes).toContain("Bilinen dağıtım sınırlamaları");\n    expect(qa).toContain("işaretlenmemiş maddeler");\n    expect(qa).toContain("imzalı installer desteği varmış gibi beyan edilmemelidir");\n  });\n\n  it("keeps release publication tag-gated and dry runs non-publishing", () => {\n    const workflow = read(".github/workflows/release.yml");\n    expect(workflow).toContain("Build dry-run Tauri bundles");\n    expect(workflow).toContain("tagName: ${{ github.ref_name }}");\n    expect(workflow).toContain("releaseDraft: true");\n    expect(workflow).toContain("prerelease: false");\n    expect(workflow).not.toContain("v__VERSION__");\n    expect(workflow).toContain("release-manifest.json");\n  });\n});\n`;
+          write("src/test/content/finalReleaseContract.test.ts", finalContract);
+
+          const workflowPath = ".github/workflows/finalize-v1.yml";
+          if (existsSync(workflowPath)) {
+            unlinkSync(workflowPath);
+          }
+          NODE
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Run complete quality gate
+        run: npm run verify
+
+      - name: Commit finalized v1 files
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --check
+          git commit -m "Aşama 41: Final QA ve 1.0 sürüm hazırlığı [finalize-v1]"
+          git push origin HEAD:stage/41-final-qa-v1
