@@ -126,35 +126,6 @@ async function downloadAsset(asset) {
   return archivePath;
 }
 
-function safeManifestExecutable(value) {
-  if (typeof value !== "string" || !value || isAbsolute(value)) {
-    return null;
-  }
-  const parts = value.split(/[\\/]+/);
-  if (parts.some((part) => !part || part === "." || part === "..")) {
-    return null;
-  }
-  const executable = join(runtimeDirectory, ...parts);
-  return existsSync(executable) ? executable : null;
-}
-
-async function existingRuntimeMatches(target, asset) {
-  if (!existsSync(manifestPath)) {
-    return false;
-  }
-  try {
-    const manifest = JSON.parse(await readFile(manifestPath, "utf8"));
-    return (
-      manifest.target === target &&
-      manifest.asset === asset.name &&
-      manifest.digest === asset.digest &&
-      safeManifestExecutable(manifest.executableRelativePath) !== null
-    );
-  } catch {
-    return false;
-  }
-}
-
 async function discoverRuntimeExecutable(target) {
   const windows = target.includes("windows");
   const directories = windows
@@ -230,12 +201,8 @@ async function main() {
   const target = process.env.PYTHON_FARMING_RUNTIME_TARGET ?? hostTarget();
   const assets = await releaseAssets();
   const asset = selectAsset(assets, target);
-  if (await existingRuntimeMatches(target, asset)) {
-    console.log(`Portable Python hazır: ${target} (${asset.name})`);
-    return;
-  }
-
   const archivePath = await downloadAsset(asset);
+
   await rm(runtimeDirectory, { recursive: true, force: true });
   await mkdir(runtimeDirectory, { recursive: true });
   execFileSync("tar", ["-xzf", archivePath, "-C", runtimeDirectory], { stdio: "inherit" });
