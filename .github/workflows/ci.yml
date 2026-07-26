@@ -79,3 +79,59 @@ jobs:
       - name: Run locked Rust tests
         working-directory: src-tauri
         run: cargo test --all-targets --locked -q
+
+  tauri-bundle-smoke:
+    name: Linux Tauri bundle smoke
+    needs:
+      - frontend
+      - rust-runtime
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install Linux bundle dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            file \
+            libxdo-dev \
+            libssl-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            patchelf \
+            xdg-utils >/dev/null
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Build Debian bundle
+        run: npm run tauri:build -- --bundles deb
+
+      - name: Verify Debian artifact
+        shell: bash
+        run: |
+          shopt -s nullglob
+          bundles=(src-tauri/target/release/bundle/deb/*.deb)
+          if [ "${#bundles[@]}" -ne 1 ]; then
+            echo "Expected exactly one .deb bundle, found ${#bundles[@]}."
+            exit 1
+          fi
+          test -s "${bundles[0]}"
+          echo "Verified bundle: ${bundles[0]}"
