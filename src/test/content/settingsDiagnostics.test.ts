@@ -81,7 +81,7 @@ describe("settings and system diagnostics", () => {
   it("shows runtime, limits, progress and non-destructive troubleshooting", () => {
     expect(settingsPage).toContain("Python çalışma motoru");
     expect(settingsPage).toContain("Uygulama ve ortam");
-    expect(settingsPage).toContain("Çalıştırma limitleri");
+    expect(settingsPage).toContain("İzolasyon ve çalıştırma limitleri");
     expect(settingsPage).toContain("İlerleme kaydı");
     expect(settingsPage).toContain("PYTHON_FARMING_PYTHON");
     expect(settingsPage).toContain("Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez");
