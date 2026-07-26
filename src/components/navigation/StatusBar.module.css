@@ -11,18 +11,37 @@
   font-variant-numeric: tabular-nums;
 }
 
-.ready {
+.runtime {
   display: inline-flex;
   align-items: center;
   gap: 7px;
   color: var(--color-text-muted);
 }
 
-.ready i {
+.runtime i {
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  background: var(--color-text-dim);
+}
+
+.runtime[data-status="ready"] i {
   background: var(--color-success);
+}
+
+.runtime[data-status="checking"] i {
+  background: var(--color-accent);
+  animation: runtimePulse 900ms ease-in-out infinite alternate;
+}
+
+.runtime[data-status="offline"] i,
+.runtime[data-status="error"] i {
+  background: #e06c75;
+}
+
+@keyframes runtimePulse {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
 }
 
 .spacer {

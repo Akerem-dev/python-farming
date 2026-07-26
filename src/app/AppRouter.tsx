@@ -9,6 +9,11 @@ const WorkspacePage = lazy(async () => {
   return { default: module.WorkspacePage };
 });
 
+const SettingsPage = lazy(async () => {
+  const module = await import("../pages/SettingsPage");
+  return { default: module.SettingsPage };
+});
+
 function getCurrentRoute(): string {
   const value = window.location.hash.replace(/^#/, "");
   return value || routes.home;
@@ -23,6 +28,10 @@ function getRouteLabel(route: string) {
     return "Kod Alanı";
   }
 
+  if (route === routes.settings) {
+    return "Ayarlar ve Sistem Tanılama";
+  }
+
   return "Sayfa bulunamadı";
 }
 
@@ -30,7 +39,7 @@ export function navigate(route: AppRoute): void {
   window.location.hash = route;
 }
 
-function WorkspaceLoadingState() {
+function RouteLoadingState({ label }: { label: string }) {
   return (
     <div
       role="status"
@@ -45,7 +54,7 @@ function WorkspaceLoadingState() {
         color: "var(--color-text-muted)",
       }}
     >
-      Çalışma alanı yükleniyor…
+      {label} yükleniyor…
     </div>
   );
 }
@@ -75,8 +84,14 @@ export function AppRouter() {
     page = <HomePage />;
   } else if (route === routes.workspace) {
     page = (
-      <Suspense fallback={<WorkspaceLoadingState />}>
+      <Suspense fallback={<RouteLoadingState label="Çalışma alanı" />}>
         <WorkspacePage />
+      </Suspense>
+    );
+  } else if (route === routes.settings) {
+    page = (
+      <Suspense fallback={<RouteLoadingState label="Sistem tanılama" />}>
+        <SettingsPage />
       </Suspense>
     );
   } else {
