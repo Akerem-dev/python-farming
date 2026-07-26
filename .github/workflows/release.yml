@@ -21,6 +21,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Validate manifest versions and triggering tag
+        shell: bash
+        run: |
+          package_version="$(node -p "require('./package.json').version")"
+          tauri_version="$(node -p "require('./src-tauri/tauri.conf.json').version")"
+          cargo_version="$(sed -n '0,/^version = /s/^version = "\([^"]*\)"/\1/p' src-tauri/Cargo.toml)"
+
+          if [ "$package_version" != "$tauri_version" ] || [ "$package_version" != "$cargo_version" ]; then
+            echo "Version mismatch: package=$package_version tauri=$tauri_version cargo=$cargo_version"
+            exit 1
+          fi
+
+          if [ "$GITHUB_REF_TYPE" = "tag" ]; then
+            expected_tag="v${package_version}"
+            if [ "$GITHUB_REF_NAME" != "$expected_tag" ]; then
+              echo "Tag $GITHUB_REF_NAME does not match application version $expected_tag."
+              exit 1
+            fi
+          fi
+
       - name: Install Linux dependencies
         run: |
           sudo apt-get update -qq
@@ -126,7 +146,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           APPLE_SIGNING_IDENTITY: ${{ startsWith(matrix.platform, 'macos') && '-' || '' }}
         with:
-          tagName: v__VERSION__
+          tagName: ${{ github.ref_type == 'tag' && github.ref_name || 'v__VERSION__' }}
           releaseName: Python Farming v__VERSION__
           releaseBody: |
             Python Farming geliştirme ön izlemesi.
