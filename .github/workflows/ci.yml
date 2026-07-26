@@ -32,12 +32,12 @@ jobs:
         with:
           python-version: '3.12'
       - name: Apply integration patch
-        run: python scripts/patch_stage31.py
+        run: python scripts/patch_stage31_v2.py
       - name: Restore CI and remove temporary tools
         run: |
           git fetch origin main --depth=1
           git checkout origin/main -- .github/workflows/ci.yml
-          rm -f scripts/patch_stage31.py .github/workflows/patch-stage31.yml
+          rm -f scripts/patch_stage31.py scripts/patch_stage31_v2.py .github/workflows/patch-stage31.yml
       - name: Commit product integration
         run: |
           git config user.name "github-actions[bot]"
