@@ -2,9 +2,11 @@ import { runtimeProtocolVersion } from "./runtimeProtocol";
 
 export const runtimeLimits = {
   protocolVersion: runtimeProtocolVersion,
-  maxSourceBytes: 128 * 1024,
-  maxStdinBytes: 64 * 1024,
-  maxOutputBytes: 256 * 1024,
+  maxSingleFileSourceBytes: 128 * 1024,
+  maxProjectSourceBytes: 256 * 1024,
+  maxStdinContentBytes: 64 * 1024,
+  maxOutputBytesPerStream: 256 * 1024,
+  maxCombinedOutputBytes: 512 * 1024,
   minTimeoutMs: 250,
   maxTimeoutMs: 10_000,
 } as const;
