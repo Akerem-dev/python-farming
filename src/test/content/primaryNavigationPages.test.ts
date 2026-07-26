@@ -8,7 +8,9 @@ function read(path: string) {
 
 const routes = read("src/app/routes.ts");
 const router = read("src/app/AppRouter.tsx");
+const shell = read("src/layouts/AppShell.tsx");
 const rail = read("src/components/navigation/PrimaryRail.tsx");
+const curriculumStore = read("src/features/curriculum/store/curriculumStore.ts");
 const tasksPage = read("src/pages/TasksPage/TasksPage.tsx");
 const projectsPage = read("src/pages/ProjectsPage/ProjectsPage.tsx");
 const progressPage = read("src/pages/ProgressPage/ProgressPage.tsx");
@@ -47,6 +49,34 @@ describe("primary navigation pages", () => {
     expect(projectsPage).toContain("lesson.editor.files?.length");
     expect(projectsPage).toContain("lesson.validation.checks.filter");
     expect(projectsPage).toContain("navigate(routes.workspace)");
+  });
+
+  it("waits for persisted progress before deriving task, project or progress state", () => {
+    expect(tasksPage).toContain('!catalog || progressStatus !== "ready"');
+    expect(projectsPage).toContain('!catalog || progressStatus !== "ready"');
+    expect(progressPage).toContain('!catalog || progressStatus !== "ready"');
+    expect(tasksPage).toContain('progressStatus === "error"');
+    expect(projectsPage).toContain('progressStatus === "error"');
+    expect(progressPage).toContain('progressStatus === "error"');
+  });
+
+  it("preserves an explicitly selected task while workspace initialization resumes", () => {
+    expect(curriculumStore).toContain('type CurriculumSelectionIntent = "resume" | "explicit"');
+    expect(curriculumStore).toContain('selectionIntent: "explicit"');
+    expect(curriculumStore).toContain('state.selectionIntent === "explicit"');
+    expect(curriculumStore).toContain('return { selectionIntent: "resume" }');
+  });
+
+  it("moves focus after lazy page shells mount", () => {
+    expect(shell).toContain("useEffect(() =>");
+    expect(shell).toContain('getElementById("main-content")?.focus()');
+    expect(shell).toContain("requestAnimationFrame");
+    expect(shell).toContain("cancelAnimationFrame");
+  });
+
+  it("exposes the active task filter to assistive technology", () => {
+    expect(tasksPage).toContain('role="group"');
+    expect(tasksPage).toContain("aria-pressed={filter === value}");
   });
 
   it("derives progress from SQLite-backed progress and curriculum stores", () => {
