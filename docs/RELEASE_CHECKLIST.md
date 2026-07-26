@@ -1,0 +1,115 @@
+# Python Farming Release Kontrol Listesi
+
+Bu liste her masaüstü sürümünden önce uygulanmalıdır. Mevcut `0.1.x` hattı geliştirme ön izlemesidir.
+
+## 1. Sürüm numarası
+
+Aşağıdaki üç dosyada aynı SemVer değeri bulunmalıdır:
+
+- `package.json`
+- `src-tauri/tauri.conf.json`
+- `src-tauri/Cargo.toml`
+
+Örnek: `0.1.0`.
+
+## 2. Temiz çalışma alanı
+
+```bash
+git switch main
+git pull origin main
+npm ci
+```
+
+`git status` yalnız bilinçli release değişikliklerini göstermelidir.
+
+## 3. Otomatik kalite kapısı
+
+```bash
+npm run verify
+```
+
+Beklenen sonuçlar:
+
+- TypeScript typecheck başarılı
+- Bütün Vitest unit/content/integration testleri başarılı
+- Production frontend build başarılı
+- Rust format kontrolü başarılı
+- Bütün Rust hedef testleri `--locked` ile başarılı
+
+## 4. Yerel masaüstü smoke testi
+
+```bash
+npm run tauri:dev
+```
+
+En az şu akışlar elle denenmelidir:
+
+- Uygulamanın ilk açılışı
+- Mevcut SQLite ilerlemesinin yüklenmesi
+- Tek dosyalı Python görevi
+- Çok dosyalı Python projesi
+- `stdin` kullanan görev
+- Hata Avcısı görevi
+- Async veya SQLite doğrulayıcısı
+- Uygulamayı kapatıp yeniden açınca ilerlemenin korunması
+
+## 5. Yerel production paketi
+
+```bash
+npm run tauri:build
+```
+
+`src-tauri/target/release/bundle` altındaki installer açılmalı ve en az bir temiz kullanıcı profili üzerinde denenmelidir.
+
+## 6. Veri uyumluluğu
+
+- Yeni sürüm eski SQLite ilerleme verisini açabilmeli.
+- Veri tabanı tablosu veya anlamı değiştiyse migration testi eklenmeli.
+- Güncelleme, XP ve tamamlanan dersleri sıfırlamamalı.
+
+## 7. GitHub release workflow
+
+GitHub üzerinde **Actions → Release → Run workflow** seçilir.
+
+Workflow:
+
+- kalite kontrollerini tekrar çalıştırır,
+- Windows x64 paketi üretir,
+- Linux x64 paketi üretir,
+- macOS Apple Silicon paketi üretir,
+- macOS Intel paketi üretir,
+- Tauri sürümünden `v__VERSION__` etiketi oluşturur,
+- taslak ve ön sürüm GitHub Release hazırlar.
+
+## 8. İmzalama durumu
+
+Mevcut ön izleme hattında:
+
+- macOS paketleri ad-hoc `-` kimliğiyle imzalanır,
+- macOS notarizasyonu yapılmaz,
+- Windows Authenticode imzası yoktur.
+
+Bu nedenle taslak release herkese açık yayımlanmadan önce platform uyarıları ve kurulum davranışı elle kontrol edilmelidir.
+
+Genel kullanıma açık kararlı sürüm öncesinde Apple Developer ID/notarizasyon ve Windows kod imzalama sırları GitHub Actions'a eklenmelidir.
+
+## 9. Taslak release incelemesi
+
+- Sürüm adı ve etiketi doğru mu?
+- Dört platform çıktısı yüklendi mi?
+- Dosya adlarında sürüm ve mimari anlaşılır mı?
+- Release notları gerçek değişiklikleri anlatıyor mu?
+- Bilinen sorunlar açıkça yazıldı mı?
+- Installer boyutları makul mü?
+- İndirilen paketlerin hash değerleri kaydedildi mi?
+
+## 10. Yayın ve geri dönüş
+
+Taslak onaylandıktan sonra release yayımlanır.
+
+Kritik hata görülürse:
+
+1. Release tekrar taslağa alınır veya kaldırılır.
+2. Etkilenen sürümün bilinen sorun notu eklenir.
+3. Düzeltme patch sürümü hazırlanır.
+4. Kullanıcı SQLite verisini silen bir geri dönüş uygulanmaz.
