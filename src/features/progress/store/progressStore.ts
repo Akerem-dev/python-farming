@@ -14,6 +14,7 @@ interface ProgressState extends ProgressSnapshot {
   loadProgress: () => Promise<ProgressSnapshot | null>;
   completeLesson: (lessonId: string, xpReward: number) => Promise<ProgressSnapshot | null>;
   rememberLesson: (lessonId: string) => Promise<void>;
+  replaceSnapshot: (snapshot: ProgressSnapshot) => void;
 }
 
 const initialSnapshot: ProgressSnapshot = {
@@ -23,6 +24,9 @@ const initialSnapshot: ProgressSnapshot = {
 };
 
 function messageFromError(error: unknown) {
+  if (typeof error === "string" && error.trim()) {
+    return error;
+  }
   return error instanceof Error ? error.message : "İlerleme kaydedilemedi.";
 }
 
@@ -62,5 +66,9 @@ export const useProgressStore = create<ProgressState>((set) => ({
     } catch (error) {
       set({ status: "error", errorMessage: messageFromError(error) });
     }
+  },
+
+  replaceSnapshot: (snapshot) => {
+    set({ ...snapshot, status: "ready", errorMessage: null });
   },
 }));
