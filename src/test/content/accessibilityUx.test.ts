@@ -87,7 +87,11 @@ describe("accessibility and first-run UX contract", () => {
     expect(globalStyles).toContain("summary:focus-visible");
     expect(statusBar).toContain('aria-label="Uygulama durumu"');
     expect(statusBar).toContain('role="status"');
-    expect(statusBar).toContain("Python runtime: otomatik algılama");
+    expect(statusBar).toContain('aria-live="polite"');
+    expect(statusBar).toContain("void checkDiagnostics()");
+    expect(statusBar).toContain("Python hazır");
+    expect(statusBar).toContain("Python bulunamadı");
+    expect(statusBar).toContain("Runtime hatası");
     expect(motionStyles).toContain("prefers-reduced-motion: reduce");
     expect(motionStyles).toContain("animation-duration: 0.01ms");
     expect(motionStyles).toContain("transition-duration: 0.01ms");
