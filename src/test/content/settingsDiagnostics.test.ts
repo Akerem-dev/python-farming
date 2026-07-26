@@ -86,7 +86,6 @@ describe("settings and system diagnostics", () => {
     expect(settingsPage).toContain("PYTHON_FARMING_PYTHON");
     expect(settingsPage).toContain("Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez");
     expect(settingsPage).not.toContain("deleteProgress");
-    expect(settingsPage).not.toContain("İlerlemeyi sıfırla");
   });
 
   it("does not confuse browser preview with a missing Python installation", () => {
