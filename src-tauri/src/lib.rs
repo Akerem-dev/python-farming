@@ -20,6 +20,9 @@ pub fn run() {
             commands::progress_backup::create_progress_backup,
             commands::progress_backup::restore_progress_backup,
             commands::progress_backup::delete_progress_backup,
+            commands::progress_portability::export_progress_data,
+            commands::progress_portability::import_progress_data,
+            commands::progress_portability::reset_progress_data,
         ])
         .run(tauri::generate_context!())
         .expect("Python Farming başlatılırken kritik bir hata oluştu");
