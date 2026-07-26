@@ -33,7 +33,7 @@ describe("release readiness contract", () => {
   it("keeps JavaScript, Tauri and Rust versions aligned", () => {
     const cargoVersion = cargoToml.match(/^version = "([^"]+)"$/m)?.[1];
 
-    expect(packageJson.version).toBe("0.1.0");
+    expect(packageJson.version).toBe("1.0.0");
     expect(tauriConfig.version).toBe(packageJson.version);
     expect(cargoVersion).toBe(packageJson.version);
     expect(packageLock.version).toBe(packageJson.version);
@@ -75,7 +75,7 @@ describe("release readiness contract", () => {
   });
 
   it("documents the real completed product and clean install", () => {
-    expect(readme).toContain("39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
+    expect(readme).toContain("41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
     expect(readme).toContain("npm ci");
     expect(readme).toContain("npm run verify");
     expect(readme).toContain("docs/RELEASE_CHECKLIST.md");

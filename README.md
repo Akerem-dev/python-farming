@@ -4,9 +4,9 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 
 ## Proje durumu
 
-**39 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
+**41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
 
-Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
+`1.0.0`, doğrulanmış yerel Python çalışma motoru, Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları, mezuniyet projeleri, güvenli yerel ilerleme yönetimi ve davranışsal görev doğrulama sistemiyle ilk kararlı kaynak sürümüdür. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
 ## Çalışan sistemler
 
@@ -29,7 +29,7 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - Sürümlü JSON ile ilerleme dışa aktarma, içe alma ve güvenli sıfırlama
 - Başlangıç, Orta Seviye ve İleri Seviye bitirme projeleri
 - GitHub Actions üzerinde frontend ve Rust CI
-- Windows, Linux ve macOS için taslak release üretim akışı
+- Windows, Linux ve macOS için sürüm kontrollü dry-run ve taslak release üretim akışı
 
 ## Teknoloji yığını
 
@@ -113,16 +113,12 @@ Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçi
 
 ## Release akışı
 
-`.github/workflows/release.yml` workflow'u manuel çalıştırıldığında şu paketleri üretir:
+`.github/workflows/release.yml` iki güvenli mod sunar:
 
-- Windows x64
-- Linux x64
-- macOS Apple Silicon
-- macOS Intel
+- Manuel `workflow_dispatch` çalıştırması Windows x64, Linux x64, macOS Apple Silicon ve macOS Intel paketlerini dry-run artifact olarak üretir; GitHub Release oluşturmaz.
+- Yalnız bütün manifest sürümleriyle eşleşen `vX.Y.Z` etiketi taslak ve kararlı GitHub Release oluşturabilir.
 
-Workflow önce bütün kalite kontrollerini çalıştırır, ardından GitHub üzerinde **taslak ve ön sürüm** release oluşturur. macOS paketleri sertifika bulunmadığında ad-hoc imzalanır. Windows kod imzası ve macOS notarizasyonu henüz yapılandırılmadığı için taslak release incelenmeden yayımlanmamalıdır.
-
-Ayrıntılı adımlar için [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md) dosyasını kullanın.
+Her platform çıktısıyla birlikte dosya adı, boyut ve SHA-256 değerlerini içeren bir release manifesti üretilir. `v1.0.0` etiketi oluşturulmadan önce `docs/RELEASE_CHECKLIST.md` ve `docs/FINAL_QA_1.0.md` uygulanmalıdır. Windows Authenticode imzası ile macOS Developer ID/notarizasyon sırları bu repository'de yapılandırılmamıştır; bu nedenle installer'lar genel dağıtımdan önce platform uyarıları ve temiz makine davranışı açısından ayrıca doğrulanmalıdır.
 
 ## Yerel veri
 
@@ -136,14 +132,17 @@ Normal `git pull`, `npm ci` veya uygulama güncellemesi ilerleme verisini ve yed
 
 Timeout veya çalışma alanı kotası aşıldığında yalnız ana Python süreci değil, Unix process group ya da Windows process tree bütünü sonlandırılır. Çalışma alanı toplam 16 MB ve 512 dosyayla sınırlıdır; stdout ve stderr de ayrı ayrı sınırlandırılır. Ayrıntılı tehdit modeli ve doğrulama adımları için [`docs/RUNTIME_SECURITY.md`](docs/RUNTIME_SECURITY.md) dosyasına bakın.
 
-Bu katman eğitim uygulamasındaki kazara veya basit kötüye kullanımlara karşı savunma derinliği sağlar. Python audit hook'u tek başına işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama genel amaçlı, düşmanca kod barındırma servisi olarak kullanılmamalıdır. Kod imzalama, notarizasyon ve platform paket güvenliği sonraki sağlamlaştırma aşamalarında tamamlanacaktır.
+Bu katman eğitim uygulamasındaki kazara veya basit kötüye kullanımlara karşı savunma derinliği sağlar. Python audit hook'u tek başına işletim sistemi veya sanal makine seviyesinde güven sınırı değildir; uygulama genel amaçlı, düşmanca kod barındırma servisi olarak kullanılmamalıdır. Windows Authenticode imzası ve macOS Developer ID/notarizasyonu dağıtım hesabına bağlı operasyonel adımlardır; kaynak kodu ve unsigned/ad-hoc installer üretimi doğrulanmış olsa da herkese açık dağıtım öncesinde bu imzalama adımları tamamlanmalıdır.
 
 ## Sürümleme
 
-Uygulama sürümü aşağıdaki üç dosyada aynı tutulmalıdır:
+Uygulama sürümü aşağıdaki kaynaklarda aynı tutulur:
 
 - `package.json`
+- `package-lock.json`
 - `src-tauri/tauri.conf.json`
 - `src-tauri/Cargo.toml`
+- `src-tauri/Cargo.lock`
+- `src/app/appConfig.ts`
 
-Release workflow'u GitHub etiketini Tauri uygulama sürümünden üretir.
+Release workflow'u sürüm uyuşmazlığında veya etiketi `v<manifest-version>` biçimiyle eşleşmediğinde yayını durdurur. 1.0 sürüm özeti için `docs/RELEASE_NOTES_1.0.0.md` dosyasına bakın.
