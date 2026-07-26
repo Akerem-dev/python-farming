@@ -58,8 +58,9 @@ describe("primary navigation pages", () => {
   });
 
   it("keeps the production settings and diagnostics page reachable", () => {
-    expect(settingsPage).toContain("SettingsPage");
-    expect(settingsPage).toContain("AppShell activeRoute={routes.settings}");
+    expect(settingsPage).toContain("export function SettingsPage");
+    expect(settingsPage).toContain("activeRoute={routes.settings}");
+    expect(settingsPage).toContain('context="Ayarlar / Sistem Tanılama"');
     expect(router).toContain('<SettingsPage />');
   });
 });
