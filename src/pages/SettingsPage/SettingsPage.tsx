@@ -7,6 +7,7 @@ import { useProgressStore } from "../../features/progress/store/progressStore";
 import { formatBytes, runtimeLimits } from "../../runtime/runtimeLimits";
 import { runtimeProtocolVersion } from "../../runtime/runtimeProtocol";
 import { AppShell } from "../../layouts/AppShell";
+import { ProgressBackupPanel } from "./ProgressBackupPanel";
 import styles from "./SettingsPage.module.css";
 
 async function copyText(value: string) {
@@ -325,6 +326,8 @@ export function SettingsPage() {
               kaydı silmez. Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez.
             </p>
           </article>
+
+          <ProgressBackupPanel />
         </section>
 
         {snapshot?.diagnostics.length ? (
