@@ -14,58 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rust-diagnostic:
-    name: Capture Rust diagnostic
-    if: github.event_name == 'pull_request' && github.head_ref == 'stage/38-portable-python-runtime'
-    runs-on: ubuntu-22.04
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout source branch
-        uses: actions/checkout@v7
-        with:
-          ref: ${{ github.head_ref }}
-          fetch-depth: 0
-
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update -qq
-          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq \
-            libwebkit2gtk-4.1-dev \
-            build-essential \
-            file \
-            libxdo-dev \
-            libssl-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev >/dev/null
-
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Rust cache
-        uses: swatinem/rust-cache@v2
-        with:
-          workspaces: "./src-tauri -> target"
-
-      - name: Capture compiler output once
-        shell: bash
-        run: |
-          if [ -f rust-diagnostic.txt ]; then
-            echo "Diagnostic already captured."
-            exit 0
-          fi
-          set +e
-          (cd src-tauri && cargo test --all-targets --locked) > "${RUNNER_TEMP}/rust-full.txt" 2>&1
-          code=$?
-          set -e
-          tail -n 200 "${RUNNER_TEMP}/rust-full.txt" > rust-diagnostic.txt
-          printf '\nexit_code=%s\n' "$code" >> rust-diagnostic.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rust-diagnostic.txt
-          git commit -m "chore(runtime): capture Rust diagnostic"
-          git push origin HEAD:${{ github.head_ref }}
-
   frontend:
     name: Frontend checks
     runs-on: ubuntu-latest
