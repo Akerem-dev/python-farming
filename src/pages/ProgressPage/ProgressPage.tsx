@@ -35,7 +35,7 @@ export function ProgressPage() {
     [catalog, completedLessonIds, lastLessonId],
   );
 
-  if (!catalog) {
+  if (!catalog || progressStatus !== "ready") {
     const message =
       curriculumStatus === "error"
         ? curriculumError
