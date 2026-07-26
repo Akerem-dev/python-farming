@@ -228,11 +228,8 @@ fn execute_python_sync(
         }
     }
 
-    let wait_result = wait_for_sandboxed_child(
-        &mut child,
-        &workspace,
-        Duration::from_millis(timeout_ms),
-    );
+    let wait_result =
+        wait_for_sandboxed_child(&mut child, &workspace, Duration::from_millis(timeout_ms));
     let stdout = stdout_reader.join().unwrap_or_else(|_| CapturedOutput {
         text: String::new(),
         truncated: false,
@@ -291,8 +288,7 @@ fn execute_python_sync(
         diagnostics.push(RuntimeDiagnostic {
             severity: "warning".to_string(),
             code: "OUTPUT_TRUNCATED".to_string(),
-            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı."
-                .to_string(),
+            message: "Terminal çıktısı güvenli boyut sınırını aştığı için kısaltıldı.".to_string(),
         });
     }
 
@@ -418,6 +414,8 @@ mod tests {
         assert!(sandbox_policy_violation(
             "PermissionError: Ders çalışma alanında ağ erişimi kapalıdır."
         ));
-        assert!(!sandbox_policy_violation("PermissionError: kullanıcı hatası"));
+        assert!(!sandbox_policy_violation(
+            "PermissionError: kullanıcı hatası"
+        ));
     }
 }

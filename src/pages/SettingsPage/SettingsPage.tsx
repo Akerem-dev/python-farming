@@ -109,6 +109,7 @@ export function SettingsPage() {
   const browserPreview = snapshot?.environment === "browser-preview";
   const runtimeOffline =
     diagnosticsStatus === "offline" && snapshot?.environment === "desktop";
+  const security = snapshot?.runtime?.security;
   const statusLabel =
     diagnosticsStatus === "checking"
       ? "Kontrol ediliyor"
@@ -142,7 +143,7 @@ export function SettingsPage() {
             <h1>Python ortamını ve uygulama sağlığını kontrol et</h1>
             <p>
               Bu ekran kullanıcı kodunu çalıştırmadan gömülü veya sistem Python yorumlayıcısını,
-              uygulama sürümünü, güvenlik limitlerini ve ilerleme kaydını inceler.
+              uygulama sürümünü, etkin izolasyon politikasını ve ilerleme kaydını inceler.
             </p>
           </div>
           <div className={styles.actions}>
@@ -273,10 +274,42 @@ export function SettingsPage() {
             <header className={styles.panelHeader}>
               <div>
                 <span>Güvenlik sözleşmesi</span>
-                <h2>Çalıştırma limitleri</h2>
+                <h2>İzolasyon ve çalıştırma limitleri</h2>
               </div>
             </header>
             <dl className={styles.details}>
+              <div>
+                <dt>Politika sürümü</dt>
+                <dd>v{security?.policyVersion ?? "—"}</dd>
+              </div>
+              <div>
+                <dt>Dosya sistemi</dt>
+                <dd>{security?.filesystemScope === "workspace-only" ? "Yalnız çalışma alanı" : "—"}</dd>
+              </div>
+              <div>
+                <dt>Ağ erişimi</dt>
+                <dd>{security?.networkAccess === "blocked" ? "Kapalı" : "—"}</dd>
+              </div>
+              <div>
+                <dt>Alt süreç erişimi</dt>
+                <dd>{security?.subprocessAccess === "blocked" ? "Kapalı" : "—"}</dd>
+              </div>
+              <div>
+                <dt>Çevre izolasyonu</dt>
+                <dd>{security?.environmentIsolated ? "Etkin" : "—"}</dd>
+              </div>
+              <div>
+                <dt>Süreç ağacı sonlandırma</dt>
+                <dd>{security?.processTreeTermination ? "Etkin" : "—"}</dd>
+              </div>
+              <div>
+                <dt>Çalışma alanı kotası</dt>
+                <dd>{security ? formatBytes(security.maxWorkspaceBytes) : "—"}</dd>
+              </div>
+              <div>
+                <dt>Azami çalışma alanı dosyası</dt>
+                <dd>{security?.maxWorkspaceFiles ?? "—"}</dd>
+              </div>
               <div>
                 <dt>Tek dosya kaynak kodu</dt>
                 <dd>{formatBytes(runtimeLimits.maxSingleFileSourceBytes)}</dd>
@@ -303,9 +336,10 @@ export function SettingsPage() {
               </div>
             </dl>
             <p className={styles.note}>
-              Girdi sınırı satır içeriklerinin toplamını ölçer; satır ayraçları çalışma sırasında
-              ayrıca eklenir. Stdout ve stderr ayrı ayrı sınırlandırılır. Limit aşılırsa süreç
-              durdurulur veya çıktı güvenli biçimde kısaltılır.
+              Tek ve çok dosyalı görevler aynı audit politikasını kullanır. Çalışma alanı dışı
+              dosya erişimi, ağ, alt süreç, fork, sembolik bağlantı ve yerel kütüphane yükleme
+              reddedilir. Timeout veya kota aşımında bütün süreç ağacı durdurulur; stdout ve stderr
+              ayrı ayrı sınırlandırılır.
             </p>
           </article>
 
