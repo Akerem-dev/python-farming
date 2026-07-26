@@ -73,7 +73,7 @@ export function TasksPage() {
     navigate(routes.workspace);
   };
 
-  if (!catalog) {
+  if (!catalog || progressStatus !== "ready") {
     const message =
       curriculumStatus === "error"
         ? curriculumError
@@ -123,9 +123,10 @@ export function TasksPage() {
               <span className={styles.eyebrow}>Görev listesi</span>
               <h2>{filteredRows.length} görev gösteriliyor</h2>
             </div>
-            <div className={styles.filters} aria-label="Görev filtresi">
+            <div className={styles.filters} aria-label="Görev filtresi" role="group">
               {(["available", "completed", "all"] as TaskFilter[]).map((value) => (
                 <button
+                  aria-pressed={filter === value}
                   className={styles.filterButton}
                   data-active={filter === value ? "" : undefined}
                   key={value}
