@@ -15,12 +15,14 @@ const backupPanel = read("src/pages/SettingsPage/ProgressBackupPanel.tsx");
 const settingsPage = read("src/pages/SettingsPage/SettingsPage.tsx");
 
 describe("local progress backup contract", () => {
-  it("registers dedicated list and create commands without exposing restore yet", () => {
+  it("registers list, create, restore and delete commands", () => {
     expect(rustCommands).toContain("pub mod progress_backup");
     expect(rustLib).toContain("commands::progress_backup::list_progress_backups");
     expect(rustLib).toContain("commands::progress_backup::create_progress_backup");
-    expect(rustLib).not.toContain("restore_progress_backup");
-    expect(rustLib).not.toContain("delete_progress_backup");
+    expect(rustLib).toContain("commands::progress_backup::restore_progress_backup");
+    expect(rustLib).toContain("commands::progress_backup::delete_progress_backup");
+    expect(progressService).toContain('"restore_progress_backup"');
+    expect(progressService).toContain('"delete_progress_backup"');
   });
 
   it("creates, verifies and atomically publishes a consistent SQLite snapshot", () => {
@@ -31,8 +33,28 @@ describe("local progress backup contract", () => {
     expect(rustBackup).toContain('query_row("PRAGMA quick_check"');
     expect(rustBackup).toContain("Oluşturulan ilerleme yedeği");
     expect(rustBackup).toContain('with_extension("db.tmp")');
-    expect(rustBackup).toContain("fs::remove_file(&temporary_path)");
+    expect(rustBackup).toContain("fs::remove_file");
     expect(rustBackup).toContain("fs::rename(&temporary_path, &backup_path)");
+  });
+
+  it("restores through a verified staged copy and preserves a rollback path", () => {
+    expect(rustBackup).toContain("validated_backup_path");
+    expect(rustBackup).toContain("ensure_compatible_database");
+    expect(rustBackup).toContain('with_extension("db.restore.tmp")');
+    expect(rustBackup).toContain('with_extension("db.restore.previous")');
+    expect(rustBackup).toContain("Geri yükleme öncesi güvenlik yedeği");
+    expect(rustBackup).toContain("restore_previous_database");
+    expect(rustBackup).toContain("remove_sqlite_sidecars");
+    expect(rustBackup).toContain("BACKUP_OPERATION_LOCK");
+    expect(rustBackup).toContain("relative.components().count() != 1");
+  });
+
+  it("supports deliberate deletion without allowing arbitrary filesystem paths", () => {
+    expect(rustBackup).toContain("delete_progress_backup_sync");
+    expect(rustBackup).toContain("Seçilen ilerleme yedeği silinemedi");
+    expect(rustBackup).toContain("rejects_path_traversal_and_unowned_backup_ids");
+    expect(rustBackup).toContain("../progress-1722000000123-42.db");
+    expect(rustBackup).toContain("backup_timestamp(backup_id).is_none()");
   });
 
   it("enforces bounded retention without deleting the new backup after clock rollback", () => {
@@ -48,14 +70,15 @@ describe("local progress backup contract", () => {
     expect(progressService).toContain("maxTotalBytes: 25 * 1024 * 1024");
   });
 
-  it("keeps browser preview read-only and exposes every integrity failure", () => {
+  it("requires explicit confirmation, refreshes progress and blocks corrupt restores", () => {
     expect(progressService).toContain("available: false");
     expect(progressService).toContain("yalnız Tauri masaüstü uygulamasında");
     expect(backupPanel).toContain('progressStatus !== "ready"');
-    expect(backupPanel).toContain("İlerleme yedeği oluşturuldu ve bütünlük kontrolünden geçti");
-    expect(backupPanel).toContain("corruptBackupCount");
-    expect(backupPanel).toContain("Tüm yedeklerin bütünlüğü");
-    expect(backupPanel).toContain("yerel yedek bütünlük kontrolünden geçemedi");
+    expect(backupPanel).toContain("Geri yüklemeyi onayla");
+    expect(backupPanel).toContain("Silmeyi onayla");
+    expect(backupPanel).toContain("loadProgress");
+    expect(backupPanel).toContain('backup.integrityStatus === "ok"');
+    expect(backupPanel).toContain("önce mevcut kayıt otomatik olarak güvenli bir yedeğe");
     expect(backupPanel).toContain('role="alert"');
     expect(settingsPage).toContain("<ProgressBackupPanel />");
   });
