@@ -6,6 +6,7 @@ import {
   progressTransferPolicy,
   resetProgressData,
 } from "../../features/progress/services/progressPortabilityService";
+import { useProgressOperationStore } from "../../features/progress/store/progressOperationStore";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import type { ProgressExportResult } from "../../features/progress/portabilityTypes";
 import { isTauriEnvironment } from "../../runtime/runtimeClient";
@@ -35,6 +36,9 @@ function formatExportDate(value: number) {
 export function ProgressDataPanel() {
   const progressStatus = useProgressStore((state) => state.status);
   const loadProgress = useProgressStore((state) => state.loadProgress);
+  const activeOperation = useProgressOperationStore((state) => state.activeOperation);
+  const tryBeginOperation = useProgressOperationStore((state) => state.tryBeginOperation);
+  const finishOperation = useProgressOperationStore((state) => state.finishOperation);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<PortabilityStatus>("ready");
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +48,7 @@ export function ProgressDataPanel() {
   const [resetConfirmation, setResetConfirmation] = useState("");
 
   const desktopAvailable = isTauriEnvironment();
-  const busy = status === "exporting" || status === "importing" || status === "resetting";
+  const busy = activeOperation !== null;
   const actionDisabled = !desktopAvailable || progressStatus !== "ready" || busy;
 
   const refreshProgressAndBackups = async () => {
@@ -59,6 +63,9 @@ export function ProgressDataPanel() {
   };
 
   const exportData = async () => {
+    if (!tryBeginOperation("data-export")) {
+      return;
+    }
     setStatus("exporting");
     setError(null);
     setAnnouncement("");
@@ -70,10 +77,15 @@ export function ProgressDataPanel() {
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
+    } finally {
+      finishOperation("data-export");
     }
   };
 
   const importSelectedFile = async (file: File) => {
+    if (!tryBeginOperation("data-import")) {
+      return;
+    }
     setStatus("importing");
     setError(null);
     setAnnouncement("");
@@ -87,20 +99,25 @@ export function ProgressDataPanel() {
       const payload = await file.text();
       const result = await importProgressData(payload);
       const snapshot = await refreshProgressAndBackups();
+      if (result.snapshot.totalXp !== snapshot.totalXp) {
+        throw new Error("İçe aktarılan veri ile yeniden yüklenen SQLite kaydı eşleşmiyor.");
+      }
       setStatus("ready");
       setAnnouncement(
         `${snapshot.completedLessonIds.length} ders ve ${snapshot.totalXp} XP içe aktarıldı. Önceki kayıt otomatik güvenlik yedeğine alındı.`,
       );
-      if (result.snapshot.totalXp !== snapshot.totalXp) {
-        throw new Error("İçe aktarılan veri ile yeniden yüklenen SQLite kaydı eşleşmiyor.");
-      }
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
+    } finally {
+      finishOperation("data-import");
     }
   };
 
   const resetData = async () => {
+    if (!tryBeginOperation("data-reset")) {
+      return;
+    }
     setStatus("resetting");
     setError(null);
     setAnnouncement("");
@@ -123,6 +140,8 @@ export function ProgressDataPanel() {
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
+    } finally {
+      finishOperation("data-reset");
     }
   };
 
