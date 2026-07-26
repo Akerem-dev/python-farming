@@ -14,10 +14,12 @@ const rustLib = read("src-tauri/src/lib.rs");
 const portabilityService = read(
   "src/features/progress/services/progressPortabilityService.ts",
 );
+const operationStore = read(
+  "src/features/progress/store/progressOperationStore.ts",
+);
 const portabilityPanel = read("src/pages/SettingsPage/ProgressDataPanel.tsx");
 const backupPanel = read("src/pages/SettingsPage/ProgressBackupPanel.tsx");
 const settingsPage = read("src/pages/SettingsPage/SettingsPage.tsx");
-
 
 describe("progress portability and controlled reset contract", () => {
   it("registers dedicated export, import and reset commands", () => {
@@ -44,6 +46,20 @@ describe("progress portability and controlled reset contract", () => {
     expect(rustPortability).not.toContain("userCode");
   });
 
+  it("falls back across writable export directories", () => {
+    expect(rustPortability).toContain("fn export_directories");
+    expect(rustPortability).toContain("fn write_export_file");
+    expect(rustPortability).toContain("app.path().download_dir()");
+    expect(rustPortability).toContain("app.path().document_dir()");
+    expect(rustPortability).toContain('data_directory.join("exports")');
+    expect(rustPortability).toContain("for directory in export_directories(app)?");
+    expect(rustPortability).toContain("failures.push");
+    expect(rustPortability).toContain("continue;");
+    expect(rustPortability).toContain(
+      "Downloads, Documents veya uygulama veri klasörüne yazılamadı",
+    );
+  });
+
   it("validates imports before replacing SQLite progress", () => {
     expect(rustPortability).toContain("deny_unknown_fields");
     expect(rustPortability).toContain("MAX_IMPORTED_LESSONS");
@@ -55,10 +71,23 @@ describe("progress portability and controlled reset contract", () => {
     expect(rustPortability).toContain("transaction()");
     expect(rustPortability).toContain('execute("DELETE FROM lesson_progress"');
     expect(rustPortability).toContain('execute("DELETE FROM app_state"');
-    expect(rustPortability).toContain("transaction\n        .commit()");
+    expect(rustPortability).toContain(".commit()");
     expect(rustProgress).toContain("pub(super) fn read_snapshot");
     expect(rustBackup).toContain("pub(super) fn with_backup_lock");
     expect(rustBackup).toContain("pub(super) fn create_progress_backup_sync");
+  });
+
+  it("serializes every progress writer with backup and portability operations", () => {
+    expect(rustProgress).toContain("static PROGRESS_OPERATION_LOCK: Mutex<()>");
+    expect(rustProgress).toContain("pub(super) fn with_progress_lock");
+    expect(rustProgress).toContain(
+      "with_progress_lock(|| complete_lesson_sync(&app, request))",
+    );
+    expect(rustProgress).toContain(
+      "with_progress_lock(|| set_last_lesson_sync(&app, &lesson_id))",
+    );
+    expect(rustBackup).toContain("progress::with_progress_lock(operation)");
+    expect(rustPortability).toContain("progress_backup::with_backup_lock");
   });
 
   it("requires typed reset confirmation and creates a recovery backup", () => {
@@ -69,6 +98,22 @@ describe("progress portability and controlled reset contract", () => {
     expect(portabilityPanel).toContain("Sıfırlamayı onayla");
     expect(portabilityPanel).toContain("resetConfirmation !==");
     expect(portabilityPanel).toContain("Önceki kayıt otomatik güvenlik yedeği");
+  });
+
+  it("coordinates destructive actions across both settings panels", () => {
+    expect(operationStore).toContain("activeOperation");
+    expect(operationStore).toContain("tryBeginOperation");
+    expect(operationStore).toContain("finishOperation");
+    expect(operationStore).toContain('"backup-restore"');
+    expect(operationStore).toContain('"data-import"');
+    expect(operationStore).toContain('"data-reset"');
+    expect(portabilityPanel).toContain("useProgressOperationStore");
+    expect(portabilityPanel).toContain('tryBeginOperation("data-import")');
+    expect(portabilityPanel).toContain('finishOperation("data-import")');
+    expect(backupPanel).toContain("useProgressOperationStore");
+    expect(backupPanel).toContain('tryBeginOperation("backup-restore")');
+    expect(backupPanel).toContain('finishOperation("backup-restore")');
+    expect(backupPanel).toContain("activeOperation !== null");
   });
 
   it("refreshes live progress and backup state after destructive changes", () => {
