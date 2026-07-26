@@ -2,9 +2,12 @@ use rusqlite::{params, Connection, OptionalExtension};
 use serde::{Deserialize, Serialize};
 use std::{
     fs,
+    path::PathBuf,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::Manager;
+
+const DATABASE_FILENAME: &str = "python-farming.db";
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -48,15 +51,18 @@ pub async fn set_last_lesson(
         .map_err(|error| format!("Son ders kaydedilemedi: {error}"))?
 }
 
-fn open_database(app: &tauri::AppHandle) -> Result<Connection, String> {
+pub(super) fn database_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     let data_dir = app
         .path()
         .app_data_dir()
         .map_err(|error| format!("Uygulama veri klasörü bulunamadı: {error}"))?;
     fs::create_dir_all(&data_dir)
         .map_err(|error| format!("Uygulama veri klasörü oluşturulamadı: {error}"))?;
+    Ok(data_dir.join(DATABASE_FILENAME))
+}
 
-    let connection = Connection::open(data_dir.join("python-farming.db"))
+pub(super) fn open_database(app: &tauri::AppHandle) -> Result<Connection, String> {
+    let connection = Connection::open(database_path(app)?)
         .map_err(|error| format!("SQLite veritabanı açılamadı: {error}"))?;
     connection
         .execute_batch(

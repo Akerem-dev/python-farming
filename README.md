@@ -4,7 +4,7 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 
 ## Proje durumu
 
-**31/31 ana geliştirme aşaması tamamlandı.**
+**35 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
 
 Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları; mezuniyet projeleri, yerel ilerleme kaydı ve davranışsal görev doğrulama sistemiyle birlikte çalışır. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
 
@@ -21,6 +21,7 @@ Mevcut `0.1.0` sürümü bir geliştirme ön izlemesidir. Başlangıç, Orta Sev
 - Gizli senaryolar ve zayıf/bypass çözümlerini reddeden kalite kapıları
 - JSON tabanlı müfredat paketleri
 - Yerel SQLite ilerleme, XP, rozet ve mezuniyet kaydı
+- Bütünlük kontrollü yerel ilerleme yedekleri ve sınırlı retention
 - Başlangıç, Orta Seviye ve İleri Seviye bitirme projeleri
 - GitHub Actions üzerinde frontend ve Rust CI
 - Windows, Linux ve macOS için taslak release üretim akışı
@@ -114,7 +115,9 @@ Ayrıntılı adımlar için [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST
 
 ## Yerel veri
 
-İlerleme, tamamlanan dersler, XP, rozetler ve son açık ders masaüstü uygulamasının yerel SQLite veritabanında tutulur. Normal `git pull`, `npm ci` veya uygulama güncellemesi bu veriyi silmez. Geliştirme sırasında uygulama veri klasörünü elle temizlemek ilerlemeyi sıfırlar.
+İlerleme, tamamlanan dersler, XP, rozetler ve son açık ders masaüstü uygulamasının yerel SQLite veritabanında tutulur. Ayarlar ekranından oluşturulan yedekler uygulama veri klasöründeki `backups` dizinine yazılır. Her yedek oluşturulmadan önce ana veritabanı, oluşturulduktan sonra da yedek dosyası SQLite `quick_check` ile doğrulanır. En yeni 5 yedek ve toplam en fazla 25 MB saklanır; daha eski yedekler otomatik temizlenir.
+
+Normal `git pull`, `npm ci` veya uygulama güncellemesi ilerleme verisini ve yedekleri silmez. Geliştirme sırasında uygulama veri klasörünü elle temizlemek tüm yerel veriyi sıfırlar. Bu aşama yalnız yedek oluşturma ve listelemeyi kapsar; geri yükleme ve yedek silme ayrı sağlamlaştırma aşamasında eklenecektir.
 
 ## Çalışma motoru güvenliği
 

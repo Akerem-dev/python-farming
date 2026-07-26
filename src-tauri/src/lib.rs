@@ -16,6 +16,8 @@ pub fn run() {
             commands::progress::load_progress,
             commands::progress::complete_lesson_progress,
             commands::progress::set_last_lesson,
+            commands::progress_backup::list_progress_backups,
+            commands::progress_backup::create_progress_backup,
         ])
         .run(tauri::generate_context!())
         .expect("Python Farming başlatılırken kritik bir hata oluştu");
