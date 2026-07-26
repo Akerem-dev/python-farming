@@ -50,7 +50,7 @@ describe("portable Python runtime contract", () => {
     expect(preparer).toContain("discoverRuntimeExecutable");
     expect(preparer).toContain("executableRelativePath");
     expect(preparer).toContain("safeManifestExecutable");
-    expect(preparer).toContain("python/bin");
+    expect(preparer).toContain('join(runtimeDirectory, "python", "bin")');
     expect(interpreter).toContain('const RUNTIME_MANIFEST: &str = "runtime-manifest.json"');
     expect(interpreter).toContain("executable_relative_path");
     expect(interpreter).toContain("validated_relative_executable");
