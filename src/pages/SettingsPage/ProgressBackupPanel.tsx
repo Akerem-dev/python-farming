@@ -6,6 +6,7 @@ import {
   listProgressBackups,
   restoreProgressBackup,
 } from "../../features/progress/services/progressService";
+import { useProgressOperationStore } from "../../features/progress/store/progressOperationStore";
 import { useProgressStore } from "../../features/progress/store/progressStore";
 import type {
   ProgressBackupOverview,
@@ -60,6 +61,9 @@ function backupProgressLabel(backup: ProgressBackupSummary) {
 export function ProgressBackupPanel() {
   const progressStatus = useProgressStore((state) => state.status);
   const loadProgress = useProgressStore((state) => state.loadProgress);
+  const activeOperation = useProgressOperationStore((state) => state.activeOperation);
+  const tryBeginOperation = useProgressOperationStore((state) => state.tryBeginOperation);
+  const finishOperation = useProgressOperationStore((state) => state.finishOperation);
   const [status, setStatus] = useState<BackupStatus>("loading");
   const [overview, setOverview] = useState<ProgressBackupOverview | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -96,6 +100,9 @@ export function ProgressBackupPanel() {
   }, []);
 
   const createBackup = async () => {
+    if (!tryBeginOperation("backup-create")) {
+      return;
+    }
     setStatus("creating");
     setError(null);
     setAnnouncement("");
@@ -108,10 +115,15 @@ export function ProgressBackupPanel() {
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
+    } finally {
+      finishOperation("backup-create");
     }
   };
 
   const restoreBackup = async (backupId: string) => {
+    if (!tryBeginOperation("backup-restore")) {
+      return;
+    }
     setStatus("restoring");
     setActiveBackupId(backupId);
     setError(null);
@@ -136,10 +148,14 @@ export function ProgressBackupPanel() {
       setStatus("error");
     } finally {
       setActiveBackupId(null);
+      finishOperation("backup-restore");
     }
   };
 
   const deleteBackup = async (backupId: string) => {
+    if (!tryBeginOperation("backup-delete")) {
+      return;
+    }
     setStatus("deleting");
     setActiveBackupId(backupId);
     setError(null);
@@ -155,6 +171,7 @@ export function ProgressBackupPanel() {
       setStatus("error");
     } finally {
       setActiveBackupId(null);
+      finishOperation("backup-delete");
     }
   };
 
@@ -168,11 +185,7 @@ export function ProgressBackupPanel() {
       : corruptBackupCount === 0
         ? "Tümü sağlam"
         : `${corruptBackupCount} bozuk yedek`;
-  const busy =
-    status === "loading" ||
-    status === "creating" ||
-    status === "restoring" ||
-    status === "deleting";
+  const busy = status === "loading" || activeOperation !== null;
   const actionDisabled = !available || progressStatus !== "ready" || busy;
 
   return (

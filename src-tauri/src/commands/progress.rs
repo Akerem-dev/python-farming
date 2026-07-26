@@ -3,11 +3,13 @@ use serde::{Deserialize, Serialize};
 use std::{
     fs,
     path::PathBuf,
+    sync::Mutex,
     time::{SystemTime, UNIX_EPOCH},
 };
 use tauri::Manager;
 
 const DATABASE_FILENAME: &str = "python-farming.db";
+static PROGRESS_OPERATION_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -26,7 +28,7 @@ pub struct CompleteLessonRequest {
 
 #[tauri::command]
 pub async fn load_progress(app: tauri::AppHandle) -> Result<ProgressSnapshot, String> {
-    tauri::async_runtime::spawn_blocking(move || load_progress_sync(&app))
+    tauri::async_runtime::spawn_blocking(move || with_progress_lock(|| load_progress_sync(&app)))
         .await
         .map_err(|error| format!("İlerleme bilgisi okunamadı: {error}"))?
 }
@@ -36,9 +38,11 @@ pub async fn complete_lesson_progress(
     app: tauri::AppHandle,
     request: CompleteLessonRequest,
 ) -> Result<ProgressSnapshot, String> {
-    tauri::async_runtime::spawn_blocking(move || complete_lesson_sync(&app, request))
-        .await
-        .map_err(|error| format!("Ders ilerlemesi kaydedilemedi: {error}"))?
+    tauri::async_runtime::spawn_blocking(move || {
+        with_progress_lock(|| complete_lesson_sync(&app, request))
+    })
+    .await
+    .map_err(|error| format!("Ders ilerlemesi kaydedilemedi: {error}"))?
 }
 
 #[tauri::command]
@@ -46,9 +50,20 @@ pub async fn set_last_lesson(
     app: tauri::AppHandle,
     lesson_id: String,
 ) -> Result<ProgressSnapshot, String> {
-    tauri::async_runtime::spawn_blocking(move || set_last_lesson_sync(&app, &lesson_id))
-        .await
-        .map_err(|error| format!("Son ders kaydedilemedi: {error}"))?
+    tauri::async_runtime::spawn_blocking(move || {
+        with_progress_lock(|| set_last_lesson_sync(&app, &lesson_id))
+    })
+    .await
+    .map_err(|error| format!("Son ders kaydedilemedi: {error}"))?
+}
+
+pub(super) fn with_progress_lock<T>(
+    operation: impl FnOnce() -> Result<T, String>,
+) -> Result<T, String> {
+    let _guard = PROGRESS_OPERATION_LOCK
+        .lock()
+        .map_err(|_| "İlerleme işlem kilidi kullanılamıyor.".to_string())?;
+    operation()
 }
 
 pub(super) fn database_path(app: &tauri::AppHandle) -> Result<PathBuf, String> {

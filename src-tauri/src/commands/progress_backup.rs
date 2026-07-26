@@ -4,10 +4,7 @@ use std::{
     ffi::OsString,
     fs,
     path::{Path, PathBuf},
-    sync::{
-        atomic::{AtomicI64, Ordering},
-        Mutex,
-    },
+    sync::atomic::{AtomicI64, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
 
@@ -19,7 +16,6 @@ const BACKUP_EXTENSION: &str = "db";
 const MAX_BACKUP_COUNT: usize = 5;
 const MAX_BACKUP_TOTAL_BYTES: u64 = 25 * 1024 * 1024;
 static LAST_BACKUP_TIMESTAMP: AtomicI64 = AtomicI64::new(0);
-static BACKUP_OPERATION_LOCK: Mutex<()> = Mutex::new(());
 
 #[derive(Clone, Debug)]
 struct BackupCandidate {
@@ -97,10 +93,7 @@ pub async fn delete_progress_backup(
 pub(super) fn with_backup_lock<T>(
     operation: impl FnOnce() -> Result<T, String>,
 ) -> Result<T, String> {
-    let _guard = BACKUP_OPERATION_LOCK
-        .lock()
-        .map_err(|_| "Yedek işlem kilidi kullanılamıyor.".to_string())?;
-    operation()
+    progress::with_progress_lock(operation)
 }
 
 fn backup_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {

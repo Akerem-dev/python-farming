@@ -142,29 +142,11 @@ fn export_progress_data_sync(app: &tauri::AppHandle) -> Result<ProgressExportRes
         ));
     }
 
-    let directory = export_directory(app)?;
     let file_name = format!(
         "python-farming-progress-{exported_at}-{}.json",
         std::process::id()
     );
-    let file_path = directory.join(&file_name);
-    let temporary_path = file_path.with_extension("json.tmp");
-    cleanup_file(&temporary_path);
-    let mut file = OpenOptions::new()
-        .write(true)
-        .create_new(true)
-        .open(&temporary_path)
-        .map_err(|error| format!("Geçici dışa aktarma dosyası oluşturulamadı: {error}"))?;
-    if let Err(error) = file.write_all(&serialized).and_then(|_| file.sync_all()) {
-        drop(file);
-        cleanup_file(&temporary_path);
-        return Err(format!("İlerleme dışa aktarma dosyası yazılamadı: {error}"));
-    }
-    drop(file);
-    fs::rename(&temporary_path, &file_path).map_err(|error| {
-        cleanup_file(&temporary_path);
-        format!("İlerleme dışa aktarma dosyası yayımlanamadı: {error}")
-    })?;
+    let file_path = write_export_file(app, &file_name, &serialized)?;
 
     Ok(ProgressExportResult {
         file_name,
@@ -335,25 +317,71 @@ fn validate_lesson_id(value: &str, label: &str) -> Result<(), String> {
     Ok(())
 }
 
-fn export_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
+fn export_directories(app: &tauri::AppHandle) -> Result<Vec<PathBuf>, String> {
+    let mut directories = Vec::new();
     if let Ok(directory) = app.path().download_dir() {
-        fs::create_dir_all(&directory)
-            .map_err(|error| format!("İndirilenler klasörü hazırlanamadı: {error}"))?;
-        return Ok(directory);
+        directories.push(directory);
     }
     if let Ok(directory) = app.path().document_dir() {
-        fs::create_dir_all(&directory)
-            .map_err(|error| format!("Belgeler klasörü hazırlanamadı: {error}"))?;
-        return Ok(directory);
+        if !directories.contains(&directory) {
+            directories.push(directory);
+        }
     }
     let database_path = progress::database_path(app)?;
     let data_directory = database_path
         .parent()
         .ok_or_else(|| "Uygulama veri klasörü belirlenemedi.".to_string())?;
-    let directory = data_directory.join("exports");
-    fs::create_dir_all(&directory)
-        .map_err(|error| format!("Dışa aktarma klasörü hazırlanamadı: {error}"))?;
-    Ok(directory)
+    let fallback = data_directory.join("exports");
+    if !directories.contains(&fallback) {
+        directories.push(fallback);
+    }
+    Ok(directories)
+}
+
+fn write_export_file(
+    app: &tauri::AppHandle,
+    file_name: &str,
+    serialized: &[u8],
+) -> Result<PathBuf, String> {
+    let mut failures = Vec::new();
+    for directory in export_directories(app)? {
+        if let Err(error) = fs::create_dir_all(&directory) {
+            failures.push(format!("{}: {error}", directory.display()));
+            continue;
+        }
+        let file_path = directory.join(file_name);
+        let temporary_path = file_path.with_extension("json.tmp");
+        cleanup_file(&temporary_path);
+        let mut file = match OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .open(&temporary_path)
+        {
+            Ok(file) => file,
+            Err(error) => {
+                failures.push(format!("{}: {error}", directory.display()));
+                continue;
+            }
+        };
+        if let Err(error) = file.write_all(serialized).and_then(|_| file.sync_all()) {
+            drop(file);
+            cleanup_file(&temporary_path);
+            failures.push(format!("{}: {error}", directory.display()));
+            continue;
+        }
+        drop(file);
+        match fs::rename(&temporary_path, &file_path) {
+            Ok(()) => return Ok(file_path),
+            Err(error) => {
+                cleanup_file(&temporary_path);
+                failures.push(format!("{}: {error}", directory.display()));
+            }
+        }
+    }
+    Err(format!(
+        "İlerleme dosyası Downloads, Documents veya uygulama veri klasörüne yazılamadı: {}",
+        failures.join(" | ")
+    ))
 }
 
 fn cleanup_file(path: &Path) {
