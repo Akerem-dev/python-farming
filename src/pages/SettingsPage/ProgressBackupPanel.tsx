@@ -12,6 +12,7 @@ import type {
   ProgressBackupSummary,
 } from "../../features/progress/types";
 import { formatBytes } from "../../runtime/runtimeLimits";
+import { progressBackupsChangedEvent } from "./ProgressDataPanel";
 import styles from "./SettingsPage.module.css";
 
 type BackupStatus =
@@ -68,24 +69,29 @@ export function ProgressBackupPanel() {
 
   useEffect(() => {
     let active = true;
-    void listProgressBackups()
-      .then((value) => {
-        if (!active) {
-          return;
-        }
-        setOverview(value);
-        setStatus("ready");
-      })
-      .catch((reason: unknown) => {
-        if (!active) {
-          return;
-        }
-        setError(errorMessage(reason));
-        setStatus("error");
-      });
-
+    const refreshBackups = () => {
+      void listProgressBackups()
+        .then((value) => {
+          if (!active) {
+            return;
+          }
+          setOverview(value);
+          setStatus("ready");
+          setError(null);
+        })
+        .catch((reason: unknown) => {
+          if (!active) {
+            return;
+          }
+          setError(errorMessage(reason));
+          setStatus("error");
+        });
+    };
+    refreshBackups();
+    window.addEventListener(progressBackupsChangedEvent, refreshBackups);
     return () => {
       active = false;
+      window.removeEventListener(progressBackupsChangedEvent, refreshBackups);
     };
   }, []);
 

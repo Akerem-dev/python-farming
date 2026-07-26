@@ -94,7 +94,9 @@ pub async fn delete_progress_backup(
     .map_err(|error| format!("İlerleme yedeği silinemedi: {error}"))?
 }
 
-fn with_backup_lock<T>(operation: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
+pub(super) fn with_backup_lock<T>(
+    operation: impl FnOnce() -> Result<T, String>,
+) -> Result<T, String> {
     let _guard = BACKUP_OPERATION_LOCK
         .lock()
         .map_err(|_| "Yedek işlem kilidi kullanılamıyor.".to_string())?;
@@ -112,7 +114,9 @@ fn backup_directory(app: &tauri::AppHandle) -> Result<PathBuf, String> {
     Ok(backup_directory)
 }
 
-fn create_progress_backup_sync(app: &tauri::AppHandle) -> Result<ProgressBackupOverview, String> {
+pub(super) fn create_progress_backup_sync(
+    app: &tauri::AppHandle,
+) -> Result<ProgressBackupOverview, String> {
     let source = progress::open_database(app)?;
     ensure_compatible_database(&source, "Ana ilerleme veritabanı")?;
     source

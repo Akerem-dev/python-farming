@@ -108,7 +108,9 @@ fn export_progress_data_sync(app: &tauri::AppHandle) -> Result<ProgressExportRes
         })
         .map_err(|error| format!("Dışa aktarılacak ders ilerlemesi okunamadı: {error}"))?
         .collect::<Result<Vec<_>, _>>()
-        .map_err(|error| format!("Ders ilerlemesi dışa aktarma biçimine dönüştürülemedi: {error}"))?;
+        .map_err(|error| {
+            format!("Ders ilerlemesi dışa aktarma biçimine dönüştürülemedi: {error}")
+        })?;
     let last_lesson_id = connection
         .query_row(
             "SELECT value FROM app_state WHERE key = 'last_lesson_id'",
@@ -184,8 +186,9 @@ fn import_progress_data_sync(
             MAX_TRANSFER_BYTES / (1024 * 1024)
         ));
     }
-    let document: ProgressExportDocument = serde_json::from_str(payload)
-        .map_err(|error| format!("Seçilen dosya geçerli Python Farming JSON verisi değil: {error}"))?;
+    let document: ProgressExportDocument = serde_json::from_str(payload).map_err(|error| {
+        format!("Seçilen dosya geçerli Python Farming JSON verisi değil: {error}")
+    })?;
     validate_export_document(&document)?;
 
     let backup_overview = progress_backup::create_progress_backup_sync(app)
@@ -196,10 +199,14 @@ fn import_progress_data_sync(
         .map_err(|error| format!("İçe aktarma SQLite işlemi başlatılamadı: {error}"))?;
     transaction
         .execute("DELETE FROM lesson_progress", [])
-        .map_err(|error| format!("Mevcut ders ilerlemesi içe aktarma için temizlenemedi: {error}"))?;
+        .map_err(|error| {
+            format!("Mevcut ders ilerlemesi içe aktarma için temizlenemedi: {error}")
+        })?;
     transaction
         .execute("DELETE FROM app_state", [])
-        .map_err(|error| format!("Mevcut uygulama durumu içe aktarma için temizlenemedi: {error}"))?;
+        .map_err(|error| {
+            format!("Mevcut uygulama durumu içe aktarma için temizlenemedi: {error}")
+        })?;
     for lesson in &document.lessons {
         transaction
             .execute(
