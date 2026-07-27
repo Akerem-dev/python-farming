@@ -1,6 +1,6 @@
 # Python Farming Release Kontrol Listesi
 
-Bu liste her masaüstü sürümünden önce uygulanmalıdır. `1.0.0`, ilk kararlı kaynak sürümüdür; platform installer'ları imzalama ve temiz makine kontrolleri tamamlanana kadar taslak tutulur.
+Bu liste her masaüstü sürümünden önce uygulanmalıdır. `1.1.0`, tamamlanmış Uzman Seviye yolunu içeren güncel kaynak sürümüdür; platform installer'ları imzalama ve temiz makine kontrolleri tamamlanana kadar taslak tutulur.
 
 ## 1. Sürüm numarası
 
@@ -10,7 +10,7 @@ Aşağıdaki üç dosyada aynı SemVer değeri bulunmalıdır:
 - `src-tauri/tauri.conf.json`
 - `src-tauri/Cargo.toml`
 
-Örnek: `1.0.0`.
+Örnek: `1.1.0`.
 
 ## 2. Temiz çalışma alanı
 
@@ -53,6 +53,7 @@ En az şu akışlar elle denenmelidir:
 - `stdin` kullanan görev
 - Hata Avcısı görevi
 - Async veya SQLite doğrulayıcısı
+- Uzman Seviye gerçek Python final projesi ve uzman mezuniyet kaydı
 - Uygulamayı kapatıp yeniden açınca ilerlemenin korunması
 
 ### Güvenli çalışma motoru denemeleri
@@ -98,7 +99,7 @@ GitHub üzerinde **Actions → Release → Run workflow** seçilir. Manuel çal�
 
 ### Etiketli taslak release
 
-Bütün manifestler `1.0.0` olduğunda `v1.0.0` etiketi oluşturulur. Etiket uyuşmazsa preflight işi yayını durdurur. Uyumlu etiket çalışması paketleri taslak, kararlı ve ön sürüm olmayan GitHub Release'e yükler.
+Bütün manifestler `1.1.0` olduğunda `v1.1.0` etiketi oluşturulur. Etiket uyuşmazsa preflight işi yayını durdurur. Uyumlu etiket çalışması paketleri taslak, kararlı ve ön sürüm olmayan GitHub Release'e yükler.
 
 ## 8. İmzalama durumu
 

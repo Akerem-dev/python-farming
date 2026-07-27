@@ -72,7 +72,7 @@ describe("shared runtime isolation contract", () => {
   });
 
   it("documents the threat model without claiming OS-level isolation", () => {
-    expect(readme).toContain("41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı");
+    expect(readme).toContain("6 modüllük Uzman Seviye ürün yolu tamamlandı");
     expect(readme).toContain("genel amaçlı, düşmanca kod barındırma servisi");
     expect(readme).toContain("docs/RUNTIME_SECURITY.md");
     expect(checklist).toContain("Güvenli çalışma motoru denemeleri");

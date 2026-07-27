@@ -1,12 +1,12 @@
 # Python Farming
 
-Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı görevler, hata ayıklama laboratuvarları ve çok dosyalı projelerle öğreten Tauri tabanlı masaüstü uygulamasıdır.
+Python Farming, Python'ı başlangıçtan uzman seviyeye kadar uygulamalı görevler, hata ayıklama laboratuvarları ve çok dosyalı projelerle öğreten Tauri tabanlı masaüstü uygulamasıdır.
 
 ## Proje durumu
 
-**41 ana geliştirme ve ürün sağlamlaştırma aşaması tamamlandı.**
+**41 ana geliştirme ve ürün sağlamlaştırma aşaması ile 6 modüllük Uzman Seviye ürün yolu tamamlandı.**
 
-`1.0.0`, doğrulanmış yerel Python çalışma motoru, Başlangıç, Orta Seviye ve İleri Seviye eğitim yolları, mezuniyet projeleri, güvenli yerel ilerleme yönetimi ve davranışsal görev doğrulama sistemiyle ilk kararlı kaynak sürümüdür. Uzman Seviye yolu İleri Seviye mezuniyetinden sonra açılır; uzman içerikleri ayrı ürün yolunda geliştirilecektir.
+`1.1.0`, kararlı yerel Python çalışma motoruna ek olarak Algoritmalar ve Karmaşıklık, Paralellik ve Sistem Programlama, AST/Derleyiciler, Dağıtık Sistemler, Güvenlik/Gözlemlenebilirlik ve Güvenilir Kod Analiz Platformu bitirme projesinden oluşan 6 modüllük Uzman Seviye yolunu yayımlar. Uzman yolu İleri Seviye mezuniyetinden sonra açılır ve kendi 95→100 mezuniyet hesabı ile rozetini içerir.
 
 ## Çalışan sistemler
 
@@ -27,7 +27,8 @@ Python Farming, Python'ı başlangıçtan ileri seviyeye kadar uygulamalı göre
 - Yerel SQLite ilerleme, XP, rozet ve mezuniyet kaydı
 - Bütünlük kontrollü yerel ilerleme yedekleri, geri yükleme ve kontrollü silme
 - Sürümlü JSON ile ilerleme dışa aktarma, içe alma ve güvenli sıfırlama
-- Başlangıç, Orta Seviye ve İleri Seviye bitirme projeleri
+- Başlangıç, Orta Seviye, İleri Seviye ve Uzman Seviye bitirme projeleri
+- 6 modüllük Uzman Seviye yolu ve Python Farming Uzman Seviye Mezunu rozeti
 - GitHub Actions üzerinde frontend ve Rust CI
 - Windows, Linux ve macOS için sürüm kontrollü dry-run ve taslak release üretim akışı
 
@@ -118,7 +119,7 @@ Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçi
 - Manuel `workflow_dispatch` çalıştırması Windows x64, Linux x64, macOS Apple Silicon ve macOS Intel paketlerini dry-run artifact olarak üretir; GitHub Release oluşturmaz.
 - Yalnız bütün manifest sürümleriyle eşleşen `vX.Y.Z` etiketi taslak ve kararlı GitHub Release oluşturabilir.
 
-Her platform çıktısıyla birlikte dosya adı, boyut ve SHA-256 değerlerini içeren bir release manifesti üretilir. `v1.0.0` etiketi oluşturulmadan önce `docs/RELEASE_CHECKLIST.md` ve `docs/FINAL_QA_1.0.md` uygulanmalıdır. Windows Authenticode imzası ile macOS Developer ID/notarizasyon sırları bu repository'de yapılandırılmamıştır; bu nedenle installer'lar genel dağıtımdan önce platform uyarıları ve temiz makine davranışı açısından ayrıca doğrulanmalıdır.
+Her platform çıktısıyla birlikte dosya adı, boyut ve SHA-256 değerlerini içeren bir release manifesti üretilir. `v1.1.0` etiketi oluşturulmadan önce `docs/RELEASE_CHECKLIST.md` ve `docs/FINAL_QA_1.1.md` uygulanmalıdır. Windows Authenticode imzası ile macOS Developer ID/notarizasyon sırları bu repository'de yapılandırılmamıştır; bu nedenle installer'lar genel dağıtımdan önce platform uyarıları ve temiz makine davranışı açısından ayrıca doğrulanmalıdır.
 
 ## Yerel veri
 
@@ -145,4 +146,4 @@ Uygulama sürümü aşağıdaki kaynaklarda aynı tutulur:
 - `src-tauri/Cargo.lock`
 - `src/app/appConfig.ts`
 
-Release workflow'u sürüm uyuşmazlığında veya etiketi `v<manifest-version>` biçimiyle eşleşmediğinde yayını durdurur. 1.0 sürüm özeti için `docs/RELEASE_NOTES_1.0.0.md` dosyasına bakın.
+Release workflow'u sürüm uyuşmazlığında veya etiketi `v<manifest-version>` biçimiyle eşleşmediğinde yayını durdurur. 1.1 sürüm özeti için `docs/RELEASE_NOTES_1.1.0.md` dosyasına bakın; 1.0 geçmişi `docs/RELEASE_NOTES_1.0.0.md` içinde korunur.
