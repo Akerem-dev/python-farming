@@ -1,0 +1,333 @@
+
+> python-farming@1.0.0 test
+> vitest run --reporter=verbose
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/python-farming/python-farming[39m
+
+ [32m✓[39m src/tests/unit/capstoneTaskValidationService.test.ts[2m > [22mcapstone validator integration[2m > [22mvalidates the complete domain, persistence, typing and test contract[32m 101[2mms[22m[39m
+ [32m✓[39m src/tests/unit/capstoneTaskValidationService.test.ts[2m > [22mcapstone validator integration[2m > [22mrejects a project without sufficient tests[32m 57[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedDatabaseProject.integration.test.ts[2m > [22madvanced database project integration[2m > [22mpasses the transactional SQLite reference solution[32m 81[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedDatabaseProject.integration.test.ts[2m > [22madvanced database project integration[2m > [22mrejects a hard-coded summary that only matches the visible example[32m 60[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mpasses the complete local data platform[32m 144[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mregisters dedicated export, import and reset commands[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mexports a versioned bounded document without student source code[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mfalls back across writable export directories[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mvalidates imports before replacing SQLite progress[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mserializes every progress writer with backup and portability operations[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mrequires typed reset confirmation and creates a recovery backup[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mcoordinates destructive actions across both settings panels[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mrefreshes live progress and backup state after destructive changes[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts[2m > [22mprogress portability and controlled reset contract[2m > [22mkeeps browser preview read-only and checks payload size twice[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mpublishes a real lazy-loaded Settings route[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mruns the existing backend health check and app-version commands[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mkeeps displayed safety limits equal to both Rust execution paths[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mshows runtime, limits, progress and non-destructive troubleshooting[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mdoes not confuse browser preview with a missing Python installation[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mclears stale snapshots and preserves string errors after failed refreshes[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mwaits for real progress data before creating a support report[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mdescribes source, input and output limits without overstating enforcement[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mfeeds the same diagnostics state into the global status bar[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts[2m > [22msettings and system diagnostics[2m > [22mcreates a support report without source code or lesson answers[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects a hard-coded visible report[32m 127[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects a repository without a transaction boundary[32m 136[2mms[22m[39m
+ [32m✓[39m src/test/integration/architecturePatternsProject.integration.test.ts[2m > [22marchitecture patterns project integration[2m > [22mpasses the layered reference solution[32m 53[2mms[22m[39m
+ [32m✓[39m src/test/integration/architecturePatternsProject.integration.test.ts[2m > [22marchitecture patterns project integration[2m > [22mrejects a hard-coded report that bypasses the layers[32m 52[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects blocking sleep inside the async collector[32m 141[2mms[22m[39m
+ [32m✓[39m src/test/integration/httpNetworkingProject.integration.test.ts[2m > [22mHTTP networking project integration[2m > [22mpasses the layered offline HTTP reference solution[32m 60[2mms[22m[39m
+ [32m✓[39m src/test/integration/httpNetworkingProject.integration.test.ts[2m > [22mHTTP networking project integration[2m > [22mrejects a hard-coded report that only matches one visible example[32m 60[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22maccepts a qualified frozen dataclass decorator[32m 136[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingValidatorIntegration.test.ts[2m > [22mtyping validator integration[2m > [22mvalidates annotations, protocol, dataclass fields and hidden behavior[32m 56[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingValidatorIntegration.test.ts[2m > [22mtyping validator integration[2m > [22mrejects incorrect annotations[32m 64[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects a non-Decimal Event value annotation[32m 126[2mms[22m[39m
+ [32m✓[39m src/test/integration/packagingPerformanceProject.integration.test.ts[2m > [22mpackaging and performance project integration[2m > [22mpasses the packaged reference implementation[32m 68[2mms[22m[39m
+ [32m✓[39m src/test/integration/packagingPerformanceProject.integration.test.ts[2m > [22mpackaging and performance project integration[2m > [22mrejects a hard-coded visible report[32m 50[2mms[22m[39m
+ [32m✓[39m src/test/integration/packagingPerformanceProject.integration.test.ts[2m > [22mpackaging and performance project integration[2m > [22mrejects an optimized implementation with nested loops[32m 61[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects an empty repository protocol[32m 123[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertParallelismProject.integration.test.ts[2m > [22mexpert parallelism project integration[2m > [22mpasses the concurrent multi-file reference implementation[32m 62[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects a serial collector that ignores the requested overlap[32m 147[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertParallelismProject.integration.test.ts[2m > [22mexpert parallelism project integration[2m > [22mrejects a hard-coded visible station report[32m 46[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertParallelismProject.integration.test.ts[2m > [22mexpert parallelism project integration[2m > [22mrejects a sequential implementation without future lifecycle calls[32m 61[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryValidatorIntegration.test.ts[2m > [22mstandard library validator integration[2m > [22mvalidates Decimal, date, aware datetime, Counter, Enum and decorators[32m 49[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryValidatorIntegration.test.ts[2m > [22mstandard library validator integration[2m > [22mrejects wrong runtime types and naive datetimes[32m 48[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects an imported alias of blocking sleep[32m 136[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects profiling calls hidden in unreachable code[32m 125[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mrejects an application layer that bypasses service injection[32m 140[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts[2m > [22madvanced capstone validator integration[2m > [22mdoes not count assertions hidden under if False[32m 106[2mms[22m[39m
+ [32m✓[39m src/tests/unit/inheritanceValidatorIntegration.test.ts[2m > [22minheritance validator integration[2m > [22mvalidates bases, overrides, super, classmethod and staticmethod[32m 62[2mms[22m[39m
+ [32m✓[39m src/test/integration/asyncProgrammingValidator.integration.test.ts[2m > [22masync programming validator integration[2m > [22mvalidates gather timing, timeout and cancellation cleanup[32m 109[2mms[22m[39m
+ [32m✓[39m src/tests/unit/inheritanceValidatorIntegration.test.ts[2m > [22minheritance validator integration[2m > [22mrejects a child constructor that does not call super[32m 48[2mms[22m[39m
+ [32m✓[39m src/test/integration/asyncProgrammingValidator.integration.test.ts[2m > [22masync programming validator integration[2m > [22mrejects blocking time.sleep inside async code[32m 106[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mdefines a real route for every primary rail destination[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22muses native hash links plus an application event for WebView2 navigation[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mloads every destination through the application router[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mbuilds task and project views from the published curriculum[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mwaits for persisted progress before deriving task, project or progress state[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mpreserves an explicitly selected task while workspace initialization resumes[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mmoves focus after lazy page shells mount[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mexposes the active task filter to assistive technology[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mderives progress from SQLite-backed progress and curriculum stores[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts[2m > [22mprimary navigation pages[2m > [22mkeeps the production settings and diagnostics page reachable[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertAlgorithmsProject.integration.test.ts[2m > [22mexpert algorithms project integration[2m > [22mpasses the multi-file reference implementation[32m 72[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertAlgorithmsProject.integration.test.ts[2m > [22mexpert algorithms project integration[2m > [22mrejects a hard-coded visible decision report[32m 65[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingValidatorIntegration.test.ts[2m > [22mtesting validator integration[2m > [22mruns parametrized and exception tests while killing mutants[32m 111[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingValidatorIntegration.test.ts[2m > [22mtesting validator integration[2m > [22mrejects a weak suite that passes a hidden mutant[32m 94[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mpins an immutable release and verifies the published SHA-256 digest[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mrebuilds the resource directory from the verified archive on every package build[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22msupports every release target and prepares a Tauri resource[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mdiscovers the extracted executable and records a safe relative manifest path[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mselects override, bundled runtime and system fallback in that order[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22muses the same interpreter resolver for single and multi-file execution[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mreports whether Python is bundled and managed by the application[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts[2m > [22mportable Python runtime contract[2m > [22mopens the built Debian package and executes the manifest-selected interpreter[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopValidatorIntegration.test.ts[2m > [22mOOP validator integration[2m > [22mvalidates class structure, property setters and hidden object scenarios[32m 67[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopValidatorIntegration.test.ts[2m > [22mOOP validator integration[2m > [22mrejects a method that forgot the self parameter[32m 66[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mcatches render failures and offers an explicit recovery action[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mlets keyboard users bypass repeated navigation[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mannounces route changes and moves focus to the page landmark[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mexposes determinate progress values semantically[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mmarks current navigation and exposes every primary destination[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mshows a practical three-step guide only before any learning progress[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts[2m > [22maccessibility and first-run UX contract[2m > [22mkeeps focus, status and reduced-motion support globally active[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mkeeps JavaScript, Tauri and Rust versions aligned[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mprovides one-command frontend and Rust verification[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mcommits npm and Cargo lockfiles and enforces them in CI[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mbuilds and verifies a real Linux Tauri installer in CI[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mdocuments the real completed product and clean install[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22muses the current official Tauri draft release pipeline[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts[2m > [22mrelease readiness contract[2m > [22mrejects release tags that do not match all manifest versions[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22mregisters list, create, restore and delete commands[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22mcreates, verifies and atomically publishes a consistent SQLite snapshot[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22mrestores through a verified staged copy and preserves a rollback path[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22msupports deliberate deletion without allowing arbitrary filesystem paths[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22menforces bounded retention without deleting the new backup after clock rollback[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts[2m > [22mlocal progress backup contract[2m > [22mrequires explicit confirmation, refreshes progress and blocks corrupt restores[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionValidatorIntegration.test.ts[2m > [22mexception validator integration[2m > [22mvalidates handlers, custom errors, returns and raised exceptions[32m 54[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionValidatorIntegration.test.ts[2m > [22mexception validator integration[2m > [22mrejects a bare except handler[32m 57[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mpublishes seven ordered lessons[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mcovers prediction, debugging, custom exceptions and file processing[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mrequires explicit exception types in handler-focused lessons[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mtests both successful function results and raised exceptions[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mships a resilient JSON transfer final project[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts[2m > [22mexception handling module content[2m > [22mawards 555 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedPatternValidator.integration.test.ts[2m > [22madvanced pattern validator integration[2m > [22mvalidates wraps, decorated functions and generator context managers[32m 73[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mcovers prediction, completion, debugging and project practice[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mrequires inheritance, overrides and super calls structurally[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mrequires real classmethod and staticmethod decorators[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mships polymorphic hidden object scenarios[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mpublishes a multi-file payment system final[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts[2m > [22mclasses and inheritance module content[2m > [22mawards 720 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mruns single and multi-file code through one sandbox runner[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mblocks filesystem escape, network, subprocess and native loading events[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mclears inherited environment values and redirects user directories[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mterminates the whole process tree on timeout or workspace abuse[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mpublishes the enforced security profile through diagnostics[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts[2m > [22mshared runtime isolation contract[2m > [22mdocuments the threat model without claiming OS-level isolation[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mpublishes seven ordered lessons and 1300 XP[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mregisters the package immediately after the algorithms module[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mcovers futures, locks, queues and graceful thread shutdown[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mkeeps executable laboratories inside the desktop sandbox process policy[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mships a real race-condition debugging contract[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22mrequires complete producer-consumer lifecycle calls[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts[2m > [22mexpert parallelism and systems content[2m > [22muses a six-file final project with bounded workers and hidden reports[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/integration/generatorValidator.integration.test.ts[2m > [22mgenerator validator integration[2m > [22mvalidates yield from, send, throw, close and generator state[32m 67[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts[2m > [22mdictionaries and sets module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts[2m > [22mdictionaries and sets module content[2m > [22mcovers prediction, completion, iteration and a data mini project[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts[2m > [22mdictionaries and sets module content[2m > [22mpublishes a three-deliverable stock analyzer project[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts[2m > [22mdictionaries and sets module content[2m > [22mends the beginner path with dictionary and set comprehension validation[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts[2m > [22mdictionaries and sets module content[2m > [22mawards 420 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts[2m > [22mcurriculum progress rules[2m > [22mkeeps the second lesson locked until the first one is complete[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts[2m > [22mcurriculum progress rules[2m > [22mlocks the next module until the current module is complete[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts[2m > [22mcurriculum progress rules[2m > [22mselects the first unlocked incomplete lesson as the resume target[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts[2m > [22mcurriculum progress rules[2m > [22mderives module completion from persisted lesson completion[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts[2m > [22mcurriculum progress rules[2m > [22mmarks modules without published lessons as coming soon[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mcovers prediction, completion, debugging and multi-file practice[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mrequires real annotation, dataclass and protocol checks[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mteaches safe mutable defaults and frozen models[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mpublishes a strict typed order model final[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts[2m > [22mtyping and dataclasses module content[2m > [22mawards 750 XP across the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mcontains prediction, completion, debugging and data transformation practice[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mships a tuple debugging lesson with slicing validation[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mvalidates the data laboratory with structure and hidden list cases[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mends with a tuple-based collection summary challenge[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts[2m > [22mlists and tuples module content[2m > [22mawards 395 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mpublishes the six-module expert roadmap[32m 5[2mms[22m[39m
+ [31m×[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mregisters the expert package in the published package index[32m 9[2mms[22m[39m
+[31m   → expected '/content/modules/parallelism-systems.…' to be '/content/modules/algorithms-complexit…' // Object.is equality[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mpublishes seven ordered lessons and 1260 XP[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mcovers complexity, binary search, heap selection, BFS and dynamic programming[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mships a linear-time performance debugging contract[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22muses a six-file final project with hidden behavior scenarios[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mcalculates expert roadmap progress from real modules[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mpublishes seven ordered intermediate lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mcontains five dedicated file processing laboratories[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mships text and json fixtures with Python entrypoints[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mprotects source data and validates generated outputs[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mends with a four-file persistent order archive[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts[2m > [22mfiles and pathlib content[2m > [22mawards 520 XP across the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/advancedGraduation.test.ts[2m > [22madvanced graduation[2m > [22mkeeps the final platform locked while identifying weak modules[32m 13[2mms[22m[39m
+ [32m✓[39m src/tests/unit/advancedGraduation.test.ts[2m > [22madvanced graduation[2m > [22mawards 95 mastery points after seven advanced modules[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/advancedGraduation.test.ts[2m > [22madvanced graduation[2m > [22mawards the badge and unlocks Expert after the final platform[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateGraduation.test.ts[2m > [22mintermediate graduation[2m > [22mkeeps the capstone locked while identifying weak modules[32m 14[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateGraduation.test.ts[2m > [22mintermediate graduation[2m > [22mawards 95 mastery points and unlocks the project after nine core modules[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateGraduation.test.ts[2m > [22mintermediate graduation[2m > [22mawards the badge and unlocks Advanced after the capstone[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mcovers every comprehension family used by the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mrequires explicit StopIteration handling in the debugging lesson[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mships a strict custom iterator protocol exercise[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mpublishes a yield-based lazy stream final without list comprehensions[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts[2m > [22mcomprehensions and iterators module content[2m > [22mawards 580 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mcovers prediction, completion, debugging and multi-file project work[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mrequires real standard-library runtime types[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mpublishes strict Enum and cache contracts[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mkeeps the final report deterministic and independent of the system clock[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts[2m > [22mstandard library module content[2m > [22mawards 800 XP across the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22mcontains prediction, completion, debugging and refactoring practice[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22muses named function definitions and hidden cases in executable function lessons[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22mrequires exactly one default parameter in default-argument lessons[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22mpublishes a strict three-call refactoring task[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts[2m > [22mfunctions module content[2m > [22mawards 380 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts[2m > [22mintermediate testing module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts[2m > [22mintermediate testing module content[2m > [22muses a dedicated test laboratory mode for executable testing lessons[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts[2m > [22mintermediate testing module content[2m > [22mrequires explicit exception and parametrized test coverage[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts[2m > [22mintermediate testing module content[2m > [22mships a two-source two-test-file mutation-resistant final[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts[2m > [22mintermediate testing module content[2m > [22mawards 700 XP across the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts[2m > [22mbeginner graduation mastery[2m > [22mkeeps the exam locked and reports weak modules before core completion[32m 15[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts[2m > [22mbeginner graduation mastery[2m > [22munlocks the exam at 95 mastery after all eight core modules[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts[2m > [22mbeginner graduation mastery[2m > [22mawards full mastery, badge state and intermediate access after the exam[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts[2m > [22mbeginner graduation mastery[2m > [22mfinds the published graduation lesson[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/generatorsCoroutinesContent.test.ts[2m > [22mgenerators and coroutines curriculum package[2m > [22mpublishes seven ordered lessons with 850 XP[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/content/generatorsCoroutinesContent.test.ts[2m > [22mgenerators and coroutines curriculum package[2m > [22mcovers lazy yield, delegation, send, throw, close and the final pipeline[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts[2m > [22mcurriculumStore[2m > [22mkeeps the next lesson locked until the current lesson is complete[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts[2m > [22mcurriculumStore[2m > [22mmoves to the next lesson after the prerequisite is complete[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts[2m > [22mcurriculumStore[2m > [22mmoves back to the previous lesson[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts[2m > [22mcurriculumStore[2m > [22mignores unknown lesson ids[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts[2m > [22mcurriculum compatibility[2m > [22mstarts a new learner at the first introduction lesson[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts[2m > [22mcurriculum compatibility[2m > [22munlocks variables only after the introduction module is complete[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts[2m > [22mcurriculum compatibility[2m > [22mkeeps lessons completed in an older version open for review[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts[2m > [22mcurriculum compatibility[2m > [22mskips legacy-completed lessons after the final introduction lesson[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts[2m > [22mcurriculum compatibility[2m > [22mcontinues into the first incomplete lesson of the next module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts[2m > [22madvanced databases module content[2m > [22mpublishes seven ordered advanced lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts[2m > [22madvanced databases module content[2m > [22mawards 1000 XP[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts[2m > [22madvanced databases module content[2m > [22mcovers parameter binding, foreign keys, transactions and indexes[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts[2m > [22madvanced databases module content[2m > [22mships a layered migration, repository and service final project[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts[2m > [22madvanced databases module content[2m > [22mrequires both transaction and nested iteration structure in the final[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts[2m > [22mobject-oriented basics module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts[2m > [22mobject-oriented basics module content[2m > [22mcovers prediction, completion, debugging, encapsulation and object modeling[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts[2m > [22mobject-oriented basics module content[2m > [22muses structural class checks and hidden object scenarios[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts[2m > [22mobject-oriented basics module content[2m > [22mships a multi-file store domain project[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts[2m > [22mobject-oriented basics module content[2m > [22mawards 650 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts[2m > [22mmodules and packages content[2m > [22mpublishes seven ordered intermediate lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts[2m > [22mmodules and packages content[2m > [22mships real multi-file workspaces with valid entrypoints[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts[2m > [22mmodules and packages content[2m > [22mvalidates project imports and module-level function cases[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts[2m > [22mmodules and packages content[2m > [22mends with a four-file package project[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts[2m > [22mmodules and packages content[2m > [22mawards 500 XP across the module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts[2m > [22mbeginner graduation content[2m > [22mpublishes one assessment outside the eight core modules[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts[2m > [22mbeginner graduation content[2m > [22mcovers all beginner topics and a visible graduation contract[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts[2m > [22mbeginner graduation content[2m > [22mrequires function, loop, condition, dictionary and set structures[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts[2m > [22mbeginner graduation content[2m > [22muses four comprehensive hidden scenarios including custom threshold and empty data[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts[2m > [22mbeginner graduation content[2m > [22mawards 150 XP for the final assessment[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts[2m > [22mHTTP and networking module content[2m > [22mpublishes seven ordered advanced lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts[2m > [22mHTTP and networking module content[2m > [22mawards 930 XP[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts[2m > [22mHTTP and networking module content[2m > [22mcovers URL, Request, HTTP errors, retry and pagination[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts[2m > [22mHTTP and networking module content[2m > [22mkeeps network access offline through read-only fake transports[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts[2m > [22mHTTP and networking module content[2m > [22mships a layered five-file final project with hidden scenarios[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateUnlock.test.ts[2m > [22mintermediate curriculum access[2m > [22mstays locked before the graduation exam is complete[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateUnlock.test.ts[2m > [22mintermediate curriculum access[2m > [22mopens immediately after graduation is recorded[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22mparses a valid validator response[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22mrejects an invalid validator response[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22mturns each stdin line into a separate input value[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22mkeeps visible requirements separate from hidden tests[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22maccepts the correct output prediction without running Python[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts[2m > [22mtask validation service[2m > [22mkeeps a wrong prediction hidden behind the answer check[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/finalReleaseContract.test.ts[2m > [22mPython Farming 1.0 final release contract[2m > [22mkeeps every application version source aligned at 1.0.0[32m 5[2mms[22m[39m
+ [32m✓[39m src/test/content/finalReleaseContract.test.ts[2m > [22mPython Farming 1.0 final release contract[2m > [22mpublishes honest completion, release notes and final QA boundaries[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/finalReleaseContract.test.ts[2m > [22mPython Farming 1.0 final release contract[2m > [22mkeeps release publication tag-gated and dry runs non-publishing[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/architecturePatternsContent.test.ts[2m > [22marchitecture patterns module content[2m > [22mpublishes seven ordered lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/architecturePatternsContent.test.ts[2m > [22marchitecture patterns module content[2m > [22mawards 1080 XP[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/architecturePatternsContent.test.ts[2m > [22marchitecture patterns module content[2m > [22mcovers DI, repository, strategy, factory, adapter and service layer[32m 2[2mms[22m[39m
+ [32m✓[39m src/test/content/architecturePatternsContent.test.ts[2m > [22marchitecture patterns module content[2m > [22mships a six-file layered final project with hidden scenarios[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts[2m > [22mpackaging and performance module content[2m > [22mpublishes seven ordered lessons[32m 5[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts[2m > [22mpackaging and performance module content[2m > [22mawards 1060 XP[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts[2m > [22mpackaging and performance module content[2m > [22mcovers timeit, profiling, memory, caching and package API contracts[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts[2m > [22mpackaging and performance module content[2m > [22mships a complete performance debugging guide[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts[2m > [22mpackaging and performance module content[2m > [22muses a six-file final project with deterministic hidden reports[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateCapstoneContent.test.ts[2m > [22mintermediate capstone content[2m > [22mpublishes a single 300 XP graduation project[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateCapstoneContent.test.ts[2m > [22mintermediate capstone content[2m > [22mships a multi-file domain, persistence, reporting and testing workspace[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateCapstoneContent.test.ts[2m > [22mintermediate capstone content[2m > [22mrequires the capstone quality gate and persistent JSON outputs[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedProjectContent.test.ts[2m > [22madvanced capstone module content[2m > [22mpublishes the final advanced platform lesson[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedProjectContent.test.ts[2m > [22madvanced capstone module content[2m > [22mships an eleven-file production workspace[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedProjectContent.test.ts[2m > [22madvanced capstone module content[2m > [22muses the dedicated advanced capstone quality gate[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedProjectContent.test.ts[2m > [22madvanced capstone module content[2m > [22mkeeps external networking disabled through FakeTransport[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts[2m > [22mpackaged curriculum content[2m > [22mpublishes five ordered Python introduction lessons[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts[2m > [22mpackaged curriculum content[2m > [22mkeeps lesson ids unique across packaged and legacy content[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts[2m > [22mpackaged curriculum content[2m > [22mawards 170 XP across the introduction module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts[2m > [22mpackaged curriculum content[2m > [22muses call count checks for beginner print exercises[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts[2m > [22mloops module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts[2m > [22mloops module content[2m > [22mcontains output prediction, code ordering and debugging practice[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts[2m > [22mloops module content[2m > [22mpublishes a valid shuffled code ordering lesson[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts[2m > [22mloops module content[2m > [22mrequires real loop AST nodes across code and debugging lessons[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts[2m > [22mloops module content[2m > [22mawards 360 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts[2m > [22mconditionals module content[2m > [22mpublishes seven ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts[2m > [22mconditionals module content[2m > [22mcontains prediction, completion, debugging and chapter challenge modes[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts[2m > [22mconditionals module content[2m > [22mships a deliberately broken SyntaxError starter with a debugging workflow[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts[2m > [22mconditionals module content[2m > [22mrequires real If AST nodes in every coding condition lesson[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts[2m > [22mconditionals module content[2m > [22mawards 340 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/asyncAwaitContent.test.ts[2m > [22masync and await module content[2m > [22mpublishes seven ordered advanced lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/test/content/asyncAwaitContent.test.ts[2m > [22masync and await module content[2m > [22mawards 920 XP and includes prediction, debugging and multi-file work[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/content/asyncAwaitContent.test.ts[2m > [22masync and await module content[2m > [22muses real async programming quality gates[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorWorkspace.test.ts[2m > [22meditor multi-file workspace[2m > [22mloads all files and activates the entrypoint[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorWorkspace.test.ts[2m > [22meditor multi-file workspace[2m > [22mdoes not change read-only support files[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorWorkspace.test.ts[2m > [22meditor multi-file workspace[2m > [22mswitches files and resets the complete project[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts[2m > [22moperators module content[2m > [22mpublishes six ordered lessons[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts[2m > [22moperators module content[2m > [22mcontains two output prediction and two code completion lessons[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts[2m > [22moperators module content[2m > [22mkeeps each prediction answer inside its published options[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts[2m > [22moperators module content[2m > [22mships visible completion markers in code completion starters[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts[2m > [22moperators module content[2m > [22mawards 260 XP across the complete module[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/content/decoratorsContextManagersContent.test.ts[2m > [22mdecorators and context managers content[2m > [22mpublishes seven ordered advanced lessons worth 820 XP[32m 5[2mms[22m[39m
+ [32m✓[39m src/test/content/decoratorsContextManagersContent.test.ts[2m > [22mdecorators and context managers content[2m > [22mcovers wraps, parameterized decorators and both context manager forms[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/terminalFormatter.test.ts[2m > [22mformatTerminalOutput[2m > [22mshows a ready prompt before the first execution[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/terminalFormatter.test.ts[2m > [22mformatTerminalOutput[2m > [22mcombines stdout and execution metadata[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/terminalFormatter.test.ts[2m > [22mformatTerminalOutput[2m > [22mexplains when an execution times out[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/release/multiplatformReleaseContract.test.ts[2m > [22mmultiplatform release contract[2m > [22mkeeps manual runs as dry-run artifacts instead of fake releases[32m 3[2mms[22m[39m
+ [32m✓[39m src/test/release/multiplatformReleaseContract.test.ts[2m > [22mmultiplatform release contract[2m > [22mpublishes GitHub releases only for matching version tags[32m 0[2mms[22m[39m
+ [32m✓[39m src/test/release/multiplatformReleaseContract.test.ts[2m > [22mmultiplatform release contract[2m > [22mbuilds Windows, Linux and both macOS architectures[32m 1[2mms[22m[39m
+ [32m✓[39m src/test/release/multiplatformReleaseContract.test.ts[2m > [22mmultiplatform release contract[2m > [22mgenerates SHA-256 release manifests[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumPackageLoading.test.ts[2m > [22mpublished curriculum package loading[2m > [22mvalidates and merges every package from the published index[32m 17[2mms[22m[39m
+ [32m✓[39m src/tests/unit/orderValidationService.test.ts[2m > [22mcode ordering validation[2m > [22maccepts the exact published block order[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/orderValidationService.test.ts[2m > [22mcode ordering validation[2m > [22mrejects a complete but incorrectly ordered answer[32m 1[2mms[22m[39m
+ [32m✓[39m src/tests/unit/orderValidationService.test.ts[2m > [22mcode ordering validation[2m > [22mrejects missing or repeated blocks[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorStore.test.ts[2m > [22meditorStore[2m > [22mmarks a document as dirty when its content changes[32m 3[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorStore.test.ts[2m > [22meditorStore[2m > [22mstores cursor position[32m 2[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorStore.test.ts[2m > [22meditorStore[2m > [22mrestores the starter code[32m 0[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorLanguages.test.ts[2m > [22meditor project file languages[2m > [22mdetects Python, JSON and plain text project files[32m 2[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/test/content/expertAlgorithmsContent.test.ts[2m > [22mexpert algorithms and complexity content[2m > [22mregisters the expert package in the published package index
+[31m[1mAssertionError[22m: expected '/content/modules/parallelism-systems.…' to be '/content/modules/algorithms-complexit…' // Object.is equality[39m
+
+Expected: [32m"/content/modules/[7malgorithms-complexity[27m.json"[39m
+Received: [31m"/content/modules/[7mparallelism-systems[27m.json"[39m
+
+[36m [2m❯[22m src/test/content/expertAlgorithmsContent.test.ts:[2m45:32[22m[39m
+    [90m 43|[39m     [35mconst[39m index [33m=[39m [34mloadPackageIndex[39m()[33m;[39m
+    [90m 44|[39m     expect(index.files).toContain("/content/modules/algorithms-complex…
+    [90m 45|[39m     expect(index.files.at(-1)).toBe("/content/modules/algorithms-compl…
+    [90m   |[39m                                [31m^[39m
+    [90m 46|[39m   })[33m;[39m
+    [90m 47|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m68 passed[39m[22m[90m (69)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m299 passed[39m[22m[90m (300)[39m
+[2m   Start at [22m 03:28:44
+[2m   Duration [22m 5.69s[2m (transform 919ms, setup 0ms, import 1.96s, tests 4.21s, environment 9ms)[22m
+
