@@ -1,0 +1,1048 @@
+{
+  "moduleId": "algorithms-complexity",
+  "lessons": [
+    {
+      "id": "expert.algorithms.growth-order",
+      "moduleId": "algorithms-complexity",
+      "order": 1,
+      "title": "Büyüme oranlarını doğru sırala",
+      "summary": "Algoritma maliyetini tek bir ölçüme göre değil, girdi büyüdükçe değişen işlem sayısına göre değerlendir.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "output-prediction",
+      "task": {
+        "title": "Büyüme oranlarını küçükten büyüğe sırala",
+        "instructions": [
+          "n büyüdüğünde dört maliyet ifadesinin davranışını karşılaştır.",
+          "Sabit, logaritmik, doğrusal ve karesel büyümeyi ayırt et.",
+          "En yavaş büyüyenden en hızlı büyüyene doğru seçeneği belirle."
+        ],
+        "requirements": [
+          "Katsayılar ve küçük girdi süreleri Big-O sırasını değiştirmez.",
+          "log₂(n), n'den; n ise n²'den daha yavaş büyür."
+        ],
+        "sampleOutput": "O(1) < O(log n) < O(n) < O(n²)",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def tahmini_islem_sayilari(n):\n    return {\n        \"sabit\": 50,\n        \"logaritmik\": n.bit_length(),\n        \"dogrusal\": n,\n        \"karesel\": n * n,\n    }\n\n\nfor boyut in (8, 64, 512):\n    print(boyut, tahmini_islem_sayilari(boyut))\n"
+      },
+      "hints": [],
+      "validation": {
+        "id": "expert.algorithms.growth-order",
+        "title": "Büyüme oranlarını doğru sırala",
+        "xpReward": 90,
+        "timeoutMs": 10000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "a"
+        }
+      },
+      "choice": {
+        "prompt": "Büyüme oranlarının doğru sırası hangisidir?",
+        "options": [
+          {
+            "id": "a",
+            "label": "O(1) < O(log n) < O(n) < O(n²)"
+          },
+          {
+            "id": "b",
+            "label": "O(log n) < O(1) < O(n²) < O(n)"
+          },
+          {
+            "id": "c",
+            "label": "O(n) < O(log n) < O(1) < O(n²)"
+          },
+          {
+            "id": "d",
+            "label": "O(n²) < O(n) < O(log n) < O(1)"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.binary-search",
+      "moduleId": "algorithms-complexity",
+      "order": 2,
+      "title": "Binary search sözleşmesini uygula",
+      "summary": "Sıralı bir dizide arama aralığını her adımda yarıya indirerek O(log n) arama yap.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "code",
+      "task": {
+        "title": "Binary search ile ilk eşleşmeyi bul",
+        "instructions": [
+          "binary_search(veriler, hedef) fonksiyonunu tamamla.",
+          "Hedef varsa indeksini, yoksa -1 döndür.",
+          "Tekrarlanan hedeflerde ilk eşleşmenin indeksini bul."
+        ],
+        "requirements": [
+          "Liste sıralı kabul edilir.",
+          "Dilimleme veya list.index kullanma.",
+          "Arama aralığı while döngüsünde yarıya indirilmelidir."
+        ],
+        "sampleOutput": "binary_search([1, 3, 3, 7, 9], 3) -> 1",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def binary_search(veriler, hedef):\n    sol = 0\n    sag = len(veriler) - 1\n    sonuc = -1\n\n    # Arama aralığını yarıya indir.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(binary_search([1, 3, 3, 7, 9], 3))\n"
+      },
+      "hints": [
+        {
+          "title": "İlk eşleşme",
+          "body": "Eşleşmede sonucu kaydet; daha solda aynı değer olabilir diye sağ sınırı azalt."
+        }
+      ],
+      "validation": {
+        "id": "expert.algorithms.binary-search",
+        "title": "Binary search ile ilk eşleşmeyi bul",
+        "xpReward": 165,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "binary-def",
+            "kind": "function_definition",
+            "name": "binary_search",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "binary_search tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "binary-while",
+            "kind": "node_count",
+            "nodeName": "While",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "Arama döngüsü kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "binary-no-index",
+            "kind": "call_count",
+            "name": "index",
+            "min": 0,
+            "max": 0,
+            "file": "main.py",
+            "label": "Hazır index araması kullanılmıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "binary-cases",
+            "kind": "function_cases",
+            "name": "binary_search",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    3,
+                    3,
+                    7,
+                    9
+                  ],
+                  3
+                ],
+                "expected": 1
+              },
+              {
+                "args": [
+                  [
+                    2,
+                    4,
+                    6,
+                    8
+                  ],
+                  5
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  [],
+                  1
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  [
+                    5
+                  ],
+                  5
+                ],
+                "expected": 0
+              },
+              {
+                "args": [
+                  [
+                    1,
+                    1,
+                    1,
+                    1
+                  ],
+                  1
+                ],
+                "expected": 0
+              }
+            ],
+            "label": "Gizli binary search senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.top-k",
+      "moduleId": "algorithms-complexity",
+      "order": 3,
+      "title": "Top-k seçimini tam sıralama yapmadan çöz",
+      "summary": "Bütün veriyi sıralamak yerine heap tabanlı seçimle en büyük k öğeyi verimli biçimde çıkar.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "code-completion",
+      "task": {
+        "title": "En yüksek k skoru seç",
+        "instructions": [
+          "top_k_skorlar(skorlar, k) fonksiyonunu tamamla.",
+          "Sonucu büyükten küçüğe döndür.",
+          "k sıfır veya negatifse boş liste döndür."
+        ],
+        "requirements": [
+          "heapq.nlargest kullanılmalı.",
+          "Girdi listesi değiştirilmemeli.",
+          "k liste uzunluğundan büyük olabilir."
+        ],
+        "sampleOutput": "top_k_skorlar([5, 1, 9, 7], 2) -> [9, 7]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from heapq import nlargest\n\n\ndef top_k_skorlar(skorlar, k):\n    # Tam sıralama yerine heap tabanlı seçim yap.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(top_k_skorlar([5, 1, 9, 7], 2))\n"
+      },
+      "hints": [
+        {
+          "title": "nlargest",
+          "body": "nlargest(k, iterable) en büyük k öğeyi büyükten küçüğe verir."
+        }
+      ],
+      "validation": {
+        "id": "expert.algorithms.top-k",
+        "title": "En yüksek k skoru seç",
+        "xpReward": 155,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "heap-import",
+            "kind": "import_statement",
+            "module": "heapq",
+            "name": "nlargest",
+            "file": "main.py",
+            "label": "heapq.nlargest import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "top-k-def",
+            "kind": "function_definition",
+            "name": "top_k_skorlar",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "top_k_skorlar tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "top-k-cases",
+            "kind": "function_cases",
+            "name": "top_k_skorlar",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    5,
+                    1,
+                    9,
+                    7
+                  ],
+                  2
+                ],
+                "expected": [
+                  9,
+                  7
+                ]
+              },
+              {
+                "args": [
+                  [
+                    3,
+                    3,
+                    1
+                  ],
+                  5
+                ],
+                "expected": [
+                  3,
+                  3,
+                  1
+                ]
+              },
+              {
+                "args": [
+                  [
+                    4,
+                    2
+                  ],
+                  0
+                ],
+                "expected": []
+              },
+              {
+                "args": [
+                  [],
+                  3
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli top-k senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.duplicate-debug",
+      "moduleId": "algorithms-complexity",
+      "order": 4,
+      "title": "Hata Avcısı: karesel tekrar aramasını düzelt",
+      "summary": "İç içe döngüyle çalışan O(n²) çözümü tek geçişli set tabanlı O(n) çözüme dönüştür.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "debugging",
+      "task": {
+        "title": "İlk tekrar eden değeri doğrusal zamanda bul",
+        "instructions": [
+          "ilk_tekrar(veriler) fonksiyonundaki iç içe döngüyü kaldır.",
+          "Daha önce görülen değerleri bir set içinde tut.",
+          "İlk tekrar eden değeri; tekrar yoksa None döndür."
+        ],
+        "requirements": [
+          "En fazla bir for döngüsü bulunmalı.",
+          "set kullanılmalı.",
+          "Girdi sırası korunmalı."
+        ],
+        "sampleOutput": "ilk_tekrar([4, 2, 5, 2, 4]) -> 2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def ilk_tekrar(veriler):\n    for indeks, deger in enumerate(veriler):\n        for onceki in veriler[:indeks]:\n            if deger == onceki:\n                return deger\n    return None\n\n\nif __name__ == \"__main__\":\n    print(ilk_tekrar([4, 2, 5, 2, 4]))\n"
+      },
+      "hints": [
+        {
+          "title": "Görülenler kümesi",
+          "body": "Her değerde önce üyelik kontrolü yap, sonra kümeye ekle."
+        }
+      ],
+      "debugging": {
+        "errorType": "Performance regression",
+        "symptom": "Girdi iki katına çıktığında karşılaştırma sayısı yaklaşık dört katına çıkıyor.",
+        "workflow": [
+          "İç içe döngünün toplam karşılaştırma sayısını belirle.",
+          "Daha önce görülen değerleri sabit zamana yakın üyelik kontrolüyle sakla.",
+          "İlk tekrarın sırasını gizli testlerle doğrula."
+        ]
+      },
+      "validation": {
+        "id": "expert.algorithms.duplicate-debug",
+        "title": "İlk tekrar eden değeri doğrusal zamanda bul",
+        "xpReward": 175,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "repeat-def",
+            "kind": "function_definition",
+            "name": "ilk_tekrar",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "ilk_tekrar tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "single-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "Tek geçişli döngü kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "set-call",
+            "kind": "call",
+            "name": "set",
+            "file": "main.py",
+            "label": "Set tabanlı indeks kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "repeat-cases",
+            "kind": "function_cases",
+            "name": "ilk_tekrar",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    4,
+                    2,
+                    5,
+                    2,
+                    4
+                  ]
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  [
+                    1,
+                    2,
+                    3
+                  ]
+                ],
+                "expected": null
+              },
+              {
+                "args": [
+                  [
+                    "a",
+                    "b",
+                    "a"
+                  ]
+                ],
+                "expected": "a"
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": null
+              }
+            ],
+            "label": "Gizli tekrar senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.bfs",
+      "moduleId": "algorithms-complexity",
+      "order": 5,
+      "title": "Graf üzerinde en kısa atlama sayısını bul",
+      "summary": "Ağırlıksız bir graf üzerinde breadth-first search kullanarak en az kenar sayısını hesapla.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "code",
+      "task": {
+        "title": "BFS ile en kısa mesafeyi hesapla",
+        "instructions": [
+          "en_kisa_mesafe(graf, baslangic, hedef) fonksiyonunu tamamla.",
+          "Ulaşılamayan hedefte -1 döndür.",
+          "Döngülü graflarda aynı düğümü tekrar işleme."
+        ],
+        "requirements": [
+          "collections.deque kullanılmalı.",
+          "Mesafe kenar sayısı olarak hesaplanmalı.",
+          "Graf sözlük biçimindedir."
+        ],
+        "sampleOutput": "A -> D için 2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from collections import deque\n\n\ndef en_kisa_mesafe(graf, baslangic, hedef):\n    # Kuyrukta (dugum, mesafe) çiftleri tut.\n    pass\n\n\nif __name__ == \"__main__\":\n    graf = {\"A\": [\"B\", \"C\"], \"B\": [\"D\"], \"C\": [\"D\"], \"D\": []}\n    print(en_kisa_mesafe(graf, \"A\", \"D\"))\n"
+      },
+      "hints": [
+        {
+          "title": "BFS katmanları",
+          "body": "Kuyruktan çıkan düğümün komşularını mesafe + 1 ile kuyruğa ekle."
+        }
+      ],
+      "validation": {
+        "id": "expert.algorithms.bfs",
+        "title": "BFS ile en kısa mesafeyi hesapla",
+        "xpReward": 185,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "deque-import",
+            "kind": "import_statement",
+            "module": "collections",
+            "name": "deque",
+            "file": "main.py",
+            "label": "deque import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "bfs-def",
+            "kind": "function_definition",
+            "name": "en_kisa_mesafe",
+            "minParams": 3,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "BFS fonksiyonu tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "bfs-while",
+            "kind": "node_count",
+            "nodeName": "While",
+            "min": 1,
+            "file": "main.py",
+            "label": "Kuyruk tüketme döngüsü var",
+            "visibility": "visible"
+          },
+          {
+            "id": "bfs-cases",
+            "kind": "function_cases",
+            "name": "en_kisa_mesafe",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  {
+                    "A": [
+                      "B",
+                      "C"
+                    ],
+                    "B": [
+                      "D"
+                    ],
+                    "C": [
+                      "D"
+                    ],
+                    "D": []
+                  },
+                  "A",
+                  "D"
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  {
+                    "A": [
+                      "B"
+                    ],
+                    "B": [
+                      "A"
+                    ],
+                    "C": []
+                  },
+                  "A",
+                  "C"
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  {
+                    "A": []
+                  },
+                  "A",
+                  "A"
+                ],
+                "expected": 0
+              },
+              {
+                "args": [
+                  {},
+                  "X",
+                  "Y"
+                ],
+                "expected": -1
+              }
+            ],
+            "label": "Gizli BFS senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.dynamic-programming",
+      "moduleId": "algorithms-complexity",
+      "order": 6,
+      "title": "Dinamik programlamayla minimum maliyeti bul",
+      "summary": "Tekrarlanan alt problemleri önbelleğe alarak üstel aramayı yönetilebilir bir çözüm hâline getir.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "code-completion",
+      "task": {
+        "title": "Minimum bozuk para sayısını hesapla",
+        "instructions": [
+          "minimum_para_sayisi(paralar, hedef) fonksiyonunu tamamla.",
+          "Hedef üretilemiyorsa -1 döndür.",
+          "Tekrarlanan alt problemleri lru_cache ile önbelleğe al."
+        ],
+        "requirements": [
+          "Pozitif olmayan para değerleri yok sayılmalı.",
+          "Hedef 0 ise sonuç 0 olmalı.",
+          "Girdi listesi değiştirilmemeli."
+        ],
+        "sampleOutput": "minimum_para_sayisi([1, 3, 4], 6) -> 2",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from functools import lru_cache\n\n\ndef minimum_para_sayisi(paralar, hedef):\n    temiz = tuple(sorted({para for para in paralar if para > 0}))\n\n    @lru_cache(maxsize=None)\n    def coz(kalan):\n        # Taban durumlarını ve alt problem geçişini tamamla.\n        pass\n\n    sonuc = coz(hedef)\n    return -1 if sonuc == float(\"inf\") else sonuc\n\n\nif __name__ == \"__main__\":\n    print(minimum_para_sayisi([1, 3, 4], 6))\n"
+      },
+      "hints": [
+        {
+          "title": "Alt problem",
+          "body": "Her para için coz(kalan - para) sonucuna 1 ekleyip minimumu al."
+        }
+      ],
+      "validation": {
+        "id": "expert.algorithms.dynamic-programming",
+        "title": "Minimum bozuk para sayısını hesapla",
+        "xpReward": 205,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "lru-import",
+            "kind": "import_statement",
+            "module": "functools",
+            "name": "lru_cache",
+            "file": "main.py",
+            "label": "lru_cache import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "dp-def",
+            "kind": "function_definition",
+            "name": "minimum_para_sayisi",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "Dinamik programlama fonksiyonu",
+            "visibility": "visible"
+          },
+          {
+            "id": "cache-usage",
+            "kind": "decorator_usage",
+            "name": "coz",
+            "accepted": [
+              "lru_cache"
+            ],
+            "file": "main.py",
+            "label": "Alt problem önbelleğe alınıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "dp-cases",
+            "kind": "function_cases",
+            "name": "minimum_para_sayisi",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    3,
+                    4
+                  ],
+                  6
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  [
+                    2
+                  ],
+                  3
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  [
+                    2,
+                    5
+                  ],
+                  0
+                ],
+                "expected": 0
+              },
+              {
+                "args": [
+                  [
+                    0,
+                    -1,
+                    2
+                  ],
+                  4
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  [],
+                  7
+                ],
+                "expected": -1
+              }
+            ],
+            "label": "Gizli dinamik programlama senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.algorithms.final",
+      "moduleId": "algorithms-complexity",
+      "order": 7,
+      "title": "Final: Algoritma Karar Motoru",
+      "summary": "Arama, graf ve dinamik programlama katmanlarını çok dosyalı, test edilebilir bir karar motorunda birleştir.",
+      "levelLabel": "Expert Algorithms",
+      "mode": "code",
+      "task": {
+        "title": "Çok dosyalı algoritma karar motorunu tamamla",
+        "instructions": [
+          "search.py içinde ilk eşleşmeli binary search uygula.",
+          "graph.py içinde BFS ile en kısa mesafeyi hesapla.",
+          "optimizer.py içinde önbellekli minimum para çözümünü kur.",
+          "app.py üç sonucu tek raporda birleştirsin."
+        ],
+        "requirements": [
+          "Paket içi importlar korunmalı.",
+          "Fonksiyonlar sabit görünür sonucu döndürmemeli.",
+          "Gizli senaryolar farklı veri, graf ve hedeflerle çalışacaktır."
+        ],
+        "sampleOutput": "{\"indeks\": 1, \"mesafe\": 2, \"minimum_para\": 2}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from karar_motoru import karar_raporu\n\n\nif __name__ == \"__main__\":\n    graf = {\"A\": [\"B\", \"C\"], \"B\": [\"D\"], \"C\": [\"D\"], \"D\": []}\n    print(karar_raporu([1, 3, 3, 7, 9], 3, graf, \"A\", \"D\", [1, 3, 4], 6))\n",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from karar_motoru import karar_raporu\n\n\nif __name__ == \"__main__\":\n    graf = {\"A\": [\"B\", \"C\"], \"B\": [\"D\"], \"C\": [\"D\"], \"D\": []}\n    print(karar_raporu([1, 3, 3, 7, 9], 3, graf, \"A\", \"D\", [1, 3, 4], 6))\n"
+          },
+          {
+            "path": "karar_motoru/__init__.py",
+            "starterCode": "from .app import karar_raporu\n\n__all__ = [\"karar_raporu\"]\n"
+          },
+          {
+            "path": "karar_motoru/search.py",
+            "starterCode": "def binary_search(veriler, hedef):\n    # İlk eşleşmenin indeksini O(log n) zamanda döndür.\n    pass\n"
+          },
+          {
+            "path": "karar_motoru/graph.py",
+            "starterCode": "from collections import deque\n\n\ndef en_kisa_mesafe(graf, baslangic, hedef):\n    # Ağırlıksız graf üzerinde BFS uygula.\n    pass\n"
+          },
+          {
+            "path": "karar_motoru/optimizer.py",
+            "starterCode": "from functools import lru_cache\n\n\ndef minimum_para_sayisi(paralar, hedef):\n    # Alt problemleri önbelleğe alan çözümü kur.\n    pass\n"
+          },
+          {
+            "path": "karar_motoru/app.py",
+            "starterCode": "from .graph import en_kisa_mesafe\nfrom .optimizer import minimum_para_sayisi\nfrom .search import binary_search\n\n\ndef karar_raporu(veriler, hedef, graf, baslangic, bitis, paralar, tutar):\n    # Üç algoritmanın gerçek sonuçlarını tek sözlükte birleştir.\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Katmanları ayrı doğrula",
+          "body": "Önce search, graph ve optimizer fonksiyonlarını tek tek çalıştır; sonra app.py içinde birleştir."
+        }
+      ],
+      "validation": {
+        "id": "expert.algorithms.final",
+        "title": "Çok dosyalı algoritma karar motorunu tamamla",
+        "xpReward": 285,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "search-file",
+            "kind": "file_exists",
+            "path": "karar_motoru/search.py",
+            "label": "Arama katmanı mevcut",
+            "visibility": "visible"
+          },
+          {
+            "id": "graph-file",
+            "kind": "file_exists",
+            "path": "karar_motoru/graph.py",
+            "label": "Graf katmanı mevcut",
+            "visibility": "visible"
+          },
+          {
+            "id": "optimizer-file",
+            "kind": "file_exists",
+            "path": "karar_motoru/optimizer.py",
+            "label": "Optimizasyon katmanı mevcut",
+            "visibility": "visible"
+          },
+          {
+            "id": "app-import-search",
+            "kind": "import_statement",
+            "module": ".search",
+            "name": "binary_search",
+            "file": "karar_motoru/app.py",
+            "label": "Arama katmanı bağlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "app-import-graph",
+            "kind": "import_statement",
+            "module": ".graph",
+            "name": "en_kisa_mesafe",
+            "file": "karar_motoru/app.py",
+            "label": "Graf katmanı bağlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "app-import-optimizer",
+            "kind": "import_statement",
+            "module": ".optimizer",
+            "name": "minimum_para_sayisi",
+            "file": "karar_motoru/app.py",
+            "label": "Optimizasyon katmanı bağlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "search-cases",
+            "kind": "function_cases",
+            "name": "binary_search",
+            "module": "karar_motoru.search",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    3,
+                    3,
+                    7,
+                    9
+                  ],
+                  3
+                ],
+                "expected": 1
+              },
+              {
+                "args": [
+                  [
+                    2,
+                    4,
+                    6
+                  ],
+                  5
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  [
+                    1,
+                    1,
+                    1
+                  ],
+                  1
+                ],
+                "expected": 0
+              }
+            ],
+            "label": "Gizli arama senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "graph-cases",
+            "kind": "function_cases",
+            "name": "en_kisa_mesafe",
+            "module": "karar_motoru.graph",
+            "cases": [
+              {
+                "args": [
+                  {
+                    "A": [
+                      "B",
+                      "C"
+                    ],
+                    "B": [
+                      "D"
+                    ],
+                    "C": [
+                      "D"
+                    ],
+                    "D": []
+                  },
+                  "A",
+                  "D"
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  {
+                    "A": [
+                      "B"
+                    ],
+                    "B": [
+                      "A"
+                    ],
+                    "C": []
+                  },
+                  "A",
+                  "C"
+                ],
+                "expected": -1
+              }
+            ],
+            "label": "Gizli graf senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "optimizer-cases",
+            "kind": "function_cases",
+            "name": "minimum_para_sayisi",
+            "module": "karar_motoru.optimizer",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    3,
+                    4
+                  ],
+                  6
+                ],
+                "expected": 2
+              },
+              {
+                "args": [
+                  [
+                    2
+                  ],
+                  3
+                ],
+                "expected": -1
+              },
+              {
+                "args": [
+                  [
+                    5
+                  ],
+                  0
+                ],
+                "expected": 0
+              }
+            ],
+            "label": "Gizli optimizasyon senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "karar_raporu",
+            "module": "karar_motoru.app",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    3,
+                    3,
+                    7,
+                    9
+                  ],
+                  3,
+                  {
+                    "A": [
+                      "B",
+                      "C"
+                    ],
+                    "B": [
+                      "D"
+                    ],
+                    "C": [
+                      "D"
+                    ],
+                    "D": []
+                  },
+                  "A",
+                  "D",
+                  [
+                    1,
+                    3,
+                    4
+                  ],
+                  6
+                ],
+                "expected": {
+                  "indeks": 1,
+                  "mesafe": 2,
+                  "minimum_para": 2
+                }
+              },
+              {
+                "args": [
+                  [
+                    2,
+                    4,
+                    6
+                  ],
+                  5,
+                  {
+                    "X": []
+                  },
+                  "X",
+                  "X",
+                  [
+                    2
+                  ],
+                  3
+                ],
+                "expected": {
+                  "indeks": -1,
+                  "mesafe": 0,
+                  "minimum_para": -1
+                }
+              }
+            ],
+            "label": "Gizli karar raporları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}

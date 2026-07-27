@@ -26,6 +26,7 @@
     "/content/modules/databases-advanced.json",
     "/content/modules/architecture-patterns.json",
     "/content/modules/packaging-performance.json",
-    "/content/modules/advanced-project.json"
+    "/content/modules/advanced-project.json",
+    "/content/modules/algorithms-complexity.json"
   ]
 }

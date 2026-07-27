@@ -184,6 +184,48 @@
           "lessonIds": []
         }
       ]
+    },
+    {
+      "id": "expert",
+      "title": "Uzman Seviye",
+      "modules": [
+        {
+          "id": "algorithms-complexity",
+          "number": "01",
+          "title": "Algoritmalar ve Karmaşıklık",
+          "lessonIds": []
+        },
+        {
+          "id": "parallelism-systems",
+          "number": "02",
+          "title": "Paralellik ve Sistem Programlama",
+          "lessonIds": []
+        },
+        {
+          "id": "compilers-metaprogramming",
+          "number": "03",
+          "title": "AST, Derleyiciler ve Metaprogramlama",
+          "lessonIds": []
+        },
+        {
+          "id": "distributed-resilience",
+          "number": "04",
+          "title": "Dağıtık Sistemler ve Dayanıklılık",
+          "lessonIds": []
+        },
+        {
+          "id": "security-observability",
+          "number": "05",
+          "title": "Güvenlik ve Gözlemlenebilirlik",
+          "lessonIds": []
+        },
+        {
+          "id": "expert-project",
+          "number": "06",
+          "title": "Uzmanlık Projesi",
+          "lessonIds": []
+        }
+      ]
     }
   ],
   "lessons": [
