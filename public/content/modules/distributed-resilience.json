@@ -172,13 +172,13 @@
                 "args": [
                   4,
                   0.5,
-                  2.0
+                  2
                 ],
                 "expected": [
                   0.5,
-                  1.0,
-                  2.0,
-                  2.0
+                  1,
+                  2,
+                  2
                 ]
               },
               {
@@ -999,55 +999,37 @@
           },
           {
             "id": "retry-class",
-            "kind": "class_definition",
-            "name": "RetryPolicy",
-            "minInitParams": 1,
-            "maxInitParams": 2,
-            "requiredMethods": [
-              "calistir"
-            ],
-            "requiredAttributes": [
-              "max_deneme"
-            ],
-            "file": "dayanikli_sistem/retry.py",
-            "label": "RetryPolicy tanımlandı",
+            "kind": "file_content_regex",
+            "path": "dayanikli_sistem/retry.py",
+            "pattern": "class\\s+RetryPolicy\\s*:[\\s\\S]*def\\s+calistir\\s*\\(",
+            "flags": "s",
+            "label": "RetryPolicy ve calistir() tanımlandı",
             "visibility": "visible"
           },
           {
             "id": "registry-class",
-            "kind": "class_definition",
-            "name": "IdempotencyRegistry",
-            "minInitParams": 0,
-            "maxInitParams": 1,
-            "requiredMethods": [
-              "icerir",
-              "ekle"
-            ],
-            "requiredAttributes": [
-              "_kimlikler"
-            ],
+            "kind": "file_content_regex",
+            "path": "dayanikli_sistem/idempotency.py",
+            "pattern": "class\\s+IdempotencyRegistry\\s*:[\\s\\S]*def\\s+icerir\\s*\\([\\s\\S]*def\\s+ekle\\s*\\(",
+            "flags": "s",
+            "label": "IdempotencyRegistry sözleşmesi tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "registry-set",
+            "kind": "call",
+            "name": "set",
             "file": "dayanikli_sistem/idempotency.py",
-            "label": "IdempotencyRegistry tanımlandı",
+            "label": "Idempotency kimlikleri set ile tutuluyor",
             "visibility": "visible"
           },
           {
             "id": "breaker-class",
-            "kind": "class_definition",
-            "name": "CircuitBreaker",
-            "minInitParams": 1,
-            "maxInitParams": 2,
-            "requiredMethods": [
-              "izin_ver",
-              "basari",
-              "hata"
-            ],
-            "requiredAttributes": [
-              "esik",
-              "basarisizlik",
-              "durum"
-            ],
-            "file": "dayanikli_sistem/breaker.py",
-            "label": "CircuitBreaker tanımlandı",
+            "kind": "file_content_regex",
+            "path": "dayanikli_sistem/breaker.py",
+            "pattern": "class\\s+CircuitBreaker\\s*:[\\s\\S]*def\\s+izin_ver\\s*\\([\\s\\S]*def\\s+basari\\s*\\([\\s\\S]*def\\s+hata\\s*\\(",
+            "flags": "s",
+            "label": "CircuitBreaker durum sözleşmesi tanımlandı",
             "visibility": "visible"
           },
           {

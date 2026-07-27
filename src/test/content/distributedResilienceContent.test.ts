@@ -115,12 +115,12 @@ describe("expert distributed systems and resilience content", () => {
           pattern: expect.stringContaining("dataclass"),
         }),
         expect.objectContaining({
-          kind: "class_definition",
-          name: "RetryPolicy",
+          kind: "file_content_regex",
+          path: "dayanikli_sistem/retry.py",
         }),
         expect.objectContaining({
-          kind: "class_definition",
-          name: "CircuitBreaker",
+          kind: "file_content_regex",
+          path: "dayanikli_sistem/breaker.py",
         }),
         expect.objectContaining({
           kind: "function_cases",
