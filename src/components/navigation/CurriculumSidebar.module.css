@@ -1,14 +1,15 @@
 .root {
-  width: calc(var(--sidebar-width) - var(--rail-width));
+  width: 100%;
   min-width: 0;
-  padding: var(--space-4) 10px;
-  border-right: 1px solid var(--color-border);
-  background: var(--color-sidebar);
+  min-height: 0;
+  flex: 1 1 auto;
+  padding: var(--space-4) 14px var(--space-5);
+  background: transparent;
   overflow: auto;
 }
 
 .compact {
-  padding-top: var(--space-5);
+  padding-top: var(--space-3);
 }
 
 .headingRow,
@@ -20,27 +21,26 @@
 }
 
 .headingRow {
-  padding: 0 8px var(--space-4);
+  padding: 0 10px var(--space-3);
   color: var(--color-text-primary);
-  font-size: var(--font-size-xs);
-  font-weight: 720;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.01em;
 }
 
 .count {
   color: var(--color-text-dim);
-  font-weight: 500;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
   letter-spacing: normal;
-  text-transform: none;
 }
 
 .levelLabel {
-  padding: 10px 8px;
+  padding: 12px 10px 7px;
   color: var(--color-text-dim);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
 
@@ -51,36 +51,41 @@
 
 .row {
   width: 100%;
-  min-height: 42px;
+  min-height: 40px;
   display: grid;
-  grid-template-columns: 28px minmax(0, 1fr) 16px;
+  grid-template-columns: 30px minmax(0, 1fr) 18px;
   align-items: center;
-  gap: 6px;
-  padding: 0 8px;
-  border: 0;
-  border-radius: var(--radius-sm);
+  gap: 7px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
   background: transparent;
   color: var(--color-text-muted);
   font: inherit;
-  font-size: 11px;
+  font-size: var(--font-size-xs);
   text-align: left;
-  cursor: pointer;
+  transition:
+    color var(--motion-fast),
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    transform var(--motion-fast);
 }
 
 .row:not(:disabled):hover {
   background: var(--color-surface-hover);
   color: var(--color-text-primary);
+  transform: translate3d(1px, 0, 0);
 }
 
-.row:focus-visible {
-  outline: 2px solid var(--color-accent);
-  outline-offset: 1px;
+.row:disabled {
+  opacity: 0.68;
 }
 
 .active {
-  background: var(--color-accent-soft);
+  border-color: rgba(var(--color-accent-rgb), 0.13);
+  background: var(--color-surface-selected);
   color: var(--color-text-primary);
-  box-shadow: inset 2px 0 0 var(--color-accent);
+  box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
 .completed .state,
@@ -96,24 +101,23 @@
 .locked,
 .coming-soon {
   color: var(--color-text-dim);
-  cursor: not-allowed;
-  opacity: 0.68;
 }
 
 .coming-soon {
-  opacity: 0.52;
+  opacity: 0.56;
 }
 
 .number {
   color: var(--color-text-dim);
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .title {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: 1px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -121,37 +125,38 @@
 
 .title small {
   color: var(--color-text-dim);
-  font-size: 8px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-regular);
+  letter-spacing: 0;
 }
 
 .state {
   text-align: center;
   font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
 }
 
 .progressBox {
   margin-top: var(--space-5);
   padding: var(--space-4);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: var(--color-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-surface);
+  background: color-mix(in srgb, var(--color-surface) 82%, transparent);
 }
 
 .progressHeader {
   margin-bottom: var(--space-3);
   color: var(--color-text-muted);
-  font-size: 10px;
-  text-transform: uppercase;
+  font-size: var(--font-size-2xs);
 }
 
 .progressHeader strong {
-  color: var(--color-text-primary);
+  color: var(--color-accent-strong);
+  font-size: var(--font-size-xs);
 }
 
 .progressBox p {
   margin: var(--space-3) 0 0;
   color: var(--color-text-dim);
-  font-size: 10px;
+  font-size: var(--font-size-2xs);
 }
