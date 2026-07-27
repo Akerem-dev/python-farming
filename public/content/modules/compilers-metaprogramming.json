@@ -5,71 +5,71 @@
       "id": "expert.compilers.token-flow",
       "moduleId": "compilers-metaprogramming",
       "order": 1,
-      "title": "Kaynak koddan token ve AST üretim sırasını çöz",
-      "summary": "Python kaynak metni önce tokenlara ayrılır, ardından parser bu tokenlardan Abstract Syntax Tree üretir.",
-      "levelLabel": "Expert Language Tools",
+      "title": "Kaynak kodun derleyici hattındaki yolunu sırala",
+      "summary": "Python kaynak kodu tokenlara ayrılır, AST'ye dönüştürülür, bytecode üretilir ve sanal makinede yürütülür.",
+      "levelLabel": "Expert Compilers",
       "mode": "output-prediction",
       "choice": {
-        "prompt": "Bu akışın doğru sıralaması hangisidir?",
+        "prompt": "Bu derleyici hattında AST üretiminden hemen sonra hangi adım gelir?",
         "options": [
           {
-            "id": "tokens-ast-bytecode",
-            "label": "Kaynak → token → AST → bytecode"
+            "id": "tokenize",
+            "label": "Tokenizasyon"
           },
           {
-            "id": "ast-tokens-bytecode",
-            "label": "Kaynak → AST → token → bytecode"
+            "id": "bytecode",
+            "label": "Bytecode üretimi"
           },
           {
-            "id": "bytecode-ast-token",
-            "label": "Kaynak → bytecode → AST → token"
+            "id": "execute",
+            "label": "Sanal makinede yürütme"
           },
           {
-            "id": "tokens-bytecode-ast",
-            "label": "Kaynak → token → bytecode → AST"
+            "id": "link",
+            "label": "Native linker"
           }
         ]
       },
       "task": {
-        "title": "Python derleme hattının doğru sırasını seç",
+        "title": "AST sonrasındaki derleyici adımını seç",
         "instructions": [
-          "Kaynak metnin lexical analiz ile tokenlara ayrıldığını hatırla.",
-          "Parser'ın tokenlardan AST ürettiğini değerlendir.",
-          "AST doğrulandıktan sonra bytecode üretildiğini seç."
+          "Kaynak koddan token ve AST üretim sırasını düşün.",
+          "AST'nin yürütülmeden önce hangi ara temsile çevrildiğini belirle.",
+          "Doğru seçeneği işaretle."
         ],
         "requirements": [
-          "Tokenizasyon ve parsing aynı aşama gibi düşünülmemeli.",
-          "AST, kaynak kodun yapısal temsilidir.",
-          "Bytecode, AST sonrasında üretilir."
+          "Tokenizasyon ile AST üretimi ayrılmalı.",
+          "Python bytecode'unun sanal makine tarafından yürütüldüğü bilinmeli.",
+          "Native linker bu hattın zorunlu adımı değildir."
         ],
-        "sampleOutput": "Kaynak → token → AST → bytecode",
+        "sampleOutput": "Bytecode üretimi",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "kaynak = \"sonuc = 2 + 3\"\nprint(\"Kaynak → token → AST → bytecode\")\n"
+        "starterCode": "adimlar = [\"tokenizasyon\", \"ast\", \"bytecode\", \"yurutme\"]\nprint(adimlar[2])\n"
       },
       "hints": [
         {
-          "title": "Lexical analiz",
-          "body": "İlk aşama karakterleri anlamlı tokenlara ayırır."
+          "title": "Ara temsil",
+          "body": "AST doğrudan native makine kodu değildir; Python önce bytecode üretir."
         },
         {
-          "title": "Parser",
-          "body": "Parser token dizisini sözdizimsel bir ağaca dönüştürür."
+          "title": "Sanal makine",
+          "body": "CPython sanal makinesi oluşan bytecode talimatlarını yürütür."
         }
       ],
       "validation": {
         "id": "expert.compilers.token-flow",
-        "title": "Kaynak koddan token ve AST üretim sırasını çöz",
+        "title": "Kaynak kodun derleyici hattındaki yolunu sırala",
         "xpReward": 100,
         "timeoutMs": 1000,
         "checks": [],
         "answer": {
           "kind": "choice",
-          "correctOptionId": "tokens-ast-bytecode"
+          "correctOptionId": "bytecode"
         }
       }
     },
@@ -77,46 +77,46 @@
       "id": "expert.compilers.node-visitor",
       "moduleId": "compilers-metaprogramming",
       "order": 2,
-      "title": "NodeVisitor ile kaynak kodun yapısını özetle",
-      "summary": "ast.NodeVisitor düğüm türlerine göre kontrollü ziyaret metotları çalıştırır ve repository araçlarının temelini oluşturur.",
-      "levelLabel": "Expert Language Tools",
+      "title": "NodeVisitor ile sembol ve çağrı analizi yap",
+      "summary": "ast.NodeVisitor düğüm türlerine göre visit_* metotlarını çağırarak kaynak kodu çalıştırmadan yapısal bilgi toplar.",
+      "levelLabel": "Expert Compilers",
       "mode": "code-completion",
       "task": {
-        "title": "Fonksiyon, sınıf ve çağrı adlarını AST üzerinden çıkar",
+        "title": "Fonksiyon, sınıf ve çağrı adlarını AST'den çıkar",
         "instructions": [
-          "KodOzetiZiyaretcisi sınıfını ast.NodeVisitor'dan türet.",
-          "visit_FunctionDef, visit_ClassDef ve visit_Call metotlarında adları topla.",
-          "ozetle(kaynak) fonksiyonunda ast.parse ile ağacı üret ve ziyaretçiyi çalıştır.",
-          "Dönen listeleri alfabetik sırala."
+          "KodAnalizi sınıfını ast.NodeVisitor tabanında tamamla.",
+          "visit_FunctionDef, visit_ClassDef ve visit_Call metotlarında adları kaydet.",
+          "Alt düğümlerin de gezilmesi için generic_visit çağır.",
+          "analiz_et(kaynak) fonksiyonunda ast.parse ve visitor.visit kullan."
         ],
         "requirements": [
-          "Kaynak metinde regex kullanılmamalı.",
-          "generic_visit çocuk düğümlerin de gezilmesini sağlamalı.",
-          "Fonksiyon, sınıf ve çağrı listeleri deterministik olmalı."
+          "Kaynak kod exec veya eval ile çalıştırılmamalı.",
+          "Fonksiyonlar, sınıflar ve çağrılar ayrı listelerde dönmeli.",
+          "Sonuç listeleri deterministik olarak sıralanmalı."
         ],
-        "sampleOutput": "{\"fonksiyonlar\": [\"topla\"], \"siniflar\": [\"Hesap\"], \"cagrilar\": [\"print\"]}",
+        "sampleOutput": "{'fonksiyonlar': ['hesapla'], 'siniflar': ['Servis'], 'cagrilar': ['print']}",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "import ast\n\n\nclass KodOzetiZiyaretcisi(ast.NodeVisitor):\n    def __init__(self):\n        self.fonksiyonlar = []\n        self.siniflar = []\n        self.cagrilar = []\n\n    def visit_FunctionDef(self, node):\n        # Fonksiyon adını kaydet ve çocuk düğümlere devam et.\n        pass\n\n    def visit_ClassDef(self, node):\n        pass\n\n    def visit_Call(self, node):\n        pass\n\n\ndef ozetle(kaynak):\n    # ast.parse ile ağacı üret, ziyaret et ve sıralı rapor döndür.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(ozetle(\"class Hesap:\\n    def topla(self, a, b):\\n        print(a + b)\"))\n"
+        "starterCode": "import ast\n\n\nclass KodAnalizi(ast.NodeVisitor):\n    def __init__(self):\n        self.fonksiyonlar = []\n        self.siniflar = []\n        self.cagrilar = []\n\n    def visit_FunctionDef(self, node):\n        # Fonksiyon adını ekle ve alt düğümleri gez.\n        pass\n\n    def visit_ClassDef(self, node):\n        pass\n\n    def visit_Call(self, node):\n        pass\n\n\ndef analiz_et(kaynak):\n    # Kaynağı AST'ye çevirip visitor ile gez.\n    pass\n\n\nif __name__ == \"__main__\":\n    ornek = \"\"\"\nclass Servis:\n    def hesapla(self):\n        print(1)\n\"\"\"\n    print(analiz_et(ornek))\n"
       },
       "hints": [
         {
           "title": "Çağrı adı",
-          "body": "ast.Name için node.func.id; ast.Attribute için node.func.attr kullanılabilir."
+          "body": "ast.Name için node.func.id, ast.Attribute için node.func.attr kullanılabilir."
         },
         {
           "title": "Alt düğümler",
-          "body": "Her visit_* metodunun sonunda self.generic_visit(node) çağır."
+          "body": "self.generic_visit(node) metot gövdesindeki çağrıların da bulunmasını sağlar."
         }
       ],
       "validation": {
         "id": "expert.compilers.node-visitor",
-        "title": "NodeVisitor ile kaynak kodun yapısını özetle",
-        "xpReward": 160,
+        "title": "NodeVisitor ile sembol ve çağrı analizi yap",
+        "xpReward": 170,
         "timeoutMs": 10000,
         "checks": [
           {
@@ -130,8 +130,9 @@
           {
             "id": "visitor-class",
             "kind": "class_definition",
-            "name": "KodOzetiZiyaretcisi",
+            "name": "KodAnalizi",
             "minInitParams": 0,
+            "maxInitParams": 0,
             "requiredMethods": [
               "visit_FunctionDef",
               "visit_ClassDef",
@@ -141,9 +142,8 @@
               "ast.NodeVisitor"
             ],
             "file": "main.py",
-            "label": "NodeVisitor sınıfı tanımlandı",
-            "visibility": "visible",
-            "maxInitParams": 0
+            "label": "KodAnalizi NodeVisitor tabanında tanımlandı",
+            "visibility": "visible"
           },
           {
             "id": "parse-call",
@@ -154,65 +154,73 @@
             "visibility": "visible"
           },
           {
-            "id": "generic-visits",
+            "id": "visit-call",
+            "kind": "call",
+            "name": "visit",
+            "file": "main.py",
+            "label": "visitor.visit() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "generic-visit-calls",
             "kind": "call_count",
             "name": "generic_visit",
             "min": 3,
             "file": "main.py",
-            "label": "Çocuk düğümler ziyaret ediliyor",
+            "label": "Alt AST düğümleri geziliyor",
             "visibility": "visible"
           },
           {
-            "id": "summary-def",
+            "id": "analysis-def",
             "kind": "function_definition",
-            "name": "ozetle",
+            "name": "analiz_et",
             "minParams": 1,
             "maxParams": 1,
             "requireReturn": true,
             "file": "main.py",
-            "label": "ozetle() tanımlandı",
+            "label": "analiz_et() tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "summary-cases",
+            "id": "analysis-cases",
             "kind": "function_cases",
-            "name": "ozetle",
+            "name": "analiz_et",
             "module": "main",
             "cases": [
               {
                 "args": [
-                  "def topla(a, b):\n    return max(a, b)\n"
+                  "def hesapla(x):\n    print(x)\n    return abs(x)\n"
                 ],
                 "expected": {
                   "fonksiyonlar": [
-                    "topla"
+                    "hesapla"
                   ],
                   "siniflar": [],
                   "cagrilar": [
-                    "max"
-                  ]
-                }
-              },
-              {
-                "args": [
-                  "class A:\n    def x(self):\n        print(len([1]))\n"
-                ],
-                "expected": {
-                  "fonksiyonlar": [
-                    "x"
-                  ],
-                  "siniflar": [
-                    "A"
-                  ],
-                  "cagrilar": [
-                    "len",
+                    "abs",
                     "print"
                   ]
                 }
               },
               {
                 "args": [
-                  "sonuc = 3"
+                  "class A:\n    def calis(self):\n        self.kaydet()\n"
+                ],
+                "expected": {
+                  "fonksiyonlar": [
+                    "calis"
+                  ],
+                  "siniflar": [
+                    "A"
+                  ],
+                  "cagrilar": [
+                    "kaydet"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "x = 1\n"
                 ],
                 "expected": {
                   "fonksiyonlar": [],
@@ -221,7 +229,7 @@
                 }
               }
             ],
-            "label": "Gizli AST özet senaryoları",
+            "label": "Gizli AST ziyaretçi senaryoları",
             "visibility": "hidden"
           }
         ]
@@ -231,78 +239,78 @@
       "id": "expert.compilers.node-transformer",
       "moduleId": "compilers-metaprogramming",
       "order": 3,
-      "title": "NodeTransformer ile değişkenleri güvenli yeniden adlandır",
-      "summary": "ast.NodeTransformer düğümleri yerinde değiştirebilir; fix_missing_locations ve unparse ile çalışabilir kaynak yeniden üretilebilir.",
-      "levelLabel": "Expert Language Tools",
+      "title": "NodeTransformer ile güvenli kaynak dönüşümü yap",
+      "summary": "ast.NodeTransformer belirli düğümleri değiştirip yeni ve geçerli bir AST üretebilir; fix_missing_locations ve unparse dönüşümü tamamlar.",
+      "levelLabel": "Expert Compilers",
       "mode": "code",
       "task": {
-        "title": "Belirli bir değişken adını bütün AST içinde yeniden adlandır",
+        "title": "print çağrılarını log çağrılarına dönüştür",
         "instructions": [
-          "DegiskenYenidenAdlandirici sınıfını ast.NodeTransformer'dan türet.",
-          "visit_Name içinde yalnız eşleşen ast.Name düğümlerini değiştir.",
-          "ast.copy_location ile kaynak konumunu koru.",
-          "ast.fix_missing_locations ve ast.unparse kullanarak yeni kodu döndür."
+          "PrintDonusturucu sınıfını ast.NodeTransformer tabanında yaz.",
+          "visit_Call içinde yalnız doğrudan print çağrılarını log ile değiştir.",
+          "Dönüşen ağaca ast.fix_missing_locations uygula.",
+          "ast.unparse ile yeni kaynak metnini döndür."
         ],
         "requirements": [
-          "Metin replace() kullanılmamalı.",
-          "String literal içindeki aynı kelime değişmemeli.",
-          "Yalnız gerçek isim düğümleri yeniden adlandırılmalı."
+          "String replace kullanılmamalı.",
+          "printable gibi farklı isimler değiştirilmemeli.",
+          "İç içe çağrılar da doğru gezilmeli."
         ],
-        "sampleOutput": "yeni = 3\nprint(yeni, \"eski\")",
+        "sampleOutput": "log('merhaba')",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "import ast\n\n\nclass DegiskenYenidenAdlandirici(ast.NodeTransformer):\n    def __init__(self, eski, yeni):\n        self.eski = eski\n        self.yeni = yeni\n\n    def visit_Name(self, node):\n        # Yalnız ast.Name düğümünün id alanını değiştir.\n        pass\n\n\ndef yeniden_adlandir(kaynak, eski, yeni):\n    # parse → transform → fix_missing_locations → unparse\n    pass\n\n\nif __name__ == \"__main__\":\n    print(yeniden_adlandir('eski = 3\\nprint(eski, \"eski\")', \"eski\", \"yeni\"))\n"
+        "starterCode": "import ast\n\n\nclass PrintDonusturucu(ast.NodeTransformer):\n    def visit_Call(self, node):\n        # Önce alt düğümleri gez, sonra doğrudan print çağrısını log yap.\n        pass\n\n\ndef printleri_logla(kaynak):\n    # parse -> visit -> fix_missing_locations -> unparse hattını kur.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(printleri_logla(\"print('merhaba')\"))\n"
       },
       "hints": [
         {
-          "title": "Yeni düğüm",
-          "body": "ast.Name(id=self.yeni, ctx=node.ctx) oluşturup ast.copy_location kullan."
+          "title": "Yeni isim düğümü",
+          "body": "node.func = ast.Name(id='log', ctx=ast.Load()) ile çağrının hedefi değiştirilebilir."
         },
         {
-          "title": "Sıralama",
-          "body": "Önce visit(), sonra fix_missing_locations(), en son ast.unparse()."
+          "title": "Konum bilgisi",
+          "body": "ast.fix_missing_locations dönüştürülen düğümlerin eksik satır/kolon alanlarını tamamlar."
         }
       ],
       "validation": {
         "id": "expert.compilers.node-transformer",
-        "title": "NodeTransformer ile değişkenleri güvenli yeniden adlandır",
+        "title": "NodeTransformer ile güvenli kaynak dönüşümü yap",
         "xpReward": 180,
         "timeoutMs": 10000,
         "checks": [
           {
             "id": "transformer-class",
             "kind": "class_definition",
-            "name": "DegiskenYenidenAdlandirici",
-            "minInitParams": 2,
+            "name": "PrintDonusturucu",
+            "minInitParams": 0,
+            "maxInitParams": 0,
             "requiredMethods": [
-              "visit_Name"
+              "visit_Call"
             ],
             "requiredBases": [
               "ast.NodeTransformer"
             ],
             "file": "main.py",
-            "label": "NodeTransformer sınıfı tanımlandı",
-            "visibility": "visible",
-            "maxInitParams": 2
-          },
-          {
-            "id": "copy-location",
-            "kind": "call",
-            "name": "copy_location",
-            "file": "main.py",
-            "label": "Kaynak konumu korunuyor",
+            "label": "PrintDonusturucu NodeTransformer tabanında tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "fix-locations",
+            "id": "parse-call",
+            "kind": "call",
+            "name": "parse",
+            "file": "main.py",
+            "label": "ast.parse() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "fix-call",
             "kind": "call",
             "name": "fix_missing_locations",
             "file": "main.py",
-            "label": "Eksik AST konumları tamamlanıyor",
+            "label": "fix_missing_locations() kullanıldı",
             "visibility": "visible"
           },
           {
@@ -310,41 +318,52 @@
             "kind": "call",
             "name": "unparse",
             "file": "main.py",
-            "label": "AST yeniden kaynak koda çevriliyor",
+            "label": "ast.unparse() kullanıldı",
             "visibility": "visible"
           },
           {
-            "id": "rename-cases",
+            "id": "transform-def",
+            "kind": "function_definition",
+            "name": "printleri_logla",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "printleri_logla() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "transform-cases",
             "kind": "function_cases",
-            "name": "yeniden_adlandir",
+            "name": "printleri_logla",
             "module": "main",
             "cases": [
               {
                 "args": [
-                  "eski = 1\nsonuc = eski + 2",
-                  "eski",
-                  "yeni"
+                  "print('a')"
                 ],
-                "expected": "yeni = 1\nsonuc = yeni + 2"
+                "expected": "log('a')"
               },
               {
                 "args": [
-                  "mesaj = 'eski'\neski = 4\nprint(mesaj, eski)",
-                  "eski",
-                  "deger"
+                  "x = print(hesapla())"
                 ],
-                "expected": "mesaj = 'eski'\ndeger = 4\nprint(mesaj, deger)"
+                "expected": "x = log(hesapla())"
               },
               {
                 "args": [
-                  "x = 2\nprint(x)",
-                  "y",
-                  "z"
+                  "printable('a')"
                 ],
-                "expected": "x = 2\nprint(x)"
+                "expected": "printable('a')"
+              },
+              {
+                "args": [
+                  "if x:\n    print(x)"
+                ],
+                "expected": "if x:\n    log(x)"
               }
             ],
-            "label": "Gizli yeniden adlandırma senaryoları",
+            "label": "Gizli AST dönüşüm senaryoları",
             "visibility": "hidden"
           }
         ]
@@ -354,127 +373,158 @@
       "id": "expert.compilers.safe-analysis",
       "moduleId": "compilers-metaprogramming",
       "order": 4,
-      "title": "AST ile güvenli kod politikası uygula",
-      "summary": "Statik analiz, kaynak kodu çalıştırmadan riskli import ve çağrıları yapısal olarak tespit edebilir.",
-      "levelLabel": "Expert Language Tools",
+      "title": "Hata Avcısı: kaynak kodu çalıştırmadan güvenlik denetimi yap",
+      "summary": "Metin araması alias importları ve nitelikli çağrıları kaçırır; AST tabanlı denetim import ve çağrı düğümlerini yapısal olarak inceler.",
+      "levelLabel": "Expert Debugging",
       "mode": "debugging",
       "debugging": {
         "errorType": "UnsafeStaticAnalysis",
-        "message": "Mevcut çözüm yalnız metin arıyor; alias importları ve attribute çağrılarını kaçırıyor.",
         "workflow": [
-          "Kaynağı ast.parse ile ayrıştır.",
-          "Import, ImportFrom ve Call düğümlerini ayrı ele al.",
-          "Raporu benzersiz ve sıralı listelerle üret."
-        ]
+          "Kaynağı ast.parse ile ayrıştır ve import aliaslarını gerçek modül adına eşle.",
+          "Import, ImportFrom ve Call düğümlerini ayrı ziyaret et.",
+          "Yasak modül ve çağrıları satır numarasıyla benzersiz biçimde raporla."
+        ],
+        "symptom": "String araması os.system aliasını, from-import kullanımını veya yorum/metin içindeki sahte eşleşmeleri doğru ayıramıyor."
       },
       "task": {
-        "title": "Yasak import ve riskli çağrıları çalıştırmadan raporla",
+        "title": "Yasak import ve riskli çağrıları statik olarak bul",
         "instructions": [
-          "YASAK_IMPORTLAR kümesinde subprocess, socket ve ctypes tut.",
-          "RISKLI_CAGRILAR kümesinde eval, exec, compile ve __import__ tut.",
-          "Import ve ImportFrom düğümlerinden kök modülü çıkar.",
-          "Call düğümlerinde hem Name hem Attribute çağrılarını tanı.",
-          "guvenlik_raporu(kaynak) içinde sıralı ve benzersiz rapor döndür."
+          "guvenlik_bulgulari(kaynak) fonksiyonunu AST tabanlı hale getir.",
+          "os ve subprocess importlarını yasak_modul olarak raporla.",
+          "eval, exec, os.system ve subprocess.run çağrılarını riskli_cagri olarak raporla.",
+          "Alias importlarını çöz ve sonuçları satır/tür/ad sırasıyla döndür."
         ],
         "requirements": [
-          "Kaynak kod exec veya eval ile çalıştırılmamalı.",
-          "import subprocess as sp biçimi yakalanmalı.",
-          "subprocess.run ve eval çağrıları ayrı raporlanmalı."
+          "Kaynak kod eval, exec veya runpy ile çalıştırılmamalı.",
+          "Yorum ve string içindeki kelimeler bulgu sayılmamalı.",
+          "Her bulguda tur, ad ve satir alanları bulunmalı."
         ],
-        "sampleOutput": "{\"yasak_importlar\": [\"subprocess\"], \"riskli_cagrilar\": [\"eval\", \"subprocess.run\"]}",
+        "sampleOutput": "[{'tur': 'yasak_modul', 'ad': 'os', 'satir': 1}, {'tur': 'riskli_cagri', 'ad': 'os.system', 'satir': 2}]",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "import ast\n\nYASAK_IMPORTLAR = {\"subprocess\", \"socket\", \"ctypes\"}\nRISKLI_CAGRILAR = {\"eval\", \"exec\", \"compile\", \"__import__\"}\n\n\ndef cagri_adi(node):\n    if isinstance(node, ast.Name):\n        return node.id\n    if isinstance(node, ast.Attribute):\n        sol = cagri_adi(node.value)\n        return f\"{sol}.{node.attr}\" if sol else node.attr\n    return \"\"\n\n\ndef guvenlik_raporu(kaynak):\n    yasak_importlar = set()\n    riskli_cagrilar = set()\n    agac = ast.parse(kaynak)\n\n    # ast.walk ile import ve çağrı düğümlerini incele.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(guvenlik_raporu(\"import subprocess as sp\\nsp.run(['echo', 'x'])\\neval('1+1')\"))\n"
+        "starterCode": "import ast\n\nYASAK_MODULLER = {\"os\", \"subprocess\"}\nRISKLI_CAGRILAR = {\"eval\", \"exec\", \"os.system\", \"subprocess.run\"}\n\n\ndef guvenlik_bulgulari(kaynak):\n    # Hatalı yaklaşım: metin araması aliasları ve yorumları ayıramaz.\n    bulgular = []\n    for ad in sorted(YASAK_MODULLER | RISKLI_CAGRILAR):\n        if ad in kaynak:\n            bulgular.append({\"tur\": \"eslesme\", \"ad\": ad, \"satir\": 0})\n    return bulgular\n\n\nif __name__ == \"__main__\":\n    print(guvenlik_bulgulari(\"import os as sistem\\nsistem.system('x')\"))\n"
       },
       "hints": [
         {
-          "title": "Kök modül",
-          "body": "alias.name.split('.')[0] ile paket kökünü al."
+          "title": "Alias tablosu",
+          "body": "import os as sistem için aliases['sistem'] = 'os' kaydı tut."
         },
         {
-          "title": "Alias çağrısı",
-          "body": "Import alias eşleşmelerini bir sözlükte tutup sp.run adını subprocess.run biçimine çöz."
+          "title": "Nitelikli ad",
+          "body": "ast.Attribute düğümlerinde value ve attr parçalarını noktalı ada dönüştür."
         }
       ],
       "validation": {
         "id": "expert.compilers.safe-analysis",
-        "title": "AST ile güvenli kod politikası uygula",
-        "xpReward": 180,
+        "title": "Hata Avcısı: kaynak kodu çalıştırmadan güvenlik denetimi yap",
+        "xpReward": 200,
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "walk-call",
-            "kind": "call",
-            "name": "walk",
+            "id": "ast-import",
+            "kind": "import_statement",
+            "module": "ast",
             "file": "main.py",
-            "label": "AST ast.walk ile taranıyor",
+            "label": "ast modülü kullanılıyor",
             "visibility": "visible"
           },
           {
-            "id": "no-runtime-eval",
-            "kind": "file_content_regex",
-            "path": "main.py",
-            "pattern": "RISKLI_CAGRILAR\\s*=\\s*\\{[^}]*eval",
-            "label": "eval yalnız politika verisi olarak tanımlı",
+            "id": "parse-call",
+            "kind": "call",
+            "name": "parse",
+            "file": "main.py",
+            "label": "Kaynak ast.parse ile ayrıştırılıyor",
             "visibility": "visible"
           },
           {
-            "id": "report-def",
+            "id": "walk-or-visit",
+            "kind": "call_count",
+            "name": "walk",
+            "min": 1,
+            "file": "main.py",
+            "label": "AST düğümleri yapısal olarak geziliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "audit-def",
             "kind": "function_definition",
-            "name": "guvenlik_raporu",
+            "name": "guvenlik_bulgulari",
             "minParams": 1,
             "maxParams": 1,
             "requireReturn": true,
             "file": "main.py",
-            "label": "guvenlik_raporu() tanımlandı",
+            "label": "guvenlik_bulgulari() tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "security-cases",
+            "id": "audit-cases",
             "kind": "function_cases",
-            "name": "guvenlik_raporu",
+            "name": "guvenlik_bulgulari",
             "module": "main",
             "cases": [
               {
                 "args": [
-                  "import subprocess as sp\nsp.run(['echo', 'x'])\neval('1+1')"
+                  "import os\nos.system('x')\n"
                 ],
-                "expected": {
-                  "yasak_importlar": [
-                    "subprocess"
-                  ],
-                  "riskli_cagrilar": [
-                    "eval",
-                    "subprocess.run"
-                  ]
-                }
+                "expected": [
+                  {
+                    "tur": "yasak_modul",
+                    "ad": "os",
+                    "satir": 1
+                  },
+                  {
+                    "tur": "riskli_cagri",
+                    "ad": "os.system",
+                    "satir": 2
+                  }
+                ]
               },
               {
                 "args": [
-                  "from socket import socket\nsocket()\nprint('ok')"
+                  "import os as sistem\nsistem.system('x')\n"
                 ],
-                "expected": {
-                  "yasak_importlar": [
-                    "socket"
-                  ],
-                  "riskli_cagrilar": []
-                }
+                "expected": [
+                  {
+                    "tur": "yasak_modul",
+                    "ad": "os",
+                    "satir": 1
+                  },
+                  {
+                    "tur": "riskli_cagri",
+                    "ad": "os.system",
+                    "satir": 2
+                  }
+                ]
               },
               {
                 "args": [
-                  "import json\njson.loads('{}')"
+                  "from subprocess import run as calistir\ncalistir(['x'])\n"
                 ],
-                "expected": {
-                  "yasak_importlar": [],
-                  "riskli_cagrilar": []
-                }
+                "expected": [
+                  {
+                    "tur": "yasak_modul",
+                    "ad": "subprocess",
+                    "satir": 1
+                  },
+                  {
+                    "tur": "riskli_cagri",
+                    "ad": "subprocess.run",
+                    "satir": 2
+                  }
+                ]
+              },
+              {
+                "args": [
+                  "metin = 'os.system ve eval'\n# subprocess.run\nprint(metin)\n"
+                ],
+                "expected": []
               }
             ],
-            "label": "Gizli güvenlik analizi senaryoları",
+            "label": "Gizli güvenli statik analiz senaryoları",
             "visibility": "hidden"
           }
         ]
@@ -484,46 +534,45 @@
       "id": "expert.compilers.decorator-registry",
       "moduleId": "compilers-metaprogramming",
       "order": 5,
-      "title": "Decorator ile açıklanabilir komut kayıt sistemi kur",
-      "summary": "Parametreli decorator'lar fonksiyonları import anında kaydedebilir; wraps metadata ve hata ayıklama kalitesini korur.",
-      "levelLabel": "Expert Language Tools",
+      "title": "Decorator ile metadata koruyan kayıt sistemi kur",
+      "summary": "Parametreli decorator bir fonksiyonu kayıt tablosuna ekleyebilir; functools.wraps sarmalanan fonksiyonun kimliğini korur.",
+      "levelLabel": "Expert Metaprogramming",
       "mode": "code",
       "task": {
-        "title": "Komutları isimle kaydeden ve çalıştıran decorator sistemi oluştur",
+        "title": "Komut fonksiyonlarını adlarıyla kaydeden decorator yaz",
         "instructions": [
-          "KAYITLAR sözlüğünü oluştur.",
-          "kaydet(ad) parametreli decorator'ını yaz.",
-          "İç wrapper fonksiyonunda functools.wraps kullan.",
-          "ikiyle_carp ve karesini_al fonksiyonlarını decorator ile kaydet.",
-          "komut_calistir(ad, deger) bilinmeyen komutta KeyError yükseltsin."
+          "KAYIT sözlüğünü kullan.",
+          "komut(ad) parametreli decorator fonksiyonunu oluştur.",
+          "Sarmalayıcıda functools.wraps kullan.",
+          "Dekore edilen fonksiyonu verilen adla kayıt tablosuna ekle."
         ],
         "requirements": [
-          "Decorator import sırasında fonksiyonu sözlüğe eklemeli.",
-          "Fonksiyonun __name__ metadata'sı korunmalı.",
-          "Sabit if/elif zinciri kullanılmamalı."
+          "Aynı ad ikinci kez kaydedilirse ValueError yükselmeli.",
+          "Sarmalayıcı *args ve **kwargs kabul etmeli.",
+          "Fonksiyonun __name__ metadata alanı korunmalı."
         ],
-        "sampleOutput": "komut_calistir('iki', 6) → 12",
+        "sampleOutput": "{'topla': 5, 'metadata': 'topla'}",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "from functools import wraps\n\nKAYITLAR = {}\n\n\ndef kaydet(ad):\n    # Parametreli decorator döndür.\n    pass\n\n\n@kaydet(\"iki\")\ndef ikiyle_carp(deger):\n    return deger * 2\n\n\n@kaydet(\"kare\")\ndef karesini_al(deger):\n    return deger * deger\n\n\ndef komut_calistir(ad, deger):\n    # Kayıtlı fonksiyonu sözlükten bul ve çalıştır.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(komut_calistir(\"iki\", 6))\n"
+        "starterCode": "from functools import wraps\n\nKAYIT = {}\n\n\ndef komut(ad):\n    # Parametreli decorator ve wraps kullanan sarmalayıcıyı yaz.\n    pass\n\n\n@komut(\"topla\")\ndef topla(a, b):\n    return a + b\n\n\nif __name__ == \"__main__\":\n    print({\"topla\": KAYIT[\"topla\"](2, 3), \"metadata\": topla.__name__})\n"
       },
       "hints": [
         {
           "title": "Üç katman",
-          "body": "kaydet(ad) → decorator(func) → wrapper(*args, **kwargs)."
+          "body": "komut(ad) -> decorator(func) -> wrapper(*args, **kwargs) yapısı gerekir."
         },
         {
           "title": "Kayıt zamanı",
-          "body": "KAYITLAR[ad] = wrapper ataması decorator içinde yapılmalı."
+          "body": "KAYIT[ad] ataması decorator çalışırken yapılmalıdır."
         }
       ],
       "validation": {
         "id": "expert.compilers.decorator-registry",
-        "title": "Decorator ile açıklanabilir komut kayıt sistemi kur",
+        "title": "Decorator ile metadata koruyan kayıt sistemi kur",
         "xpReward": 180,
         "timeoutMs": 10000,
         "checks": [
@@ -537,44 +586,23 @@
             "visibility": "visible"
           },
           {
-            "id": "registry-assignment",
-            "kind": "assignment",
-            "name": "KAYITLAR",
-            "file": "main.py",
-            "label": "KAYITLAR sözlüğü tanımlandı",
-            "visibility": "visible"
-          },
-          {
-            "id": "decorator-def",
+            "id": "command-def",
             "kind": "function_definition",
-            "name": "kaydet",
+            "name": "komut",
             "minParams": 1,
             "maxParams": 1,
             "requireReturn": true,
             "file": "main.py",
-            "label": "kaydet() decorator fabrikası tanımlandı",
+            "label": "komut() decorator factory tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "decorated-two",
-            "kind": "decorator_usage",
-            "name": "ikiyle_carp",
-            "accepted": [
-              "kaydet"
-            ],
+            "id": "nested-functions",
+            "kind": "node_count",
+            "nodeName": "FunctionDef",
+            "min": 4,
             "file": "main.py",
-            "label": "ikiyle_carp decorator ile kaydedildi",
-            "visibility": "visible"
-          },
-          {
-            "id": "decorated-square",
-            "kind": "decorator_usage",
-            "name": "karesini_al",
-            "accepted": [
-              "kaydet"
-            ],
-            "file": "main.py",
-            "label": "karesini_al decorator ile kaydedildi",
+            "label": "Decorator ve wrapper katmanları bulunuyor",
             "visibility": "visible"
           },
           {
@@ -582,55 +610,24 @@
             "kind": "call",
             "name": "wraps",
             "file": "main.py",
-            "label": "Wrapper metadata'sı korunuyor",
+            "label": "wraps() kullanıldı",
             "visibility": "visible"
           },
           {
-            "id": "command-cases",
-            "kind": "function_cases",
-            "name": "komut_calistir",
-            "module": "main",
-            "cases": [
-              {
-                "args": [
-                  "iki",
-                  6
-                ],
-                "expected": 12
-              },
-              {
-                "args": [
-                  "kare",
-                  -4
-                ],
-                "expected": 16
-              },
-              {
-                "args": [
-                  "iki",
-                  0
-                ],
-                "expected": 0
-              }
-            ],
-            "label": "Gizli komut kayıt senaryoları",
-            "visibility": "hidden"
+            "id": "duplicate-raise",
+            "kind": "raise_exception",
+            "name": "ValueError",
+            "min": 1,
+            "file": "main.py",
+            "label": "Tekrarlanan kayıt reddediliyor",
+            "visibility": "visible"
           },
           {
-            "id": "unknown-command",
-            "kind": "function_raises",
-            "name": "komut_calistir",
-            "module": "main",
-            "cases": [
-              {
-                "args": [
-                  "yok",
-                  1
-                ],
-                "exception": "KeyError"
-              }
-            ],
-            "label": "Bilinmeyen komut reddediliyor",
+            "id": "registry-output",
+            "kind": "stdout_regex",
+            "pattern": "['\\\"]topla['\\\"]\\s*:\\s*5.*['\\\"]metadata['\\\"]\\s*:\\s*['\\\"]topla['\\\"]",
+            "flags": "s",
+            "label": "Kayıt ve metadata çıktısı doğru",
             "visibility": "hidden"
           }
         ]
@@ -640,69 +637,69 @@
       "id": "expert.compilers.descriptor-metaclass",
       "moduleId": "compilers-metaprogramming",
       "order": 6,
-      "title": "Descriptor ve metaclass ile doğrulanan eklentiler üret",
-      "summary": "Descriptor alan erişimini yönetirken metaclass sınıf oluşturma anında kayıt ve sözleşme kontrolü yapabilir.",
-      "levelLabel": "Expert Language Tools",
+      "title": "Descriptor ve metaclass ile doğrulanan eklenti kaydı oluştur",
+      "summary": "Descriptor attribute erişimini yönetir; metaclass ise sınıf oluşturma anında doğrulama ve otomatik kayıt uygulayabilir.",
+      "levelLabel": "Expert Metaprogramming",
       "mode": "code-completion",
       "task": {
-        "title": "Pozitif sayı descriptor'ı ve otomatik eklenti metaclass'ı kur",
+        "title": "Sürümlü eklentileri sınıf oluşturulurken kaydet",
         "instructions": [
-          "PozitifSayi descriptor'ında __set_name__, __get__ ve __set__ tanımla.",
-          "bool veya sıfırdan küçük/eşit değerlerde ValueError yükselt.",
-          "EklentiMeta.__new__ içinde soyut olmayan sınıfları KAYITLAR sözlüğüne ekle.",
-          "Carpan eklentisini ad='carpan' anahtarıyla kaydet.",
-          "eklenti_calistir(ad, katsayi, deger) ile eklentiyi örnekleyip çalıştır."
+          "Surum descriptor sınıfında __set_name__, __get__ ve __set__ metotlarını tamamla.",
+          "Değerin pozitif tam sayı olmasını zorunlu tut.",
+          "EklentiMeta.__new__ içinde ad ve çalıştır metotlarını doğrula.",
+          "Soyut taban dışındaki sınıfları EKLENTILER sözlüğüne kaydet."
         ],
         "requirements": [
-          "Descriptor değeri instance.__dict__ içinde saklamalı.",
-          "Metaclass sabit sınıf adı yerine sınıfın ad alanını kullanmalı.",
-          "Bilinmeyen eklenti KeyError üretmeli."
+          "bool değeri sürüm olarak kabul edilmemeli.",
+          "Aynı eklenti adı ikinci kez kaydedilmemeli.",
+          "Kayıt sınıf tanımı sırasında yapılmalı."
         ],
-        "sampleOutput": "eklenti_calistir('carpan', 3, 5) → 15",
+        "sampleOutput": "{'rapor': 2, 'sonuc': 'hazir'}",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "KAYITLAR = {}\n\n\nclass PozitifSayi:\n    def __set_name__(self, owner, name):\n        pass\n\n    def __get__(self, instance, owner):\n        pass\n\n    def __set__(self, instance, value):\n        pass\n\n\nclass EklentiMeta(type):\n    def __new__(mcls, name, bases, namespace):\n        # Sınıfı oluştur, ad alanı varsa KAYITLAR'a ekle.\n        pass\n\n\nclass TemelEklenti(metaclass=EklentiMeta):\n    ad = None\n\n\nclass Carpan(TemelEklenti):\n    ad = \"carpan\"\n    katsayi = PozitifSayi()\n\n    def __init__(self, katsayi):\n        self.katsayi = katsayi\n\n    def calistir(self, deger):\n        return self.katsayi * deger\n\n\ndef eklenti_calistir(ad, katsayi, deger):\n    pass\n\n\nif __name__ == \"__main__\":\n    print(eklenti_calistir(\"carpan\", 3, 5))\n"
+        "starterCode": "EKLENTILER = {}\n\n\nclass Surum:\n    def __set_name__(self, owner, name):\n        pass\n\n    def __get__(self, instance, owner):\n        pass\n\n    def __set__(self, instance, value):\n        pass\n\n\nclass EklentiMeta(type):\n    def __new__(mcls, name, bases, namespace):\n        # Sınıfı oluştur, sözleşmeyi doğrula ve somut eklentiyi kaydet.\n        pass\n\n\nclass Eklenti(metaclass=EklentiMeta):\n    soyut = True\n    surum = Surum()\n\n\nclass RaporEklentisi(Eklenti):\n    soyut = False\n    ad = \"rapor\"\n\n    def calistir(self):\n        return \"hazir\"\n\n\nif __name__ == \"__main__\":\n    eklenti = RaporEklentisi()\n    eklenti.surum = 2\n    print({\"rapor\": eklenti.surum, \"sonuc\": eklenti.calistir()})\n"
       },
       "hints": [
         {
-          "title": "Descriptor adı",
-          "body": "__set_name__ içinde self.storage_name = f'_{name}' sakla."
+          "title": "Descriptor depolama adı",
+          "body": "__set_name__ içinde self.private_name = '_' + name oluştur."
         },
         {
-          "title": "Metaclass kayıt",
-          "body": "sinif = super().__new__(...); eklenti_adi = namespace.get('ad')."
+          "title": "Metaclass sırası",
+          "body": "Önce super().__new__ ile sınıfı oluştur; sonra namespace sözleşmesini doğrula ve kaydet."
         }
       ],
       "validation": {
         "id": "expert.compilers.descriptor-metaclass",
-        "title": "Descriptor ve metaclass ile doğrulanan eklentiler üret",
+        "title": "Descriptor ve metaclass ile doğrulanan eklenti kaydı oluştur",
         "xpReward": 200,
         "timeoutMs": 10000,
         "checks": [
           {
             "id": "descriptor-class",
             "kind": "class_definition",
-            "name": "PozitifSayi",
+            "name": "Surum",
             "minInitParams": 0,
+            "maxInitParams": 0,
             "requiredMethods": [
               "__set_name__",
               "__get__",
               "__set__"
             ],
             "file": "main.py",
-            "label": "PozitifSayi descriptor'ı tanımlandı",
-            "visibility": "visible",
-            "maxInitParams": 0
+            "label": "Surum descriptor sözleşmesi tanımlandı",
+            "visibility": "visible"
           },
           {
-            "id": "meta-class",
+            "id": "metaclass-def",
             "kind": "class_definition",
             "name": "EklentiMeta",
             "minInitParams": 0,
+            "maxInitParams": 0,
             "requiredMethods": [
               "__new__"
             ],
@@ -710,85 +707,49 @@
               "type"
             ],
             "file": "main.py",
-            "label": "EklentiMeta metaclass'ı tanımlandı",
-            "visibility": "visible",
-            "maxInitParams": 0
-          },
-          {
-            "id": "base-metaclass",
-            "kind": "file_content_regex",
-            "path": "main.py",
-            "pattern": "class\\s+TemelEklenti\\s*\\(\\s*metaclass\\s*=\\s*EklentiMeta\\s*\\)",
-            "label": "Temel sınıf EklentiMeta kullanıyor",
+            "label": "EklentiMeta metaclass tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "positive-raise",
+            "id": "set-name-count",
+            "kind": "call",
+            "name": "setattr",
+            "file": "main.py",
+            "label": "Descriptor kontrollü atama yapıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "type-check",
+            "kind": "call",
+            "name": "isinstance",
+            "file": "main.py",
+            "label": "Sürüm tipi doğrulanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "value-raise",
             "kind": "raise_exception",
             "name": "ValueError",
             "min": 1,
             "file": "main.py",
-            "label": "Geçersiz değer ValueError üretiyor",
+            "label": "Geçersiz sürüm değeri reddediliyor",
             "visibility": "visible"
           },
           {
-            "id": "plugin-cases",
-            "kind": "function_cases",
-            "name": "eklenti_calistir",
-            "module": "main",
-            "cases": [
-              {
-                "args": [
-                  "carpan",
-                  3,
-                  5
-                ],
-                "expected": 15
-              },
-              {
-                "args": [
-                  "carpan",
-                  2,
-                  -4
-                ],
-                "expected": -8
-              },
-              {
-                "args": [
-                  "carpan",
-                  1,
-                  0
-                ],
-                "expected": 0
-              }
-            ],
-            "label": "Gizli eklenti senaryoları",
-            "visibility": "hidden"
+            "id": "type-raise",
+            "kind": "raise_exception",
+            "name": "TypeError",
+            "min": 1,
+            "file": "main.py",
+            "label": "Eksik eklenti sözleşmesi reddediliyor",
+            "visibility": "visible"
           },
           {
-            "id": "invalid-factor",
-            "kind": "function_raises",
-            "name": "eklenti_calistir",
-            "module": "main",
-            "cases": [
-              {
-                "args": [
-                  "carpan",
-                  0,
-                  5
-                ],
-                "exception": "ValueError"
-              },
-              {
-                "args": [
-                  "yok",
-                  2,
-                  5
-                ],
-                "exception": "KeyError"
-              }
-            ],
-            "label": "Geçersiz katsayı ve eklenti reddediliyor",
+            "id": "plugin-output",
+            "kind": "stdout_regex",
+            "pattern": "['\\\"]rapor['\\\"]\\s*:\\s*2.*['\\\"]sonuc['\\\"]\\s*:\\s*['\\\"]hazir['\\\"]",
+            "flags": "s",
+            "label": "Descriptor ve eklenti kaydı çalışıyor",
             "visibility": "hidden"
           }
         ]
@@ -799,200 +760,184 @@
       "moduleId": "compilers-metaprogramming",
       "order": 7,
       "title": "Statik Kod Denetim Laboratuvarı",
-      "summary": "Çok dosyalı final laboratuvarında AST ziyaretçisi, kural seti, immutable bulgu modeli ve deterministik raporlama birlikte çalışır.",
-      "levelLabel": "Expert Language Tools",
+      "summary": "Çok dosyalı final projede AST modelleri, ziyaretçi, güvenlik kuralları ve deterministik raporlama tek bir güvenli analiz API'sinde birleşir.",
+      "levelLabel": "Expert Project Lab",
       "mode": "data-transformation",
       "task": {
-        "title": "Kaynak çalıştırmadan yapısal ve güvenlik raporu üreten paket geliştir",
+        "title": "Çalıştırmadan Python kaynak denetimi yapan paket geliştir",
         "instructions": [
-          "Bulgu modelini frozen dataclass olarak koru.",
-          "StatikAnalizZiyaretcisi ile fonksiyon, sınıf, import, çağrı ve karar düğümlerini tara.",
-          "Alias importlarını gerçek modül adına çöz.",
-          "Cyclomatic benzeri karmaşıklığı 1 + if/for/while sayısı olarak hesapla.",
-          "analiz_raporu(kaynak) içinde benzersiz ve sıralı bulgular döndür.",
-          "main.py yalnız paket API'sini kullanmalı."
+          "statik_analiz paketindeki eksik AST model, kural, ziyaretçi ve raporlama fonksiyonlarını tamamla.",
+          "denetim_raporu(kaynak) fonksiyonunda fonksiyonları, sınıfları, karar noktalarını ve güvenlik bulgularını çıkar.",
+          "Import aliaslarını çöz ve bulguları immutable Bulgu nesneleriyle temsil et.",
+          "Raporu deterministik ve JSON uyumlu sözlük olarak döndür."
         ],
         "requirements": [
-          "Kaynak kod exec/eval ile çalıştırılmamalı.",
-          "Rapor giriş sırasından bağımsız ve deterministik olmalı.",
-          "Yasak importlar ve riskli çağrılar satır numarasıyla gösterilmeli.",
-          "Sabit çıktı döndüren çözümler gizli senaryolarda reddedilmeli."
+          "Kaynak kod hiçbir aşamada çalıştırılmamalı.",
+          "ast.NodeVisitor ve ast.parse kullanılmalı.",
+          "Bulgu frozen dataclass olmalı.",
+          "Bulgular tekrar etmemeli ve satır/tür/ad sırasına göre sıralanmalı.",
+          "Final proje altı dosyadan oluşmalı."
         ],
-        "sampleOutput": "{\"fonksiyonlar\": [\"calistir\"], \"siniflar\": [\"Islem\"], \"karmasiklik\": 2, \"bulgular\": [{\"tur\": \"import\", \"ad\": \"subprocess\", \"satir\": 2}, {\"tur\": \"cagri\", \"ad\": \"eval\", \"satir\": 7}]}",
+        "sampleOutput": "{'fonksiyonlar': ['hesapla'], 'siniflar': [], 'karar_noktalari': 1, 'bulgular': [{'tur': 'yasak_modul', 'ad': 'os', 'satir': 1}]}",
         "stdinEnabled": false,
         "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
         "defaultStdin": ""
       },
       "editor": {
         "filename": "main.py",
-        "starterCode": "from statik_analiz import analiz_raporu\n\n\nif __name__ == \"__main__\":\n    kaynak = \"\"\"\nimport subprocess\n\nclass Islem:\n    def calistir(self, deger):\n        if deger > 0:\n            return eval(str(deger))\n        return 0\n\"\"\"\n    print(analiz_raporu(kaynak))\n",
+        "starterCode": "from statik_analiz import denetim_raporu\n\n\nif __name__ == \"__main__\":\n    kaynak = \"\"\"\nimport os\n\ndef hesapla(x):\n    if x > 0:\n        return x\n    return 0\n\"\"\"\n    print(denetim_raporu(kaynak))\n",
         "entrypoint": "main.py",
         "files": [
           {
             "path": "main.py",
-            "starterCode": "from statik_analiz import analiz_raporu\n\n\nif __name__ == \"__main__\":\n    kaynak = \"\"\"\nimport subprocess\n\nclass Islem:\n    def calistir(self, deger):\n        if deger > 0:\n            return eval(str(deger))\n        return 0\n\"\"\"\n    print(analiz_raporu(kaynak))\n"
+            "starterCode": "from statik_analiz import denetim_raporu\n\n\nif __name__ == \"__main__\":\n    kaynak = \"\"\"\nimport os\n\ndef hesapla(x):\n    if x > 0:\n        return x\n    return 0\n\"\"\"\n    print(denetim_raporu(kaynak))\n"
           },
           {
             "path": "statik_analiz/__init__.py",
-            "starterCode": "from .report import analiz_raporu\n\n__all__ = [\"analiz_raporu\"]\n"
+            "starterCode": "from .report import denetim_raporu\n\n__all__ = [\"denetim_raporu\"]\n"
           },
           {
             "path": "statik_analiz/models.py",
-            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Bulgu:\n    tur: str\n    ad: str\n    satir: int\n\n    def anahtar(self):\n        return (self.satir, self.tur, self.ad)\n"
+            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True, order=True)\nclass Bulgu:\n    satir: int\n    tur: str\n    ad: str\n\n    def sozluk(self):\n        return {\"tur\": self.tur, \"ad\": self.ad, \"satir\": self.satir}\n"
           },
           {
             "path": "statik_analiz/rules.py",
-            "starterCode": "YASAK_IMPORTLAR = {\"subprocess\", \"socket\", \"ctypes\"}\nRISKLI_CAGRILAR = {\"eval\", \"exec\", \"compile\", \"__import__\"}\n\n\ndef kok_modul(ad):\n    return ad.split(\".\")[0]\n"
+            "starterCode": "YASAK_MODULLER = {\"os\", \"subprocess\"}\nRISKLI_CAGRILAR = {\"eval\", \"exec\", \"os.system\", \"subprocess.run\"}\n\n\ndef temel_modul(ad):\n    return ad.split(\".\", 1)[0]\n"
           },
           {
             "path": "statik_analiz/visitor.py",
-            "starterCode": "import ast\n\nfrom .models import Bulgu\nfrom .rules import RISKLI_CAGRILAR, YASAK_IMPORTLAR, kok_modul\n\n\nclass StatikAnalizZiyaretcisi(ast.NodeVisitor):\n    def __init__(self):\n        self.fonksiyonlar = set()\n        self.siniflar = set()\n        self.bulgular = []\n        self.karmasiklik = 1\n        self.aliaslar = {}\n\n    def visit_FunctionDef(self, node):\n        # Fonksiyon adını kaydet.\n        pass\n\n    def visit_AsyncFunctionDef(self, node):\n        pass\n\n    def visit_ClassDef(self, node):\n        pass\n\n    def visit_Import(self, node):\n        # Alias ve yasak importları kaydet.\n        pass\n\n    def visit_ImportFrom(self, node):\n        pass\n\n    def visit_Call(self, node):\n        # Name/Attribute çağrı adını çöz ve riskli çağrıları kaydet.\n        pass\n\n    def visit_If(self, node):\n        self.karmasiklik += 1\n        self.generic_visit(node)\n\n    def visit_For(self, node):\n        self.karmasiklik += 1\n        self.generic_visit(node)\n\n    def visit_While(self, node):\n        self.karmasiklik += 1\n        self.generic_visit(node)\n"
+            "starterCode": "import ast\n\nfrom .models import Bulgu\nfrom .rules import RISKLI_CAGRILAR, YASAK_MODULLER, temel_modul\n\n\nclass DenetimZiyaretcisi(ast.NodeVisitor):\n    def __init__(self):\n        self.fonksiyonlar = set()\n        self.siniflar = set()\n        self.karar_noktalari = 0\n        self.bulgular = set()\n        self.aliaslar = {}\n\n    def visit_FunctionDef(self, node):\n        pass\n\n    def visit_AsyncFunctionDef(self, node):\n        pass\n\n    def visit_ClassDef(self, node):\n        pass\n\n    def visit_If(self, node):\n        pass\n\n    def visit_For(self, node):\n        pass\n\n    def visit_While(self, node):\n        pass\n\n    def visit_Import(self, node):\n        pass\n\n    def visit_ImportFrom(self, node):\n        pass\n\n    def visit_Call(self, node):\n        pass\n\n    def noktali_ad(self, node):\n        pass\n"
           },
           {
             "path": "statik_analiz/report.py",
-            "starterCode": "import ast\n\nfrom .visitor import StatikAnalizZiyaretcisi\n\n\ndef analiz_raporu(kaynak):\n    # Kaynağı ayrıştır, ziyaretçiyi çalıştır ve deterministik rapor döndür.\n    pass\n"
+            "starterCode": "import ast\n\nfrom .visitor import DenetimZiyaretcisi\n\n\ndef denetim_raporu(kaynak):\n    # parse, visit ve deterministik raporlama hattını tamamla.\n    pass\n"
           }
         ]
       },
       "hints": [
         {
-          "title": "Çağrı adı çözümü",
-          "body": "ast.Name ve ast.Attribute düğümlerini recursive bir yardımcıyla tam ada çevir."
+          "title": "Bulgular için set",
+          "body": "Frozen ve order=True Bulgu nesneleri set içinde benzersiz tutulup sorted ile sıralanabilir."
         },
         {
-          "title": "Deterministik bulgu",
-          "body": "Bulgu.anahtar() ile set/dict üzerinden benzersizleştirip sorted kullan."
+          "title": "Karar noktaları",
+          "body": "If, For ve While düğümleri ziyaret edildiğinde sayacı artır ve generic_visit çağır."
         },
         {
-          "title": "Alias",
-          "body": "import subprocess as sp kaydında sp → subprocess eşlemesini sakla."
+          "title": "Alias çözümü",
+          "body": "noktali_ad sonucunun ilk parçasını aliaslar sözlüğündeki gerçek adla değiştir."
         }
       ],
       "validation": {
         "id": "expert.compilers.final",
         "title": "Statik Kod Denetim Laboratuvarı",
-        "xpReward": 340,
+        "xpReward": 310,
         "timeoutMs": 10000,
         "checks": [
           {
-            "id": "file-0",
+            "id": "main-file",
             "kind": "file_exists",
             "path": "main.py",
-            "label": "main.py mevcut",
+            "label": "main.py bulundu",
             "visibility": "visible"
           },
           {
-            "id": "file-1",
+            "id": "package-file",
             "kind": "file_exists",
             "path": "statik_analiz/__init__.py",
-            "label": "statik_analiz/__init__.py mevcut",
+            "label": "Paket giriş dosyası bulundu",
             "visibility": "visible"
           },
           {
-            "id": "file-2",
+            "id": "models-file",
             "kind": "file_exists",
             "path": "statik_analiz/models.py",
-            "label": "statik_analiz/models.py mevcut",
+            "label": "Model dosyası bulundu",
             "visibility": "visible"
           },
           {
-            "id": "file-3",
+            "id": "rules-file",
             "kind": "file_exists",
             "path": "statik_analiz/rules.py",
-            "label": "statik_analiz/rules.py mevcut",
+            "label": "Kural dosyası bulundu",
             "visibility": "visible"
           },
           {
-            "id": "file-4",
+            "id": "visitor-file",
             "kind": "file_exists",
             "path": "statik_analiz/visitor.py",
-            "label": "statik_analiz/visitor.py mevcut",
+            "label": "AST ziyaretçi dosyası bulundu",
             "visibility": "visible"
           },
           {
-            "id": "file-5",
+            "id": "report-file",
             "kind": "file_exists",
             "path": "statik_analiz/report.py",
-            "label": "statik_analiz/report.py mevcut",
+            "label": "Raporlama dosyası bulundu",
             "visibility": "visible"
           },
           {
-            "id": "ast-import-final",
-            "kind": "import_statement",
-            "module": "ast",
-            "file": "statik_analiz/visitor.py",
-            "label": "Ziyaretçi ast modülünü kullanıyor",
-            "visibility": "visible"
-          },
-          {
-            "id": "visitor-final",
-            "kind": "class_definition",
-            "name": "StatikAnalizZiyaretcisi",
-            "minInitParams": 0,
-            "requiredMethods": [
-              "visit_FunctionDef",
-              "visit_AsyncFunctionDef",
-              "visit_ClassDef",
-              "visit_Import",
-              "visit_ImportFrom",
-              "visit_Call",
-              "visit_If",
-              "visit_For",
-              "visit_While"
-            ],
-            "requiredBases": [
-              "ast.NodeVisitor"
-            ],
-            "file": "statik_analiz/visitor.py",
-            "label": "Statik analiz ziyaretçisi tanımlandı",
-            "visibility": "visible",
-            "maxInitParams": 0
-          },
-          {
-            "id": "finding-model",
+            "id": "bulgu-dataclass",
             "kind": "dataclass_definition",
             "name": "Bulgu",
             "fields": [
               {
+                "name": "satir",
+                "accepted": [
+                  "int"
+                ],
+                "defaultKind": "required"
+              },
+              {
                 "name": "tur",
                 "accepted": [
                   "str"
-                ]
+                ],
+                "defaultKind": "required"
               },
               {
                 "name": "ad",
                 "accepted": [
                   "str"
-                ]
-              },
-              {
-                "name": "satir",
-                "accepted": [
-                  "int"
-                ]
+                ],
+                "defaultKind": "required"
               }
             ],
             "frozen": true,
             "requiredMethods": [
-              "anahtar"
+              "sozluk"
             ],
             "file": "statik_analiz/models.py",
-            "label": "Immutable Bulgu modeli tanımlandı",
+            "label": "Bulgu immutable dataclass olarak tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "report-def-final",
-            "kind": "function_definition",
-            "name": "analiz_raporu",
-            "minParams": 1,
-            "maxParams": 1,
-            "requireReturn": true,
-            "file": "statik_analiz/report.py",
-            "label": "analiz_raporu() paket API'si tanımlandı",
+            "id": "visitor-class",
+            "kind": "class_definition",
+            "name": "DenetimZiyaretcisi",
+            "minInitParams": 0,
+            "maxInitParams": 0,
+            "requiredMethods": [
+              "visit_FunctionDef",
+              "visit_AsyncFunctionDef",
+              "visit_ClassDef",
+              "visit_If",
+              "visit_For",
+              "visit_While",
+              "visit_Import",
+              "visit_ImportFrom",
+              "visit_Call",
+              "noktali_ad"
+            ],
+            "requiredBases": [
+              "ast.NodeVisitor"
+            ],
+            "file": "statik_analiz/visitor.py",
+            "label": "DenetimZiyaretcisi AST sözleşmesini uyguluyor",
             "visibility": "visible"
           },
           {
-            "id": "parse-final",
+            "id": "parse-call",
             "kind": "call",
             "name": "parse",
             "file": "statik_analiz/report.py",
@@ -1000,121 +945,170 @@
             "visibility": "visible"
           },
           {
-            "id": "visit-final",
+            "id": "visit-call",
             "kind": "call",
             "name": "visit",
             "file": "statik_analiz/report.py",
-            "label": "Ziyaretçi çalıştırılıyor",
+            "label": "AST ziyaretçisi çalıştırılıyor",
             "visibility": "visible"
           },
           {
-            "id": "sorted-final",
-            "kind": "call",
-            "name": "sorted",
+            "id": "report-def",
+            "kind": "function_definition",
+            "name": "denetim_raporu",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
             "file": "statik_analiz/report.py",
-            "label": "Rapor deterministik sıralanıyor",
+            "label": "denetim_raporu() tanımlandı",
             "visibility": "visible"
           },
           {
-            "id": "no-runtime-exec",
-            "kind": "file_content_regex",
-            "path": "statik_analiz/report.py",
-            "pattern": "(?s)def\\s+analiz_raporu(?!.*\\bexec\\s*\\()",
-            "label": "Kaynak kod çalıştırılmadan analiz ediliyor",
+            "id": "generic-visits",
+            "kind": "call_count",
+            "name": "generic_visit",
+            "min": 8,
+            "file": "statik_analiz/visitor.py",
+            "label": "AST alt düğümleri tam geziliyor",
             "visibility": "visible"
           },
           {
-            "id": "final-cases",
+            "id": "report-list-comprehension",
+            "kind": "node_count",
+            "nodeName": "ListComp",
+            "min": 1,
+            "file": "statik_analiz/report.py",
+            "label": "Rapor listeleri comprehension ile oluşturuluyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
             "kind": "function_cases",
-            "name": "analiz_raporu",
-            "module": "statik_analiz.report",
+            "name": "denetim_raporu",
+            "module": "statik_analiz",
             "cases": [
               {
                 "args": [
-                  "import subprocess\nclass Islem:\n    def calistir(self, x):\n        if x:\n            return eval(str(x))\n        return 0\n"
+                  "import os\n\ndef hesapla(x):\n    if x > 0:\n        return x\n    return 0\n"
                 ],
                 "expected": {
                   "fonksiyonlar": [
-                    "calistir"
+                    "hesapla"
                   ],
-                  "siniflar": [
-                    "Islem"
-                  ],
-                  "karmasiklik": 2,
+                  "siniflar": [],
+                  "karar_noktalari": 1,
                   "bulgular": [
                     {
-                      "tur": "import",
+                      "tur": "yasak_modul",
+                      "ad": "os",
+                      "satir": 1
+                    }
+                  ]
+                }
+              },
+              {
+                "args": [
+                  "import subprocess as sp\n\nclass Servis:\n    async def calis(self):\n        for x in range(2):\n            sp.run([str(x)])\n"
+                ],
+                "expected": {
+                  "fonksiyonlar": [
+                    "calis"
+                  ],
+                  "siniflar": [
+                    "Servis"
+                  ],
+                  "karar_noktalari": 1,
+                  "bulgular": [
+                    {
+                      "tur": "yasak_modul",
                       "ad": "subprocess",
                       "satir": 1
                     },
                     {
-                      "tur": "cagri",
-                      "ad": "eval",
-                      "satir": 5
+                      "tur": "riskli_cagri",
+                      "ad": "subprocess.run",
+                      "satir": 6
                     }
                   ]
                 }
               },
               {
                 "args": [
-                  "import socket as sk\ndef baglan():\n    for _ in range(2):\n        sk.socket()\n"
+                  "def temiz():\n    metin = 'eval os.system'\n    return metin\n"
                 ],
                 "expected": {
                   "fonksiyonlar": [
-                    "baglan"
+                    "temiz"
                   ],
                   "siniflar": [],
-                  "karmasiklik": 2,
-                  "bulgular": [
-                    {
-                      "tur": "import",
-                      "ad": "socket",
-                      "satir": 1
-                    }
-                  ]
-                }
-              },
-              {
-                "args": [
-                  "class A:\n    pass\n\nasync def getir():\n    while False:\n        pass\n    return 1\n"
-                ],
-                "expected": {
-                  "fonksiyonlar": [
-                    "getir"
-                  ],
-                  "siniflar": [
-                    "A"
-                  ],
-                  "karmasiklik": 2,
+                  "karar_noktalari": 0,
                   "bulgular": []
                 }
               },
               {
                 "args": [
-                  "from ctypes import CDLL\ncompile('x=1', '<x>', 'exec')\n"
+                  "from os import system as calistir\n\nwhile hazir():\n    calistir('x')\n"
                 ],
                 "expected": {
                   "fonksiyonlar": [],
                   "siniflar": [],
-                  "karmasiklik": 1,
+                  "karar_noktalari": 1,
                   "bulgular": [
                     {
-                      "tur": "import",
-                      "ad": "ctypes",
+                      "tur": "yasak_modul",
+                      "ad": "os",
                       "satir": 1
                     },
                     {
-                      "tur": "cagri",
-                      "ad": "compile",
-                      "satir": 2
+                      "tur": "riskli_cagri",
+                      "ad": "os.system",
+                      "satir": 4
                     }
                   ]
                 }
               }
             ],
-            "label": "Gizli çok dosyalı analiz senaryoları",
+            "label": "Gizli çok dosyalı statik analiz senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "no-exec",
+            "kind": "file_content_regex",
+            "path": "statik_analiz/report.py",
+            "pattern": "ast\\.parse",
+            "label": "Raporlama kaynağı çalıştırmadan AST kullanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "no-runtime-eval",
+            "kind": "file_content_regex",
+            "path": "statik_analiz/report.py",
+            "pattern": "^(?![\\s\\S]*(?:eval|exec|runpy\\.run_path)\\s*\\()[\\s\\S]*$",
+            "flags": "s",
+            "label": "Raporlama katmanı kaynak kodu çalıştırmıyor",
             "visibility": "hidden"
           }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Python kaynak kodu metni",
+        "targetShape": "Fonksiyonlar, sınıflar, karmaşıklık ve güvenlik bulgularını içeren deterministik statik analiz raporu",
+        "rules": [
+          "Kaynak kod çalıştırılmadan ast.parse ile ayrıştırılmalı.",
+          "Bulgular tür, satır ve ad bilgisine göre benzersiz ve sıralı olmalı.",
+          "Alias importları gerçek modül adına çözülmeli."
+        ],
+        "workflow": [
+          "Kaynağı AST'ye dönüştür.",
+          "Ziyaretçiyle sembol, karar ve güvenlik düğümlerini topla.",
+          "Immutable bulguları benzersizleştir ve deterministik rapor üret."
+        ],
+        "projectTitle": "Statik Kod Denetim Laboratuvarı",
+        "deliverables": [
+          "AST model ve ziyaretçi katmanı",
+          "Güvenlik ve karmaşıklık kuralları",
+          "Deterministik raporlama API'si",
+          "Çok dosyalı çalıştırılabilir proje"
         ]
       }
     }
