@@ -51,9 +51,9 @@ export function ProjectsPage() {
             lesson.editor.files?.length ?? 1,
             Boolean(
               lesson.graduation ||
-              lesson.dataTransformation?.projectTitle ||
-              lesson.fileSystem?.projectTitle ||
-              lesson.testing?.labTitle,
+                lesson.dataTransformation?.projectTitle ||
+                lesson.fileSystem?.projectTitle ||
+                lesson.testing?.labTitle,
             ),
           ),
         )
@@ -98,7 +98,7 @@ export function ProjectsPage() {
 
   return (
     <AppShell activeRoute={routes.projects} context="Projeler">
-      <div className={styles.page}>
+      <div className={`${styles.page} ${styles.projectsPage}`}>
         <section className={styles.hero}>
           <div>
             <span className={styles.eyebrow}>Proje laboratuvarı</span>
