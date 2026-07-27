@@ -29,7 +29,7 @@ function errorMessage(error: unknown) {
 function formatExportDate(value: number) {
   return new Intl.DateTimeFormat("tr-TR", {
     dateStyle: "medium",
-    timeStyle: "medium",
+    timeStyle: "short",
   }).format(new Date(value));
 }
 
@@ -73,7 +73,7 @@ export function ProgressDataPanel() {
       const result = await exportProgressData();
       setLastExport(result);
       setStatus("ready");
-      setAnnouncement(`İlerleme dosyası oluşturuldu: ${result.fileName}`);
+      setAnnouncement(`Yedek dosyan hazır: ${result.fileName}`);
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
@@ -93,18 +93,18 @@ export function ProgressDataPanel() {
     try {
       if (file.size > progressTransferPolicy.maxPayloadBytes) {
         throw new Error(
-          `Seçilen dosya ${formatBytes(progressTransferPolicy.maxPayloadBytes)} içe aktarma sınırını aşıyor.`,
+          `Seçilen dosya ${formatBytes(progressTransferPolicy.maxPayloadBytes)} sınırını aşıyor.`,
         );
       }
       const payload = await file.text();
       const result = await importProgressData(payload);
       const snapshot = await refreshProgressAndBackups();
       if (result.snapshot.totalXp !== snapshot.totalXp) {
-        throw new Error("İçe aktarılan veri ile yeniden yüklenen SQLite kaydı eşleşmiyor.");
+        throw new Error("İçe aktarılan ilerleme doğrulanamadı.");
       }
       setStatus("ready");
       setAnnouncement(
-        `${snapshot.completedLessonIds.length} ders ve ${snapshot.totalXp} XP içe aktarıldı. Önceki kayıt otomatik güvenlik yedeğine alındı.`,
+        `${snapshot.completedLessonIds.length} ders ve ${snapshot.totalXp} XP geri yüklendi. Önceki ilerlemen de yedeklendi.`,
       );
     } catch (reason) {
       setError(errorMessage(reason));
@@ -129,14 +129,12 @@ export function ProgressDataPanel() {
         snapshot.totalXp !== 0 ||
         snapshot.completedLessonIds.length !== 0
       ) {
-        throw new Error("İlerleme sıfırlama sonucu boş SQLite kaydıyla eşleşmiyor.");
+        throw new Error("İlerleme sıfırlanamadı.");
       }
       setStatus("ready");
       setShowResetConfirmation(false);
       setResetConfirmation("");
-      setAnnouncement(
-        "İlerleme sıfırlandı. Önceki kayıt otomatik güvenlik yedeği olarak saklandı.",
-      );
+      setAnnouncement("İlerlemen sıfırlandı. Önceki kayıt güvenlik yedeği olarak saklandı.");
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
@@ -149,26 +147,26 @@ export function ProgressDataPanel() {
     <article className={styles.panel}>
       <header className={styles.panelHeader}>
         <div>
-          <span>Veri taşınabilirliği</span>
-          <h2>Dışa aktar, içe al veya sıfırla</h2>
+          <span>Verilerini taşı</span>
+          <h2>İlerlemeni başka cihaza götür</h2>
         </div>
       </header>
 
       <p className={styles.message}>
-        İlerleme dosyası ders kimliklerini, her dersin XP değerini, tamamlanma zamanını ve son açık
-        dersi sürümlü JSON biçiminde taşır. Öğrenci kodları ve ders cevapları dosyaya eklenmez.
+        İlerlemeni tek bir dosya olarak sakla veya daha önce oluşturduğun dosyadan geri yükle.
+        Yazdığın kodlar ve ders cevapların bu dosyaya eklenmez.
       </p>
 
       <div className={styles.actions}>
-        <Button variant="secondary" onClick={() => void exportData()} disabled={actionDisabled}>
-          {status === "exporting" ? "Dışa aktarılıyor…" : "İlerlemeyi dışa aktar"}
+        <Button variant="primary" onClick={() => void exportData()} disabled={actionDisabled}>
+          {status === "exporting" ? "Dosya hazırlanıyor…" : "Yedek dosyası oluştur"}
         </Button>
         <Button
           variant="secondary"
           onClick={() => fileInputRef.current?.click()}
           disabled={actionDisabled}
         >
-          {status === "importing" ? "İçe aktarılıyor…" : "JSON dosyasından içe aktar"}
+          {status === "importing" ? "Geri yükleniyor…" : "Dosyadan geri yükle"}
         </Button>
         <Button
           variant="secondary"
@@ -188,7 +186,7 @@ export function ProgressDataPanel() {
         className={styles.hiddenFileInput}
         type="file"
         accept="application/json,.json"
-        aria-label="İçe aktarılacak Python Farming ilerleme dosyası"
+        aria-label="Geri yüklenecek Python Farming ilerleme dosyası"
         onChange={(event) => {
           const file = event.currentTarget.files?.[0];
           event.currentTarget.value = "";
@@ -200,21 +198,20 @@ export function ProgressDataPanel() {
 
       {lastExport ? (
         <div className={styles.helpBox}>
-          <strong>Son dışa aktarma</strong>
+          <strong>Son oluşturulan dosya</strong>
           <p>
-            {lastExport.completedLessonCount} ders · {lastExport.totalXp} XP · {formatBytes(lastExport.sizeBytes)}
-            <br />
-            {formatExportDate(lastExport.exportedAt)} · <code>{lastExport.filePath}</code>
+            {lastExport.fileName}<br />
+            {lastExport.completedLessonCount} ders · {lastExport.totalXp} XP · {formatExportDate(lastExport.exportedAt)}
           </p>
         </div>
       ) : null}
 
       {showResetConfirmation ? (
         <div className={styles.dangerBox} role="group" aria-label="İlerleme sıfırlama onayı">
-          <strong>Bu işlem bütün ders ilerlemesini ve XP’yi sıfırlar.</strong>
+          <strong>Bütün ders ilerlemen ve XP bilgin sıfırlanacak.</strong>
           <p>
-            İşlemden önce mevcut kayıt otomatik yedeklenir. Devam etmek için aşağıdaki alana tam
-            olarak <code>{progressTransferPolicy.resetConfirmation}</code> yaz.
+            Şu anki ilerlemen önce yedeklenecek. Devam etmek için aşağıdaki alana tam olarak
+            <code>{progressTransferPolicy.resetConfirmation}</code> yaz.
           </p>
           <input
             className={styles.textInput}
@@ -261,8 +258,8 @@ export function ProgressDataPanel() {
 
       <p className={styles.note}>
         {desktopAvailable
-          ? `İçe aktarma dosyaları en fazla ${formatBytes(progressTransferPolicy.maxPayloadBytes)} olabilir. İçe aktarma ve sıfırlama transaction içinde çalışır ve önce güvenlik yedeği oluşturur.`
-          : "Bu işlemler yalnız Tauri masaüstü uygulamasında kullanılabilir. Tarayıcı ön izlemesi yerel dosyalara yazmaz."}
+          ? "Geri yükleme ve sıfırlama öncesinde mevcut ilerlemen otomatik olarak yedeklenir."
+          : "Bu işlemler masaüstü uygulamasında kullanılabilir."}
       </p>
     </article>
   );
