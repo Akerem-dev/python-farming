@@ -109,7 +109,7 @@ function NavigationIcon({ route }: { route: AppRoute }) {
 export function PrimaryRail({ activeRoute }: PrimaryRailProps) {
   return (
     <nav className={styles.root} aria-label="Ana navigasyon">
-      <span className={styles.sectionLabel}>Menü</span>
+      <span className={styles.sectionLabel}>Ana menü</span>
       <div className={styles.list}>
         {items.map((item) => {
           const active = item.route === activeRoute;
