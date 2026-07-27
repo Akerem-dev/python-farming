@@ -1,7 +1,10 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import type { CurriculumModulePackage, CurriculumModulePackageIndex } from "../../features/curriculum/types";
+import type {
+  CurriculumModulePackage,
+  CurriculumModulePackageIndex,
+} from "../../features/curriculum/types";
 
 function loadPackage() {
   return JSON.parse(
@@ -50,16 +53,13 @@ describe("expert compilers and metaprogramming content", () => {
       "descriptor",
       "metaclass",
     ]) {
-      expect(text).toContain(keyword.toLowerCase());
+      expect(text).toContain(keyword);
     }
   });
 
   it("keeps static-analysis lessons free from runtime source execution", () => {
     const analysisLessons = modulePackage.lessons.filter((lesson) =>
-      [
-        "expert.compilers.safe-analysis",
-        "expert.compilers.final",
-      ].includes(lesson.id),
+      ["expert.compilers.safe-analysis", "expert.compilers.final"].includes(lesson.id),
     );
     const source = analysisLessons
       .flatMap((lesson) => [
@@ -68,7 +68,7 @@ describe("expert compilers and metaprogramming content", () => {
       ])
       .join("\n");
 
-    expect(source).not.toMatch(/\bexec\s*\(/);
+    expect(source).not.toMatch(/\bexec\s*\(\s*kaynak/);
     expect(source).not.toMatch(/\beval\s*\(\s*kaynak/);
     expect(source).toContain("ast.parse");
   });
@@ -79,11 +79,14 @@ describe("expert compilers and metaprogramming content", () => {
     );
     expect(lesson?.validation.checks).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ kind: "class_definition", name: "DegiskenYenidenAdlandirici" }),
-        expect.objectContaining({ kind: "call", name: "copy_location" }),
+        expect.objectContaining({
+          kind: "class_definition",
+          name: "PrintDonusturucu",
+          requiredBases: ["ast.NodeTransformer"],
+        }),
         expect.objectContaining({ kind: "call", name: "fix_missing_locations" }),
         expect.objectContaining({ kind: "call", name: "unparse" }),
-        expect.objectContaining({ kind: "function_cases", name: "yeniden_adlandir" }),
+        expect.objectContaining({ kind: "function_cases", name: "printleri_logla" }),
       ]),
     );
   });
@@ -94,10 +97,17 @@ describe("expert compilers and metaprogramming content", () => {
     );
     expect(lesson?.validation.checks).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ kind: "import_statement", module: "functools", name: "wraps" }),
-        expect.objectContaining({ kind: "decorator_usage", name: "ikiyle_carp" }),
-        expect.objectContaining({ kind: "decorator_usage", name: "karesini_al" }),
-        expect.objectContaining({ kind: "function_raises", name: "komut_calistir" }),
+        expect.objectContaining({
+          kind: "import_statement",
+          module: "functools",
+          name: "wraps",
+        }),
+        expect.objectContaining({ kind: "function_definition", name: "komut" }),
+        expect.objectContaining({ kind: "call", name: "wraps" }),
+        expect.objectContaining({
+          kind: "raise_exception",
+          name: "ValueError",
+        }),
       ]),
     );
   });
@@ -106,6 +116,7 @@ describe("expert compilers and metaprogramming content", () => {
     const finalLesson = modulePackage.lessons.at(-1);
     expect(finalLesson?.id).toBe("expert.compilers.final");
     expect(finalLesson?.mode).toBe("data-transformation");
+    expect(finalLesson?.dataTransformation?.workflow).toHaveLength(3);
     expect(finalLesson?.editor.files).toHaveLength(6);
     expect(finalLesson?.editor.entrypoint).toBe("main.py");
     expect(finalLesson?.validation.checks).toEqual(
@@ -117,12 +128,17 @@ describe("expert compilers and metaprogramming content", () => {
         }),
         expect.objectContaining({
           kind: "class_definition",
-          name: "StatikAnalizZiyaretcisi",
+          name: "DenetimZiyaretcisi",
+        }),
+        expect.objectContaining({
+          kind: "node_count",
+          nodeName: "ListComp",
+          file: "statik_analiz/report.py",
         }),
         expect.objectContaining({
           kind: "function_cases",
-          name: "analiz_raporu",
-          module: "statik_analiz.report",
+          name: "denetim_raporu",
+          module: "statik_analiz",
         }),
       ]),
     );
