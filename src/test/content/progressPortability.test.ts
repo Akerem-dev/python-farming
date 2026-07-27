@@ -97,7 +97,7 @@ describe("progress portability and controlled reset contract", () => {
     expect(portabilityPanel).toContain("progressTransferPolicy.resetConfirmation");
     expect(portabilityPanel).toContain("Sıfırlamayı onayla");
     expect(portabilityPanel).toContain("resetConfirmation !==");
-    expect(portabilityPanel).toContain("Önceki kayıt otomatik güvenlik yedeği");
+    expect(portabilityPanel).toContain("Şu anki ilerlemen önce yedeklenecek");
   });
 
   it("coordinates destructive actions across both settings panels", () => {
@@ -130,7 +130,7 @@ describe("progress portability and controlled reset contract", () => {
     expect(portabilityService).toContain("maxPayloadBytes: 2 * 1024 * 1024");
     expect(portabilityService).toContain("yalnız Tauri masaüstü uygulamasında");
     expect(portabilityPanel).toContain("file.size > progressTransferPolicy.maxPayloadBytes");
-    expect(portabilityPanel).toContain("Tarayıcı ön izlemesi yerel dosyalara yazmaz");
+    expect(portabilityPanel).toContain("Bu işlemler masaüstü uygulamasında kullanılabilir");
     expect(rustPortability).toContain("payload.as_bytes().len() > MAX_TRANSFER_BYTES");
     expect(portabilityPanel).toContain('role="alert"');
     expect(portabilityPanel).toContain('aria-live="polite"');
