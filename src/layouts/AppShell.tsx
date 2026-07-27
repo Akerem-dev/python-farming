@@ -57,8 +57,10 @@ export function AppShell({
       </a>
       <TitleBar context={context} />
       <div className={styles.body}>
-        <PrimaryRail activeRoute={activeRoute} />
-        <CurriculumSidebar compact={compactCurriculum} />
+        <div className={styles.sidebar}>
+          <PrimaryRail activeRoute={activeRoute} />
+          <CurriculumSidebar compact={compactCurriculum} />
+        </div>
         <main
           id="main-content"
           className={styles.content}
