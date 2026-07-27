@@ -12,8 +12,8 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 0 18px;
+  gap: 11px;
+  padding: 0 17px 0 14px;
   border-right: 1px solid var(--color-border);
   background:
     linear-gradient(90deg, rgba(var(--color-accent-rgb), 0.045), transparent 78%),
@@ -31,6 +31,7 @@
   border-radius: 13px;
   background: #fffaf0;
   box-shadow: 0 7px 18px rgba(49, 86, 64, 0.11);
+  transform: translate3d(-1px, -1px, 0);
 }
 
 .logo {
@@ -38,7 +39,7 @@
   height: 58px;
   max-width: none;
   object-fit: contain;
-  transform: scale(1.34) translateY(1px);
+  transform: scale(1.27) translate3d(-1px, -2px, 0);
   transform-origin: center;
 }
 
@@ -46,6 +47,7 @@
   min-width: 0;
   display: grid;
   gap: 2px;
+  transform: translate3d(0, -1px, 0);
 }
 
 .brandCopy strong {
