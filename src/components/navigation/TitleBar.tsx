@@ -11,14 +11,12 @@ export function TitleBar({ context }: TitleBarProps) {
 
   return (
     <header className={styles.root}>
-      <div className={styles.brand} aria-label={appConfig.name}>
+      <div className={styles.brand}>
         <img
-          className={styles.logo}
-          src="/assets/brand/logo-mark.png"
-          alt=""
-          aria-hidden="true"
+          className={styles.wordmark}
+          src="/assets/brand/python-farming-wordmark.png"
+          alt={appConfig.name}
         />
-        <span className={styles.brandText}>{appConfig.name}</span>
       </div>
 
       <div className={styles.context}>
