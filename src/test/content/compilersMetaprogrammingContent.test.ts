@@ -80,9 +80,9 @@ describe("expert compilers and metaprogramming content", () => {
     expect(lesson?.validation.checks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          kind: "class_definition",
-          name: "PrintDonusturucu",
-          requiredBases: ["ast.NodeTransformer"],
+          kind: "file_content_regex",
+          path: "main.py",
+          pattern: expect.stringContaining("PrintDonusturucu"),
         }),
         expect.objectContaining({ kind: "call", name: "fix_missing_locations" }),
         expect.objectContaining({ kind: "call", name: "unparse" }),
@@ -105,11 +105,36 @@ describe("expert compilers and metaprogramming content", () => {
         expect.objectContaining({ kind: "function_definition", name: "komut" }),
         expect.objectContaining({ kind: "call", name: "wraps" }),
         expect.objectContaining({
-          kind: "raise_exception",
-          name: "ValueError",
+          kind: "file_content_regex",
+          path: "main.py",
+          pattern: expect.stringContaining("ValueError"),
         }),
       ]),
     );
+  });
+
+  it("routes executable lessons through the multi-file project validator", () => {
+    const specializedKinds = new Set([
+      "dataclass_definition",
+      "protocol_definition",
+      "class_definition",
+      "class_cases",
+      "raise_exception",
+      "function_raises",
+      "exception_handling",
+      "exception_class",
+      "stdlib_function_cases",
+      "enum_definition",
+      "decorator_usage",
+    ]);
+
+    const remaining = modulePackage.lessons.flatMap((lesson) =>
+      lesson.validation.checks
+        .filter((check) => specializedKinds.has(check.kind))
+        .map((check) => `${lesson.id}:${check.kind}`),
+    );
+
+    expect(remaining).toEqual([]);
   });
 
   it("uses a six-file final static-analysis project with hidden reports", () => {
@@ -122,13 +147,14 @@ describe("expert compilers and metaprogramming content", () => {
     expect(finalLesson?.validation.checks).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          kind: "dataclass_definition",
-          name: "Bulgu",
-          frozen: true,
+          kind: "file_content_regex",
+          path: "statik_analiz/models.py",
+          pattern: expect.stringContaining("dataclass"),
         }),
         expect.objectContaining({
-          kind: "class_definition",
-          name: "DenetimZiyaretcisi",
+          kind: "file_content_regex",
+          path: "statik_analiz/visitor.py",
+          pattern: expect.stringContaining("DenetimZiyaretcisi"),
         }),
         expect.objectContaining({
           kind: "node_count",
