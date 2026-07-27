@@ -4,7 +4,10 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import type { CurriculumModulePackage } from "../../features/curriculum/types";
-import type { TaskValidationResult, TaskValidationSpec } from "../../features/learning/taskValidationTypes";
+import type {
+  TaskValidationResult,
+  TaskValidationSpec,
+} from "../../features/learning/taskValidationTypes";
 
 const workspaces: string[] = [];
 const validatorFilename = "__python_farming_project_validator__.py";
@@ -71,53 +74,46 @@ afterEach(() => {
 });
 
 const referenceFiles = {
-  "main.py": `from statik_analiz import analiz_raporu
+  "main.py": `from statik_analiz import denetim_raporu
 
 if __name__ == "__main__":
-    print(analiz_raporu("import subprocess\\neval('1+1')"))
+    print(denetim_raporu("import os\\nos.system('x')"))
 `,
-  "statik_analiz/__init__.py": `from .report import analiz_raporu
+  "statik_analiz/__init__.py": `from .report import denetim_raporu
 
-__all__ = ["analiz_raporu"]
+__all__ = ["denetim_raporu"]
 `,
   "statik_analiz/models.py": `from dataclasses import dataclass
 
-@dataclass(frozen=True)
+
+@dataclass(frozen=True, order=True)
 class Bulgu:
+    satir: int
     tur: str
     ad: str
-    satir: int
 
-    def anahtar(self):
-        return (self.satir, self.tur, self.ad)
+    def sozluk(self):
+        return {"tur": self.tur, "ad": self.ad, "satir": self.satir}
 `,
-  "statik_analiz/rules.py": `YASAK_IMPORTLAR = {"subprocess", "socket", "ctypes"}
-RISKLI_CAGRILAR = {"eval", "exec", "compile", "__import__"}
+  "statik_analiz/rules.py": `YASAK_MODULLER = {"os", "subprocess"}
+RISKLI_CAGRILAR = {"eval", "exec", "os.system", "subprocess.run"}
 
-def kok_modul(ad):
-    return ad.split(".")[0]
+
+def temel_modul(ad):
+    return ad.split(".", 1)[0]
 `,
   "statik_analiz/visitor.py": `import ast
 
 from .models import Bulgu
-from .rules import RISKLI_CAGRILAR, YASAK_IMPORTLAR, kok_modul
+from .rules import RISKLI_CAGRILAR, YASAK_MODULLER, temel_modul
 
 
-def cagri_adi(node):
-    if isinstance(node, ast.Name):
-        return node.id
-    if isinstance(node, ast.Attribute):
-        sol = cagri_adi(node.value)
-        return f"{sol}.{node.attr}" if sol else node.attr
-    return ""
-
-
-class StatikAnalizZiyaretcisi(ast.NodeVisitor):
+class DenetimZiyaretcisi(ast.NodeVisitor):
     def __init__(self):
         self.fonksiyonlar = set()
         self.siniflar = set()
-        self.bulgular = []
-        self.karmasiklik = 1
+        self.karar_noktalari = 0
+        self.bulgular = set()
         self.aliaslar = {}
 
     def visit_FunctionDef(self, node):
@@ -132,65 +128,68 @@ class StatikAnalizZiyaretcisi(ast.NodeVisitor):
         self.siniflar.add(node.name)
         self.generic_visit(node)
 
-    def visit_Import(self, node):
-        for alias in node.names:
-            root = kok_modul(alias.name)
-            self.aliaslar[alias.asname or root] = root
-            if root in YASAK_IMPORTLAR:
-                self.bulgular.append(Bulgu("import", root, node.lineno))
-        self.generic_visit(node)
-
-    def visit_ImportFrom(self, node):
-        root = kok_modul(node.module or "")
-        if root in YASAK_IMPORTLAR:
-            self.bulgular.append(Bulgu("import", root, node.lineno))
-        for alias in node.names:
-            self.aliaslar[alias.asname or alias.name] = (
-                f"{root}.{alias.name}" if root else alias.name
-            )
-        self.generic_visit(node)
-
-    def visit_Call(self, node):
-        ad = cagri_adi(node.func)
-        parts = ad.split(".")
-        if parts and parts[0] in self.aliaslar:
-            parts[0] = self.aliaslar[parts[0]]
-            ad = ".".join(parts)
-        if ad in RISKLI_CAGRILAR:
-            self.bulgular.append(Bulgu("cagri", ad, node.lineno))
-        self.generic_visit(node)
-
     def visit_If(self, node):
-        self.karmasiklik += 1
+        self.karar_noktalari += 1
         self.generic_visit(node)
 
     def visit_For(self, node):
-        self.karmasiklik += 1
+        self.karar_noktalari += 1
         self.generic_visit(node)
 
     def visit_While(self, node):
-        self.karmasiklik += 1
+        self.karar_noktalari += 1
         self.generic_visit(node)
+
+    def visit_Import(self, node):
+        for alias in node.names:
+            root = temel_modul(alias.name)
+            self.aliaslar[alias.asname or root] = root
+            if root in YASAK_MODULLER:
+                self.bulgular.add(Bulgu(node.lineno, "yasak_modul", root))
+        self.generic_visit(node)
+
+    def visit_ImportFrom(self, node):
+        root = temel_modul(node.module or "")
+        if root in YASAK_MODULLER:
+            self.bulgular.add(Bulgu(node.lineno, "yasak_modul", root))
+        for alias in node.names:
+            tam_ad = f"{root}.{alias.name}" if root else alias.name
+            self.aliaslar[alias.asname or alias.name] = tam_ad
+        self.generic_visit(node)
+
+    def visit_Call(self, node):
+        ad = self.noktali_ad(node.func)
+        if ad:
+            parcalar = ad.split(".")
+            if parcalar[0] in self.aliaslar:
+                parcalar[0] = self.aliaslar[parcalar[0]]
+                ad = ".".join(parcalar)
+            if ad in RISKLI_CAGRILAR:
+                self.bulgular.add(Bulgu(node.lineno, "riskli_cagri", ad))
+        self.generic_visit(node)
+
+    def noktali_ad(self, node):
+        if isinstance(node, ast.Name):
+            return node.id
+        if isinstance(node, ast.Attribute):
+            sol = self.noktali_ad(node.value)
+            return f"{sol}.{node.attr}" if sol else node.attr
+        return ""
 `,
   "statik_analiz/report.py": `import ast
 
-from .visitor import StatikAnalizZiyaretcisi
+from .visitor import DenetimZiyaretcisi
 
 
-def analiz_raporu(kaynak):
+def denetim_raporu(kaynak):
     agac = ast.parse(kaynak)
-    ziyaretci = StatikAnalizZiyaretcisi()
+    ziyaretci = DenetimZiyaretcisi()
     ziyaretci.visit(agac)
-    benzersiz = {bulgu.anahtar(): bulgu for bulgu in ziyaretci.bulgular}
-    bulgular = [
-        {"tur": bulgu.tur, "ad": bulgu.ad, "satir": bulgu.satir}
-        for bulgu in sorted(benzersiz.values(), key=lambda item: item.anahtar())
-    ]
     return {
-        "fonksiyonlar": sorted(ziyaretci.fonksiyonlar),
-        "siniflar": sorted(ziyaretci.siniflar),
-        "karmasiklik": ziyaretci.karmasiklik,
-        "bulgular": bulgular,
+        "fonksiyonlar": [ad for ad in sorted(ziyaretci.fonksiyonlar)],
+        "siniflar": [ad for ad in sorted(ziyaretci.siniflar)],
+        "karar_noktalari": ziyaretci.karar_noktalari,
+        "bulgular": [bulgu.sozluk() for bulgu in sorted(ziyaretci.bulgular)],
     }
 `,
 };
@@ -205,15 +204,12 @@ describe("expert compilers project integration", () => {
   it("rejects a hard-coded visible report", () => {
     const weakFiles = {
       ...referenceFiles,
-      "statik_analiz/report.py": `def analiz_raporu(kaynak):
+      "statik_analiz/report.py": `def denetim_raporu(kaynak):
     return {
-        "fonksiyonlar": ["calistir"],
-        "siniflar": ["Islem"],
-        "karmasiklik": 2,
-        "bulgular": [
-            {"tur": "import", "ad": "subprocess", "satir": 1},
-            {"tur": "cagri", "ad": "eval", "satir": 5},
-        ],
+        "fonksiyonlar": ["hesapla"],
+        "siniflar": [],
+        "karar_noktalari": 1,
+        "bulgular": [{"tur": "yasak_modul", "ad": "os", "satir": 1}],
     }
 `,
     };
@@ -223,14 +219,14 @@ describe("expert compilers project integration", () => {
   it("rejects text searching without an AST visitor", () => {
     const weakFiles = {
       ...referenceFiles,
-      "statik_analiz/visitor.py": `class StatikAnalizZiyaretcisi:
+      "statik_analiz/visitor.py": `class DenetimZiyaretcisi:
     pass
 `,
-      "statik_analiz/report.py": `def analiz_raporu(kaynak):
+      "statik_analiz/report.py": `def denetim_raporu(kaynak):
     return {
         "fonksiyonlar": [],
         "siniflar": [],
-        "karmasiklik": 1,
+        "karar_noktalari": 0,
         "bulgular": [],
     }
 `,
