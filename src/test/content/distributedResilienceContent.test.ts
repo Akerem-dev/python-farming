@@ -148,6 +148,11 @@ describe("expert distributed systems and resilience content", () => {
           path: "dayanikli_sistem/breaker.py",
         }),
         expect.objectContaining({
+          kind: "node_count",
+          nodeName: "For",
+          file: "dayanikli_sistem/orchestrator.py",
+        }),
+        expect.objectContaining({
           kind: "function_cases",
           name: "dayaniklilik_raporu",
           module: "dayanikli_sistem",

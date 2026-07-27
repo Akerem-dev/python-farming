@@ -1060,6 +1060,15 @@
             "visibility": "visible"
           },
           {
+            "id": "orchestrator-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "dayanikli_sistem/orchestrator.py",
+            "label": "Olay akışı yapısal olarak döngüyle işleniyor",
+            "visibility": "visible"
+          },
+          {
             "id": "report-cases",
             "kind": "function_cases",
             "name": "dayaniklilik_raporu",
