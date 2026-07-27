@@ -44,7 +44,7 @@ describe("Python Farming 1.1 expert release contract", () => {
     expect(readme).not.toContain("uzman içerikleri ayrı ürün yolunda geliştirilecektir");
     expect(notes).toContain("Güvenilir Kod Analiz Platformu");
     expect(notes).toContain("Bilinen dağıtım sınırlamaları");
-    expect(qa).toContain("işaretlenmemiş maddeler");
+    expect(qa).toContain("İşaretlenmemiş maddeler");
     expect(qa).toContain("imzalı installer desteği varmış gibi beyan edilmemelidir");
   });
 
