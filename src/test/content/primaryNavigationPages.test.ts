@@ -29,6 +29,19 @@ describe("primary navigation pages", () => {
     expect(rail).not.toContain("disabled=");
   });
 
+  it("uses native hash links plus an application event for WebView2 navigation", () => {
+    expect(rail).toContain('<a');
+    expect(rail).toContain('href={`#${item.route}`}');
+    expect(rail).toContain("event.preventDefault()");
+    expect(rail).toContain("navigate(route)");
+    expect(router).toContain('const appNavigationEvent = "python-farming:navigate"');
+    expect(router).toContain("window.history.pushState");
+    expect(router).toContain("new CustomEvent<AppRoute>");
+    expect(router).toContain('addEventListener("hashchange"');
+    expect(router).toContain('addEventListener("popstate"');
+    expect(router).toContain("addEventListener(appNavigationEvent");
+  });
+
   it("loads every destination through the application router", () => {
     expect(router).toContain('import("../pages/TasksPage")');
     expect(router).toContain('import("../pages/ProjectsPage")');
