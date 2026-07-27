@@ -1,0 +1,341 @@
+.workspace-refined-shell {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+
+.workspace-refined-shell > div {
+  height: 100%;
+}
+
+.workspace-refined-shell #main-content {
+  background: #ede7da;
+}
+
+.workspace-refined-shell #main-content > div:first-child {
+  height: 100%;
+  min-height: 680px;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.72fr) minmax(560px, 1.55fr);
+  grid-template-rows: minmax(0, 1fr) 184px;
+  gap: 1px;
+  padding: 0;
+  background: var(--color-border);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section {
+  min-width: 0;
+  min-height: 0;
+  border: 0;
+  background: var(--color-surface);
+}
+
+/* Lesson brief ----------------------------------------------------------- */
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) {
+  overflow: auto;
+  padding: clamp(24px, 2.4vw, 38px);
+  border-right: 0;
+  background:
+    linear-gradient(180deg, rgba(var(--color-accent-rgb), 0.045), transparent 190px),
+    var(--color-surface);
+  scrollbar-gutter: stable;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:first-child {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--color-border-subtle);
+  color: var(--color-accent-strong);
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > h1 {
+  margin: 22px 0 8px;
+  color: var(--color-text-primary);
+  font-size: clamp(29px, 2.3vw, 38px);
+  line-height: 1.08;
+  letter-spacing: -0.042em;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > p {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(2) {
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid rgba(var(--color-accent-rgb), 0.24);
+  border-radius: 10px;
+  background:
+    linear-gradient(120deg, var(--color-accent-soft), transparent 72%),
+    var(--color-surface);
+  box-shadow: 0 8px 24px rgba(55, 45, 28, 0.055);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(2) > span,
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) [class*="eyebrow"] {
+  color: var(--color-accent-strong);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(2) h2 {
+  margin: 7px 0 13px;
+  color: var(--color-text-primary);
+  font-size: 20px;
+  line-height: 1.25;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) ol,
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) ul {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  line-height: 1.72;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(3) {
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-top: 16px;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 9px;
+  background: var(--color-surface);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(3) > div {
+  padding: 17px 18px;
+  border-top: 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:nth-of-type(3) > div:last-child {
+  border-bottom: 0;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) pre {
+  border-radius: 7px;
+  font-size: 11px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) details {
+  border-color: var(--color-border);
+  border-radius: 8px;
+  background: var(--color-surface-raised);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) aside {
+  border-color: rgba(var(--color-brand-warm-rgb), 0.28);
+  background: var(--color-brand-warm-soft);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:last-child {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) button {
+  min-height: 38px;
+}
+
+/* Editor ----------------------------------------------------------------- */
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) {
+  display: grid;
+  grid-template-rows: 50px minmax(0, 1fr) 32px;
+  overflow: hidden;
+  background: var(--color-code-background);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header {
+  padding: 0 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+  background: #202c24;
+  color: var(--color-code-muted);
+  font-size: 11px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > div {
+  align-items: stretch;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header [class*="activeTab"] {
+  min-width: 130px;
+  padding: 0 15px;
+  border-bottom-color: #d1a35e;
+  color: #f2f5ef;
+  font-size: 12px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header [class*="modeBadge"] {
+  align-self: center;
+  margin-left: 10px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #c5d0c6;
+  font-size: 9px;
+  letter-spacing: 0.02em;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header [class*="runtimeStatus"] {
+  color: #c5d0c6;
+  font-size: 10px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > div:nth-child(2) {
+  min-height: 0;
+  background: var(--color-code-background);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > footer {
+  padding: 0 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  background: #202c24;
+  color: #aeb9af;
+  font-size: 9px;
+}
+
+/* Output area ------------------------------------------------------------ */
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: 40px minmax(0, 1fr);
+  border-top: 0;
+  background: #17221b;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > header {
+  grid-column: 1 / -1;
+  padding: 0 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #202c24;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > header > div {
+  gap: 22px;
+  color: #aeb9af;
+  font-size: 10px;
+  text-transform: none;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > header button {
+  color: #aeb9af;
+  font-size: 10px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > header [class*="Active"] {
+  color: #e3ba72 !important;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) pre {
+  padding: 14px 18px;
+  color: #dbe4dc;
+  font-size: 11px;
+  line-height: 1.62;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > div:last-child {
+  align-self: stretch;
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding: 12px 14px;
+  background: linear-gradient(90deg, transparent, rgba(23, 34, 27, 0.96) 18%);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > div:last-child button {
+  min-height: 38px;
+  white-space: nowrap;
+}
+
+/* Interaction polish ---------------------------------------------------- */
+.workspace-refined-shell button,
+.workspace-refined-shell summary {
+  transition:
+    background-color var(--motion-fast),
+    border-color var(--motion-fast),
+    color var(--motion-fast),
+    transform var(--motion-fast),
+    box-shadow var(--motion-fast);
+}
+
+.workspace-refined-shell button:not(:disabled):active {
+  transform: translate3d(0, 1px, 0);
+}
+
+.workspace-refined-shell ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.workspace-refined-shell ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.workspace-refined-shell ::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--color-text-muted) 42%, transparent);
+  background-clip: padding-box;
+}
+
+@media (max-width: 1180px) {
+  .workspace-refined-shell #main-content > div:first-child {
+    grid-template-columns: minmax(300px, 0.72fr) minmax(500px, 1.35fr);
+  }
+}
+
+@media (max-width: 1040px) {
+  .workspace-refined-shell #main-content > div:first-child {
+    height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 500px 210px;
+  }
+
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(1) {
+    max-height: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(3) {
+    grid-column: 1;
+  }
+}
+
+@media (max-width: 720px) {
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(1) {
+    padding: 22px;
+  }
+
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(3) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 40px minmax(120px, 1fr) auto;
+  }
+
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > div:last-child {
+    grid-column: 1;
+    justify-content: stretch;
+    background: #17221b;
+  }
+
+  .workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > div:last-child button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace-refined-shell *,
+  .workspace-refined-shell *::before,
+  .workspace-refined-shell *::after {
+    scroll-behavior: auto !important;
+  }
+}
