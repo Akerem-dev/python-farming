@@ -151,6 +151,7 @@ describe("expert distributed systems and resilience content", () => {
           kind: "node_count",
           nodeName: "For",
           file: "dayanikli_sistem/orchestrator.py",
+          visibility: "visible",
         }),
         expect.objectContaining({
           kind: "function_cases",
