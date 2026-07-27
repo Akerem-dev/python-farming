@@ -100,6 +100,31 @@ describe("expert distributed systems and resilience content", () => {
     );
   });
 
+  it("uses only project-validator-supported checks in the final lesson", () => {
+    const finalLesson = modulePackage.lessons.at(-1);
+    const supportedKinds = new Set([
+      "file_exists",
+      "file_content_regex",
+      "json_file_equals",
+      "file_unchanged",
+      "import_statement",
+      "assignment",
+      "call",
+      "call_count",
+      "node_count",
+      "function_definition",
+      "function_cases",
+      "variable_type",
+      "variable_non_empty",
+      "variable_positive",
+      "stdout_regex",
+    ]);
+
+    expect(finalLesson?.validation.checks.every((check) => supportedKinds.has(check.kind))).toBe(
+      true,
+    );
+  });
+
   it("ships a seven-file final resilience project with hidden behavior cases", () => {
     const finalLesson = modulePackage.lessons.at(-1);
     expect(finalLesson?.id).toBe("expert.distributed.final");
