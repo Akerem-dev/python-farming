@@ -35,11 +35,14 @@ export function StatusBar() {
       >
         <i aria-hidden="true" /> {runtimeLabel}
       </span>
-      <span>{snapshot?.runtime?.version ?? "Yerel yorumlayıcı otomatik algılanır"}</span>
+      <span className={styles.runtimeVersion}>
+        {snapshot?.runtime?.version ?? "Yerel yorumlayıcı otomatik algılanır"}
+      </span>
       <span className={styles.spacer} />
-      <span>{appConfig.name} v{snapshot?.appVersion ?? appConfig.version}</span>
-      <span>UTF-8</span>
-      <span>Tema: Dark</span>
+      <span className={styles.localNote}>İlerlemen bu cihazda saklanıyor</span>
+      <span className={styles.appVersion}>
+        {appConfig.name} v{snapshot?.appVersion ?? appConfig.version}
+      </span>
     </footer>
   );
 }
