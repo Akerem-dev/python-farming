@@ -60,7 +60,7 @@ describe("shared runtime isolation contract", () => {
     expect(projectRuntime).toContain("bütün süreç ağacı durduruldu");
   });
 
-  it("publishes the enforced security profile through diagnostics", () => {
+  it("publishes the enforced security profile through advanced diagnostics", () => {
     expect(protocol).toContain("export interface RuntimeSecurityProfile");
     expect(protocol).toContain('filesystemScope: "workspace-only"');
     expect(protocol).toContain('networkAccess: "blocked"');
@@ -68,7 +68,8 @@ describe("shared runtime isolation contract", () => {
     expect(protocol).toContain("processTreeTermination: boolean");
     expect(diagnostics).toContain("Güvenli çalışma profili");
     expect(diagnostics).toContain("Süreç ağacı sonlandırma");
-    expect(settings).toContain("Güvenlik sözleşmesi");
+    expect(settings).toContain("Teknik ayrıntılar ve destek");
+    expect(settings).toContain("İzolasyon ve çalıştırma limitleri");
   });
 
   it("documents the threat model without claiming OS-level isolation", () => {
