@@ -39,7 +39,7 @@ export function StatusBar() {
         {snapshot?.runtime?.version ?? "Yerel yorumlayıcı otomatik algılanır"}
       </span>
       <span className={styles.spacer} />
-      <span className={styles.localNote}>İlerlemen bu cihazda saklanıyor</span>
+      <span className={styles.localNote}>İlerlemen güvenle bu cihazda saklanıyor</span>
       <span className={styles.appVersion}>
         {appConfig.name} v{snapshot?.appVersion ?? appConfig.version}
       </span>
