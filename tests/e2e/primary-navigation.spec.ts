@@ -19,7 +19,7 @@ const pageJourneys = [
   {
     label: "Ayarlar",
     hash: "#/settings",
-    heading: "Python ortamını ve uygulama sağlığını kontrol et",
+    heading: "Uygulaman hazır, ilerlemen güvende",
   },
 ] as const;
 
