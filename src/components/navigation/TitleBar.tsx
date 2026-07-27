@@ -22,7 +22,7 @@ export function TitleBar({ context }: TitleBarProps) {
       </div>
 
       <div className={styles.context}>
-        <span>Bulunduğun yer</span>
+        <span>Şu anda</span>
         <strong>{context}</strong>
       </div>
 
