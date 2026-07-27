@@ -46,7 +46,7 @@ function NavigationIcon({ route }: { route: AppRoute }) {
     strokeWidth: 1.8,
     strokeLinecap: "round" as const,
     strokeLinejoin: "round" as const,
-    focusable: "false",
+    focusable: false,
     "aria-hidden": true,
   };
 
