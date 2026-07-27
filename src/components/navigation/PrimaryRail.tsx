@@ -5,16 +5,17 @@ import styles from "./PrimaryRail.module.css";
 
 interface RailItem {
   label: string;
+  symbol: string;
   route: AppRoute;
 }
 
 const items: RailItem[] = [
-  { label: "Ana Sayfa", route: routes.home },
-  { label: "Kod Alanı", route: routes.workspace },
-  { label: "Görevler", route: routes.tasks },
-  { label: "Projeler", route: routes.projects },
-  { label: "İlerleme", route: routes.progress },
-  { label: "Ayarlar", route: routes.settings },
+  { label: "Ana Sayfa", symbol: "⌂", route: routes.home },
+  { label: "Kod Alanı", symbol: "</>", route: routes.workspace },
+  { label: "Görevler", symbol: "✓", route: routes.tasks },
+  { label: "Projeler", symbol: "□", route: routes.projects },
+  { label: "İlerleme", symbol: "◒", route: routes.progress },
+  { label: "Ayarlar", symbol: "⚙", route: routes.settings },
 ];
 
 interface PrimaryRailProps {
@@ -122,7 +123,7 @@ export function PrimaryRail({ activeRoute }: PrimaryRailProps) {
               onClick={(event) => followRoute(event, item.route)}
               aria-current={active ? "page" : undefined}
             >
-              <span className={styles.symbol} aria-hidden="true">
+              <span className={styles.symbol} aria-hidden="true" data-fallback-symbol={item.symbol}>
                 <NavigationIcon route={item.route} />
               </span>
               <span>{item.label}</span>
