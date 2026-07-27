@@ -37,7 +37,7 @@ describe("settings and system diagnostics", () => {
     expect(routes).toContain('settings: "/settings"');
     expect(router).toContain('import("../pages/SettingsPage")');
     expect(router).toContain("route === routes.settings");
-    expect(router).toContain('return "Ayarlar ve Sistem Tanılama"');
+    expect(router).toContain('return "Ayarlar"');
     expect(rail).toContain('{ label: "Ayarlar", symbol: "⚙", route: routes.settings }');
   });
 
@@ -78,19 +78,21 @@ describe("settings and system diagnostics", () => {
     expect(runtimeLimits.maxTimeoutMs).toBe(rustConstant(runtimeRust, "MAX_TIMEOUT_MS"));
   });
 
-  it("shows runtime, limits, progress and non-destructive troubleshooting", () => {
-    expect(settingsPage).toContain("Python çalışma motoru");
-    expect(settingsPage).toContain("Uygulama ve ortam");
+  it("shows a user-first summary and keeps technical diagnostics behind disclosure", () => {
+    expect(settingsPage).toContain("Uygulaman hazır, ilerlemen güvende");
+    expect(settingsPage).toContain("Öğrenme ortamı");
+    expect(settingsPage).toContain("Bu cihazda kayıtlı");
+    expect(settingsPage).toContain('<details className={styles.advancedPanel}>');
+    expect(settingsPage).toContain("Teknik ayrıntılar ve destek");
     expect(settingsPage).toContain("İzolasyon ve çalıştırma limitleri");
-    expect(settingsPage).toContain("İlerleme kaydı");
     expect(settingsPage).toContain("PYTHON_FARMING_PYTHON");
     expect(settingsPage).toContain("Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez");
     expect(settingsPage).not.toContain("deleteProgress");
   });
 
   it("does not confuse browser preview with a missing Python installation", () => {
-    expect(statusBar).toContain("Tarayıcı ön izlemesi");
-    expect(settingsPage).toContain("Masaüstü kontrolü gerekli");
+    expect(statusBar).toContain("Ön izleme modu");
+    expect(settingsPage).toContain("Ön izleme açık");
     expect(settingsPage).toContain("const browserPreview");
     expect(settingsPage).toContain("const runtimeOffline");
     expect(settingsPage).toContain("{runtimeOffline ? (");
@@ -106,7 +108,7 @@ describe("settings and system diagnostics", () => {
     expect(settingsPage).toContain('progressStatus !== "ready"');
     expect(settingsPage).toContain('progressStatus === "idle"');
     expect(settingsPage).toContain("void loadProgress()");
-    expect(settingsPage).toContain("İlerleme kaydı yüklenemedi.");
+    expect(settingsPage).toContain("İlerlemen yüklenemedi.");
     expect(settingsPage).toContain("progressError");
   });
 
@@ -123,8 +125,8 @@ describe("settings and system diagnostics", () => {
   it("feeds the same diagnostics state into the global status bar", () => {
     expect(statusBar).toContain("useDiagnosticsStore");
     expect(statusBar).toContain("checkDiagnostics()");
-    expect(statusBar).toContain("Python hazır");
-    expect(statusBar).toContain("Python bulunamadı");
+    expect(statusBar).toContain("Kod çalıştırma hazır");
+    expect(statusBar).toContain("Kod çalıştırma kullanılamıyor");
     expect(statusBar).toContain('data-status={status}');
   });
 
@@ -155,7 +157,6 @@ describe("settings and system diagnostics", () => {
     };
 
     const report = createDiagnosticsReport(snapshot);
-
     expect(report).toContain("Python Farming Sistem Tanılama Raporu");
     expect(report).toContain("Python 3.13.5");
     expect(report).toContain("python3");
