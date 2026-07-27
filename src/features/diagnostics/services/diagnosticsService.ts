@@ -39,11 +39,15 @@ function getPlatformLabel() {
 export async function collectDiagnostics(): Promise<DiagnosticsSnapshot> {
   const checkedAt = new Date().toISOString();
   const platform = getPlatformLabel();
+  const buildSha = appConfig.buildSha;
+  const buildChannel = appConfig.buildChannel;
 
   if (!isTauriEnvironment()) {
     return {
       environment: "browser-preview",
       appVersion: appConfig.version,
+      buildSha,
+      buildChannel,
       platform,
       checkedAt,
       runtimeStatus: "unavailable",
@@ -84,6 +88,8 @@ export async function collectDiagnostics(): Promise<DiagnosticsSnapshot> {
   return {
     environment: "desktop",
     appVersion,
+    buildSha,
+    buildChannel,
     platform,
     checkedAt,
     runtimeStatus,
@@ -107,6 +113,8 @@ export function createDiagnosticsReport(snapshot: DiagnosticsSnapshot) {
     `Ortam: ${snapshot.environment}`,
     `Platform: ${snapshot.platform}`,
     `Uygulama sürümü: ${snapshot.appVersion}`,
+    `Build kanalı: ${snapshot.buildChannel}`,
+    `Build commit: ${snapshot.buildSha}`,
     `Runtime protokolü: ${runtimeProtocolVersion}`,
     `Python durumu: ${snapshot.runtimeStatus}`,
     `Python sürümü: ${snapshot.runtime?.version ?? "bulunamadı"}`,

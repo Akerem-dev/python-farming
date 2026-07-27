@@ -27,6 +27,9 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => window.localStorage.clear());
   await page.goto("/");
   await expect(page.getByRole("navigation", { name: "Ana navigasyon" })).toBeVisible();
+  await expect(page.getByRole("contentinfo", { name: "Uygulama durumu" })).toContainText(
+    /Python Farming v1\.1\.0 · (?:ci|local)\/(?:[0-9a-f]{7,12}|unknown)/i,
+  );
 });
 
 test("primary rail opens every product page with a real pointer click", async ({ page }) => {

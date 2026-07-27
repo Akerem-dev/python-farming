@@ -6,6 +6,8 @@ export type DiagnosticsRuntimeStatus = "ready" | "offline" | "unavailable" | "er
 export interface DiagnosticsSnapshot {
   environment: DiagnosticsEnvironment;
   appVersion: string;
+  buildSha?: string;
+  buildChannel?: string;
   platform: string;
   checkedAt: string;
   runtimeStatus: DiagnosticsRuntimeStatus;
