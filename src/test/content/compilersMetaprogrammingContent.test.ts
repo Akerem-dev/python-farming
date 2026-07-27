@@ -67,10 +67,19 @@ describe("expert compilers and metaprogramming content", () => {
         ...(lesson.editor.files?.map((file) => file.starterCode) ?? []),
       ])
       .join("\n");
+    const checks = analysisLessons.flatMap((lesson) => lesson.validation.checks);
 
     expect(source).not.toMatch(/\bexec\s*\(\s*kaynak/);
     expect(source).not.toMatch(/\beval\s*\(\s*kaynak/);
-    expect(source).toContain("ast.parse");
+    expect(checks).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ kind: "call", name: "parse" }),
+        expect.objectContaining({
+          kind: "file_content_regex",
+          pattern: expect.stringContaining("ast\\.parse"),
+        }),
+      ]),
+    );
   });
 
   it("ships a real NodeTransformer contract instead of text replacement", () => {
