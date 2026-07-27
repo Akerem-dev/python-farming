@@ -24,6 +24,10 @@ export function StatusBar() {
             : status === "error"
               ? "Runtime hatası"
               : "Runtime bekliyor";
+  const appVersion = snapshot?.appVersion ?? appConfig.version;
+  const buildSha = snapshot?.buildSha ?? appConfig.buildSha;
+  const buildChannel = snapshot?.buildChannel ?? appConfig.buildChannel;
+  const buildLabel = `${buildChannel}/${buildSha}`;
 
   return (
     <footer className={styles.root} aria-label="Uygulama durumu">
@@ -37,7 +41,9 @@ export function StatusBar() {
       </span>
       <span>{snapshot?.runtime?.version ?? "Yerel yorumlayıcı otomatik algılanır"}</span>
       <span className={styles.spacer} />
-      <span>{appConfig.name} v{snapshot?.appVersion ?? appConfig.version}</span>
+      <span title={`Çalışan build: ${buildLabel}`}>
+        {appConfig.name} v{appVersion} · {buildLabel}
+      </span>
       <span>UTF-8</span>
       <span>Tema: Dark</span>
     </footer>
