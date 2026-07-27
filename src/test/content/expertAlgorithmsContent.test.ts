@@ -39,10 +39,12 @@ describe("expert algorithms and complexity content", () => {
     expect(expert?.modules.at(-1)?.id).toBe("expert-project");
   });
 
-  it("registers the expert package in the published package index", () => {
-    const index = loadPackageIndex();
-    expect(index.files).toContain("/content/modules/algorithms-complexity.json");
-    expect(index.files.at(-1)).toBe("/content/modules/algorithms-complexity.json");
+  it("registers the first expert package after the advanced roadmap", () => {
+    const files = loadPackageIndex().files;
+    const advancedProjectIndex = files.indexOf("/content/modules/advanced-project.json");
+    const algorithmIndex = files.indexOf("/content/modules/algorithms-complexity.json");
+    expect(advancedProjectIndex).toBeGreaterThanOrEqual(0);
+    expect(algorithmIndex).toBe(advancedProjectIndex + 1);
   });
 
   it("publishes seven ordered lessons and 1260 XP", () => {
