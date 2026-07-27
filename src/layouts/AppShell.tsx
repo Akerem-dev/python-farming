@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from "react";
+import { useEffect, type PropsWithChildren } from "react";
 import { navigate } from "../app/AppRouter";
 import { routes, type AppRoute } from "../app/routes";
 import { FirstRunGuide } from "../components/onboarding/FirstRunGuide";
@@ -32,6 +32,14 @@ export function AppShell({
     completedLessonIds.length === 0 &&
     totalXp === 0 &&
     firstLesson !== null;
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      document.getElementById("main-content")?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [activeRoute]);
 
   const startFirstLesson = () => {
     if (!firstLesson) {

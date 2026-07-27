@@ -9,6 +9,21 @@ const WorkspacePage = lazy(async () => {
   return { default: module.WorkspacePage };
 });
 
+const TasksPage = lazy(async () => {
+  const module = await import("../pages/TasksPage");
+  return { default: module.TasksPage };
+});
+
+const ProjectsPage = lazy(async () => {
+  const module = await import("../pages/ProjectsPage");
+  return { default: module.ProjectsPage };
+});
+
+const ProgressPage = lazy(async () => {
+  const module = await import("../pages/ProgressPage");
+  return { default: module.ProgressPage };
+});
+
 const SettingsPage = lazy(async () => {
   const module = await import("../pages/SettingsPage");
   return { default: module.SettingsPage };
@@ -26,6 +41,18 @@ function getRouteLabel(route: string) {
 
   if (route === routes.workspace) {
     return "Kod Alanı";
+  }
+
+  if (route === routes.tasks) {
+    return "Görevler";
+  }
+
+  if (route === routes.projects) {
+    return "Projeler";
+  }
+
+  if (route === routes.progress) {
+    return "İlerleme";
   }
 
   if (route === routes.settings) {
@@ -86,6 +113,24 @@ export function AppRouter() {
     page = (
       <Suspense fallback={<RouteLoadingState label="Çalışma alanı" />}>
         <WorkspacePage />
+      </Suspense>
+    );
+  } else if (route === routes.tasks) {
+    page = (
+      <Suspense fallback={<RouteLoadingState label="Görevler" />}>
+        <TasksPage />
+      </Suspense>
+    );
+  } else if (route === routes.projects) {
+    page = (
+      <Suspense fallback={<RouteLoadingState label="Projeler" />}>
+        <ProjectsPage />
+      </Suspense>
+    );
+  } else if (route === routes.progress) {
+    page = (
+      <Suspense fallback={<RouteLoadingState label="İlerleme" />}>
+        <ProgressPage />
       </Suspense>
     );
   } else if (route === routes.settings) {

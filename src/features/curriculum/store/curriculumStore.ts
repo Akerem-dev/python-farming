@@ -10,11 +10,13 @@ import { loadCurriculumCatalog } from "../services/curriculumService";
 import type { CurriculumCatalog, CurriculumLesson } from "../types";
 
 export type CurriculumLoadStatus = "idle" | "loading" | "ready" | "error";
+type CurriculumSelectionIntent = "resume" | "explicit";
 
 interface CurriculumState {
   status: CurriculumLoadStatus;
   catalog: CurriculumCatalog | null;
   currentLessonId: string | null;
+  selectionIntent: CurriculumSelectionIntent;
   errorMessage: string | null;
   loadCatalog: () => Promise<CurriculumCatalog | null>;
   selectLesson: (lessonId: string) => void;
@@ -27,6 +29,7 @@ export const useCurriculumStore = create<CurriculumState>((set, get) => ({
   status: "idle",
   catalog: null,
   currentLessonId: null,
+  selectionIntent: "resume",
   errorMessage: null,
 
   loadCatalog: async () => {
@@ -69,19 +72,25 @@ export const useCurriculumStore = create<CurriculumState>((set, get) => ({
     set((state) => {
       const completedLessonIds = useProgressStore.getState().completedLessonIds;
       return state.catalog && isLessonUnlocked(state.catalog, lessonId, completedLessonIds)
-        ? { currentLessonId: lessonId }
+        ? { currentLessonId: lessonId, selectionIntent: "explicit" }
         : state;
     }),
 
   selectResumeLesson: (lastLessonId) =>
     set((state) => {
+      if (state.selectionIntent === "explicit" && state.currentLessonId) {
+        return { selectionIntent: "resume" };
+      }
+
       const progress = useProgressStore.getState();
       const lesson = getResumeLesson(
         state.catalog,
         progress.completedLessonIds,
         lastLessonId ?? progress.lastLessonId,
       );
-      return lesson ? { currentLessonId: lesson.id } : state;
+      return lesson
+        ? { currentLessonId: lesson.id, selectionIntent: "resume" }
+        : { selectionIntent: "resume" };
     }),
 
   selectNextLesson: () =>
@@ -91,13 +100,17 @@ export const useCurriculumStore = create<CurriculumState>((set, get) => ({
         state.currentLessonId,
         useProgressStore.getState().completedLessonIds,
       );
-      return lesson ? { currentLessonId: lesson.id } : state;
+      return lesson
+        ? { currentLessonId: lesson.id, selectionIntent: "explicit" }
+        : state;
     }),
 
   selectPreviousLesson: () =>
     set((state) => {
       const lesson = getPreviousLesson(state.catalog, state.currentLessonId);
-      return lesson ? { currentLessonId: lesson.id } : state;
+      return lesson
+        ? { currentLessonId: lesson.id, selectionIntent: "explicit" }
+        : state;
     }),
 }));
 
