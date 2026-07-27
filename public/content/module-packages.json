@@ -27,6 +27,7 @@
     "/content/modules/architecture-patterns.json",
     "/content/modules/packaging-performance.json",
     "/content/modules/advanced-project.json",
-    "/content/modules/algorithms-complexity.json"
+    "/content/modules/algorithms-complexity.json",
+    "/content/modules/parallelism-systems.json"
   ]
 }
