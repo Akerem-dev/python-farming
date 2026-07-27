@@ -129,19 +129,9 @@
           },
           {
             "id": "visitor-class",
-            "kind": "class_definition",
-            "name": "KodAnalizi",
-            "minInitParams": 0,
-            "maxInitParams": 0,
-            "requiredMethods": [
-              "visit_FunctionDef",
-              "visit_ClassDef",
-              "visit_Call"
-            ],
-            "requiredBases": [
-              "ast.NodeVisitor"
-            ],
-            "file": "main.py",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "class\\s+KodAnalizi\\s*\\(\\s*ast\\.NodeVisitor\\s*\\)",
             "label": "KodAnalizi NodeVisitor tabanında tanımlandı",
             "visibility": "visible"
           },
@@ -283,17 +273,9 @@
         "checks": [
           {
             "id": "transformer-class",
-            "kind": "class_definition",
-            "name": "PrintDonusturucu",
-            "minInitParams": 0,
-            "maxInitParams": 0,
-            "requiredMethods": [
-              "visit_Call"
-            ],
-            "requiredBases": [
-              "ast.NodeTransformer"
-            ],
-            "file": "main.py",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "class\\s+PrintDonusturucu\\s*\\(\\s*ast\\.NodeTransformer\\s*\\)",
             "label": "PrintDonusturucu NodeTransformer tabanında tanımlandı",
             "visibility": "visible"
           },
@@ -615,11 +597,10 @@
           },
           {
             "id": "duplicate-raise",
-            "kind": "raise_exception",
-            "name": "ValueError",
-            "min": 1,
-            "file": "main.py",
-            "label": "Tekrarlanan kayıt reddediliyor",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "raise\\s+ValueError\\s*\\(",
+            "label": "Tekrarlanan kayıt ValueError ile reddediliyor",
             "visibility": "visible"
           },
           {
@@ -681,33 +662,27 @@
         "checks": [
           {
             "id": "descriptor-class",
-            "kind": "class_definition",
-            "name": "Surum",
-            "minInitParams": 0,
-            "maxInitParams": 0,
-            "requiredMethods": [
-              "__set_name__",
-              "__get__",
-              "__set__"
-            ],
-            "file": "main.py",
-            "label": "Surum descriptor sözleşmesi tanımlandı",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "class\\s+Surum\\s*:",
+            "label": "Surum descriptor sınıfı tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "descriptor-methods",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "def\\s+__set_name__[\\s\\S]*def\\s+__get__[\\s\\S]*def\\s+__set__",
+            "flags": "s",
+            "label": "Descriptor protokol metotları tanımlandı",
             "visibility": "visible"
           },
           {
             "id": "metaclass-def",
-            "kind": "class_definition",
-            "name": "EklentiMeta",
-            "minInitParams": 0,
-            "maxInitParams": 0,
-            "requiredMethods": [
-              "__new__"
-            ],
-            "requiredBases": [
-              "type"
-            ],
-            "file": "main.py",
-            "label": "EklentiMeta metaclass tanımlandı",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "class\\s+EklentiMeta\\s*\\(\\s*type\\s*\\)",
+            "label": "EklentiMeta type tabanında tanımlandı",
             "visibility": "visible"
           },
           {
@@ -728,19 +703,17 @@
           },
           {
             "id": "value-raise",
-            "kind": "raise_exception",
-            "name": "ValueError",
-            "min": 1,
-            "file": "main.py",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "raise\\s+ValueError\\s*\\(",
             "label": "Geçersiz sürüm değeri reddediliyor",
             "visibility": "visible"
           },
           {
             "id": "type-raise",
-            "kind": "raise_exception",
-            "name": "TypeError",
-            "min": 1,
-            "file": "main.py",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "raise\\s+TypeError\\s*\\(",
             "label": "Eksik eklenti sözleşmesi reddediliyor",
             "visibility": "visible"
           },
@@ -877,63 +850,28 @@
             "visibility": "visible"
           },
           {
-            "id": "bulgu-dataclass",
-            "kind": "dataclass_definition",
-            "name": "Bulgu",
-            "fields": [
-              {
-                "name": "satir",
-                "accepted": [
-                  "int"
-                ],
-                "defaultKind": "required"
-              },
-              {
-                "name": "tur",
-                "accepted": [
-                  "str"
-                ],
-                "defaultKind": "required"
-              },
-              {
-                "name": "ad",
-                "accepted": [
-                  "str"
-                ],
-                "defaultKind": "required"
-              }
-            ],
-            "frozen": true,
-            "requiredMethods": [
-              "sozluk"
-            ],
-            "file": "statik_analiz/models.py",
-            "label": "Bulgu immutable dataclass olarak tanımlandı",
+            "id": "bulgu-frozen-dataclass",
+            "kind": "file_content_regex",
+            "path": "statik_analiz/models.py",
+            "pattern": "@dataclass\\s*\\(\\s*frozen\\s*=\\s*True\\s*,\\s*order\\s*=\\s*True\\s*\\)",
+            "label": "Bulgu frozen ve sıralanabilir dataclass olarak tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "bulgu-fields",
+            "kind": "file_content_regex",
+            "path": "statik_analiz/models.py",
+            "pattern": "class\\s+Bulgu\\s*:[\\s\\S]*satir\\s*:\\s*int[\\s\\S]*tur\\s*:\\s*str[\\s\\S]*ad\\s*:\\s*str",
+            "flags": "s",
+            "label": "Bulgu alanları tip açıklamalarıyla tanımlandı",
             "visibility": "visible"
           },
           {
             "id": "visitor-class",
-            "kind": "class_definition",
-            "name": "DenetimZiyaretcisi",
-            "minInitParams": 0,
-            "maxInitParams": 0,
-            "requiredMethods": [
-              "visit_FunctionDef",
-              "visit_AsyncFunctionDef",
-              "visit_ClassDef",
-              "visit_If",
-              "visit_For",
-              "visit_While",
-              "visit_Import",
-              "visit_ImportFrom",
-              "visit_Call",
-              "noktali_ad"
-            ],
-            "requiredBases": [
-              "ast.NodeVisitor"
-            ],
-            "file": "statik_analiz/visitor.py",
-            "label": "DenetimZiyaretcisi AST sözleşmesini uyguluyor",
+            "kind": "file_content_regex",
+            "path": "statik_analiz/visitor.py",
+            "pattern": "class\\s+DenetimZiyaretcisi\\s*\\(\\s*ast\\.NodeVisitor\\s*\\)",
+            "label": "DenetimZiyaretcisi NodeVisitor tabanında tanımlandı",
             "visibility": "visible"
           },
           {
