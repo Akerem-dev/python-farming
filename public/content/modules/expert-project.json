@@ -1,0 +1,445 @@
+{
+  "moduleId": "expert-project",
+  "lessons": [
+    {
+      "id": "expert.project.reliable-code-platform",
+      "moduleId": "expert-project",
+      "order": 1,
+      "title": "Güvenilir Kod Analiz Platformu geliştir",
+      "summary": "Uzman bitirme projesi algoritma, paralellik, AST, decorator, dayanıklılık, güvenlik ve gözlemlenebilirlik katmanlarını tek repository analiz ürününde birleştirir.",
+      "levelLabel": "Expert Capstone",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Çok dosyalı güvenilir repository analiz raporu üret",
+        "instructions": [
+          "Kaynak dosya modeli, decorator kural kaydı, AST analizörü, thread havuzu, circuit breaker ve gözlem katmanlarını tamamla.",
+          "Duplicate yolları yalnız bir kez analiz et ve tekrarlar listesinde koru.",
+          "Syntax hatalarını servis hatası gibi kaydet; art arda iki hata sonrası devreyi açıp kalan sonuçları atla.",
+          "Secret atamalarını değerlerini sızdırmadan ve güvensiz çağrıları satır bilgisiyle raporla.",
+          "Deterministik bulgular, karmaşıklık, SLO metrikleri ve SHA-256 audit root içeren rapor döndür."
+        ],
+        "requirements": [
+          "ThreadPoolExecutor.map() girdi sırasını koruyarak gerçek analiz fonksiyonunu çalıştırmalı.",
+          "AST bulguları yalnız path, kind, name ve line alanlarını taşımalı; source veya secret değeri çıktıya girmemeli.",
+          "Circuit breaker başarıda sıfırlanmalı ve eşik kadar ardışık syntax hatasında açılmalı.",
+          "Rapor aynı girdide her çalışmada aynı sonucu üretmeli."
+        ],
+        "sampleOutput": "{'analiz_edilen': ['a.py', 'b.py'], 'tekrarlar': ['a.py'], 'hatalar': [], 'atlanmis': [], 'bulgular': [{'path': 'a.py', 'kind': 'secret_assignment', 'name': 'token', 'line': 1}, {'path': 'a.py', 'kind': 'unsafe_call', 'name': 'eval', 'line': 2}], 'karmasiklik': {'a.py': 0, 'b.py': 1}, 'metrikler': {'toplam': 3, 'benzersiz': 2, 'analiz': 2, 'hata': 0, 'atlanmis': 0, 'basari_orani': 100.0, 'slo': 'healthy'}, 'devre': 'kapali', 'audit_root': 'c43b0c846b7eb9ad8affeecb75d8af85c6603b2e648b2bc57d3b07cef01a7a74'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from kod_platformu import analiz_raporu\n\n\nif __name__ == \"__main__\":\n    dosyalar = [\n        {\"path\": \"a.py\", \"source\": \"token = 'abc'\\nresult = eval('1+1')\\n\"},\n        {\"path\": \"b.py\", \"source\": \"def f(x):\\n    if x:\\n        return x\\n\"},\n    ]\n    print(analiz_raporu(dosyalar, hedef=90.0))\n",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from kod_platformu import analiz_raporu\n\n\nif __name__ == \"__main__\":\n    dosyalar = [\n        {\"path\": \"a.py\", \"source\": \"token = 'abc'\\nresult = eval('1+1')\\n\"},\n        {\"path\": \"b.py\", \"source\": \"def f(x):\\n    if x:\\n        return x\\n\"},\n    ]\n    print(analiz_raporu(dosyalar, hedef=90.0))\n"
+          },
+          {
+            "path": "kod_platformu/__init__.py",
+            "starterCode": "from .report import analiz_raporu\n\n__all__ = [\"analiz_raporu\"]\n"
+          },
+          {
+            "path": "kod_platformu/models.py",
+            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass KaynakDosya:\n    path: str\n    source: str\n"
+          },
+          {
+            "path": "kod_platformu/registry.py",
+            "starterCode": "KURALLAR = {}\n\n\ndef kontrol_kaydi(ad):\n    def decorator(fonksiyon):\n        KURALLAR[ad] = fonksiyon\n        return fonksiyon\n\n    return decorator\n"
+          },
+          {
+            "path": "kod_platformu/security.py",
+            "starterCode": "import ast\n\nfrom .registry import kontrol_kaydi\n\nHASSAS_PARÇALAR = (\"password\", \"token\", \"secret\", \"api_key\", \"authorization\")\nGUVENSIZ_CAGRILAR = {\"eval\", \"exec\", \"system\", \"popen\"}\n\n\n@kontrol_kaydi(\"secret_assignment\")\ndef gizli_atamalar(tree, path):\n    # Hassas isimli atamaları değerlerini açığa çıkarmadan raporla.\n    pass\n\n\n@kontrol_kaydi(\"unsafe_call\")\ndef guvensiz_cagrilar(tree, path):\n    # eval, exec, system ve popen çağrılarını raporla.\n    pass\n"
+          },
+          {
+            "path": "kod_platformu/analyzer.py",
+            "starterCode": "import ast\n\nfrom . import security  # Kural decorator'larını kaydeder.\nfrom .registry import KURALLAR\n\n\ndef dosya_analizi(dosya):\n    # Syntax hatasını güvenli sonuç olarak dönüştür; kuralları ve karmaşıklığı çalıştır.\n    pass\n"
+          },
+          {
+            "path": "kod_platformu/parallel.py",
+            "starterCode": "from concurrent.futures import ThreadPoolExecutor\n\nfrom .analyzer import dosya_analizi\n\n\ndef paralel_analiz(dosyalar):\n    # Boş girdiyi ayrı ele al ve map sırasını koru.\n    pass\n"
+          },
+          {
+            "path": "kod_platformu/resilience.py",
+            "starterCode": "class CircuitBreaker:\n    def __init__(self, esik=2):\n        if esik < 1:\n            raise ValueError(\"esik en az 1 olmalı\")\n        self.esik = esik\n        self.basarisizlik = 0\n        self.durum = \"kapali\"\n\n    def izin_ver(self):\n        pass\n\n    def basari(self):\n        pass\n\n    def hata(self):\n        pass\n"
+          },
+          {
+            "path": "kod_platformu/observability.py",
+            "starterCode": "import hashlib\nimport json\n\n\ndef metrik_ozeti(toplam, benzersiz, analiz, hata, atlanmis, hedef):\n    # Başarı oranını ve SLO durumunu üret.\n    pass\n\n\ndef audit_koku(payload):\n    # Canonical JSON üzerinden SHA-256 kökü üret.\n    pass\n"
+          },
+          {
+            "path": "kod_platformu/report.py",
+            "starterCode": "from .models import KaynakDosya\nfrom .observability import audit_koku, metrik_ozeti\nfrom .parallel import paralel_analiz\nfrom .resilience import CircuitBreaker\n\n\ndef analiz_raporu(dosyalar, hedef=99.0, esik=2):\n    # Duplicate yolları ayır, paralel analiz sonuçlarını circuit breaker ile işle ve raporu üret.\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Kural kaydı",
+          "body": "security.py import edildiğinde decorator'lar KURALLAR sözlüğünü doldurmalı; analyzer bu fonksiyonları isim sırasıyla çalıştırabilir."
+        },
+        {
+          "title": "Paralel ama deterministik",
+          "body": "ThreadPoolExecutor.map sonuçları girdi sırasıyla döndürür; bulguları ayrıca path, line, kind ve name ile sırala."
+        },
+        {
+          "title": "Dayanıklılık sırası",
+          "body": "Duplicate elemeden sonra paralel analiz yap; circuit breaker kararını analiz sonuçları üzerinde sırayla uygula."
+        },
+        {
+          "title": "Audit payload",
+          "body": "Audit root eklenmeden önceki raporu canonical JSON ile hashle; böylece root kendi içine dahil edilmez."
+        }
+      ],
+      "validation": {
+        "id": "expert.project.reliable-code-platform",
+        "title": "Güvenilir Kod Analiz Platformu geliştir",
+        "xpReward": 500,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "file-main-py",
+            "kind": "file_exists",
+            "path": "main.py",
+            "label": "main.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-__init__-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/__init__.py",
+            "label": "kod_platformu/__init__.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-models-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/models.py",
+            "label": "kod_platformu/models.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-registry-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/registry.py",
+            "label": "kod_platformu/registry.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-security-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/security.py",
+            "label": "kod_platformu/security.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-analyzer-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/analyzer.py",
+            "label": "kod_platformu/analyzer.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-parallel-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/parallel.py",
+            "label": "kod_platformu/parallel.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-resilience-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/resilience.py",
+            "label": "kod_platformu/resilience.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-observability-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/observability.py",
+            "label": "kod_platformu/observability.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-kod_platformu-report-py",
+            "kind": "file_exists",
+            "path": "kod_platformu/report.py",
+            "label": "kod_platformu/report.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "model",
+            "kind": "file_content_regex",
+            "path": "kod_platformu/models.py",
+            "pattern": "@dataclass\\s*\\(\\s*frozen\\s*=\\s*True\\s*\\)",
+            "label": "KaynakDosya immutable dataclass olarak tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "registry",
+            "kind": "file_content_regex",
+            "path": "kod_platformu/registry.py",
+            "pattern": "def\\s+kontrol_kaydi\\s*\\([\\s\\S]*KURALLAR\\s*\\[",
+            "flags": "s",
+            "label": "Decorator tabanlı kural kaydı kuruldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "ast",
+            "kind": "import_statement",
+            "module": "ast",
+            "file": "kod_platformu/analyzer.py",
+            "label": "AST analiz motoru import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "threadpool",
+            "kind": "import_statement",
+            "module": "concurrent.futures",
+            "name": "ThreadPoolExecutor",
+            "file": "kod_platformu/parallel.py",
+            "label": "ThreadPoolExecutor import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "threadpool-call",
+            "kind": "call",
+            "name": "ThreadPoolExecutor",
+            "file": "kod_platformu/parallel.py",
+            "label": "Thread havuzu gerçekten oluşturuluyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "breaker",
+            "kind": "file_content_regex",
+            "path": "kod_platformu/resilience.py",
+            "pattern": "class\\s+CircuitBreaker\\s*:[\\s\\S]*def\\s+izin_ver\\s*\\([\\s\\S]*def\\s+basari\\s*\\([\\s\\S]*def\\s+hata\\s*\\(",
+            "flags": "s",
+            "label": "Circuit breaker durum sözleşmesi tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "security-rules",
+            "kind": "file_content_regex",
+            "path": "kod_platformu/security.py",
+            "pattern": "HASSAS_PARÇALAR[\\s\\S]*GUVENSIZ_CAGRILAR",
+            "flags": "s",
+            "label": "Secret ve güvensiz çağrı politikaları tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-def",
+            "kind": "function_definition",
+            "name": "analiz_raporu",
+            "minParams": 1,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "kod_platformu/report.py",
+            "label": "analiz_raporu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "kod_platformu/report.py",
+            "label": "Analiz sonuçları yapısal döngüyle işleniyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "parallel-call",
+            "kind": "call",
+            "name": "paralel_analiz",
+            "file": "kod_platformu/report.py",
+            "label": "Paralel analiz katmanı kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "metric-call",
+            "kind": "call",
+            "name": "metrik_ozeti",
+            "file": "kod_platformu/report.py",
+            "label": "Metrik katmanı kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "audit-call",
+            "kind": "call",
+            "name": "audit_koku",
+            "file": "kod_platformu/report.py",
+            "label": "Audit kökü üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "analiz_raporu",
+            "module": "kod_platformu",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "path": "a.py",
+                      "source": "token = 'abc'\nresult = eval('1+1')\n"
+                    },
+                    {
+                      "path": "b.py",
+                      "source": "def f(x):\n    if x:\n        return x\n"
+                    },
+                    {
+                      "path": "a.py",
+                      "source": "print('duplicate')\n"
+                    }
+                  ],
+                  90.0,
+                  2
+                ],
+                "expected": {
+                  "analiz_edilen": [
+                    "a.py",
+                    "b.py"
+                  ],
+                  "tekrarlar": [
+                    "a.py"
+                  ],
+                  "hatalar": [],
+                  "atlanmis": [],
+                  "bulgular": [
+                    {
+                      "path": "a.py",
+                      "kind": "secret_assignment",
+                      "name": "token",
+                      "line": 1
+                    },
+                    {
+                      "path": "a.py",
+                      "kind": "unsafe_call",
+                      "name": "eval",
+                      "line": 2
+                    }
+                  ],
+                  "karmasiklik": {
+                    "a.py": 0,
+                    "b.py": 1
+                  },
+                  "metrikler": {
+                    "toplam": 3,
+                    "benzersiz": 2,
+                    "analiz": 2,
+                    "hata": 0,
+                    "atlanmis": 0,
+                    "basari_orani": 100.0,
+                    "slo": "healthy"
+                  },
+                  "devre": "kapali",
+                  "audit_root": "c43b0c846b7eb9ad8affeecb75d8af85c6603b2e648b2bc57d3b07cef01a7a74"
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "path": "bad1.py",
+                      "source": "def (\n"
+                    },
+                    {
+                      "path": "bad2.py",
+                      "source": "if:\n"
+                    },
+                    {
+                      "path": "later.py",
+                      "source": "print('ok')\n"
+                    }
+                  ],
+                  99.0,
+                  2
+                ],
+                "expected": {
+                  "analiz_edilen": [],
+                  "tekrarlar": [],
+                  "hatalar": [
+                    "bad1.py",
+                    "bad2.py"
+                  ],
+                  "atlanmis": [
+                    "later.py"
+                  ],
+                  "bulgular": [],
+                  "karmasiklik": {},
+                  "metrikler": {
+                    "toplam": 3,
+                    "benzersiz": 3,
+                    "analiz": 0,
+                    "hata": 2,
+                    "atlanmis": 1,
+                    "basari_orani": 0.0,
+                    "slo": "breach"
+                  },
+                  "devre": "acik",
+                  "audit_root": "5894e35bcab0410cff39f1c38e3b11dfe53324359e075cf5af9e1f1ad1f95bb7"
+                }
+              },
+              {
+                "args": [
+                  [],
+                  99.9,
+                  2
+                ],
+                "expected": {
+                  "analiz_edilen": [],
+                  "tekrarlar": [],
+                  "hatalar": [],
+                  "atlanmis": [],
+                  "bulgular": [],
+                  "karmasiklik": {},
+                  "metrikler": {
+                    "toplam": 0,
+                    "benzersiz": 0,
+                    "analiz": 0,
+                    "hata": 0,
+                    "atlanmis": 0,
+                    "basari_orani": 100.0,
+                    "slo": "healthy"
+                  },
+                  "devre": "kapali",
+                  "audit_root": "c188d31c6b255495ad0e41672da9bb19b2227e4df61f60fc6faf47e3988bc54b"
+                }
+              }
+            ],
+            "label": "Gizli uzman capstone senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Path ve Python source alanları taşıyan, duplicate veya syntax hatalı dosyalar içerebilen repository girdisi",
+        "targetShape": "Deterministik analiz, güvenlik bulguları, karmaşıklık, dayanıklılık durumu, SLO metrikleri ve audit root",
+        "rules": [
+          "Aynı path yalnız ilk kez analiz edilmeli.",
+          "Secret değerleri ve tam source metni rapora taşınmamalı.",
+          "Circuit breaker ardışık parse hatalarında kalan sonuçları atlamalı.",
+          "Bulgular ve karmaşıklık haritası deterministik sıralanmalı."
+        ],
+        "workflow": [
+          "Duplicate dosya yollarını ayır ve immutable KaynakDosya modellerini oluştur.",
+          "Decorator ile kayıtlı AST kurallarını ThreadPoolExecutor üzerinden çalıştır.",
+          "Sonuçları circuit breaker ile sırayla kabul et, hata veya atlama olarak sınıflandır.",
+          "Metrik payload'ını ve canonical SHA-256 audit root'u üret."
+        ],
+        "projectTitle": "Güvenilir Kod Analiz Platformu",
+        "deliverables": [
+          "Decorator tabanlı AST kural motoru",
+          "ThreadPoolExecutor analiz katmanı",
+          "Circuit breaker ve duplicate idempotency akışı",
+          "Secret değerlerini sızdırmayan bulgu modeli",
+          "SLO metrikleri ve tamper-evident audit root"
+        ]
+      }
+    }
+  ]
+}
