@@ -91,7 +91,7 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
       aria-label="Python müfredatı"
     >
       <div className={styles.headingRow}>
-        <span>Müfredat</span>
+        <span>Öğrenim yolun</span>
         <span className={styles.count}>{modules.length || 8} bölüm</span>
       </div>
 
@@ -144,7 +144,7 @@ export function CurriculumSidebar({ compact = false }: CurriculumSidebarProps) {
 
       <div className={styles.progressBox}>
         <div className={styles.progressHeader}>
-          <span>Yayımlanan içerik</span>
+          <span>Genel ilerleme</span>
           <strong>%{progress}</strong>
         </div>
         <ProgressBar value={progress} accessibleLabel="Tamamlanan müfredat" />
