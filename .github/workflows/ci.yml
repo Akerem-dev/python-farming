@@ -33,6 +33,28 @@ jobs:
       - name: Frontend quality gate
         run: npm run verify:frontend
 
+  browser-journeys:
+    name: Browser user journeys
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Run real navigation journeys
+        run: npm run test:e2e
+
   rust-format:
     name: Rust formatting
     runs-on: ubuntu-latest
@@ -84,6 +106,7 @@ jobs:
     name: Linux Tauri bundle smoke
     needs:
       - frontend
+      - browser-journeys
       - rust-runtime
     runs-on: ubuntu-22.04
     steps:
