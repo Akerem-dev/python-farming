@@ -4,6 +4,8 @@
 
 Python Farming 1.1.0, 1.0.0 çalışma motoru ve veri güvenliği temelinin üzerine 6 modüllük Uzman Seviye öğrenme yolunu ekler. Bu sürüm yeni bir görsel vitrin değil; gerçek Python davranışı, gizli testler ve çok dosyalı final projeleriyle doğrulanan eğitim kapsamı genişlemesidir.
 
+Tam müfredat; Başlangıç, Orta Seviye, İleri Seviye ve Uzman Seviye yollarına dağıtılmış 32 yayınlanmış modül paketinden oluşur.
+
 ## Yeni Uzman Seviye yolu
 
 1. Algoritmalar ve Karmaşıklık
