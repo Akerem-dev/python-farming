@@ -1,0 +1,1084 @@
+{
+  "moduleId": "parallelism-systems",
+  "lessons": [
+    {
+      "id": "expert.parallelism.model-choice",
+      "moduleId": "parallelism-systems",
+      "order": 1,
+      "title": "İş yüküne göre eşzamanlılık modelini seç",
+      "summary": "I/O bekleyen işler thread veya asyncio ile; saf CPU yükleri ise ayrı süreçlerle ölçeklenir. Güvenli seçim iş yükünün niteliğinden başlar.",
+      "levelLabel": "Expert Systems",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Bu karar kodu terminale hangi yürütme modelini yazar?",
+        "options": [
+          {
+            "id": "thread",
+            "label": "ThreadPoolExecutor"
+          },
+          {
+            "id": "process",
+            "label": "ProcessPoolExecutor"
+          },
+          {
+            "id": "async",
+            "label": "asyncio"
+          },
+          {
+            "id": "serial",
+            "label": "Tek iş parçacığı"
+          }
+        ]
+      },
+      "task": {
+        "title": "I/O ağırlıklı ve paylaşımlı bellek kullanan iş için modeli belirle",
+        "instructions": [
+          "is_turu değerini oku.",
+          "Paylaşılan belleğin gerekli olup olmadığını değerlendir.",
+          "Kodun yazdıracağı yürütme modelini seç."
+        ],
+        "requirements": [
+          "I/O beklemesi CPU hesaplamasından ayrılmalı.",
+          "Thread'lerin aynı süreç belleğini paylaştığı unutulmamalı.",
+          "ProcessPoolExecutor bu derste yalnız mimari karar olarak ele alınır."
+        ],
+        "sampleOutput": "ThreadPoolExecutor",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "is_turu = \"io\"\npaylasilan_bellek = True\n\nif is_turu == \"cpu\":\n    print(\"ProcessPoolExecutor\")\nelif paylasilan_bellek:\n    print(\"ThreadPoolExecutor\")\nelse:\n    print(\"asyncio\")\n"
+      },
+      "hints": [
+        {
+          "title": "I/O ağırlıklı iş",
+          "body": "Dosya, ağ veya bekleme ağırlıklı işler GIL altında thread'lerden yararlanabilir."
+        },
+        {
+          "title": "Bellek paylaşımı",
+          "body": "Thread'ler aynı süreç içindeki nesnelere erişebilir; süreçler ayrı belleğe sahiptir."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.model-choice",
+        "title": "İş yüküne göre eşzamanlılık modelini seç",
+        "xpReward": 100,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "thread"
+        }
+      }
+    },
+    {
+      "id": "expert.parallelism.thread-map",
+      "moduleId": "parallelism-systems",
+      "order": 2,
+      "title": "ThreadPoolExecutor.map ile sıralı sonuç üret",
+      "summary": "executor.map işleri paralel yürütebilirken sonuçları giriş sırasını koruyarak teslim eder.",
+      "levelLabel": "Expert Systems",
+      "mode": "code-completion",
+      "task": {
+        "title": "Sayıların karelerini thread havuzunda hesapla",
+        "instructions": [
+          "paralel_kareler(degerler, worker_sayisi) fonksiyonunu tamamla.",
+          "ThreadPoolExecutor için context manager kullan.",
+          "executor.map sonucunu liste olarak döndür."
+        ],
+        "requirements": [
+          "ThreadPoolExecutor doğrudan kullanılmalı.",
+          "max_workers dışarıdan gelen worker_sayisi ile sınırlandırılmalı.",
+          "Giriş sırası sonuç listesinde korunmalı."
+        ],
+        "sampleOutput": "[4, 9, 16]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from concurrent.futures import ThreadPoolExecutor\n\n\ndef kare(deger):\n    return deger * deger\n\n\ndef paralel_kareler(degerler, worker_sayisi=4):\n    if not degerler:\n        return []\n    # Thread havuzunu aç ve map sonucunu listeye dönüştür.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(paralel_kareler([2, 3, 4], 2))\n"
+      },
+      "hints": [
+        {
+          "title": "Context manager",
+          "body": "with ThreadPoolExecutor(max_workers=worker_sayisi) as executor: biçimini kullan."
+        },
+        {
+          "title": "Sıralı sonuç",
+          "body": "list(executor.map(kare, degerler)) giriş sırasını korur."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.thread-map",
+        "title": "ThreadPoolExecutor.map ile sıralı sonuç üret",
+        "xpReward": 160,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "thread-import",
+            "kind": "import_statement",
+            "module": "concurrent.futures",
+            "name": "ThreadPoolExecutor",
+            "file": "main.py",
+            "label": "ThreadPoolExecutor import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "parallel-def",
+            "kind": "function_definition",
+            "name": "paralel_kareler",
+            "minParams": 1,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "paralel_kareler() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "map-call",
+            "kind": "call",
+            "name": "map",
+            "file": "main.py",
+            "label": "executor.map() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "pool-context",
+            "kind": "node_count",
+            "nodeName": "With",
+            "min": 1,
+            "file": "main.py",
+            "label": "Thread havuzu context manager ile kapatılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "worker-binding",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "max_workers\\s*=\\s*worker_sayisi",
+            "label": "worker_sayisi max_workers değerine bağlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "parallel-cases",
+            "kind": "function_cases",
+            "name": "paralel_kareler",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    2,
+                    3,
+                    4
+                  ],
+                  2
+                ],
+                "expected": [
+                  4,
+                  9,
+                  16
+                ]
+              },
+              {
+                "args": [
+                  [
+                    -2,
+                    0,
+                    5
+                  ],
+                  3
+                ],
+                "expected": [
+                  4,
+                  0,
+                  25
+                ]
+              },
+              {
+                "args": [
+                  [],
+                  4
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli sıralı kare senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.parallelism.as-completed",
+      "moduleId": "parallelism-systems",
+      "order": 3,
+      "title": "as_completed ile sonuçları ve hataları ayır",
+      "summary": "Future'lar tamamlanma sırasıyla toplanabilir; her işin hatası diğer görevlerin sonucunu kaybettirmemelidir.",
+      "levelLabel": "Expert Systems",
+      "mode": "code",
+      "task": {
+        "title": "Bağımsız bölme görevlerini güvenli biçimde tamamla",
+        "instructions": [
+          "Her görevi executor.submit ile havuza gönder.",
+          "Future'ları as_completed ile tüket.",
+          "ZeroDivisionError alan görevi hata kaydı olarak sakla.",
+          "Sonuçları görev kimliğine göre sırala."
+        ],
+        "requirements": [
+          "Bir görevin hatası bütün havuzu durdurmamalı.",
+          "submit ve as_completed birlikte kullanılmalı.",
+          "Dönüş listesi deterministik olmalı."
+        ],
+        "sampleOutput": "[{\"id\": \"a\", \"sonuc\": 5.0}, {\"hata\": \"sifira_bolme\", \"id\": \"b\"}]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from concurrent.futures import ThreadPoolExecutor, as_completed\n\n\ndef bol(gorev):\n    gorev_id, pay, bolen = gorev\n    return {\"id\": gorev_id, \"sonuc\": pay / bolen}\n\n\ndef gorevleri_tamamla(gorevler):\n    if not gorevler:\n        return []\n\n    kayitlar = []\n    with ThreadPoolExecutor(max_workers=min(4, len(gorevler))) as executor:\n        future_to_id = {\n            executor.submit(bol, gorev): gorev[0]\n            for gorev in gorevler\n        }\n        # Future sonuçlarını tamamlandıkça topla ve hataları ayır.\n        pass\n\n    return sorted(kayitlar, key=lambda kayit: kayit[\"id\"])\n\n\nif __name__ == \"__main__\":\n    print(gorevleri_tamamla([[\"a\", 10, 2], [\"b\", 4, 0]]))\n"
+      },
+      "hints": [
+        {
+          "title": "Future kimliği",
+          "body": "future_to_id sözlüğü hata anında hangi görevin tamamlandığını söyler."
+        },
+        {
+          "title": "Hata izolasyonu",
+          "body": "future.result() çağrısını try/except ZeroDivisionError içinde çalıştır."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.as-completed",
+        "title": "as_completed ile sonuçları ve hataları ayır",
+        "xpReward": 180,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "as-completed-import",
+            "kind": "import_statement",
+            "module": "concurrent.futures",
+            "name": "as_completed",
+            "file": "main.py",
+            "label": "as_completed import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "submit-call",
+            "kind": "call",
+            "name": "submit",
+            "file": "main.py",
+            "label": "submit() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "as-completed-call",
+            "kind": "call",
+            "name": "as_completed",
+            "file": "main.py",
+            "label": "as_completed() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "zero-catch",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "except\\s+ZeroDivisionError",
+            "label": "ZeroDivisionError ayrı ele alınıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "tasks-def",
+            "kind": "function_definition",
+            "name": "gorevleri_tamamla",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "gorevleri_tamamla() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "tasks-cases",
+            "kind": "function_cases",
+            "name": "gorevleri_tamamla",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    [
+                      "a",
+                      10,
+                      2
+                    ],
+                    [
+                      "b",
+                      4,
+                      0
+                    ]
+                  ]
+                ],
+                "expected": [
+                  {
+                    "id": "a",
+                    "sonuc": 5.0
+                  },
+                  {
+                    "id": "b",
+                    "hata": "sifira_bolme"
+                  }
+                ]
+              },
+              {
+                "args": [
+                  [
+                    [
+                      "z",
+                      9,
+                      3
+                    ],
+                    [
+                      "x",
+                      8,
+                      4
+                    ]
+                  ]
+                ],
+                "expected": [
+                  {
+                    "id": "x",
+                    "sonuc": 2.0
+                  },
+                  {
+                    "id": "z",
+                    "sonuc": 3.0
+                  }
+                ]
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli future ve hata senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.parallelism.race-lock",
+      "moduleId": "parallelism-systems",
+      "order": 4,
+      "title": "Hata Avcısı: yarış durumunu Lock ile kapat",
+      "summary": "Paylaşılan bir değeri oku-değiştir-yaz adımları atomik değildir; kritik bölüm Lock ile korunmalıdır.",
+      "levelLabel": "Expert Debugging",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "RaceCondition",
+        "symptom": "Aynı iş yükü her çalıştırmada beklenenden daha küçük ve değişken sayaç sonuçları üretebilir.",
+        "workflow": [
+          "Paylaşılan sayacın okunduğu ve yazıldığı kritik bölümü belirle.",
+          "Tek bir Lock nesnesi oluştur ve bütün artırma işlemlerinde paylaş.",
+          "Kritik bölümü with kilit bloğuna alıp sonucu tekrar doğrula."
+        ]
+      },
+      "task": {
+        "title": "Paylaşılan sayacı kayıpsız artır",
+        "instructions": [
+          "guvenli_sayac(is_parca, tekrar) fonksiyonunu düzelt.",
+          "Bütün worker'lar aynı Lock nesnesini kullanmalı.",
+          "Her artırma işlemi kritik bölüm içinde yapılmalı."
+        ],
+        "requirements": [
+          "ThreadPoolExecutor korunmalı.",
+          "threading.Lock kullanılmalı.",
+          "Sonuç her zaman is_parca * tekrar olmalı."
+        ],
+        "sampleOutput": "400",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from concurrent.futures import ThreadPoolExecutor\nfrom threading import Lock\nimport time\n\n\ndef guvenli_sayac(is_parca, tekrar):\n    if is_parca <= 0 or tekrar <= 0:\n        return 0\n\n    sayac = [0]\n    kilit = Lock()\n\n    def arttir(_):\n        for _ in range(tekrar):\n            mevcut = sayac[0]\n            time.sleep(0)\n            sayac[0] = mevcut + 1\n\n    with ThreadPoolExecutor(max_workers=min(8, is_parca)) as executor:\n        list(executor.map(arttir, range(is_parca)))\n\n    return sayac[0]\n\n\nif __name__ == \"__main__\":\n    print(guvenli_sayac(4, 100))\n"
+      },
+      "hints": [
+        {
+          "title": "Kritik bölüm",
+          "body": "mevcut = sayac[0] ile sayac[0] = mevcut + 1 satırları birlikte korunmalı."
+        },
+        {
+          "title": "Lock kullanımı",
+          "body": "with kilit: bloğu çıkışta kilidi hata olsa bile bırakır."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.race-lock",
+        "title": "Hata Avcısı: yarış durumunu Lock ile kapat",
+        "xpReward": 200,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "lock-import",
+            "kind": "import_statement",
+            "module": "threading",
+            "name": "Lock",
+            "file": "main.py",
+            "label": "Lock import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "lock-call",
+            "kind": "call",
+            "name": "Lock",
+            "file": "main.py",
+            "label": "Lock() oluşturuldu",
+            "visibility": "visible"
+          },
+          {
+            "id": "lock-context",
+            "kind": "node_count",
+            "nodeName": "With",
+            "min": 2,
+            "file": "main.py",
+            "label": "Kritik bölüm context manager ile korunuyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "race-def",
+            "kind": "function_definition",
+            "name": "guvenli_sayac",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "guvenli_sayac() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "race-cases",
+            "kind": "function_cases",
+            "name": "guvenli_sayac",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  4,
+                  100
+                ],
+                "expected": 400
+              },
+              {
+                "args": [
+                  8,
+                  40
+                ],
+                "expected": 320
+              },
+              {
+                "args": [
+                  1,
+                  7
+                ],
+                "expected": 7
+              },
+              {
+                "args": [
+                  0,
+                  5
+                ],
+                "expected": 0
+              }
+            ],
+            "label": "Gizli yarış durumu senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.parallelism.queue-workers",
+      "moduleId": "parallelism-systems",
+      "order": 5,
+      "title": "Queue ile üretici-tüketici işçileri kur",
+      "summary": "Queue görev aktarımını thread-safe yapar; sentinel, task_done ve join birlikte temiz kapanış sağlar.",
+      "levelLabel": "Expert Systems",
+      "mode": "code-completion",
+      "task": {
+        "title": "Görev kuyruğundaki sayıları worker thread'lerinde işle",
+        "instructions": [
+          "Worker thread'lerini başlat.",
+          "Değerleri ve her worker için bir sentinel değeri kuyruğa koy.",
+          "Her get çağrısını task_done ile eşleştir.",
+          "Queue ve thread join çağrılarıyla temiz kapanış yap."
+        ],
+        "requirements": [
+          "queue.Queue kullanılmalı.",
+          "Sonuç listesi Lock ile korunmalı.",
+          "Arka planda çalışan thread bırakılmamalı."
+        ],
+        "sampleOutput": "[1, 4, 9, 16]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from queue import Queue\nfrom threading import Lock, Thread\n\n\ndef kuyruk_isle(degerler, worker_sayisi=3):\n    if not degerler:\n        return []\n\n    gorevler = Queue()\n    sonuclar = []\n    kilit = Lock()\n    sentinel = object()\n\n    def worker():\n        while True:\n            deger = gorevler.get()\n            try:\n                if deger is sentinel:\n                    return\n                sonuc = deger * deger\n                with kilit:\n                    sonuclar.append(sonuc)\n            finally:\n                gorevler.task_done()\n\n    # Thread'leri başlat, görevleri/sentinel'ları ekle ve temiz kapat.\n    pass\n\n    return sorted(sonuclar)\n\n\nif __name__ == \"__main__\":\n    print(kuyruk_isle([1, 2, 3, 4], 2))\n"
+      },
+      "hints": [
+        {
+          "title": "Sentinel sayısı",
+          "body": "Her worker'ın döngüden çıkması için worker_sayisi kadar sentinel ekle."
+        },
+        {
+          "title": "İki ayrı join",
+          "body": "gorevler.join() bütün görevleri; thread.join() ise worker thread'lerini bekler."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.queue-workers",
+        "title": "Queue ile üretici-tüketici işçileri kur",
+        "xpReward": 180,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "queue-import",
+            "kind": "import_statement",
+            "module": "queue",
+            "name": "Queue",
+            "file": "main.py",
+            "label": "Queue import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "thread-import",
+            "kind": "import_statement",
+            "module": "threading",
+            "name": "Thread",
+            "file": "main.py",
+            "label": "Thread import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "put-call",
+            "kind": "call",
+            "name": "put",
+            "file": "main.py",
+            "label": "Queue.put() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "get-call",
+            "kind": "call",
+            "name": "get",
+            "file": "main.py",
+            "label": "Queue.get() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "task-done-call",
+            "kind": "call",
+            "name": "task_done",
+            "file": "main.py",
+            "label": "task_done() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "start-call",
+            "kind": "call",
+            "name": "start",
+            "file": "main.py",
+            "label": "Thread.start() kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "join-call",
+            "kind": "call_count",
+            "name": "join",
+            "min": 2,
+            "file": "main.py",
+            "label": "Queue ve thread join çağrıları yapıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "queue-def",
+            "kind": "function_definition",
+            "name": "kuyruk_isle",
+            "minParams": 1,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "kuyruk_isle() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "queue-cases",
+            "kind": "function_cases",
+            "name": "kuyruk_isle",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    1,
+                    2,
+                    3,
+                    4
+                  ],
+                  2
+                ],
+                "expected": [
+                  1,
+                  4,
+                  9,
+                  16
+                ]
+              },
+              {
+                "args": [
+                  [
+                    -2,
+                    0,
+                    3
+                  ],
+                  3
+                ],
+                "expected": [
+                  0,
+                  4,
+                  9
+                ]
+              },
+              {
+                "args": [
+                  [],
+                  4
+                ],
+                "expected": []
+              }
+            ],
+            "label": "Gizli üretici-tüketici senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.parallelism.graceful-order",
+      "moduleId": "parallelism-systems",
+      "order": 6,
+      "title": "Worker havuzunu güvenli kapanış sırasına getir",
+      "summary": "Sentinel'lar önce kuyruğa verilir, kuyruk tamamlanır ve son olarak bütün worker thread'leri join edilir.",
+      "levelLabel": "Expert Systems",
+      "mode": "code-ordering",
+      "ordering": {
+        "prompt": "Blokları bütün worker'ları sentinel ile durdurup kaynakları temizleyecek sıraya getir.",
+        "blocks": [
+          {
+            "id": "queue-join",
+            "code": "gorev_kuyrugu.join()"
+          },
+          {
+            "id": "worker-loop",
+            "code": "for worker in workers:"
+          },
+          {
+            "id": "sentinel-body",
+            "code": "    gorev_kuyrugu.put(None)"
+          },
+          {
+            "id": "sentinel-loop",
+            "code": "for _ in workers:"
+          },
+          {
+            "id": "worker-join",
+            "code": "    worker.join()"
+          }
+        ]
+      },
+      "task": {
+        "title": "Kapanış protokolünün beş bloğunu sırala",
+        "instructions": [
+          "Önce her worker için bir sentinel kuyruğa ekle.",
+          "Kuyruktaki bütün görevlerin tamamlanmasını bekle.",
+          "Son olarak her worker thread'ini join et."
+        ],
+        "requirements": [
+          "Her blok bir kez kullanılmalı.",
+          "Girintili bloklar ilgili for satırının hemen altında olmalı.",
+          "Thread'ler join edilmeden fonksiyon bitmemeli."
+        ],
+        "sampleOutput": "Bütün worker'lar güvenli biçimde durur.",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "gorev_kuyrugu.join()\nfor worker in workers:\n    gorev_kuyrugu.put(None)\nfor _ in workers:\n    worker.join()\n"
+      },
+      "hints": [
+        {
+          "title": "Sentinel önce gelir",
+          "body": "Worker'lar çıkış işaretini ancak kuyruktan alabilir."
+        },
+        {
+          "title": "Kuyruk sonra, thread en son",
+          "body": "Queue.join görevlerin; Thread.join worker yaşam döngüsünün bittiğini doğrular."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.graceful-order",
+        "title": "Worker havuzunu güvenli kapanış sırasına getir",
+        "xpReward": 120,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "order",
+          "correctBlockIds": [
+            "sentinel-loop",
+            "sentinel-body",
+            "queue-join",
+            "worker-loop",
+            "worker-join"
+          ]
+        }
+      }
+    },
+    {
+      "id": "expert.parallelism.final",
+      "moduleId": "parallelism-systems",
+      "order": 7,
+      "title": "Paralel İş İstasyonu kur",
+      "summary": "Sınırlı thread havuzu, future-hata eşlemesi, worker politikası ve deterministik raporlamayı çok dosyalı tek sistemde birleştir.",
+      "levelLabel": "Expert Project Lab",
+      "mode": "data-transformation",
+      "dataTransformation": {
+        "sourceShape": "Kimlik ve sayısal değer taşıyan görev sözlükleri listesi",
+        "targetShape": "Başarılı sonuçları, hataları, toplamı ve normalize worker sayısını içeren deterministik rapor",
+        "rules": [
+          "Worker sayısını 1–8 aralığına sınırla.",
+          "Negatif değerleri negatif_deger hatası olarak izole et.",
+          "Başarılı ve hatalı kayıtları kimliğe göre sırala.",
+          "Bir görevin hatası diğer future sonuçlarını kaybettirmemeli."
+        ],
+        "workflow": [
+          "Girdi görevlerini doğrula ve worker politikasını uygula.",
+          "ThreadPoolExecutor ile future'ları oluştur.",
+          "as_completed içinde sonuçları veya hataları topla.",
+          "Raporlama katmanında kararlı sözlük çıktısı üret."
+        ]
+      },
+      "task": {
+        "title": "Altı dosyalı hata izolasyonlu paralel iş istasyonu oluştur",
+        "instructions": [
+          "policy.py içinde worker sayısını normalize et.",
+          "worker.py içinde görevi doğrulayıp karesini hesapla.",
+          "pipeline.py içinde submit ve as_completed ile future'ları yönet.",
+          "ValueError mesajını ilgili görev kimliğiyle hata listesine ekle.",
+          "reporting.py içinde sonuçları kimliğe göre sırala ve toplamı üret."
+        ],
+        "requirements": [
+          "ThreadPoolExecutor ve as_completed gerçek yürütmede kullanılmalı.",
+          "max_workers normalize edilmiş limit olmalı.",
+          "Sabit görünür çıktı döndüren çözümler gizli senaryolardan geçmemeli.",
+          "Bütün dosya yolları ve paket API'si korunmalı."
+        ],
+        "sampleOutput": "{\"basarili\": [{\"id\": \"a\", \"sonuc\": 4}, {\"id\": \"c\", \"sonuc\": 16}], \"hatalar\": [{\"id\": \"b\", \"hata\": \"negatif_deger\"}], \"toplam\": 3, \"worker_sayisi\": 3}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from paralel_lab import istasyon_raporu\n\n\nif __name__ == \"__main__\":\n    gorevler = [\n        {\"id\": \"a\", \"deger\": 2},\n        {\"id\": \"b\", \"deger\": -1},\n        {\"id\": \"c\", \"deger\": 4},\n    ]\n    print(istasyon_raporu(gorevler, 3))\n",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from paralel_lab import istasyon_raporu\n\n\nif __name__ == \"__main__\":\n    gorevler = [\n        {\"id\": \"a\", \"deger\": 2},\n        {\"id\": \"b\", \"deger\": -1},\n        {\"id\": \"c\", \"deger\": 4},\n    ]\n    print(istasyon_raporu(gorevler, 3))\n"
+          },
+          {
+            "path": "paralel_lab/__init__.py",
+            "starterCode": "from .pipeline import istasyon_raporu\n\n__all__ = [\"istasyon_raporu\"]\n"
+          },
+          {
+            "path": "paralel_lab/policy.py",
+            "starterCode": "def normalize_workers(worker_sayisi):\n    \"\"\"Worker sayısını 1 ile 8 arasında sınırla.\"\"\"\n    pass\n"
+          },
+          {
+            "path": "paralel_lab/worker.py",
+            "starterCode": "def gorevi_isle(gorev):\n    \"\"\"Tek görevi doğrula ve karesini hesapla.\"\"\"\n    pass\n"
+          },
+          {
+            "path": "paralel_lab/reporting.py",
+            "starterCode": "def raporla(basarili, hatalar, worker_sayisi):\n    \"\"\"Sonuçları kimliğe göre kararlı sırada raporla.\"\"\"\n    pass\n"
+          },
+          {
+            "path": "paralel_lab/pipeline.py",
+            "starterCode": "from concurrent.futures import ThreadPoolExecutor, as_completed\n\nfrom .policy import normalize_workers\nfrom .reporting import raporla\nfrom .worker import gorevi_isle\n\n\ndef istasyon_raporu(gorevler, worker_sayisi=4):\n    \"\"\"Görevleri sınırlı thread havuzunda yürüt ve hata izolasyonlu rapor döndür.\"\"\"\n    pass\n"
+          }
+        ],
+        "entrypoint": "main.py"
+      },
+      "hints": [
+        {
+          "title": "Future eşlemesi",
+          "body": "future_to_id = {executor.submit(...): gorev_id ...} sözlüğü hata kaydının kimliğini korur."
+        },
+        {
+          "title": "Kararlı çıktı",
+          "body": "Thread tamamlanma sırası değişebilir; raporla() içinde iki listeyi de id anahtarına göre sırala."
+        },
+        {
+          "title": "Worker politikası",
+          "body": "max(1, min(8, int(worker_sayisi))) sınırı görünür ve gizli senaryolarda aynıdır."
+        }
+      ],
+      "validation": {
+        "id": "expert.parallelism.final",
+        "title": "Paralel İş İstasyonu kur",
+        "xpReward": 360,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "main-file",
+            "kind": "file_exists",
+            "path": "main.py",
+            "label": "main.py proje içinde",
+            "visibility": "visible"
+          },
+          {
+            "id": "package-file",
+            "kind": "file_exists",
+            "path": "paralel_lab/__init__.py",
+            "label": "Paket dışa aktarımı hazır",
+            "visibility": "visible"
+          },
+          {
+            "id": "policy-file",
+            "kind": "file_exists",
+            "path": "paralel_lab/policy.py",
+            "label": "Worker politikası ayrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "worker-file",
+            "kind": "file_exists",
+            "path": "paralel_lab/worker.py",
+            "label": "Worker katmanı ayrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "reporting-file",
+            "kind": "file_exists",
+            "path": "paralel_lab/reporting.py",
+            "label": "Raporlama katmanı ayrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "pipeline-file",
+            "kind": "file_exists",
+            "path": "paralel_lab/pipeline.py",
+            "label": "Pipeline katmanı ayrıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "pool-import",
+            "kind": "import_statement",
+            "module": "concurrent.futures",
+            "name": "ThreadPoolExecutor",
+            "file": "paralel_lab/pipeline.py",
+            "label": "ThreadPoolExecutor pipeline'da",
+            "visibility": "visible"
+          },
+          {
+            "id": "completed-import",
+            "kind": "import_statement",
+            "module": "concurrent.futures",
+            "name": "as_completed",
+            "file": "paralel_lab/pipeline.py",
+            "label": "as_completed pipeline'da",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-def",
+            "kind": "function_definition",
+            "name": "istasyon_raporu",
+            "minParams": 1,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "paralel_lab/pipeline.py",
+            "label": "istasyon_raporu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "submit-call",
+            "kind": "call",
+            "name": "submit",
+            "file": "paralel_lab/pipeline.py",
+            "label": "Future görevleri submit ediliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "completed-call",
+            "kind": "call",
+            "name": "as_completed",
+            "file": "paralel_lab/pipeline.py",
+            "label": "Future'lar as_completed ile tüketiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "pool-context",
+            "kind": "node_count",
+            "nodeName": "With",
+            "min": 1,
+            "file": "paralel_lab/pipeline.py",
+            "label": "Thread havuzu güvenli kapanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "pipeline-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "paralel_lab/pipeline.py",
+            "label": "Future sonuçları döngüyle toplanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "bounded-workers",
+            "kind": "file_content_regex",
+            "path": "paralel_lab/pipeline.py",
+            "pattern": "max_workers\\s*=\\s*limit",
+            "label": "Normalize limit max_workers değerine bağlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "istasyon_raporu",
+            "module": "paralel_lab.pipeline",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "deger": 2
+                    },
+                    {
+                      "id": "b",
+                      "deger": 3
+                    }
+                  ],
+                  2
+                ],
+                "expected": {
+                  "basarili": [
+                    {
+                      "id": "a",
+                      "sonuc": 4
+                    },
+                    {
+                      "id": "b",
+                      "sonuc": 9
+                    }
+                  ],
+                  "hatalar": [],
+                  "toplam": 2,
+                  "worker_sayisi": 2
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "x",
+                      "deger": -1
+                    },
+                    {
+                      "id": "y",
+                      "deger": 4
+                    }
+                  ],
+                  99
+                ],
+                "expected": {
+                  "basarili": [
+                    {
+                      "id": "y",
+                      "sonuc": 16
+                    }
+                  ],
+                  "hatalar": [
+                    {
+                      "id": "x",
+                      "hata": "negatif_deger"
+                    }
+                  ],
+                  "toplam": 2,
+                  "worker_sayisi": 8
+                }
+              },
+              {
+                "args": [
+                  [],
+                  3
+                ],
+                "expected": {
+                  "basarili": [],
+                  "hatalar": [],
+                  "toplam": 0,
+                  "worker_sayisi": 3
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "z",
+                      "deger": 1.5
+                    },
+                    {
+                      "id": "a",
+                      "deger": 0
+                    }
+                  ],
+                  0
+                ],
+                "expected": {
+                  "basarili": [
+                    {
+                      "id": "a",
+                      "sonuc": 0
+                    },
+                    {
+                      "id": "z",
+                      "sonuc": 2.25
+                    }
+                  ],
+                  "hatalar": [],
+                  "toplam": 2,
+                  "worker_sayisi": 1
+                }
+              }
+            ],
+            "label": "Gizli paralel istasyon raporları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    }
+  ]
+}
