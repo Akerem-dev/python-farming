@@ -18,6 +18,12 @@ function loadCatalog() {
   ) as CurriculumCatalog;
 }
 
+function loadPackageIndex() {
+  return JSON.parse(
+    readFileSync(resolve(process.cwd(), "public/content/module-packages.json"), "utf-8"),
+  ) as { version: number; files: string[] };
+}
+
 describe("expert algorithms and complexity content", () => {
   const modulePackage = loadPackage();
 
@@ -31,6 +37,12 @@ describe("expert algorithms and complexity content", () => {
       title: "Algoritmalar ve Karmaşıklık",
     });
     expect(expert?.modules.at(-1)?.id).toBe("expert-project");
+  });
+
+  it("registers the expert package in the published package index", () => {
+    const index = loadPackageIndex();
+    expect(index.files).toContain("/content/modules/algorithms-complexity.json");
+    expect(index.files.at(-1)).toBe("/content/modules/algorithms-complexity.json");
   });
 
   it("publishes seven ordered lessons and 1260 XP", () => {
