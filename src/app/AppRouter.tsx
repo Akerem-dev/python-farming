@@ -4,6 +4,8 @@ import { NotFoundPage } from "../pages/NotFoundPage";
 import styles from "./AppRouter.module.css";
 import { routes, type AppRoute } from "./routes";
 
+const appNavigationEvent = "python-farming:navigate";
+
 const WorkspacePage = lazy(async () => {
   const module = await import("../pages/WorkspacePage");
   return { default: module.WorkspacePage };
@@ -63,7 +65,17 @@ function getRouteLabel(route: string) {
 }
 
 export function navigate(route: AppRoute): void {
-  window.location.hash = route;
+  const nextHash = `#${route}`;
+
+  if (window.location.hash !== nextHash) {
+    window.history.pushState(null, "", nextHash);
+  }
+
+  window.dispatchEvent(
+    new CustomEvent<AppRoute>(appNavigationEvent, {
+      detail: route,
+    }),
+  );
 }
 
 function RouteLoadingState({ label }: { label: string }) {
@@ -91,9 +103,21 @@ export function AppRouter() {
   const routeLabel = getRouteLabel(route);
 
   useEffect(() => {
-    const handleHashChange = () => setRoute(getCurrentRoute());
-    window.addEventListener("hashchange", handleHashChange);
-    return () => window.removeEventListener("hashchange", handleHashChange);
+    const handleLocationChange = () => setRoute(getCurrentRoute());
+    const handleApplicationNavigation = (event: Event) => {
+      const navigationEvent = event as CustomEvent<AppRoute>;
+      setRoute(navigationEvent.detail || getCurrentRoute());
+    };
+
+    window.addEventListener("hashchange", handleLocationChange);
+    window.addEventListener("popstate", handleLocationChange);
+    window.addEventListener(appNavigationEvent, handleApplicationNavigation);
+
+    return () => {
+      window.removeEventListener("hashchange", handleLocationChange);
+      window.removeEventListener("popstate", handleLocationChange);
+      window.removeEventListener(appNavigationEvent, handleApplicationNavigation);
+    };
   }, []);
 
   useEffect(() => {
