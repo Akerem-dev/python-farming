@@ -30,8 +30,14 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Frontend quality gate
-        run: npm run verify:frontend
+      - name: TypeScript typecheck
+        run: npm run typecheck
+
+      - name: Unit and content tests
+        run: npm test
+
+      - name: Production frontend build
+        run: npm run build
 
   browser-journeys:
     name: Browser user journeys
