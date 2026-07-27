@@ -1,0 +1,30 @@
+name: Materialize expert capstone
+
+on:
+  push:
+    branches:
+      - stage/47-expert-capstone-graduation
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: stage/47-expert-capstone-graduation
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - run: node scripts/materialize-expert-capstone.mjs
+      - name: Commit capstone package and cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: add expert capstone project"
+          git push origin HEAD:stage/47-expert-capstone-graduation
