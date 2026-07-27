@@ -4,7 +4,7 @@
   grid-template-columns: var(--sidebar-width) minmax(220px, 1fr) auto;
   align-items: center;
   border-bottom: 1px solid var(--color-border);
-  background: color-mix(in srgb, var(--color-app-chrome) 96%, transparent);
+  background: var(--color-app-chrome);
 }
 
 .brand {
