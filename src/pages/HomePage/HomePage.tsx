@@ -119,6 +119,12 @@ export function HomePage() {
     isModuleCompleted(module, completedLessonIds),
   ).length;
   const advancedRoadmapProgress = Math.round((completedAdvancedModules / 8) * 100);
+  const expertModules =
+    catalog?.levels.find((level) => level.id === "expert")?.modules ?? [];
+  const completedExpertModules = expertModules.filter((module) =>
+    isModuleCompleted(module, completedLessonIds),
+  ).length;
+  const expertRoadmapProgress = Math.round((completedExpertModules / 6) * 100);
   const completedPublishedModuleCount = modules.filter(
     (module) => module.lessonIds.length > 0 && isModuleCompleted(module, completedLessonIds),
   ).length;
@@ -141,14 +147,18 @@ export function HomePage() {
           ? completedIntermediateModules
           : isAdvanced
             ? completedAdvancedModules
-            : 0,
+            : isExpert
+              ? completedExpertModules
+              : 0,
       progress: isBeginner
         ? beginnerRoadmapProgress
         : isIntermediate
           ? intermediateRoadmapProgress
           : isAdvanced
             ? advancedRoadmapProgress
-            : 0,
+            : isExpert
+              ? expertRoadmapProgress
+              : 0,
       locked: isBeginner
         ? false
         : isIntermediate
@@ -209,7 +219,9 @@ export function HomePage() {
           ? "Orta Seviye"
           : resumeLevel?.id === "advanced"
             ? "İleri Seviye"
-            : "Başlangıç";
+            : resumeLevel?.id === "expert"
+              ? "Uzman Seviye"
+              : "Başlangıç";
 
   const showingAdvancedGraduation = intermediateGraduation.graduated;
   const showingIntermediateGraduation = beginnerGraduation.graduated;
