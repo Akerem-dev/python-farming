@@ -31,6 +31,7 @@
     "/content/modules/parallelism-systems.json",
     "/content/modules/compilers-metaprogramming.json",
     "/content/modules/distributed-resilience.json",
-    "/content/modules/security-observability.json"
+    "/content/modules/security-observability.json",
+    "/content/modules/expert-project.json"
   ]
 }
