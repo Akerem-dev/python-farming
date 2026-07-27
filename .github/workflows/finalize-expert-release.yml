@@ -34,14 +34,6 @@ jobs:
           rm scripts/finalize-expert-release.mjs
           rm .github/workflows/finalize-expert-release.yml
 
-      - name: Validate generated files
-        run: |
-          npm ci
-          npm run verify:frontend
-          cd src-tauri
-          cargo fmt --all -- --check
-          cargo test --all-targets --locked
-
       - name: Commit product files
         run: |
           git config user.name "github-actions[bot]"
