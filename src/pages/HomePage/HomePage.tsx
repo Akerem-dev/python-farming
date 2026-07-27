@@ -19,6 +19,11 @@ import {
   getAdvancedGraduationSnapshot,
 } from "../../features/mastery/advancedGraduation";
 import {
+  expertGraduationLessonId,
+  getExpertGraduationLesson,
+  getExpertGraduationSnapshot,
+} from "../../features/mastery/expertGraduation";
+import {
   beginnerGraduationLessonId,
   getBeginnerGraduationLesson,
   getBeginnerGraduationSnapshot,
@@ -44,7 +49,7 @@ const upcomingSystems = [
   "Kod tamamlama",
   "Hata ayıklama",
   "Çok dosyalı projeler",
-  "Expert Project Lab",
+  "Güvenilir Kod Analiz Platformu",
 ];
 
 export function HomePage() {
@@ -77,9 +82,14 @@ export function HomePage() {
     () => getAdvancedGraduationSnapshot(catalog, completedLessonIds),
     [catalog, completedLessonIds],
   );
+  const expertGraduation = useMemo(
+    () => getExpertGraduationSnapshot(catalog, completedLessonIds),
+    [catalog, completedLessonIds],
+  );
   const beginnerGraduationLesson = getBeginnerGraduationLesson(catalog);
   const intermediateGraduationLesson = getIntermediateGraduationLesson(catalog);
   const advancedGraduationLesson = getAdvancedGraduationLesson(catalog);
+  const expertGraduationLesson = getExpertGraduationLesson(catalog);
   const resumeLesson = useMemo(
     () => getResumeLesson(catalog, completedLessonIds, lastLessonId),
     [catalog, completedLessonIds, lastLessonId],
@@ -213,7 +223,9 @@ export function HomePage() {
   const currentLevelLabel =
     resumeModule.id === "beginner-graduation"
       ? "Sınav"
-      : resumeModule.id === "intermediate-project" || resumeModule.id === "advanced-project"
+      : resumeModule.id === "intermediate-project" ||
+        resumeModule.id === "advanced-project" ||
+        resumeModule.id === "expert-project"
         ? "Bitirme Projesi"
         : resumeLevel?.id === "intermediate"
           ? "Orta Seviye"
@@ -223,64 +235,98 @@ export function HomePage() {
               ? "Uzman Seviye"
               : "Başlangıç";
 
-  const showingAdvancedGraduation = intermediateGraduation.graduated;
-  const showingIntermediateGraduation = beginnerGraduation.graduated;
-  const graduationView = showingAdvancedGraduation
+  const showingExpertGraduation = advancedGraduation.graduated;
+  const showingAdvancedGraduation =
+    intermediateGraduation.graduated && !showingExpertGraduation;
+  const showingIntermediateGraduation =
+    beginnerGraduation.graduated && !showingAdvancedGraduation && !showingExpertGraduation;
+  const graduationView = showingExpertGraduation
     ? {
-        graduated: advancedGraduation.graduated,
-        unlocked: advancedGraduation.projectUnlocked,
-        masteryScore: advancedGraduation.masteryScore,
-        badgeName: advancedGraduation.badgeName,
-        completedCoreLessons: advancedGraduation.completedCoreLessons,
-        totalCoreLessons: advancedGraduation.totalCoreLessons,
-        completedCoreModules: advancedGraduation.completedCoreModules,
-        totalCoreModules: advancedGraduation.totalCoreModules,
-        weakTopics: advancedGraduation.weakTopics,
-        lesson: advancedGraduationLesson,
-        lessonId: advancedGraduationLessonId,
-        levelName: "İleri Seviye",
-        nextLevel: "Uzman Seviye",
-        readyTitle: "Yedi ileri modülü tek üretim platformunda kanıtla",
+        graduated: expertGraduation.graduated,
+        unlocked: expertGraduation.projectUnlocked,
+        masteryScore: expertGraduation.masteryScore,
+        badgeName: expertGraduation.badgeName,
+        completedCoreLessons: expertGraduation.completedCoreLessons,
+        totalCoreLessons: expertGraduation.totalCoreLessons,
+        completedCoreModules: expertGraduation.completedCoreModules,
+        totalCoreModules: expertGraduation.totalCoreModules,
+        weakTopics: expertGraduation.weakTopics,
+        lesson: expertGraduationLesson,
+        lessonId: expertGraduationLessonId,
+        levelName: "Uzman Seviye",
+        readyTitle: "Beş uzman modülü tek güvenilir analiz platformunda kanıtla",
         readyDescription:
-          "Yerel Veri Platformu bitirme projesini tamamlayarak İleri Seviye rozetini kazan ve Uzman Seviye yolunu aç.",
+          "Güvenilir Kod Analiz Platformu bitirme projesini tamamlayarak Uzman Seviye rozetini ve tam müfredat mezuniyetini kazan.",
+        graduatedDescription:
+          "Python Farming öğrenim rotasının tamamı başarıyla bitirildi. Başlangıçtan Uzman Seviyeye bütün yayımlanmış modüller ve bitirme projeleri tamamlandı.",
+        graduatedBadgeTitle: "Tüm müfredat",
+        graduatedBadgeStatus: "Tamamlandı",
       }
-    : showingIntermediateGraduation
+    : showingAdvancedGraduation
       ? {
-          graduated: intermediateGraduation.graduated,
-          unlocked: intermediateGraduation.projectUnlocked,
-          masteryScore: intermediateGraduation.masteryScore,
-          badgeName: intermediateGraduation.badgeName,
-          completedCoreLessons: intermediateGraduation.completedCoreLessons,
-          totalCoreLessons: intermediateGraduation.totalCoreLessons,
-          completedCoreModules: intermediateGraduation.completedCoreModules,
-          totalCoreModules: intermediateGraduation.totalCoreModules,
-          weakTopics: intermediateGraduation.weakTopics,
-          lesson: intermediateGraduationLesson,
-          lessonId: intermediateGraduationLessonId,
-          levelName: "Orta Seviye",
-          nextLevel: "İleri Seviye",
-          readyTitle: "Dokuz modülü üretim kalitesinde tek projede kanıtla",
+          graduated: advancedGraduation.graduated,
+          unlocked: advancedGraduation.projectUnlocked,
+          masteryScore: advancedGraduation.masteryScore,
+          badgeName: advancedGraduation.badgeName,
+          completedCoreLessons: advancedGraduation.completedCoreLessons,
+          totalCoreLessons: advancedGraduation.totalCoreLessons,
+          completedCoreModules: advancedGraduation.completedCoreModules,
+          totalCoreModules: advancedGraduation.totalCoreModules,
+          weakTopics: advancedGraduation.weakTopics,
+          lesson: advancedGraduationLesson,
+          lessonId: advancedGraduationLessonId,
+          levelName: "İleri Seviye",
+          readyTitle: "Yedi ileri modülü tek üretim platformunda kanıtla",
           readyDescription:
-            "Sipariş Yönetim Sistemi bitirme projesini tamamlayarak Orta Seviye rozetini kazan ve İleri Seviye yolunu aç.",
+            "Yerel Veri Platformu bitirme projesini tamamlayarak İleri Seviye rozetini kazan ve Uzman Seviye yolunu aç.",
+          graduatedDescription:
+            "Mezuniyet rozeti kazanıldı ve Uzman Seviye öğrenim yolu açıldı.",
+          graduatedBadgeTitle: "Uzman Seviye",
+          graduatedBadgeStatus: "Açıldı",
         }
-      : {
-          graduated: beginnerGraduation.graduated,
-          unlocked: beginnerGraduation.examUnlocked,
-          masteryScore: beginnerGraduation.masteryScore,
-          badgeName: beginnerGraduation.badgeName,
-          completedCoreLessons: beginnerGraduation.completedCoreLessons,
-          totalCoreLessons: beginnerGraduation.totalCoreLessons,
-          completedCoreModules: beginnerGraduation.completedCoreModules,
-          totalCoreModules: beginnerGraduation.totalCoreModules,
-          weakTopics: beginnerGraduation.weakTopics,
-          lesson: beginnerGraduationLesson,
-          lessonId: beginnerGraduationLessonId,
-          levelName: "Başlangıç",
-          nextLevel: "Orta Seviye",
-          readyTitle: "Sekiz modülü tek projede kanıtla",
-          readyDescription:
-            "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır.",
-        };
+      : showingIntermediateGraduation
+        ? {
+            graduated: intermediateGraduation.graduated,
+            unlocked: intermediateGraduation.projectUnlocked,
+            masteryScore: intermediateGraduation.masteryScore,
+            badgeName: intermediateGraduation.badgeName,
+            completedCoreLessons: intermediateGraduation.completedCoreLessons,
+            totalCoreLessons: intermediateGraduation.totalCoreLessons,
+            completedCoreModules: intermediateGraduation.completedCoreModules,
+            totalCoreModules: intermediateGraduation.totalCoreModules,
+            weakTopics: intermediateGraduation.weakTopics,
+            lesson: intermediateGraduationLesson,
+            lessonId: intermediateGraduationLessonId,
+            levelName: "Orta Seviye",
+            readyTitle: "Dokuz modülü üretim kalitesinde tek projede kanıtla",
+            readyDescription:
+              "Sipariş Yönetim Sistemi bitirme projesini tamamlayarak Orta Seviye rozetini kazan ve İleri Seviye yolunu aç.",
+            graduatedDescription:
+              "Mezuniyet rozeti kazanıldı ve İleri Seviye öğrenim yolu açıldı.",
+            graduatedBadgeTitle: "İleri Seviye",
+            graduatedBadgeStatus: "Açıldı",
+          }
+        : {
+            graduated: beginnerGraduation.graduated,
+            unlocked: beginnerGraduation.examUnlocked,
+            masteryScore: beginnerGraduation.masteryScore,
+            badgeName: beginnerGraduation.badgeName,
+            completedCoreLessons: beginnerGraduation.completedCoreLessons,
+            totalCoreLessons: beginnerGraduation.totalCoreLessons,
+            completedCoreModules: beginnerGraduation.completedCoreModules,
+            totalCoreModules: beginnerGraduation.totalCoreModules,
+            weakTopics: beginnerGraduation.weakTopics,
+            lesson: beginnerGraduationLesson,
+            lessonId: beginnerGraduationLessonId,
+            levelName: "Başlangıç",
+            readyTitle: "Sekiz modülü tek projede kanıtla",
+            readyDescription:
+              "Kapsamlı Mağaza Analizörü projesini tamamlayarak rozetini kazan ve Orta Seviye kilidini kaldır.",
+            graduatedDescription:
+              "Mezuniyet rozeti kazanıldı ve Orta Seviye öğrenim yolu açıldı.",
+            graduatedBadgeTitle: "Orta Seviye",
+            graduatedBadgeStatus: "Açıldı",
+          };
 
   return (
     <AppShell activeRoute={routes.home} context="Ana Sayfa / Müfredat">
@@ -361,7 +407,7 @@ export function HomePage() {
               </h2>
               <p>
                 {graduationView.graduated
-                  ? `Mezuniyet rozeti kazanıldı ve ${graduationView.nextLevel} öğrenim yolu açıldı.`
+                  ? graduationView.graduatedDescription
                   : graduationView.unlocked
                     ? graduationView.readyDescription
                     : "En düşük tamamlanma oranına sahip modüller aşağıda gösteriliyor. Bu konular tamamlandıkça bitirme projesi otomatik açılır."}
@@ -382,8 +428,8 @@ export function HomePage() {
               {graduationView.graduated ? (
                 <div className={styles.graduationBadge}>
                   <i>◆</i>
-                  <span>{graduationView.nextLevel}</span>
-                  <strong>Açıldı</strong>
+                  <span>{graduationView.graduatedBadgeTitle}</span>
+                  <strong>{graduationView.graduatedBadgeStatus}</strong>
                 </div>
               ) : graduationView.unlocked && graduationView.lesson ? (
                 <Button variant="primary" onClick={() => openLesson(graduationView.lessonId)}>
