@@ -1,0 +1,117 @@
+
+> python-farming@1.0.0 verify:frontend
+> npm run typecheck && npm test && npm run build
+
+
+> python-farming@1.0.0 typecheck
+> tsc -b --pretty false
+
+
+> python-farming@1.0.0 test
+> vitest run
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.10 [39m[90m/home/runner/work/python-farming/python-farming[39m
+
+ [32m✓[39m src/test/integration/advancedDatabaseProject.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 139[2mms[22m[39m
+ [32m✓[39m src/tests/unit/capstoneTaskValidationService.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 159[2mms[22m[39m
+ [32m✓[39m src/test/content/progressPortability.test.ts [2m([22m[2m9 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/settingsDiagnostics.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/test/integration/architecturePatternsProject.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 128[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertCompilersProject.integration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 189[2mms[22m[39m
+ [32m✓[39m src/test/integration/httpNetworkingProject.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 109[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertDistributedProject.integration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 201[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 117[2mms[22m[39m
+ [32m✓[39m src/test/integration/packagingPerformanceProject.integration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 197[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedCapstoneValidator.integration.test.ts [2m([22m[2m12 tests[22m[2m)[22m[33m 1467[2mms[22m[39m
+ [32m✓[39m src/test/content/compilersMetaprogrammingContent.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertParallelismProject.integration.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 212[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 111[2mms[22m[39m
+ [32m✓[39m src/tests/unit/inheritanceValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 110[2mms[22m[39m
+ [32m✓[39m src/test/integration/asyncProgrammingValidator.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 226[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 196[2mms[22m[39m
+ [32m✓[39m src/test/content/distributedResilienceContent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/integration/expertAlgorithmsProject.integration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 130[2mms[22m[39m
+ [32m✓[39m src/test/content/primaryNavigationPages.test.ts [2m([22m[2m10 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/test/content/portablePythonRuntime.test.ts [2m([22m[2m8 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/accessibilityUx.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 128[2mms[22m[39m
+ [32m✓[39m src/test/content/releaseReadiness.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/progressBackup.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionValidatorIntegration.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 124[2mms[22m[39m
+ [32m✓[39m src/test/integration/advancedPatternValidator.integration.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 60[2mms[22m[39m
+ [32m✓[39m src/tests/unit/exceptionsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/classesInheritanceContent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/test/integration/generatorValidator.integration.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 54[2mms[22m[39m
+ [32m✓[39m src/test/content/parallelismSystemsContent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 11[2mms[22m[39m
+ [32m✓[39m src/test/content/runtimeIsolation.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumProgress.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/test/content/expertAlgorithmsContent.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/tests/unit/dictionariesSetsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/tests/unit/typingDataclassesContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/listsTuplesContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/filesPathsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/advancedGraduation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 14[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateGraduation.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 13[2mms[22m[39m
+ [32m✓[39m src/tests/unit/comprehensionsIteratorsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/functionsContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/tests/unit/standardLibraryContent.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/testingContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/test/content/generatorsCoroutinesContent.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduation.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 22[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumStore.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 4[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumCompatibility.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedDatabasesContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/oopBasicsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/beginnerGraduationContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/modulesPackagesContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/httpNetworkingContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateUnlock.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/taskValidationService.test.ts [2m([22m[2m6 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/test/content/finalReleaseContract.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/test/content/architecturePatternsContent.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 10[2mms[22m[39m
+ [32m✓[39m src/test/content/packagingPerformanceContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/intermediateCapstoneContent.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/test/content/advancedProjectContent.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/tests/unit/curriculumContent.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/loopsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m src/tests/unit/conditionalsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m src/test/content/asyncAwaitContent.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorWorkspace.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/tests/unit/operatorsContent.test.ts [2m([22m[2m5 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/content/decoratorsContextManagersContent.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m src/tests/unit/terminalFormatter.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/test/release/multiplatformReleaseContract.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 5[2mms[22m[39m
+ [31m❯[39m src/tests/unit/curriculumPackageLoading.test.ts [2m([22m[2m1 test[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 24[2mms[22m[39m
+[31m     [31m×[31m validates and merges every package from the published index[39m[32m 22[2mms[22m[39m
+ [32m✓[39m src/tests/unit/orderValidationService.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorLanguages.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m src/tests/unit/editorStore.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 1 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/tests/unit/curriculumPackageLoading.test.ts[2m > [22mpublished curriculum package loading[2m > [22mvalidates and merges every package from the published index
+[31m[1mError[22m: expert.distributed.final veri dönüşümü görevi yapısal ve gizli testleri içermiyor.[39m
+[36m [2m❯[22m assertLesson src/features/curriculum/services/curriculumService.ts:[2m303:13[22m[39m
+    [90m301|[39m       [33m![39mhasAdvancedStreamChecks
+    [90m302|[39m     ) {
+    [90m303|[39m       throw new Error(`${lesson.id} veri dönüşümü görevi yapısal ve gi…
+    [90m   |[39m             [31m^[39m
+    [90m304|[39m     }
+    [90m305|[39m   }
+[90m [2m❯[22m assertModulePackage src/features/curriculum/services/curriculumService.ts:[2m484:21[22m[39m
+[90m [2m❯[22m src/features/curriculum/services/curriculumService.ts:[2m586:5[22m[39m
+[90m [2m❯[22m loadCurriculumCatalog src/features/curriculum/services/curriculumService.ts:[2m585:34[22m[39m
+[90m [2m❯[22m src/tests/unit/curriculumPackageLoading.test.ts:[2m38:21[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m72 passed[39m[22m[90m (73)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[1m[32m320 passed[39m[22m[90m (321)[39m
+[2m   Start at [22m 12:44:41
+[2m   Duration [22m 5.98s[2m (transform 1.06s, setup 0ms, import 2.17s, tests 4.53s, environment 8ms)[22m
+
+
+::error file=/home/runner/work/python-farming/python-farming/src/features/curriculum/services/curriculumService.ts,title=src/tests/unit/curriculumPackageLoading.test.ts > published curriculum package loading > validates and merges every package from the published index,line=303,column=13::Error: expert.distributed.final veri dönüşümü görevi yapısal ve gizli testleri içermiyor.%0A ❯ assertLesson src/features/curriculum/services/curriculumService.ts:303:13%0A ❯ assertModulePackage src/features/curriculum/services/curriculumService.ts:484:21%0A ❯ src/features/curriculum/services/curriculumService.ts:586:5%0A ❯ loadCurriculumCatalog src/features/curriculum/services/curriculumService.ts:585:34%0A ❯ src/tests/unit/curriculumPackageLoading.test.ts:38:21%0A%0A
+EXIT_STATUS=1
