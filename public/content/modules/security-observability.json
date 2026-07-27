@@ -1,0 +1,1270 @@
+{
+  "moduleId": "security-observability",
+  "lessons": [
+    {
+      "id": "expert.security.telemetry-boundary",
+      "moduleId": "security-observability",
+      "order": 1,
+      "title": "Loglanmaması gereken veriyi seç",
+      "summary": "Gözlemlenebilirlik görünürlük sağlar; ancak parola, token ve kişisel sırlar telemetriye taşınmamalıdır.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Bir HTTP isteğini incelerken aşağıdaki alanlardan hangisi uygulama loguna doğrudan yazılmamalıdır?",
+        "options": [
+          {
+            "id": "request-id",
+            "label": "request_id"
+          },
+          {
+            "id": "duration",
+            "label": "duration_ms"
+          },
+          {
+            "id": "status",
+            "label": "status_code"
+          },
+          {
+            "id": "authorization",
+            "label": "Authorization başlığındaki bearer token"
+          }
+        ]
+      },
+      "task": {
+        "title": "Telemetri sınırını belirle",
+        "instructions": [
+          "Operasyon için gerekli alanlarla kimlik doğrulama sırlarını ayır.",
+          "Logların uzun süre saklanabileceğini ve farklı ekiplerce okunabileceğini düşün.",
+          "Doğru seçeneği işaretle."
+        ],
+        "requirements": [
+          "Correlation ve süre alanları gözlemlenebilirlik için korunmalı.",
+          "Kimlik doğrulama sırrı açık metin taşınmamalı.",
+          "Seçim en az ayrıcalık ilkesine uymalı."
+        ],
+        "sampleOutput": "Authorization başlığındaki bearer token",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "loglanabilir = [\"request_id\", \"duration_ms\", \"status_code\"]\nprint(loglanabilir)\n"
+      },
+      "hints": [
+        {
+          "title": "Saklama süresi",
+          "body": "Loglar uygulama belleğinden daha uzun yaşayabilir ve merkezi sistemlere taşınabilir."
+        },
+        {
+          "title": "Kimlik doğrulama",
+          "body": "Bearer token bir gözlem alanı değil, kullanıcı adına işlem yapabilen bir sırdır."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.telemetry-boundary",
+        "title": "Loglanmaması gereken veriyi seç",
+        "xpReward": 100,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "authorization"
+        }
+      }
+    },
+    {
+      "id": "expert.security.redaction",
+      "moduleId": "security-observability",
+      "order": 2,
+      "title": "Secret değerlerini güvenli biçimde maskele",
+      "summary": "Redaction hassas değerin yalnız tanı için gerekli son bölümünü koruyup geri kalanını geri döndürülemez biçimde gizler.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "code-completion",
+      "task": {
+        "title": "Değer uzunluğunu koruyan maskeleme fonksiyonu yaz",
+        "instructions": [
+          "gizli_degeri_maskele(deger, gorunur=4) fonksiyonunu tamamla.",
+          "Değer gorunur karakterden uzunsa yalnız son gorunur karakter açık kalmalı.",
+          "Kısa değerler tamamen yıldızlanmalı; boş değer boş dönmeli."
+        ],
+        "requirements": [
+          "Girdi metne dönüştürülmeden önce None reddedilmeli.",
+          "Negatif gorunur değeri ValueError üretmeli.",
+          "Sonuç girdi uzunluğunu korumalı."
+        ],
+        "sampleOutput": "********3456",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def gizli_degeri_maskele(deger, gorunur=4):\n    # None ve negatif gorunur değerlerini doğrula.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(gizli_degeri_maskele(\"abcd123456\"))\n"
+      },
+      "hints": [
+        {
+          "title": "Kısa değer",
+          "body": "len(deger) <= gorunur ise değerin tamamını '*' ile değiştir."
+        },
+        {
+          "title": "Uzun değer",
+          "body": "Yıldız sayısı len(deger) - gorunur kadardır; son bölüm slicing ile alınabilir."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.redaction",
+        "title": "Secret değerlerini güvenli biçimde maskele",
+        "xpReward": 170,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "gizli_degeri_maskele",
+            "minParams": 1,
+            "maxParams": 2,
+            "minDefaults": 1,
+            "maxDefaults": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "gizli_degeri_maskele() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "value-error",
+            "kind": "raise_exception",
+            "name": "ValueError",
+            "min": 1,
+            "file": "main.py",
+            "label": "Negatif görünürlük reddediliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "type-error",
+            "kind": "raise_exception",
+            "name": "TypeError",
+            "min": 1,
+            "file": "main.py",
+            "label": "None değeri reddediliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "gizli_degeri_maskele",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  "abcd123456",
+                  4
+                ],
+                "expected": "******3456"
+              },
+              {
+                "args": [
+                  "abc",
+                  4
+                ],
+                "expected": "***"
+              },
+              {
+                "args": [
+                  "",
+                  4
+                ],
+                "expected": ""
+              },
+              {
+                "args": [
+                  "secret",
+                  0
+                ],
+                "expected": "******"
+              }
+            ],
+            "label": "Gizli redaction senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.security.structured-context",
+      "moduleId": "security-observability",
+      "order": 3,
+      "title": "Structured log bağlamını temizle",
+      "summary": "Structured logging serbest metin yerine sorgulanabilir alanlar üretir; güvenli bağlam kopyası hassas anahtarları merkezi olarak redakte eder.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "code",
+      "task": {
+        "title": "Hassas anahtarları case-insensitive redakte et",
+        "instructions": [
+          "guvenli_baglam(baglam) fonksiyonunu yaz.",
+          "password, token, secret, api_key ve authorization anahtarlarını büyük-küçük harften bağımsız bul.",
+          "Bu alanların değerini '[REDACTED]' yap; diğer alanları değiştirmeden yeni sözlük döndür."
+        ],
+        "requirements": [
+          "Girdi sözlüğü değiştirilmemeli.",
+          "Anahtar sırası sonuç doğruluğunu etkilememeli.",
+          "Yalnız anahtar adı tam eşleştiğinde redaction yapılmalı."
+        ],
+        "sampleOutput": "{'user': 'ali', 'token': '[REDACTED]'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "HASSAS_ALANLAR = {\"password\", \"token\", \"secret\", \"api_key\", \"authorization\"}\n\n\ndef guvenli_baglam(baglam):\n    # Yeni bir sözlük üret ve hassas anahtarları redakte et.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(guvenli_baglam({\"user\": \"ali\", \"token\": \"abc\"}))\n"
+      },
+      "hints": [
+        {
+          "title": "Anahtar normalizasyonu",
+          "body": "str(anahtar).lower() hassas alan kümesiyle karşılaştırılabilir."
+        },
+        {
+          "title": "Yeni sözlük",
+          "body": "Dict comprehension girdi nesnesini değiştirmeden dönüşüm yapabilir."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.structured-context",
+        "title": "Structured log bağlamını temizle",
+        "xpReward": 180,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "constant",
+            "kind": "assignment",
+            "name": "HASSAS_ALANLAR",
+            "file": "main.py",
+            "label": "Hassas alan politikası tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "guvenli_baglam",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "guvenli_baglam() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "dict-comp",
+            "kind": "node_count",
+            "nodeName": "DictComp",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "Yeni bağlam dict comprehension ile üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "lower-call",
+            "kind": "call",
+            "name": "lower",
+            "file": "main.py",
+            "label": "Anahtarlar case-insensitive karşılaştırılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "guvenli_baglam",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  {
+                    "user": "ali",
+                    "token": "abc"
+                  }
+                ],
+                "expected": {
+                  "user": "ali",
+                  "token": "[REDACTED]"
+                }
+              },
+              {
+                "args": [
+                  {
+                    "PASSWORD": "123",
+                    "duration_ms": 42
+                  }
+                ],
+                "expected": {
+                  "PASSWORD": "[REDACTED]",
+                  "duration_ms": 42
+                }
+              },
+              {
+                "args": [
+                  {
+                    "token_type": "bearer",
+                    "Api_Key": "x"
+                  }
+                ],
+                "expected": {
+                  "token_type": "bearer",
+                  "Api_Key": "[REDACTED]"
+                }
+              },
+              {
+                "args": [
+                  {}
+                ],
+                "expected": {}
+              }
+            ],
+            "label": "Gizli structured context senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.security.correlation",
+      "moduleId": "security-observability",
+      "order": 4,
+      "title": "Correlation ID ile dağıtık izleri birleştir",
+      "summary": "Correlation ID aynı kullanıcı isteğine ait servis kayıtlarını tek akışta birleştirir; sıra numarası iz içindeki nedensel akışı korur.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Kayıtları correlation kimliğine göre grupla ve sırala",
+        "instructions": [
+          "iz_haritasi(kayitlar) fonksiyonunu yaz.",
+          "Her kayıt correlation_id, sira ve servis alanlarını içerir.",
+          "Kayıtları correlation_id altında topla ve her grubu sira alanına göre sırala.",
+          "Sonuçta her kimlik için yalnız servis adlarının sıralı listesini döndür."
+        ],
+        "requirements": [
+          "Correlation kimliği boş olan kayıtlar 'unknown' grubuna alınmalı.",
+          "Girdi listesi değiştirilmemeli.",
+          "Sonuç anahtarları deterministik sıralanmalı."
+        ],
+        "sampleOutput": "{'c1': ['api', 'db'], 'unknown': ['worker']}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def iz_haritasi(kayitlar):\n    gruplar = {}\n    # Kayıtları grupla, sonra her grubu sıra alanına göre dönüştür.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(iz_haritasi([\n        {\"correlation_id\": \"c1\", \"sira\": 2, \"servis\": \"db\"},\n        {\"correlation_id\": \"c1\", \"sira\": 1, \"servis\": \"api\"},\n    ]))\n"
+      },
+      "hints": [
+        {
+          "title": "Gruplama",
+          "body": "setdefault ile her correlation kimliği için liste oluşturabilirsin."
+        },
+        {
+          "title": "Deterministik çıktı",
+          "body": "sorted(gruplar) anahtar sırasını, sorted(kayitlar, key=...) iz sırasını belirler."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.correlation",
+        "title": "Correlation ID ile dağıtık izleri birleştir",
+        "xpReward": 190,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "iz_haritasi",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "iz_haritasi() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "for",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "main.py",
+            "label": "Kayıtlar yapısal olarak dolaşılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "sorted",
+            "kind": "call_count",
+            "name": "sorted",
+            "min": 2,
+            "file": "main.py",
+            "label": "Gruplar ve iz adımları deterministik sıralanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "iz_haritasi",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "correlation_id": "c1",
+                      "sira": 2,
+                      "servis": "db"
+                    },
+                    {
+                      "correlation_id": "c1",
+                      "sira": 1,
+                      "servis": "api"
+                    },
+                    {
+                      "correlation_id": "",
+                      "sira": 1,
+                      "servis": "worker"
+                    }
+                  ]
+                ],
+                "expected": {
+                  "c1": [
+                    "api",
+                    "db"
+                  ],
+                  "unknown": [
+                    "worker"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {}
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "correlation_id": "b",
+                      "sira": 1,
+                      "servis": "cache"
+                    },
+                    {
+                      "correlation_id": "a",
+                      "sira": 1,
+                      "servis": "api"
+                    }
+                  ]
+                ],
+                "expected": {
+                  "a": [
+                    "api"
+                  ],
+                  "b": [
+                    "cache"
+                  ]
+                }
+              }
+            ],
+            "label": "Gizli correlation senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Correlation kimliği, sıra ve servis alanları taşıyan yapılandırılmış log kayıtları",
+        "targetShape": "Correlation kimliğine göre deterministik servis izi haritası",
+        "rules": [
+          "Boş kimlik unknown grubuna alınmalı.",
+          "Her iz sıra alanına göre yükselen biçimde sıralanmalı."
+        ],
+        "workflow": [
+          "Kayıtları correlation kimliğine göre grupla.",
+          "Grupları ve grup içi adımları sırala.",
+          "Yalnız servis adlarını içeren iz haritasını döndür."
+        ]
+      }
+    },
+    {
+      "id": "expert.security.slo",
+      "moduleId": "security-observability",
+      "order": 5,
+      "title": "SLO ve hata bütçesi durumunu hesapla",
+      "summary": "SLO bir servisin hedef güvenilirliğini tanımlar; gerçek başarı oranı hedefin altına düştüğünde hata bütçesi tüketilmiş kabul edilir.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "code-completion",
+      "task": {
+        "title": "Başarı oranını ve SLO durumunu raporla",
+        "instructions": [
+          "slo_raporu(sonuclar, hedef=99.0) fonksiyonunu tamamla.",
+          "True değerleri başarılı istek olarak say.",
+          "Başarı oranını yüzde olarak iki ondalığa yuvarla.",
+          "Oran hedefe eşit veya yüksekse healthy, değilse breach dön."
+        ],
+        "requirements": [
+          "Boş liste yüzde 100 healthy kabul edilmeli.",
+          "Hedef 0 ile 100 arasında olmalı; aksi durumda ValueError yükseltilmeli.",
+          "Rapor toplam, basarili, basari_orani ve durum alanlarını taşımalı."
+        ],
+        "sampleOutput": "{'toplam': 4, 'basarili': 3, 'basari_orani': 75.0, 'durum': 'breach'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def slo_raporu(sonuclar, hedef=99.0):\n    # Hedefi doğrula ve başarı oranını hesapla.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(slo_raporu([True, True, True, False], 99.0))\n"
+      },
+      "hints": [
+        {
+          "title": "Boş pencere",
+          "body": "Henüz istek yoksa kullanılabilirlik kaybı gözlenmemiş kabul edilebilir."
+        },
+        {
+          "title": "Boolean sayımı",
+          "body": "sum(sonuclar) True değerlerini sayar; sonucu iki ondalığa round edebilirsin."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.slo",
+        "title": "SLO ve hata bütçesi durumunu hesapla",
+        "xpReward": 200,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "slo_raporu",
+            "minParams": 1,
+            "maxParams": 2,
+            "minDefaults": 1,
+            "maxDefaults": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "slo_raporu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "sum",
+            "kind": "call",
+            "name": "sum",
+            "file": "main.py",
+            "label": "Başarılı istekler sayılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "round",
+            "kind": "call",
+            "name": "round",
+            "file": "main.py",
+            "label": "Başarı oranı yuvarlanıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "value-error",
+            "kind": "raise_exception",
+            "name": "ValueError",
+            "min": 1,
+            "file": "main.py",
+            "label": "Geçersiz hedef reddediliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "slo_raporu",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    true,
+                    true,
+                    true,
+                    false
+                  ],
+                  99.0
+                ],
+                "expected": {
+                  "toplam": 4,
+                  "basarili": 3,
+                  "basari_orani": 75.0,
+                  "durum": "breach"
+                }
+              },
+              {
+                "args": [
+                  [
+                    true,
+                    true
+                  ],
+                  100.0
+                ],
+                "expected": {
+                  "toplam": 2,
+                  "basarili": 2,
+                  "basari_orani": 100.0,
+                  "durum": "healthy"
+                }
+              },
+              {
+                "args": [
+                  [],
+                  99.9
+                ],
+                "expected": {
+                  "toplam": 0,
+                  "basarili": 0,
+                  "basari_orani": 100.0,
+                  "durum": "healthy"
+                }
+              },
+              {
+                "args": [
+                  [
+                    true,
+                    false
+                  ],
+                  50.0
+                ],
+                "expected": {
+                  "toplam": 2,
+                  "basarili": 1,
+                  "basari_orani": 50.0,
+                  "durum": "healthy"
+                }
+              }
+            ],
+            "label": "Gizli SLO senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.security.audit-chain",
+      "moduleId": "security-observability",
+      "order": 6,
+      "title": "Audit kayıtlarını hash zinciriyle koru",
+      "summary": "Tamper-evident audit zinciri her kaydın özetine önceki özeti dahil ederek silme veya değiştirme girişimini görünür kılar.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "AuditChainBroken",
+        "symptom": "Kayıt içeriği değiştirildiğinde mevcut doğrulama yine True dönüyor.",
+        "workflow": [
+          "Kayıtları canonical JSON biçimine dönüştür.",
+          "Her adımda önceki hash ile kayıt metnini birleştir.",
+          "SHA-256 özeti üret.",
+          "Doğrulamada zinciri baştan hesaplayıp karşılaştır."
+        ]
+      },
+      "task": {
+        "title": "Canonical JSON tabanlı audit zinciri üret ve doğrula",
+        "instructions": [
+          "audit_zinciri(kayitlar) ve zincir_dogrula(kayitlar, zincir) fonksiyonlarını tamamla.",
+          "Başlangıç önceki hash değeri 64 sıfır olmalı.",
+          "Kayıt json.dumps(sort_keys=True, separators=(',', ':'), ensure_ascii=False) ile canonical olmalı.",
+          "Her hash SHA-256 ile önceki_hash + '|' + canonical_kayit metninden üretilmeli."
+        ],
+        "requirements": [
+          "hashlib.sha256 ve json.dumps kullanılmalı.",
+          "Doğrulama yalnız tüm zincir birebir eşleştiğinde True dönmeli.",
+          "Girdi kayıtları değiştirilmemeli."
+        ],
+        "sampleOutput": "True",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "import hashlib\nimport json\n\n\ndef audit_zinciri(kayitlar):\n    onceki = \"0\" * 64\n    zincir = []\n    # Canonical kayıtları önceki hash ile zincirle.\n    pass\n\n\ndef zincir_dogrula(kayitlar, zincir):\n    # Zinciri yeniden üretip karşılaştır.\n    pass\n\n\nif __name__ == \"__main__\":\n    kayitlar = [{\"id\": \"a\", \"islem\": \"giris\"}, {\"id\": \"b\", \"islem\": \"cikis\"}]\n    zincir = audit_zinciri(kayitlar)\n    print(zincir_dogrula(kayitlar, zincir))\n"
+      },
+      "hints": [
+        {
+          "title": "Canonical JSON",
+          "body": "Sabit key sırası ve boşluksuz separators aynı kaydın her çalışmada aynı metni üretmesini sağlar."
+        },
+        {
+          "title": "Digest",
+          "body": "hashlib.sha256(metin.encode('utf-8')).hexdigest() 64 karakterlik özet üretir."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.audit-chain",
+        "title": "Audit kayıtlarını hash zinciriyle koru",
+        "xpReward": 220,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "hashlib",
+            "kind": "import_statement",
+            "module": "hashlib",
+            "file": "main.py",
+            "label": "hashlib import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "json",
+            "kind": "import_statement",
+            "module": "json",
+            "file": "main.py",
+            "label": "json import edildi",
+            "visibility": "visible"
+          },
+          {
+            "id": "chain-def",
+            "kind": "function_definition",
+            "name": "audit_zinciri",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "audit_zinciri() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "verify-def",
+            "kind": "function_definition",
+            "name": "zincir_dogrula",
+            "minParams": 2,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "zincir_dogrula() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "sha",
+            "kind": "call",
+            "name": "sha256",
+            "file": "main.py",
+            "label": "SHA-256 özeti üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "dumps",
+            "kind": "call",
+            "name": "dumps",
+            "file": "main.py",
+            "label": "Canonical JSON üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "chain-cases",
+            "kind": "function_cases",
+            "name": "audit_zinciri",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "islem": "giris"
+                    },
+                    {
+                      "id": "b",
+                      "islem": "cikis"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "de4bb257d01ab2e02cbca27ca3df7fd58e432e91e2d63d75a6c8f53cffa8b22c",
+                  "c29cc43cef52b4570b4c15d7a34be09dc24262fcef593eee1fcb597f00bba73e"
+                ]
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": []
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "z": 1,
+                      "a": "ç"
+                    }
+                  ]
+                ],
+                "expected": [
+                  "c5a1aa150f89b9339ae485b2371ec4e1feb0e27b81d3e547eb7dd970db116603"
+                ]
+              }
+            ],
+            "label": "Gizli audit zinciri senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "verify-cases",
+            "kind": "function_cases",
+            "name": "zincir_dogrula",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "islem": "giris"
+                    },
+                    {
+                      "id": "b",
+                      "islem": "cikis"
+                    }
+                  ],
+                  [
+                    "de4bb257d01ab2e02cbca27ca3df7fd58e432e91e2d63d75a6c8f53cffa8b22c",
+                    "c29cc43cef52b4570b4c15d7a34be09dc24262fcef593eee1fcb597f00bba73e"
+                  ]
+                ],
+                "expected": true
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "islem": "giris"
+                    },
+                    {
+                      "id": "b",
+                      "islem": "cikis"
+                    }
+                  ],
+                  [
+                    "de4bb257d01ab2e02cbca27ca3df7fd58e432e91e2d63d75a6c8f53cffa8b22c",
+                    "0000000000000000000000000000000000000000000000000000000000000000"
+                  ]
+                ],
+                "expected": false
+              },
+              {
+                "args": [
+                  [],
+                  []
+                ],
+                "expected": true
+              }
+            ],
+            "label": "Gizli audit doğrulama senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.security.final",
+      "moduleId": "security-observability",
+      "order": 7,
+      "title": "Güvenlik ve Gözlemlenebilirlik Merkezi geliştir",
+      "summary": "Final laboratuvarı secret redaction, structured logging, correlation izleri, SLO metrikleri ve tamper-evident audit kökünü tek çok dosyalı raporda birleştirir.",
+      "levelLabel": "Expert Security & Observability",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Güvenli ve deterministik operasyon raporu üret",
+        "instructions": [
+          "Olay modeli, redaction, structured log, metrik ve audit katmanlarını tamamla.",
+          "Her olayın hassas bağlam alanlarını loga girmeden redakte et.",
+          "Correlation kimliklerine göre iz sayılarını üret.",
+          "Başarı oranı, ortalama süre, SLO durumu ve audit root içeren rapor döndür."
+        ],
+        "requirements": [
+          "Girdi olayları değiştirilmemeli.",
+          "Token, password, secret, api_key ve authorization açık metin dönmemeli.",
+          "Audit hash canonical JSON ve SHA-256 kullanmalı.",
+          "Boş olay listesi deterministik ve healthy rapor üretmeli."
+        ],
+        "sampleOutput": "{'kayitlar': [{'id': 'e1', 'correlation_id': 'c1', 'level': 'info', 'duration_ms': 100, 'context': {'user': 'ali', 'token': '[REDACTED]'}}, {'id': 'e2', 'correlation_id': 'c1', 'level': 'error', 'duration_ms': 300, 'context': {'password': '[REDACTED]', 'route': '/pay'}}], 'metrikler': {'toplam': 2, 'basarili': 1, 'hata': 1, 'basari_orani': 50.0, 'ortalama_ms': 200.0, 'slo': 'breach'}, 'izler': {'c1': 2}, 'audit_root': 'd036fe5fe8ee87456d1d38ff89719684a97ba446ef697884c1e5d7caca0fe68b'}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from gozlem_merkezi import gozlem_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\n            \"id\": \"e1\",\n            \"correlation_id\": \"c1\",\n            \"status\": \"ok\",\n            \"duration_ms\": 100,\n            \"context\": {\"user\": \"ali\", \"token\": \"abc\"},\n        }\n    ]\n    print(gozlem_raporu(olaylar))\n",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from gozlem_merkezi import gozlem_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\n            \"id\": \"e1\",\n            \"correlation_id\": \"c1\",\n            \"status\": \"ok\",\n            \"duration_ms\": 100,\n            \"context\": {\"user\": \"ali\", \"token\": \"abc\"},\n        }\n    ]\n    print(gozlem_raporu(olaylar))\n"
+          },
+          {
+            "path": "gozlem_merkezi/__init__.py",
+            "starterCode": "from .report import gozlem_raporu\n\n__all__ = [\"gozlem_raporu\"]\n"
+          },
+          {
+            "path": "gozlem_merkezi/models.py",
+            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Olay:\n    id: str\n    correlation_id: str\n    status: str\n    duration_ms: int\n    context: dict\n"
+          },
+          {
+            "path": "gozlem_merkezi/redaction.py",
+            "starterCode": "HASSAS_ALANLAR = {\"password\", \"token\", \"secret\", \"api_key\", \"authorization\"}\n\n\ndef guvenli_baglam(baglam):\n    # Hassas alanları yeni sözlükte redakte et.\n    pass\n"
+          },
+          {
+            "path": "gozlem_merkezi/logs.py",
+            "starterCode": "from .redaction import guvenli_baglam\n\n\ndef yapilandirilmis_kayit(olay):\n    # Olayı güvenli structured log sözlüğüne dönüştür.\n    pass\n"
+          },
+          {
+            "path": "gozlem_merkezi/metrics.py",
+            "starterCode": "def metrik_ozeti(olaylar, hedef=99.0):\n    # Başarı oranı, ortalama süre ve SLO durumunu hesapla.\n    pass\n"
+          },
+          {
+            "path": "gozlem_merkezi/audit.py",
+            "starterCode": "import hashlib\nimport json\n\n\ndef audit_koku(kayitlar):\n    # Canonical structured log kayıtlarını hash zincirine dönüştür ve son kökü döndür.\n    pass\n"
+          },
+          {
+            "path": "gozlem_merkezi/report.py",
+            "starterCode": "from .audit import audit_koku\nfrom .logs import yapilandirilmis_kayit\nfrom .metrics import metrik_ozeti\nfrom .models import Olay\n\n\ndef gozlem_raporu(olaylar, hedef=99.0):\n    # Olayları modelle, logla, metrikleri ve iz sayılarını üret.\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "Katman sırası",
+          "body": "Önce Olay modeli, sonra güvenli log kayıtları, ardından metrik ve audit çıktıları üretilmeli."
+        },
+        {
+          "title": "İz sayısı",
+          "body": "Correlation kimliği boşsa unknown kullan; anahtarları sıralayarak deterministik sözlük döndür."
+        },
+        {
+          "title": "Audit kökü",
+          "body": "Boş listede 64 sıfır, dolu listede zincirin son SHA-256 özeti dönmeli."
+        }
+      ],
+      "validation": {
+        "id": "expert.security.final",
+        "title": "Güvenlik ve Gözlemlenebilirlik Merkezi geliştir",
+        "xpReward": 340,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "main-file",
+            "kind": "file_exists",
+            "path": "main.py",
+            "label": "main.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-__init__-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/__init__.py",
+            "label": "gozlem_merkezi/__init__.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-models-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/models.py",
+            "label": "gozlem_merkezi/models.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-redaction-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/redaction.py",
+            "label": "gozlem_merkezi/redaction.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-logs-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/logs.py",
+            "label": "gozlem_merkezi/logs.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-metrics-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/metrics.py",
+            "label": "gozlem_merkezi/metrics.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-audit-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/audit.py",
+            "label": "gozlem_merkezi/audit.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-gozlem_merkezi-report-py",
+            "kind": "file_exists",
+            "path": "gozlem_merkezi/report.py",
+            "label": "gozlem_merkezi/report.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "model",
+            "kind": "file_content_regex",
+            "path": "gozlem_merkezi/models.py",
+            "pattern": "@dataclass\\s*\\(\\s*frozen\\s*=\\s*True\\s*\\)",
+            "label": "Olay immutable dataclass olarak tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "redaction-def",
+            "kind": "function_definition",
+            "name": "guvenli_baglam",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "gozlem_merkezi/redaction.py",
+            "label": "guvenli_baglam() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "log-def",
+            "kind": "function_definition",
+            "name": "yapilandirilmis_kayit",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "gozlem_merkezi/logs.py",
+            "label": "yapilandirilmis_kayit() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "metric-def",
+            "kind": "function_definition",
+            "name": "metrik_ozeti",
+            "minParams": 1,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "gozlem_merkezi/metrics.py",
+            "label": "metrik_ozeti() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "audit-def",
+            "kind": "function_definition",
+            "name": "audit_koku",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "gozlem_merkezi/audit.py",
+            "label": "audit_koku() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-def",
+            "kind": "function_definition",
+            "name": "gozlem_raporu",
+            "minParams": 1,
+            "maxParams": 2,
+            "requireReturn": true,
+            "file": "gozlem_merkezi/report.py",
+            "label": "gozlem_raporu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-loop",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "file": "gozlem_merkezi/report.py",
+            "label": "Olay akışı yapısal olarak işleniyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "redaction-call",
+            "kind": "call",
+            "name": "yapilandirilmis_kayit",
+            "file": "gozlem_merkezi/report.py",
+            "label": "Structured logging katmanı kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "metric-call",
+            "kind": "call",
+            "name": "metrik_ozeti",
+            "file": "gozlem_merkezi/report.py",
+            "label": "Metrik katmanı kullanılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "audit-call",
+            "kind": "call",
+            "name": "audit_koku",
+            "file": "gozlem_merkezi/report.py",
+            "label": "Audit kökü üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "gozlem_raporu",
+            "module": "gozlem_merkezi",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "e1",
+                      "correlation_id": "c1",
+                      "status": "ok",
+                      "duration_ms": 100,
+                      "context": {
+                        "user": "ali",
+                        "token": "abc"
+                      }
+                    },
+                    {
+                      "id": "e2",
+                      "correlation_id": "c1",
+                      "status": "error",
+                      "duration_ms": 300,
+                      "context": {
+                        "password": "123",
+                        "route": "/pay"
+                      }
+                    }
+                  ],
+                  99.0
+                ],
+                "expected": {
+                  "kayitlar": [
+                    {
+                      "id": "e1",
+                      "correlation_id": "c1",
+                      "level": "info",
+                      "duration_ms": 100,
+                      "context": {
+                        "user": "ali",
+                        "token": "[REDACTED]"
+                      }
+                    },
+                    {
+                      "id": "e2",
+                      "correlation_id": "c1",
+                      "level": "error",
+                      "duration_ms": 300,
+                      "context": {
+                        "password": "[REDACTED]",
+                        "route": "/pay"
+                      }
+                    }
+                  ],
+                  "metrikler": {
+                    "toplam": 2,
+                    "basarili": 1,
+                    "hata": 1,
+                    "basari_orani": 50.0,
+                    "ortalama_ms": 200.0,
+                    "slo": "breach"
+                  },
+                  "izler": {
+                    "c1": 2
+                  },
+                  "audit_root": "d036fe5fe8ee87456d1d38ff89719684a97ba446ef697884c1e5d7caca0fe68b"
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "x",
+                      "correlation_id": "",
+                      "status": "ok",
+                      "duration_ms": 50,
+                      "context": {
+                        "authorization": "Bearer x",
+                        "token_type": "bearer"
+                      }
+                    }
+                  ],
+                  100.0
+                ],
+                "expected": {
+                  "kayitlar": [
+                    {
+                      "id": "x",
+                      "correlation_id": "unknown",
+                      "level": "info",
+                      "duration_ms": 50,
+                      "context": {
+                        "authorization": "[REDACTED]",
+                        "token_type": "bearer"
+                      }
+                    }
+                  ],
+                  "metrikler": {
+                    "toplam": 1,
+                    "basarili": 1,
+                    "hata": 0,
+                    "basari_orani": 100.0,
+                    "ortalama_ms": 50.0,
+                    "slo": "healthy"
+                  },
+                  "izler": {
+                    "unknown": 1
+                  },
+                  "audit_root": "ea26bc547dcc85e76ac3629b4e27d45d469727067a9da3e8fa0297bb1221977c"
+                }
+              },
+              {
+                "args": [
+                  [],
+                  99.9
+                ],
+                "expected": {
+                  "kayitlar": [],
+                  "metrikler": {
+                    "toplam": 0,
+                    "basarili": 0,
+                    "hata": 0,
+                    "basari_orani": 100.0,
+                    "ortalama_ms": 0.0,
+                    "slo": "healthy"
+                  },
+                  "izler": {},
+                  "audit_root": "0000000000000000000000000000000000000000000000000000000000000000"
+                }
+              }
+            ],
+            "label": "Gizli güvenlik ve gözlemlenebilirlik senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "no-secret-output",
+            "kind": "file_content_regex",
+            "path": "gozlem_merkezi/redaction.py",
+            "pattern": "\\[REDACTED\\]",
+            "label": "Redaction sabiti açıkça tanımlandı",
+            "visibility": "visible"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Kimlik, correlation, durum, süre ve bağlam alanları taşıyan operasyon olayları",
+        "targetShape": "Redakte structured loglar, SLO metrikleri, iz sayıları ve SHA-256 audit kökü",
+        "rules": [
+          "Hassas alanlar structured log üretilmeden redakte edilmeli.",
+          "Metrik ve audit sonuçları aynı güvenli kayıt kümesinden türetilmeli.",
+          "Çıktı deterministik olmalı."
+        ],
+        "workflow": [
+          "Olayları immutable modele dönüştür.",
+          "Güvenli structured log kayıtlarını üret.",
+          "Metrik ve correlation özetlerini hesapla.",
+          "Canonical log zincirinden audit root üret."
+        ],
+        "projectTitle": "Güvenlik ve Gözlemlenebilirlik Merkezi",
+        "deliverables": [
+          "Immutable olay modeli",
+          "Merkezi secret redaction",
+          "Structured log ve SLO metrik katmanları",
+          "Tamper-evident audit kökü",
+          "Deterministik gözlem raporu"
+        ]
+      }
+    }
+  ]
+}
