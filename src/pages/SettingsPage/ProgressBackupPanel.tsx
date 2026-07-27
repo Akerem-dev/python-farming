@@ -12,7 +12,6 @@ import type {
   ProgressBackupOverview,
   ProgressBackupSummary,
 } from "../../features/progress/types";
-import { formatBytes } from "../../runtime/runtimeLimits";
 import { progressBackupsChangedEvent } from "./ProgressDataPanel";
 import styles from "./SettingsPage.module.css";
 
@@ -47,7 +46,7 @@ function formatBackupDate(value: number | undefined) {
 
   return new Intl.DateTimeFormat("tr-TR", {
     dateStyle: "medium",
-    timeStyle: "medium",
+    timeStyle: "short",
   }).format(new Date(value));
 }
 
@@ -111,7 +110,7 @@ export function ProgressBackupPanel() {
       const nextOverview = await createProgressBackup();
       setOverview(nextOverview);
       setStatus("ready");
-      setAnnouncement("İlerleme yedeği oluşturuldu ve bütünlük kontrolünden geçti.");
+      setAnnouncement("İlerlemenin yeni bir yedeği oluşturuldu.");
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
@@ -140,9 +139,7 @@ export function ProgressBackupPanel() {
       }
       setOverview(nextOverview);
       setStatus("ready");
-      setAnnouncement(
-        "İlerleme yedeği geri yüklendi. Önceki kayıt otomatik güvenlik yedeği olarak saklandı.",
-      );
+      setAnnouncement("Seçtiğin yedek geri yüklendi. Önceki ilerlemen de güvenli biçimde saklandı.");
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
@@ -165,7 +162,7 @@ export function ProgressBackupPanel() {
       const nextOverview = await deleteProgressBackup(backupId);
       setOverview(nextOverview);
       setStatus("ready");
-      setAnnouncement("Seçilen ilerleme yedeği kalıcı olarak silindi.");
+      setAnnouncement("Seçilen yedek silindi.");
     } catch (reason) {
       setError(errorMessage(reason));
       setStatus("error");
@@ -179,12 +176,6 @@ export function ProgressBackupPanel() {
   const latestBackup = overview?.backups[0];
   const corruptBackupCount =
     overview?.backups.filter((backup) => backup.integrityStatus === "corrupt").length ?? 0;
-  const integrityLabel =
-    !overview || overview.backups.length === 0
-      ? "—"
-      : corruptBackupCount === 0
-        ? "Tümü sağlam"
-        : `${corruptBackupCount} bozuk yedek`;
   const busy = status === "loading" || activeOperation !== null;
   const actionDisabled = !available || progressStatus !== "ready" || busy;
 
@@ -192,40 +183,36 @@ export function ProgressBackupPanel() {
     <article className={styles.panel}>
       <header className={styles.panelHeader}>
         <div>
-          <span>Yerel veri güvenliği</span>
-          <h2>İlerleme yedekleri</h2>
+          <span>Güvenlik yedekleri</span>
+          <h2>İlerlemeni geri alabilirsin</h2>
         </div>
       </header>
 
-      <dl className={styles.details}>
+      <p className={styles.message}>
+        Yeni bir yedek oluştur veya daha önce kaydettiğin bir ilerleme noktasına dön.
+      </p>
+
+      <dl className={styles.summaryList}>
         <div>
-          <dt>Saklanan yedek</dt>
+          <dt>Kayıtlı yedek</dt>
           <dd>{status === "loading" ? "Yükleniyor…" : overview?.backups.length ?? "—"}</dd>
-        </div>
-        <div>
-          <dt>Toplam boyut</dt>
-          <dd>{overview ? formatBytes(overview.totalBytes) : "—"}</dd>
         </div>
         <div>
           <dt>Son yedek</dt>
           <dd>{formatBackupDate(latestBackup?.createdAt)}</dd>
         </div>
         <div>
-          <dt>Tüm yedeklerin bütünlüğü</dt>
-          <dd>{integrityLabel}</dd>
-        </div>
-        <div>
           <dt>Son yedekteki ilerleme</dt>
           <dd>
             {latestBackup?.completedLessonCount == null
-              ? "—"
+              ? "Henüz yok"
               : `${latestBackup.completedLessonCount} ders · ${latestBackup.totalXp ?? 0} XP`}
           </dd>
         </div>
       </dl>
 
       <div className={styles.actions}>
-        <Button variant="secondary" onClick={createBackup} disabled={actionDisabled}>
+        <Button variant="primary" onClick={createBackup} disabled={actionDisabled}>
           {status === "creating" ? "Yedekleniyor…" : "Şimdi yedekle"}
         </Button>
         <span role="status" aria-live="polite">
@@ -241,8 +228,7 @@ export function ProgressBackupPanel() {
 
       {corruptBackupCount > 0 ? (
         <div className={styles.errorBanner} role="alert">
-          {corruptBackupCount} yerel yedek bütünlük kontrolünden geçemedi. Bozuk yedekler geri
-          yüklenemez; yalnızca silinebilir.
+          {corruptBackupCount} yedek kullanılamıyor. Bu yedekler geri yüklenemez, yalnızca silinebilir.
         </div>
       ) : null}
 
@@ -257,8 +243,7 @@ export function ProgressBackupPanel() {
               <section className={styles.helpBox} key={backup.id}>
                 <strong>{formatBackupDate(backup.createdAt)}</strong>
                 <p>
-                  {backupProgressLabel(backup)} · {formatBytes(backup.sizeBytes)} ·{" "}
-                  {backup.integrityStatus === "ok" ? "Bütünlük: sağlam" : "Bütünlük: bozuk"}
+                  {backupProgressLabel(backup)} · {backup.integrityStatus === "ok" ? "Kullanılabilir" : "Kullanılamıyor"}
                 </p>
                 <div className={styles.actions}>
                   <Button
@@ -281,7 +266,7 @@ export function ProgressBackupPanel() {
                   <div role="group" aria-label="Yedek işlemi onayı">
                     <p>
                       {pendingAction.kind === "restore"
-                        ? "Bu yedek mevcut ilerlemenin yerine geçecek. İşlemden önce mevcut kayıt otomatik olarak güvenli bir yedeğe alınacak."
+                        ? "Bu yedek mevcut ilerlemenin yerine geçecek. Şu anki ilerlemen işlemden önce otomatik olarak saklanacak."
                         : "Bu yedek kalıcı olarak silinecek. Bu işlem geri alınamaz."}
                     </p>
                     <div className={styles.actions}>
@@ -313,13 +298,13 @@ export function ProgressBackupPanel() {
           })}
         </div>
       ) : status === "ready" ? (
-        <p className={styles.note}>Henüz kayıtlı ilerleme yedeği yok.</p>
+        <p className={styles.note}>Henüz kayıtlı yedek yok.</p>
       ) : null}
 
       <p className={styles.note}>
         {available
-          ? `En yeni ${overview?.maxBackupCount ?? 5} yedek korunur; toplam saklama alanı ${formatBytes(overview?.maxTotalBytes ?? 0)} ile sınırlıdır. Geri yüklemeden önce mevcut ilerleme otomatik olarak yedeklenir.`
-          : "Yedekleme yalnız Tauri masaüstü uygulamasında kullanılabilir. Tarayıcı ön izlemesi yerel dosya sistemine yazmaz."}
+          ? `En yeni ${overview?.maxBackupCount ?? 5} yedek otomatik olarak korunur.`
+          : "Yedekleme masaüstü uygulamasında kullanılabilir."}
       </p>
     </article>
   );
