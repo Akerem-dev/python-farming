@@ -1,11 +1,9 @@
 import { useEffect } from "react";
-import { appConfig } from "../../app/appConfig";
 import { useDiagnosticsStore } from "../../features/diagnostics/store/diagnosticsStore";
 import styles from "./StatusBar.module.css";
 
 export function StatusBar() {
   const status = useDiagnosticsStore((state) => state.status);
-  const snapshot = useDiagnosticsStore((state) => state.snapshot);
   const checkDiagnostics = useDiagnosticsStore((state) => state.checkDiagnostics);
 
   useEffect(() => {
@@ -14,16 +12,16 @@ export function StatusBar() {
 
   const runtimeLabel =
     status === "checking"
-      ? "Python kontrol ediliyor"
+      ? "Hazırlanıyor"
       : status === "ready"
-        ? "Python hazır"
+        ? "Kod çalıştırma hazır"
         : status === "unavailable"
-          ? "Tarayıcı ön izlemesi"
+          ? "Ön izleme modu"
           : status === "offline"
-            ? "Python bulunamadı"
+            ? "Kod çalıştırma kullanılamıyor"
             : status === "error"
-              ? "Runtime hatası"
-              : "Runtime bekliyor";
+              ? "Bir sorun oluştu"
+              : "Hazırlanıyor";
 
   return (
     <footer className={styles.root} aria-label="Uygulama durumu">
@@ -35,14 +33,8 @@ export function StatusBar() {
       >
         <i aria-hidden="true" /> {runtimeLabel}
       </span>
-      <span className={styles.runtimeVersion}>
-        {snapshot?.runtime?.version ?? "Yerel yorumlayıcı otomatik algılanır"}
-      </span>
       <span className={styles.spacer} />
-      <span className={styles.localNote}>İlerlemen güvenle bu cihazda saklanıyor</span>
-      <span className={styles.appVersion}>
-        {appConfig.name} v{snapshot?.appVersion ?? appConfig.version}
-      </span>
+      <span className={styles.localNote}>İlerlemen bu cihazda otomatik kaydediliyor</span>
     </footer>
   );
 }
