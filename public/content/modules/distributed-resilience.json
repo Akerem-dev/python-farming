@@ -1,1 +1,1263 @@
-{"moduleId":"distributed-resilience","lessons":[{"id":"expert.distributed.cap-tradeoff","moduleId":"distributed-resilience","order":1,"title":"Ağ bölünmesinde tutarlılık kararını ver","summary":"Dağıtık sistemler ağ bölünmesi sırasında tutarlılık ile erişilebilirlik arasında açık bir ürün kararı vermek zorundadır.","levelLabel":"Expert Distributed Systems","mode":"output-prediction","choice":{"prompt":"Ödeme bakiyesi gibi yanlış çift harcamaya izin verilemeyen bir sistemde ağ bölünmesi sırasında hangi davranış seçilmelidir?","options":[{"id":"consistency","label":"Tutarlılığı koru; bazı istekleri geçici olarak reddet"},{"id":"availability","label":"Her isteği kabul et; düğümler sonra uzlaşsın"},{"id":"latency","label":"Yalnız en hızlı düğümün cevabını kullan"},{"id":"random","label":"Her düğüm bağımsız karar versin"}]},"task":{"title":"Bölünme toleransı altında doğru önceliği seç","instructions":["Verinin finansal bakiye olduğunu düşün.","Ağ bölünmesinde iki düğümün farklı bakiye yazmasının etkisini değerlendir.","Doğru seçeneği işaretle."],"requirements":["Partition tolerance dağıtık ortamda göz ardı edilmemeli.","Yanlış çift harcama erişilebilirlikten daha kritik kabul edilmeli.","Seçim ürün gereksinimiyle gerekçelendirilmeli."],"sampleOutput":"Tutarlılığı koru; bazı istekleri geçici olarak reddet","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"oncelik = \"tutarlilik\"\nprint(oncelik)\n"},"hints":[{"title":"CAP bir menü değildir","body":"Ağ bölünmesi gerçekleştiğinde tutarlılık ve erişilebilirlik arasında davranış seçilir."},{"title":"İş riski","body":"Finansal bakiyede geçici reddetme, iki farklı doğru bakiye üretmekten daha güvenlidir."}],"validation":{"id":"expert.distributed.cap-tradeoff","title":"Ağ bölünmesinde tutarlılık kararını ver","xpReward":100,"timeoutMs":1000,"checks":[],"answer":{"kind":"choice","correctOptionId":"consistency"}}},{"id":"expert.distributed.retry-backoff","moduleId":"distributed-resilience","order":2,"title":"Üstel geri çekilme planı üret","summary":"Retry yalnız geçici hatalarda ve sınırlı deneme sayısıyla kullanılmalı; üstel backoff yeniden deneme fırtınasını azaltır.","levelLabel":"Expert Distributed Systems","mode":"code-completion","task":{"title":"Gecikme sürelerini tavan değerle sınırla","instructions":["gecikme_plani(deneme_sayisi, taban, tavan) fonksiyonunu tamamla.","İlk gecikme taban, sonraki gecikmeler taban * 2 ** sıra olmalı.","Her değeri tavan ile sınırla ve liste döndür."],"requirements":["time.sleep kullanılmamalı; yalnız plan hesaplanmalı.","Negatif veya sıfır deneme sayısında boş liste dönmeli.","Sonuç deterministik olmalı."],"sampleOutput":"[0.5, 1.0, 2.0, 2.0]","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"def gecikme_plani(deneme_sayisi, taban=0.5, tavan=2.0):\n    # Üstel gecikmeleri hesapla; gerçek uyku yapma.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(gecikme_plani(4))\n"},"hints":[{"title":"Üstel büyüme","body":"sıra 0 için taban * 2 ** 0 değeri tabandır."},{"title":"Tavan","body":"min(hesaplanan, tavan) ile gecikme üst sınırda tutulabilir."}],"validation":{"id":"expert.distributed.retry-backoff","title":"Üstel geri çekilme planı üret","xpReward":170,"timeoutMs":10000,"checks":[{"id":"function","kind":"function_definition","name":"gecikme_plani","minParams":1,"maxParams":3,"requireReturn":true,"file":"main.py","label":"gecikme_plani() tanımlandı","visibility":"visible"},{"id":"range","kind":"call","name":"range","file":"main.py","label":"Denemeler range ile üretiliyor","visibility":"visible"},{"id":"min","kind":"call","name":"min","file":"main.py","label":"Gecikme tavanla sınırlandı","visibility":"visible"},{"id":"power","kind":"file_content_regex","path":"main.py","pattern":"2\\s*\\*\\*","label":"Üstel backoff kullanıldı","visibility":"visible"},{"id":"no-sleep","kind":"file_content_regex","path":"main.py","pattern":"^(?![\\s\\S]*\\b(?:sleep|time\\.sleep)\\s*\\()[\\s\\S]*$","flags":"s","label":"Gerçek bekleme yapılmıyor","visibility":"hidden"},{"id":"cases","kind":"function_cases","name":"gecikme_plani","module":"main","cases":[{"args":[4,0.5,2.0],"expected":[0.5,1.0,2.0,2.0]},{"args":[3,1,10],"expected":[1,2,4]},{"args":[0,1,5],"expected":[]},{"args":[5,2,3],"expected":[2,3,3,3,3]}],"label":"Gizli backoff senaryoları","visibility":"hidden"}]}},{"id":"expert.distributed.idempotency","moduleId":"distributed-resilience","order":3,"title":"Tekrarlanan olayları idempotent işle","summary":"Idempotency anahtarı aynı komutun ağ tekrarları nedeniyle birden fazla kez uygulanmasını engeller.","levelLabel":"Expert Distributed Systems","mode":"code","task":{"title":"Aynı olay kimliğini yalnız bir kez uygula","instructions":["benzersiz_uygula(olaylar) fonksiyonunu yaz.","Her olay id ve deger alanları içerir.","İlk görülen id işlenmeli, tekrarlar tekrarlar listesine eklenmeli.","İşlenen id listesi, tekrar listesi ve toplam değeri sözlük olarak döndür."],"requirements":["Benzersizlik için set kullanılmalı.","Girdi sırası korunmalı.","Girdi listesi değiştirilmemeli."],"sampleOutput":"{'islenen': ['a', 'b'], 'tekrarlar': ['a'], 'toplam': 30}","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"def benzersiz_uygula(olaylar):\n    gorulen = set()\n    islenen = []\n    tekrarlar = []\n    toplam = 0\n    # Olayları idempotent biçimde uygula.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(benzersiz_uygula([\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]))\n"},"hints":[{"title":"İlk kontrol","body":"olay['id'] gorulen kümesindeyse tekrar olarak kaydet ve devam et."},{"title":"Yan etki sırası","body":"Toplama yalnız id ilk kez görüldüğünde yapılmalı."}],"validation":{"id":"expert.distributed.idempotency","title":"Tekrarlanan olayları idempotent işle","xpReward":180,"timeoutMs":10000,"checks":[{"id":"function","kind":"function_definition","name":"benzersiz_uygula","minParams":1,"maxParams":1,"requireReturn":true,"file":"main.py","label":"benzersiz_uygula() tanımlandı","visibility":"visible"},{"id":"set","kind":"call","name":"set","file":"main.py","label":"Kimlikler set ile tutuluyor","visibility":"visible"},{"id":"for","kind":"node_count","nodeName":"For","min":1,"max":1,"file":"main.py","label":"Olaylar tek geçişte işleniyor","visibility":"visible"},{"id":"cases","kind":"function_cases","name":"benzersiz_uygula","module":"main","cases":[{"args":[[{"id":"a","deger":10},{"id":"b","deger":20},{"id":"a","deger":99}]],"expected":{"islenen":["a","b"],"tekrarlar":["a"],"toplam":30}},{"args":[[]],"expected":{"islenen":[],"tekrarlar":[],"toplam":0}},{"args":[[{"id":"x","deger":5},{"id":"x","deger":5},{"id":"y","deger":-2}]],"expected":{"islenen":["x","y"],"tekrarlar":["x"],"toplam":3}}],"label":"Gizli idempotency senaryoları","visibility":"hidden"}]}},{"id":"expert.distributed.circuit-breaker","moduleId":"distributed-resilience","order":4,"title":"Circuit breaker durum makinesi kur","summary":"Circuit breaker art arda başarısız olan bağımlılığa istek göndermeyi keserek zincirleme çökmeyi sınırlar.","levelLabel":"Expert Distributed Systems","mode":"code","task":{"title":"Başarısızlık eşiğinde devreyi aç","instructions":["CircuitBreaker sınıfını esik parametresiyle oluştur.","kaydet(basarili) başarılıysa sayacı sıfırlayıp durumu kapalı yapmalı.","Başarısızlık sayısı eşiğe ulaştığında durum açık olmalı.","izin_ver() yalnız kapalı durumda True dönmeli."],"requirements":["durum alanı 'kapali' veya 'acik' olmalı.","Eşik en az 1 olmalı; aksi durumda ValueError yükseltilmeli.","Başarı devreyi yeniden kapatmalı."],"sampleOutput":"acik","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"class CircuitBreaker:\n    def __init__(self, esik=2):\n        # Eşiği doğrula ve başlangıç durumunu kur.\n        pass\n\n    def kaydet(self, basarili):\n        pass\n\n    def izin_ver(self):\n        pass\n\n\nif __name__ == \"__main__\":\n    devre = CircuitBreaker(2)\n    devre.kaydet(False)\n    devre.kaydet(False)\n    print(devre.durum)\n"},"hints":[{"title":"Ardışık hata","body":"Başarı geldiğinde başarısızlık sayacı sıfırlanır."},{"title":"Fail fast","body":"Devre açıkken izin_ver False dönerek uzak çağrıyı daha başlamadan durdurur."}],"validation":{"id":"expert.distributed.circuit-breaker","title":"Circuit breaker durum makinesi kur","xpReward":190,"timeoutMs":10000,"checks":[{"id":"class","kind":"class_definition","name":"CircuitBreaker","minInitParams":1,"maxInitParams":2,"requiredMethods":["kaydet","izin_ver"],"requiredAttributes":["esik","basarisizlik","durum"],"file":"main.py","label":"CircuitBreaker durumuyla tanımlandı","visibility":"visible"},{"id":"value-error","kind":"raise_exception","name":"ValueError","min":1,"file":"main.py","label":"Geçersiz eşik reddediliyor","visibility":"visible"},{"id":"cases","kind":"class_cases","name":"CircuitBreaker","module":"main","cases":[{"initArgs":[2],"actions":[{"kind":"call","name":"kaydet","args":[false]},{"kind":"call","name":"kaydet","args":[false]}],"observe":{"kind":"attribute","name":"durum"},"expected":"acik"},{"initArgs":[3],"actions":[{"kind":"call","name":"kaydet","args":[false]},{"kind":"call","name":"kaydet","args":[true]}],"observe":{"kind":"method","name":"izin_ver","args":[]},"expected":true},{"initArgs":[1],"observe":{"kind":"method","name":"izin_ver","args":[]},"expected":true}],"label":"Gizli circuit breaker senaryoları","visibility":"hidden"},{"id":"invalid","kind":"function_raises","name":"CircuitBreaker","module":"main","cases":[{"args":[0],"exception":"ValueError"}],"label":"Sıfır eşik reddediliyor","visibility":"hidden"}]}},{"id":"expert.distributed.health","moduleId":"distributed-resilience","order":5,"title":"Kısmi arızada servis sağlığını sınıflandır","summary":"Health check tek bir boolean yerine kritik ve ikincil bağımlılıkları ayırarak healthy, degraded veya down durumu üretmelidir.","levelLabel":"Expert Distributed Systems","mode":"code-completion","task":{"title":"Kritik ve ikincil servisleri ayrı değerlendir","instructions":["saglik_durumu(servisler) fonksiyonunu tamamla.","Her servis ad, kritik ve hazir alanları içerir.","Hazır olmayan kritik servis varsa down dön.","Yalnız ikincil servislerde hata varsa degraded; hepsi hazırsa healthy dön."],"requirements":["Boş servis listesi healthy kabul edilmeli.","Girdi listesi değiştirilmemeli.","Sonuç yalnız healthy, degraded veya down olmalı."],"sampleOutput":"degraded","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"def saglik_durumu(servisler):\n    # Kritik ve ikincil bağımlılıkları ayır.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(saglik_durumu([\n        {\"ad\": \"veritabani\", \"kritik\": True, \"hazir\": True},\n        {\"ad\": \"metrik\", \"kritik\": False, \"hazir\": False},\n    ]))\n"},"hints":[{"title":"Öncelik","body":"Önce hazır olmayan kritik servis var mı kontrol et."},{"title":"Kısmi işlev","body":"İkincil servis hatası ana kullanıcı görevini durdurmuyorsa degraded uygundur."}],"validation":{"id":"expert.distributed.health","title":"Kısmi arızada servis sağlığını sınıflandır","xpReward":190,"timeoutMs":10000,"checks":[{"id":"function","kind":"function_definition","name":"saglik_durumu","minParams":1,"maxParams":1,"requireReturn":true,"file":"main.py","label":"saglik_durumu() tanımlandı","visibility":"visible"},{"id":"any","kind":"call","name":"any","file":"main.py","label":"Servis kümeleri any ile değerlendiriliyor","visibility":"visible"},{"id":"cases","kind":"function_cases","name":"saglik_durumu","module":"main","cases":[{"args":[[]],"expected":"healthy"},{"args":[[{"ad":"db","kritik":true,"hazir":true}]],"expected":"healthy"},{"args":[[{"ad":"db","kritik":true,"hazir":false},{"ad":"cache","kritik":false,"hazir":true}]],"expected":"down"},{"args":[[{"ad":"db","kritik":true,"hazir":true},{"ad":"metric","kritik":false,"hazir":false}]],"expected":"degraded"}],"label":"Gizli health check senaryoları","visibility":"hidden"}]}},{"id":"expert.distributed.event-order","moduleId":"distributed-resilience","order":6,"title":"Sıra dışı olay tüketicisini düzelt","summary":"Dağıtık olaylar gecikebilir veya tekrar gelebilir; tüketici varlık başına son sürümü izleyerek eski olayları reddetmelidir.","levelLabel":"Expert Distributed Systems","mode":"debugging","debugging":{"errorType":"StaleEventApplied","symptom":"Geç gelen eski olay güncel bakiyeyi geri alıyor ve aynı olay iki kez uygulanıyor.","workflow":["Olayları geliş sırasıyla incele.","Her varlık için son uygulanan sürümü tut.","Sürümü eski veya eşit olayları atla.","Uygulanan olay kimliklerini benzersiz tut."]},"task":{"title":"Sürüm ve olay kimliği koruması ekle","instructions":["sirali_uygula(olaylar) fonksiyonunu düzelt.","Her olay id, varlik, surum ve deger taşır.","Aynı id tekrar uygulanmamalı.","Bir varlık için son sürümden küçük veya eşit olay atlanmalı.","Son durum ve uygulanan id listesi dönmeli."],"requirements":["Olaylar geliş sırasına göre değerlendirilmeli; global sort yapılmamalı.","Varlık başına sürüm tutulmalı.","Sonuç deterministik olmalı."],"sampleOutput":"{'durum': {'hesap': 20}, 'uygulanan': ['e2']}","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"def sirali_uygula(olaylar):\n    durum = {}\n    son_surumer = {}\n    uygulanan_idler = set()\n    uygulanan = []\n\n    for olay in olaylar:\n        # HATA: Eski ve tekrarlanan olaylar doğrudan uygulanıyor.\n        durum[olay[\"varlik\"]] = olay[\"deger\"]\n        uygulanan.append(olay[\"id\"])\n\n    return {\"durum\": durum, \"uygulanan\": uygulanan}\n\n\nif __name__ == \"__main__\":\n    print(sirali_uygula([\n        {\"id\": \"e2\", \"varlik\": \"hesap\", \"surum\": 2, \"deger\": 20},\n        {\"id\": \"e1\", \"varlik\": \"hesap\", \"surum\": 1, \"deger\": 10},\n    ]))\n"},"hints":[{"title":"İki koruma","body":"Hem olay id kümesini hem varlık başına son sürüm sözlüğünü kontrol et."},{"title":"Eşit sürüm","body":"Aynı sürüm de yeniden uygulanmamalı; yalnız daha büyük sürüm kabul edilir."}],"validation":{"id":"expert.distributed.event-order","title":"Sıra dışı olay tüketicisini düzelt","xpReward":210,"timeoutMs":10000,"checks":[{"id":"function","kind":"function_definition","name":"sirali_uygula","minParams":1,"maxParams":1,"requireReturn":true,"file":"main.py","label":"sirali_uygula() tanımlandı","visibility":"visible"},{"id":"set","kind":"call","name":"set","file":"main.py","label":"Olay kimlikleri set ile izleniyor","visibility":"visible"},{"id":"if-count","kind":"node_count","nodeName":"If","min":2,"file":"main.py","label":"Duplicate ve sürüm korumaları bulunuyor","visibility":"visible"},{"id":"cases","kind":"function_cases","name":"sirali_uygula","module":"main","cases":[{"args":[[{"id":"e2","varlik":"hesap","surum":2,"deger":20},{"id":"e1","varlik":"hesap","surum":1,"deger":10}]],"expected":{"durum":{"hesap":20},"uygulanan":["e2"]}},{"args":[[{"id":"a","varlik":"x","surum":1,"deger":5},{"id":"a","varlik":"x","surum":2,"deger":9},{"id":"b","varlik":"x","surum":2,"deger":9}]],"expected":{"durum":{"x":5},"uygulanan":["a"]}},{"args":[[{"id":"a","varlik":"x","surum":1,"deger":1},{"id":"b","varlik":"y","surum":1,"deger":2}]],"expected":{"durum":{"x":1,"y":2},"uygulanan":["a","b"]}}],"label":"Gizli sıra dışı olay senaryoları","visibility":"hidden"}]}},{"id":"expert.distributed.final","moduleId":"distributed-resilience","order":7,"title":"Dayanıklı Servis Orkestratörü geliştir","summary":"Final laboratuvarı retry, idempotency ve circuit breaker politikalarını tek deterministik çok dosyalı servis akışında birleştirir.","levelLabel":"Expert Distributed Systems","mode":"data-transformation","task":{"title":"Dayanıklı olay işleme raporu üret","instructions":["Olay, retry, idempotency ve circuit breaker katmanlarını tamamla.","Her benzersiz olay için en fazla üç servis sonucu değerlendir.","İki ardışık başarısız olaydan sonra devreyi aç ve sonraki olayları atla.","İşlenen, tekrar, başarısız, atlanan, toplam, devre ve deneme alanlarını içeren rapor döndür."],"requirements":["Aynı olay id yalnız bir kez uzak çağrıya gitmeli.","Devre açıkken servis sonucu tüketilmemeli.","Başarı circuit breaker hata sayacını sıfırlamalı.","Çıktı girdi sırasına göre deterministik olmalı."],"sampleOutput":"{'islenen': ['a', 'b'], 'tekrarlar': ['a'], 'basarisiz': [], 'atlanmis': [], 'toplam': 30, 'devre': 'kapali', 'deneme': 3}","stdinEnabled":false,"stdinPlaceholder":"Bu görev dışarıdan girdi istemiyor.","defaultStdin":""},"editor":{"filename":"main.py","starterCode":"from dayanikli_sistem import dayaniklilik_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]\n    sonuclar = {\"a\": [False, True], \"b\": [True]}\n    print(dayaniklilik_raporu(olaylar, sonuclar))\n","entrypoint":"main.py","files":[{"path":"main.py","starterCode":"from dayanikli_sistem import dayaniklilik_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]\n    sonuclar = {\"a\": [False, True], \"b\": [True]}\n    print(dayaniklilik_raporu(olaylar, sonuclar))\n"},{"path":"dayanikli_sistem/__init__.py","starterCode":"from .orchestrator import dayaniklilik_raporu\n\n__all__ = [\"dayaniklilik_raporu\"]\n"},{"path":"dayanikli_sistem/models.py","starterCode":"from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Olay:\n    id: str\n    deger: int\n"},{"path":"dayanikli_sistem/retry.py","starterCode":"class RetryPolicy:\n    def __init__(self, max_deneme=3):\n        if max_deneme < 1:\n            raise ValueError(\"max_deneme en az 1 olmalı\")\n        self.max_deneme = max_deneme\n\n    def calistir(self, sonuclar):\n        # En fazla max_deneme sonucu değerlendir ve (başarılı, deneme) döndür.\n        pass\n"},{"path":"dayanikli_sistem/idempotency.py","starterCode":"class IdempotencyRegistry:\n    def __init__(self):\n        self._kimlikler = set()\n\n    def icerir(self, olay_id):\n        pass\n\n    def ekle(self, olay_id):\n        pass\n"},{"path":"dayanikli_sistem/breaker.py","starterCode":"class CircuitBreaker:\n    def __init__(self, esik=2):\n        self.esik = esik\n        self.basarisizlik = 0\n        self.durum = \"kapali\"\n\n    def izin_ver(self):\n        pass\n\n    def basari(self):\n        pass\n\n    def hata(self):\n        pass\n"},{"path":"dayanikli_sistem/orchestrator.py","starterCode":"from .breaker import CircuitBreaker\nfrom .idempotency import IdempotencyRegistry\nfrom .models import Olay\nfrom .retry import RetryPolicy\n\n\ndef dayaniklilik_raporu(olaylar, servis_sonuclari, esik=2):\n    # Retry, idempotency ve circuit breaker akışını birleştir.\n    pass\n"}]},"hints":[{"title":"İşlem sırası","body":"Önce duplicate kontrolü, sonra circuit breaker izni, ardından retry çalıştırılmalı."},{"title":"Kayıt zamanı","body":"Olay kimliğini yalnız gerçekten deneme yapıldığında registry'ye ekle; devre nedeniyle atlanan olay yeniden denenebilir."},{"title":"Başarı ve hata","body":"Başarıda toplamı artırıp devreyi kapat; tüm retry denemeleri biterse başarısızlığı kaydet."}],"validation":{"id":"expert.distributed.final","title":"Dayanıklı Servis Orkestratörü geliştir","xpReward":330,"timeoutMs":10000,"checks":[{"id":"file-main-py","kind":"file_exists","path":"main.py","label":"main.py bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-__init__-py","kind":"file_exists","path":"dayanikli_sistem/__init__.py","label":"Paket giriş dosyası bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-models-py","kind":"file_exists","path":"dayanikli_sistem/models.py","label":"Olay modeli bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-retry-py","kind":"file_exists","path":"dayanikli_sistem/retry.py","label":"Retry politikası bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-idempotency-py","kind":"file_exists","path":"dayanikli_sistem/idempotency.py","label":"Idempotency kaydı bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-breaker-py","kind":"file_exists","path":"dayanikli_sistem/breaker.py","label":"Circuit breaker bulundu","visibility":"visible"},{"id":"file-dayanikli_sistem-orchestrator-py","kind":"file_exists","path":"dayanikli_sistem/orchestrator.py","label":"Orkestratör bulundu","visibility":"visible"},{"id":"frozen-event","kind":"file_content_regex","path":"dayanikli_sistem/models.py","pattern":"@dataclass\\s*\\(\\s*frozen\\s*=\\s*True\\s*\\)","label":"Olay immutable dataclass olarak tanımlandı","visibility":"visible"},{"id":"retry-class","kind":"class_definition","name":"RetryPolicy","minInitParams":1,"maxInitParams":2,"requiredMethods":["calistir"],"requiredAttributes":["max_deneme"],"file":"dayanikli_sistem/retry.py","label":"RetryPolicy tanımlandı","visibility":"visible"},{"id":"registry-class","kind":"class_definition","name":"IdempotencyRegistry","minInitParams":0,"maxInitParams":1,"requiredMethods":["icerir","ekle"],"requiredAttributes":["_kimlikler"],"file":"dayanikli_sistem/idempotency.py","label":"IdempotencyRegistry tanımlandı","visibility":"visible"},{"id":"breaker-class","kind":"class_definition","name":"CircuitBreaker","minInitParams":1,"maxInitParams":2,"requiredMethods":["izin_ver","basari","hata"],"requiredAttributes":["esik","basarisizlik","durum"],"file":"dayanikli_sistem/breaker.py","label":"CircuitBreaker tanımlandı","visibility":"visible"},{"id":"orchestrator-def","kind":"function_definition","name":"dayaniklilik_raporu","minParams":2,"maxParams":3,"requireReturn":true,"file":"dayanikli_sistem/orchestrator.py","label":"dayaniklilik_raporu() tanımlandı","visibility":"visible"},{"id":"retry-call","kind":"call","name":"calistir","file":"dayanikli_sistem/orchestrator.py","label":"Retry politikası çalıştırılıyor","visibility":"visible"},{"id":"allow-call","kind":"call","name":"izin_ver","file":"dayanikli_sistem/orchestrator.py","label":"Circuit breaker izin kontrolü yapılıyor","visibility":"visible"},{"id":"report-cases","kind":"function_cases","name":"dayaniklilik_raporu","module":"dayanikli_sistem","cases":[{"args":[[{"id":"a","deger":10},{"id":"b","deger":20},{"id":"a","deger":99}],{"a":[false,true],"b":[true]}],"expected":{"islenen":["a","b"],"tekrarlar":["a"],"basarisiz":[],"atlanmis":[],"toplam":30,"devre":"kapali","deneme":3}},{"args":[[{"id":"a","deger":1},{"id":"b","deger":2},{"id":"c","deger":3},{"id":"d","deger":4}],{"a":[false,false,false],"b":[false,false,false],"c":[true],"d":[true]}],"expected":{"islenen":[],"tekrarlar":[],"basarisiz":["a","b"],"atlanmis":["c","d"],"toplam":0,"devre":"acik","deneme":6}},{"args":[[{"id":"x","deger":5},{"id":"x","deger":5},{"id":"y","deger":7}],{"x":[true],"y":[false,true]}],"expected":{"islenen":["x","y"],"tekrarlar":["x"],"basarisiz":[],"atlanmis":[],"toplam":12,"devre":"kapali","deneme":3}}],"label":"Gizli dayanıklılık orkestrasyonu senaryoları","visibility":"hidden"},{"id":"no-sleep","kind":"file_content_regex","path":"dayanikli_sistem/retry.py","pattern":"^(?![\\s\\S]*\\b(?:sleep|time\\.sleep)\\s*\\()[\\s\\S]*$","flags":"s","label":"Simülasyon gerçek uyku yapmıyor","visibility":"hidden"}]},"dataTransformation":{"sourceShape":"Olay listesi ve olay kimliğine göre deterministik servis sonucu dizileri","targetShape":"Retry, idempotency ve circuit breaker kararlarını açıklayan dayanıklılık raporu","rules":["Aynı id ikinci kez işlenmemeli.","Her olay en fazla üç kez denenmeli.","Circuit breaker iki ardışık başarısız olayda açılmalı.","Gerçek ağ veya sleep çağrısı yapılmamalı."],"workflow":["Olay kimliğini idempotency registry ile kontrol et.","Circuit breaker iznini değerlendir.","Retry politikasını servis sonuçları üzerinde çalıştır.","Başarı veya hata durumunu devreye kaydet ve raporu güncelle."],"projectTitle":"Dayanıklı Servis Orkestratörü","deliverables":["Immutable olay modeli","Retry ve circuit breaker politikaları","Idempotency registry","Deterministik çok dosyalı orkestrasyon raporu"]}}]}
+{
+  "moduleId": "distributed-resilience",
+  "lessons": [
+    {
+      "id": "expert.distributed.cap-tradeoff",
+      "moduleId": "distributed-resilience",
+      "order": 1,
+      "title": "Ağ bölünmesinde tutarlılık kararını ver",
+      "summary": "Dağıtık sistemler ağ bölünmesi sırasında tutarlılık ile erişilebilirlik arasında açık bir ürün kararı vermek zorundadır.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "output-prediction",
+      "choice": {
+        "prompt": "Ödeme bakiyesi gibi yanlış çift harcamaya izin verilemeyen bir sistemde ağ bölünmesi sırasında hangi davranış seçilmelidir?",
+        "options": [
+          {
+            "id": "consistency",
+            "label": "Tutarlılığı koru; bazı istekleri geçici olarak reddet"
+          },
+          {
+            "id": "availability",
+            "label": "Her isteği kabul et; düğümler sonra uzlaşsın"
+          },
+          {
+            "id": "latency",
+            "label": "Yalnız en hızlı düğümün cevabını kullan"
+          },
+          {
+            "id": "random",
+            "label": "Her düğüm bağımsız karar versin"
+          }
+        ]
+      },
+      "task": {
+        "title": "Bölünme toleransı altında doğru önceliği seç",
+        "instructions": [
+          "Verinin finansal bakiye olduğunu düşün.",
+          "Ağ bölünmesinde iki düğümün farklı bakiye yazmasının etkisini değerlendir.",
+          "Doğru seçeneği işaretle."
+        ],
+        "requirements": [
+          "Partition tolerance dağıtık ortamda göz ardı edilmemeli.",
+          "Yanlış çift harcama erişilebilirlikten daha kritik kabul edilmeli.",
+          "Seçim ürün gereksinimiyle gerekçelendirilmeli."
+        ],
+        "sampleOutput": "Tutarlılığı koru; bazı istekleri geçici olarak reddet",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "oncelik = \"tutarlilik\"\nprint(oncelik)\n"
+      },
+      "hints": [
+        {
+          "title": "CAP bir menü değildir",
+          "body": "Ağ bölünmesi gerçekleştiğinde tutarlılık ve erişilebilirlik arasında davranış seçilir."
+        },
+        {
+          "title": "İş riski",
+          "body": "Finansal bakiyede geçici reddetme, iki farklı doğru bakiye üretmekten daha güvenlidir."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.cap-tradeoff",
+        "title": "Ağ bölünmesinde tutarlılık kararını ver",
+        "xpReward": 100,
+        "timeoutMs": 1000,
+        "checks": [],
+        "answer": {
+          "kind": "choice",
+          "correctOptionId": "consistency"
+        }
+      }
+    },
+    {
+      "id": "expert.distributed.retry-backoff",
+      "moduleId": "distributed-resilience",
+      "order": 2,
+      "title": "Üstel geri çekilme planı üret",
+      "summary": "Retry yalnız geçici hatalarda ve sınırlı deneme sayısıyla kullanılmalı; üstel backoff yeniden deneme fırtınasını azaltır.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "code-completion",
+      "task": {
+        "title": "Gecikme sürelerini tavan değerle sınırla",
+        "instructions": [
+          "gecikme_plani(deneme_sayisi, taban, tavan) fonksiyonunu tamamla.",
+          "İlk gecikme taban, sonraki gecikmeler taban * 2 ** sıra olmalı.",
+          "Her değeri tavan ile sınırla ve liste döndür."
+        ],
+        "requirements": [
+          "time.sleep kullanılmamalı; yalnız plan hesaplanmalı.",
+          "Negatif veya sıfır deneme sayısında boş liste dönmeli.",
+          "Sonuç deterministik olmalı."
+        ],
+        "sampleOutput": "[0.5, 1.0, 2.0, 2.0]",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def gecikme_plani(deneme_sayisi, taban=0.5, tavan=2.0):\n    # Üstel gecikmeleri hesapla; gerçek uyku yapma.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(gecikme_plani(4))\n"
+      },
+      "hints": [
+        {
+          "title": "Üstel büyüme",
+          "body": "sıra 0 için taban * 2 ** 0 değeri tabandır."
+        },
+        {
+          "title": "Tavan",
+          "body": "min(hesaplanan, tavan) ile gecikme üst sınırda tutulabilir."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.retry-backoff",
+        "title": "Üstel geri çekilme planı üret",
+        "xpReward": 170,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "gecikme_plani",
+            "minParams": 1,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "gecikme_plani() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "range",
+            "kind": "call",
+            "name": "range",
+            "file": "main.py",
+            "label": "Denemeler range ile üretiliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "min",
+            "kind": "call",
+            "name": "min",
+            "file": "main.py",
+            "label": "Gecikme tavanla sınırlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "power",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "2\\s*\\*\\*",
+            "label": "Üstel backoff kullanıldı",
+            "visibility": "visible"
+          },
+          {
+            "id": "no-sleep",
+            "kind": "file_content_regex",
+            "path": "main.py",
+            "pattern": "^(?![\\s\\S]*\\b(?:sleep|time\\.sleep)\\s*\\()[\\s\\S]*$",
+            "flags": "s",
+            "label": "Gerçek bekleme yapılmıyor",
+            "visibility": "hidden"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "gecikme_plani",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  4,
+                  0.5,
+                  2.0
+                ],
+                "expected": [
+                  0.5,
+                  1.0,
+                  2.0,
+                  2.0
+                ]
+              },
+              {
+                "args": [
+                  3,
+                  1,
+                  10
+                ],
+                "expected": [
+                  1,
+                  2,
+                  4
+                ]
+              },
+              {
+                "args": [
+                  0,
+                  1,
+                  5
+                ],
+                "expected": []
+              },
+              {
+                "args": [
+                  5,
+                  2,
+                  3
+                ],
+                "expected": [
+                  2,
+                  3,
+                  3,
+                  3,
+                  3
+                ]
+              }
+            ],
+            "label": "Gizli backoff senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.distributed.idempotency",
+      "moduleId": "distributed-resilience",
+      "order": 3,
+      "title": "Tekrarlanan olayları idempotent işle",
+      "summary": "Idempotency anahtarı aynı komutun ağ tekrarları nedeniyle birden fazla kez uygulanmasını engeller.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "code",
+      "task": {
+        "title": "Aynı olay kimliğini yalnız bir kez uygula",
+        "instructions": [
+          "benzersiz_uygula(olaylar) fonksiyonunu yaz.",
+          "Her olay id ve deger alanları içerir.",
+          "İlk görülen id işlenmeli, tekrarlar tekrarlar listesine eklenmeli.",
+          "İşlenen id listesi, tekrar listesi ve toplam değeri sözlük olarak döndür."
+        ],
+        "requirements": [
+          "Benzersizlik için set kullanılmalı.",
+          "Girdi sırası korunmalı.",
+          "Girdi listesi değiştirilmemeli."
+        ],
+        "sampleOutput": "{'islenen': ['a', 'b'], 'tekrarlar': ['a'], 'toplam': 30}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def benzersiz_uygula(olaylar):\n    gorulen = set()\n    islenen = []\n    tekrarlar = []\n    toplam = 0\n    # Olayları idempotent biçimde uygula.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(benzersiz_uygula([\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]))\n"
+      },
+      "hints": [
+        {
+          "title": "İlk kontrol",
+          "body": "olay['id'] gorulen kümesindeyse tekrar olarak kaydet ve devam et."
+        },
+        {
+          "title": "Yan etki sırası",
+          "body": "Toplama yalnız id ilk kez görüldüğünde yapılmalı."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.idempotency",
+        "title": "Tekrarlanan olayları idempotent işle",
+        "xpReward": 180,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "benzersiz_uygula",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "benzersiz_uygula() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "set",
+            "kind": "call",
+            "name": "set",
+            "file": "main.py",
+            "label": "Kimlikler set ile tutuluyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "for",
+            "kind": "node_count",
+            "nodeName": "For",
+            "min": 1,
+            "max": 1,
+            "file": "main.py",
+            "label": "Olaylar tek geçişte işleniyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "benzersiz_uygula",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "deger": 10
+                    },
+                    {
+                      "id": "b",
+                      "deger": 20
+                    },
+                    {
+                      "id": "a",
+                      "deger": 99
+                    }
+                  ]
+                ],
+                "expected": {
+                  "islenen": [
+                    "a",
+                    "b"
+                  ],
+                  "tekrarlar": [
+                    "a"
+                  ],
+                  "toplam": 30
+                }
+              },
+              {
+                "args": [
+                  []
+                ],
+                "expected": {
+                  "islenen": [],
+                  "tekrarlar": [],
+                  "toplam": 0
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "x",
+                      "deger": 5
+                    },
+                    {
+                      "id": "x",
+                      "deger": 5
+                    },
+                    {
+                      "id": "y",
+                      "deger": -2
+                    }
+                  ]
+                ],
+                "expected": {
+                  "islenen": [
+                    "x",
+                    "y"
+                  ],
+                  "tekrarlar": [
+                    "x"
+                  ],
+                  "toplam": 3
+                }
+              }
+            ],
+            "label": "Gizli idempotency senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.distributed.circuit-breaker",
+      "moduleId": "distributed-resilience",
+      "order": 4,
+      "title": "Circuit breaker durum makinesi kur",
+      "summary": "Circuit breaker art arda başarısız olan bağımlılığa istek göndermeyi keserek zincirleme çökmeyi sınırlar.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "code",
+      "task": {
+        "title": "Başarısızlık eşiğinde devreyi aç",
+        "instructions": [
+          "CircuitBreaker sınıfını esik parametresiyle oluştur.",
+          "kaydet(basarili) başarılıysa sayacı sıfırlayıp durumu kapalı yapmalı.",
+          "Başarısızlık sayısı eşiğe ulaştığında durum açık olmalı.",
+          "izin_ver() yalnız kapalı durumda True dönmeli."
+        ],
+        "requirements": [
+          "durum alanı 'kapali' veya 'acik' olmalı.",
+          "Eşik en az 1 olmalı; aksi durumda ValueError yükseltilmeli.",
+          "Başarı devreyi yeniden kapatmalı."
+        ],
+        "sampleOutput": "acik",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "class CircuitBreaker:\n    def __init__(self, esik=2):\n        # Eşiği doğrula ve başlangıç durumunu kur.\n        pass\n\n    def kaydet(self, basarili):\n        pass\n\n    def izin_ver(self):\n        pass\n\n\nif __name__ == \"__main__\":\n    devre = CircuitBreaker(2)\n    devre.kaydet(False)\n    devre.kaydet(False)\n    print(devre.durum)\n"
+      },
+      "hints": [
+        {
+          "title": "Ardışık hata",
+          "body": "Başarı geldiğinde başarısızlık sayacı sıfırlanır."
+        },
+        {
+          "title": "Fail fast",
+          "body": "Devre açıkken izin_ver False dönerek uzak çağrıyı daha başlamadan durdurur."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.circuit-breaker",
+        "title": "Circuit breaker durum makinesi kur",
+        "xpReward": 190,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "class",
+            "kind": "class_definition",
+            "name": "CircuitBreaker",
+            "minInitParams": 1,
+            "maxInitParams": 2,
+            "requiredMethods": [
+              "kaydet",
+              "izin_ver"
+            ],
+            "requiredAttributes": [
+              "esik",
+              "basarisizlik",
+              "durum"
+            ],
+            "file": "main.py",
+            "label": "CircuitBreaker durumuyla tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "value-error",
+            "kind": "raise_exception",
+            "name": "ValueError",
+            "min": 1,
+            "file": "main.py",
+            "label": "Geçersiz eşik reddediliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "class_cases",
+            "name": "CircuitBreaker",
+            "module": "main",
+            "cases": [
+              {
+                "initArgs": [
+                  2
+                ],
+                "actions": [
+                  {
+                    "kind": "call",
+                    "name": "kaydet",
+                    "args": [
+                      false
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "name": "kaydet",
+                    "args": [
+                      false
+                    ]
+                  }
+                ],
+                "observe": {
+                  "kind": "attribute",
+                  "name": "durum"
+                },
+                "expected": "acik"
+              },
+              {
+                "initArgs": [
+                  3
+                ],
+                "actions": [
+                  {
+                    "kind": "call",
+                    "name": "kaydet",
+                    "args": [
+                      false
+                    ]
+                  },
+                  {
+                    "kind": "call",
+                    "name": "kaydet",
+                    "args": [
+                      true
+                    ]
+                  }
+                ],
+                "observe": {
+                  "kind": "method",
+                  "name": "izin_ver",
+                  "args": []
+                },
+                "expected": true
+              },
+              {
+                "initArgs": [
+                  1
+                ],
+                "observe": {
+                  "kind": "method",
+                  "name": "izin_ver",
+                  "args": []
+                },
+                "expected": true
+              }
+            ],
+            "label": "Gizli circuit breaker senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "invalid",
+            "kind": "function_raises",
+            "name": "CircuitBreaker",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  0
+                ],
+                "exception": "ValueError"
+              }
+            ],
+            "label": "Sıfır eşik reddediliyor",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.distributed.health",
+      "moduleId": "distributed-resilience",
+      "order": 5,
+      "title": "Kısmi arızada servis sağlığını sınıflandır",
+      "summary": "Health check tek bir boolean yerine kritik ve ikincil bağımlılıkları ayırarak healthy, degraded veya down durumu üretmelidir.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "code-completion",
+      "task": {
+        "title": "Kritik ve ikincil servisleri ayrı değerlendir",
+        "instructions": [
+          "saglik_durumu(servisler) fonksiyonunu tamamla.",
+          "Her servis ad, kritik ve hazir alanları içerir.",
+          "Hazır olmayan kritik servis varsa down dön.",
+          "Yalnız ikincil servislerde hata varsa degraded; hepsi hazırsa healthy dön."
+        ],
+        "requirements": [
+          "Boş servis listesi healthy kabul edilmeli.",
+          "Girdi listesi değiştirilmemeli.",
+          "Sonuç yalnız healthy, degraded veya down olmalı."
+        ],
+        "sampleOutput": "degraded",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def saglik_durumu(servisler):\n    # Kritik ve ikincil bağımlılıkları ayır.\n    pass\n\n\nif __name__ == \"__main__\":\n    print(saglik_durumu([\n        {\"ad\": \"veritabani\", \"kritik\": True, \"hazir\": True},\n        {\"ad\": \"metrik\", \"kritik\": False, \"hazir\": False},\n    ]))\n"
+      },
+      "hints": [
+        {
+          "title": "Öncelik",
+          "body": "Önce hazır olmayan kritik servis var mı kontrol et."
+        },
+        {
+          "title": "Kısmi işlev",
+          "body": "İkincil servis hatası ana kullanıcı görevini durdurmuyorsa degraded uygundur."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.health",
+        "title": "Kısmi arızada servis sağlığını sınıflandır",
+        "xpReward": 190,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "saglik_durumu",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "saglik_durumu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "any",
+            "kind": "call",
+            "name": "any",
+            "file": "main.py",
+            "label": "Servis kümeleri any ile değerlendiriliyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "saglik_durumu",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  []
+                ],
+                "expected": "healthy"
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "db",
+                      "kritik": true,
+                      "hazir": true
+                    }
+                  ]
+                ],
+                "expected": "healthy"
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "db",
+                      "kritik": true,
+                      "hazir": false
+                    },
+                    {
+                      "ad": "cache",
+                      "kritik": false,
+                      "hazir": true
+                    }
+                  ]
+                ],
+                "expected": "down"
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "ad": "db",
+                      "kritik": true,
+                      "hazir": true
+                    },
+                    {
+                      "ad": "metric",
+                      "kritik": false,
+                      "hazir": false
+                    }
+                  ]
+                ],
+                "expected": "degraded"
+              }
+            ],
+            "label": "Gizli health check senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.distributed.event-order",
+      "moduleId": "distributed-resilience",
+      "order": 6,
+      "title": "Sıra dışı olay tüketicisini düzelt",
+      "summary": "Dağıtık olaylar gecikebilir veya tekrar gelebilir; tüketici varlık başına son sürümü izleyerek eski olayları reddetmelidir.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "debugging",
+      "debugging": {
+        "errorType": "StaleEventApplied",
+        "symptom": "Geç gelen eski olay güncel bakiyeyi geri alıyor ve aynı olay iki kez uygulanıyor.",
+        "workflow": [
+          "Olayları geliş sırasıyla incele.",
+          "Her varlık için son uygulanan sürümü tut.",
+          "Sürümü eski veya eşit olayları atla.",
+          "Uygulanan olay kimliklerini benzersiz tut."
+        ]
+      },
+      "task": {
+        "title": "Sürüm ve olay kimliği koruması ekle",
+        "instructions": [
+          "sirali_uygula(olaylar) fonksiyonunu düzelt.",
+          "Her olay id, varlik, surum ve deger taşır.",
+          "Aynı id tekrar uygulanmamalı.",
+          "Bir varlık için son sürümden küçük veya eşit olay atlanmalı.",
+          "Son durum ve uygulanan id listesi dönmeli."
+        ],
+        "requirements": [
+          "Olaylar geliş sırasına göre değerlendirilmeli; global sort yapılmamalı.",
+          "Varlık başına sürüm tutulmalı.",
+          "Sonuç deterministik olmalı."
+        ],
+        "sampleOutput": "{'durum': {'hesap': 20}, 'uygulanan': ['e2']}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "def sirali_uygula(olaylar):\n    durum = {}\n    son_surumer = {}\n    uygulanan_idler = set()\n    uygulanan = []\n\n    for olay in olaylar:\n        # HATA: Eski ve tekrarlanan olaylar doğrudan uygulanıyor.\n        durum[olay[\"varlik\"]] = olay[\"deger\"]\n        uygulanan.append(olay[\"id\"])\n\n    return {\"durum\": durum, \"uygulanan\": uygulanan}\n\n\nif __name__ == \"__main__\":\n    print(sirali_uygula([\n        {\"id\": \"e2\", \"varlik\": \"hesap\", \"surum\": 2, \"deger\": 20},\n        {\"id\": \"e1\", \"varlik\": \"hesap\", \"surum\": 1, \"deger\": 10},\n    ]))\n"
+      },
+      "hints": [
+        {
+          "title": "İki koruma",
+          "body": "Hem olay id kümesini hem varlık başına son sürüm sözlüğünü kontrol et."
+        },
+        {
+          "title": "Eşit sürüm",
+          "body": "Aynı sürüm de yeniden uygulanmamalı; yalnız daha büyük sürüm kabul edilir."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.event-order",
+        "title": "Sıra dışı olay tüketicisini düzelt",
+        "xpReward": 210,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "function",
+            "kind": "function_definition",
+            "name": "sirali_uygula",
+            "minParams": 1,
+            "maxParams": 1,
+            "requireReturn": true,
+            "file": "main.py",
+            "label": "sirali_uygula() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "set",
+            "kind": "call",
+            "name": "set",
+            "file": "main.py",
+            "label": "Olay kimlikleri set ile izleniyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "if-count",
+            "kind": "node_count",
+            "nodeName": "If",
+            "min": 2,
+            "file": "main.py",
+            "label": "Duplicate ve sürüm korumaları bulunuyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "cases",
+            "kind": "function_cases",
+            "name": "sirali_uygula",
+            "module": "main",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "e2",
+                      "varlik": "hesap",
+                      "surum": 2,
+                      "deger": 20
+                    },
+                    {
+                      "id": "e1",
+                      "varlik": "hesap",
+                      "surum": 1,
+                      "deger": 10
+                    }
+                  ]
+                ],
+                "expected": {
+                  "durum": {
+                    "hesap": 20
+                  },
+                  "uygulanan": [
+                    "e2"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "varlik": "x",
+                      "surum": 1,
+                      "deger": 5
+                    },
+                    {
+                      "id": "a",
+                      "varlik": "x",
+                      "surum": 2,
+                      "deger": 9
+                    },
+                    {
+                      "id": "b",
+                      "varlik": "x",
+                      "surum": 2,
+                      "deger": 9
+                    }
+                  ]
+                ],
+                "expected": {
+                  "durum": {
+                    "x": 9
+                  },
+                  "uygulanan": [
+                    "a",
+                    "b"
+                  ]
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "varlik": "x",
+                      "surum": 1,
+                      "deger": 1
+                    },
+                    {
+                      "id": "b",
+                      "varlik": "y",
+                      "surum": 1,
+                      "deger": 2
+                    }
+                  ]
+                ],
+                "expected": {
+                  "durum": {
+                    "x": 1,
+                    "y": 2
+                  },
+                  "uygulanan": [
+                    "a",
+                    "b"
+                  ]
+                }
+              }
+            ],
+            "label": "Gizli sıra dışı olay senaryoları",
+            "visibility": "hidden"
+          }
+        ]
+      }
+    },
+    {
+      "id": "expert.distributed.final",
+      "moduleId": "distributed-resilience",
+      "order": 7,
+      "title": "Dayanıklı Servis Orkestratörü geliştir",
+      "summary": "Final laboratuvarı retry, idempotency ve circuit breaker politikalarını tek deterministik çok dosyalı servis akışında birleştirir.",
+      "levelLabel": "Expert Distributed Systems",
+      "mode": "data-transformation",
+      "task": {
+        "title": "Dayanıklı olay işleme raporu üret",
+        "instructions": [
+          "Olay, retry, idempotency ve circuit breaker katmanlarını tamamla.",
+          "Her benzersiz olay için en fazla üç servis sonucu değerlendir.",
+          "İki ardışık başarısız olaydan sonra devreyi aç ve sonraki olayları atla.",
+          "İşlenen, tekrar, başarısız, atlanan, toplam, devre ve deneme alanlarını içeren rapor döndür."
+        ],
+        "requirements": [
+          "Aynı olay id yalnız bir kez uzak çağrıya gitmeli.",
+          "Devre açıkken servis sonucu tüketilmemeli.",
+          "Başarı circuit breaker hata sayacını sıfırlamalı.",
+          "Çıktı girdi sırasına göre deterministik olmalı."
+        ],
+        "sampleOutput": "{'islenen': ['a', 'b'], 'tekrarlar': ['a'], 'basarisiz': [], 'atlanmis': [], 'toplam': 30, 'devre': 'kapali', 'deneme': 3}",
+        "stdinEnabled": false,
+        "stdinPlaceholder": "Bu görev dışarıdan girdi istemiyor.",
+        "defaultStdin": ""
+      },
+      "editor": {
+        "filename": "main.py",
+        "starterCode": "from dayanikli_sistem import dayaniklilik_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]\n    sonuclar = {\"a\": [False, True], \"b\": [True]}\n    print(dayaniklilik_raporu(olaylar, sonuclar))\n",
+        "entrypoint": "main.py",
+        "files": [
+          {
+            "path": "main.py",
+            "starterCode": "from dayanikli_sistem import dayaniklilik_raporu\n\n\nif __name__ == \"__main__\":\n    olaylar = [\n        {\"id\": \"a\", \"deger\": 10},\n        {\"id\": \"b\", \"deger\": 20},\n        {\"id\": \"a\", \"deger\": 99},\n    ]\n    sonuclar = {\"a\": [False, True], \"b\": [True]}\n    print(dayaniklilik_raporu(olaylar, sonuclar))\n"
+          },
+          {
+            "path": "dayanikli_sistem/__init__.py",
+            "starterCode": "from .orchestrator import dayaniklilik_raporu\n\n__all__ = [\"dayaniklilik_raporu\"]\n"
+          },
+          {
+            "path": "dayanikli_sistem/models.py",
+            "starterCode": "from dataclasses import dataclass\n\n\n@dataclass(frozen=True)\nclass Olay:\n    id: str\n    deger: int\n"
+          },
+          {
+            "path": "dayanikli_sistem/retry.py",
+            "starterCode": "class RetryPolicy:\n    def __init__(self, max_deneme=3):\n        if max_deneme < 1:\n            raise ValueError(\"max_deneme en az 1 olmalı\")\n        self.max_deneme = max_deneme\n\n    def calistir(self, sonuclar):\n        # En fazla max_deneme sonucu değerlendir ve (başarılı, deneme) döndür.\n        pass\n"
+          },
+          {
+            "path": "dayanikli_sistem/idempotency.py",
+            "starterCode": "class IdempotencyRegistry:\n    def __init__(self):\n        self._kimlikler = set()\n\n    def icerir(self, olay_id):\n        pass\n\n    def ekle(self, olay_id):\n        pass\n"
+          },
+          {
+            "path": "dayanikli_sistem/breaker.py",
+            "starterCode": "class CircuitBreaker:\n    def __init__(self, esik=2):\n        self.esik = esik\n        self.basarisizlik = 0\n        self.durum = \"kapali\"\n\n    def izin_ver(self):\n        pass\n\n    def basari(self):\n        pass\n\n    def hata(self):\n        pass\n"
+          },
+          {
+            "path": "dayanikli_sistem/orchestrator.py",
+            "starterCode": "from .breaker import CircuitBreaker\nfrom .idempotency import IdempotencyRegistry\nfrom .models import Olay\nfrom .retry import RetryPolicy\n\n\ndef dayaniklilik_raporu(olaylar, servis_sonuclari, esik=2):\n    # Retry, idempotency ve circuit breaker akışını birleştir.\n    pass\n"
+          }
+        ]
+      },
+      "hints": [
+        {
+          "title": "İşlem sırası",
+          "body": "Önce duplicate kontrolü, sonra circuit breaker izni, ardından retry çalıştırılmalı."
+        },
+        {
+          "title": "Kayıt zamanı",
+          "body": "Olay kimliğini yalnız gerçekten deneme yapıldığında registry'ye ekle; devre nedeniyle atlanan olay yeniden denenebilir."
+        },
+        {
+          "title": "Başarı ve hata",
+          "body": "Başarıda toplamı artırıp devreyi kapat; tüm retry denemeleri biterse başarısızlığı kaydet."
+        }
+      ],
+      "validation": {
+        "id": "expert.distributed.final",
+        "title": "Dayanıklı Servis Orkestratörü geliştir",
+        "xpReward": 330,
+        "timeoutMs": 10000,
+        "checks": [
+          {
+            "id": "file-main-py",
+            "kind": "file_exists",
+            "path": "main.py",
+            "label": "main.py bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-__init__-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/__init__.py",
+            "label": "Paket giriş dosyası bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-models-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/models.py",
+            "label": "Olay modeli bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-retry-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/retry.py",
+            "label": "Retry politikası bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-idempotency-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/idempotency.py",
+            "label": "Idempotency kaydı bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-breaker-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/breaker.py",
+            "label": "Circuit breaker bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "file-dayanikli_sistem-orchestrator-py",
+            "kind": "file_exists",
+            "path": "dayanikli_sistem/orchestrator.py",
+            "label": "Orkestratör bulundu",
+            "visibility": "visible"
+          },
+          {
+            "id": "frozen-event",
+            "kind": "file_content_regex",
+            "path": "dayanikli_sistem/models.py",
+            "pattern": "@dataclass\\s*\\(\\s*frozen\\s*=\\s*True\\s*\\)",
+            "label": "Olay immutable dataclass olarak tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-class",
+            "kind": "class_definition",
+            "name": "RetryPolicy",
+            "minInitParams": 1,
+            "maxInitParams": 2,
+            "requiredMethods": [
+              "calistir"
+            ],
+            "requiredAttributes": [
+              "max_deneme"
+            ],
+            "file": "dayanikli_sistem/retry.py",
+            "label": "RetryPolicy tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "registry-class",
+            "kind": "class_definition",
+            "name": "IdempotencyRegistry",
+            "minInitParams": 0,
+            "maxInitParams": 1,
+            "requiredMethods": [
+              "icerir",
+              "ekle"
+            ],
+            "requiredAttributes": [
+              "_kimlikler"
+            ],
+            "file": "dayanikli_sistem/idempotency.py",
+            "label": "IdempotencyRegistry tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "breaker-class",
+            "kind": "class_definition",
+            "name": "CircuitBreaker",
+            "minInitParams": 1,
+            "maxInitParams": 2,
+            "requiredMethods": [
+              "izin_ver",
+              "basari",
+              "hata"
+            ],
+            "requiredAttributes": [
+              "esik",
+              "basarisizlik",
+              "durum"
+            ],
+            "file": "dayanikli_sistem/breaker.py",
+            "label": "CircuitBreaker tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "orchestrator-def",
+            "kind": "function_definition",
+            "name": "dayaniklilik_raporu",
+            "minParams": 2,
+            "maxParams": 3,
+            "requireReturn": true,
+            "file": "dayanikli_sistem/orchestrator.py",
+            "label": "dayaniklilik_raporu() tanımlandı",
+            "visibility": "visible"
+          },
+          {
+            "id": "retry-call",
+            "kind": "call",
+            "name": "calistir",
+            "file": "dayanikli_sistem/orchestrator.py",
+            "label": "Retry politikası çalıştırılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "allow-call",
+            "kind": "call",
+            "name": "izin_ver",
+            "file": "dayanikli_sistem/orchestrator.py",
+            "label": "Circuit breaker izin kontrolü yapılıyor",
+            "visibility": "visible"
+          },
+          {
+            "id": "report-cases",
+            "kind": "function_cases",
+            "name": "dayaniklilik_raporu",
+            "module": "dayanikli_sistem",
+            "cases": [
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "deger": 10
+                    },
+                    {
+                      "id": "b",
+                      "deger": 20
+                    },
+                    {
+                      "id": "a",
+                      "deger": 99
+                    }
+                  ],
+                  {
+                    "a": [
+                      false,
+                      true
+                    ],
+                    "b": [
+                      true
+                    ]
+                  }
+                ],
+                "expected": {
+                  "islenen": [
+                    "a",
+                    "b"
+                  ],
+                  "tekrarlar": [
+                    "a"
+                  ],
+                  "basarisiz": [],
+                  "atlanmis": [],
+                  "toplam": 30,
+                  "devre": "kapali",
+                  "deneme": 3
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "a",
+                      "deger": 1
+                    },
+                    {
+                      "id": "b",
+                      "deger": 2
+                    },
+                    {
+                      "id": "c",
+                      "deger": 3
+                    },
+                    {
+                      "id": "d",
+                      "deger": 4
+                    }
+                  ],
+                  {
+                    "a": [
+                      false,
+                      false,
+                      false
+                    ],
+                    "b": [
+                      false,
+                      false,
+                      false
+                    ],
+                    "c": [
+                      true
+                    ],
+                    "d": [
+                      true
+                    ]
+                  }
+                ],
+                "expected": {
+                  "islenen": [],
+                  "tekrarlar": [],
+                  "basarisiz": [
+                    "a",
+                    "b"
+                  ],
+                  "atlanmis": [
+                    "c",
+                    "d"
+                  ],
+                  "toplam": 0,
+                  "devre": "acik",
+                  "deneme": 6
+                }
+              },
+              {
+                "args": [
+                  [
+                    {
+                      "id": "x",
+                      "deger": 5
+                    },
+                    {
+                      "id": "x",
+                      "deger": 5
+                    },
+                    {
+                      "id": "y",
+                      "deger": 7
+                    }
+                  ],
+                  {
+                    "x": [
+                      true
+                    ],
+                    "y": [
+                      false,
+                      true
+                    ]
+                  }
+                ],
+                "expected": {
+                  "islenen": [
+                    "x",
+                    "y"
+                  ],
+                  "tekrarlar": [
+                    "x"
+                  ],
+                  "basarisiz": [],
+                  "atlanmis": [],
+                  "toplam": 12,
+                  "devre": "kapali",
+                  "deneme": 3
+                }
+              }
+            ],
+            "label": "Gizli dayanıklılık orkestrasyonu senaryoları",
+            "visibility": "hidden"
+          },
+          {
+            "id": "no-sleep",
+            "kind": "file_content_regex",
+            "path": "dayanikli_sistem/retry.py",
+            "pattern": "^(?![\\s\\S]*\\b(?:sleep|time\\.sleep)\\s*\\()[\\s\\S]*$",
+            "flags": "s",
+            "label": "Simülasyon gerçek uyku yapmıyor",
+            "visibility": "hidden"
+          }
+        ]
+      },
+      "dataTransformation": {
+        "sourceShape": "Olay listesi ve olay kimliğine göre deterministik servis sonucu dizileri",
+        "targetShape": "Retry, idempotency ve circuit breaker kararlarını açıklayan dayanıklılık raporu",
+        "rules": [
+          "Aynı id ikinci kez işlenmemeli.",
+          "Her olay en fazla üç kez denenmeli.",
+          "Circuit breaker iki ardışık başarısız olayda açılmalı.",
+          "Gerçek ağ veya sleep çağrısı yapılmamalı."
+        ],
+        "workflow": [
+          "Olay kimliğini idempotency registry ile kontrol et.",
+          "Circuit breaker iznini değerlendir.",
+          "Retry politikasını servis sonuçları üzerinde çalıştır.",
+          "Başarı veya hata durumunu devreye kaydet ve raporu güncelle."
+        ],
+        "projectTitle": "Dayanıklı Servis Orkestratörü",
+        "deliverables": [
+          "Immutable olay modeli",
+          "Retry ve circuit breaker politikaları",
+          "Idempotency registry",
+          "Deterministik çok dosyalı orkestrasyon raporu"
+        ]
+      }
+    }
+  ]
+}
