@@ -27,6 +27,7 @@ export function AppShell({
   const completedLessonIds = useProgressStore((state) => state.completedLessonIds);
   const totalXp = useProgressStore((state) => state.totalXp);
   const firstLesson = catalog?.lessons[0] ?? null;
+  const showCurriculum = activeRoute === routes.home || activeRoute === routes.workspace;
   const showFirstRunGuide =
     activeRoute === routes.home &&
     completedLessonIds.length === 0 &&
@@ -57,9 +58,9 @@ export function AppShell({
       </a>
       <TitleBar context={context} />
       <div className={styles.body}>
-        <div className={styles.sidebar}>
+        <div className={`${styles.sidebar} ${showCurriculum ? "" : styles.navigationOnly}`.trim()}>
           <PrimaryRail activeRoute={activeRoute} />
-          <CurriculumSidebar compact={compactCurriculum} />
+          {showCurriculum ? <CurriculumSidebar compact={compactCurriculum} /> : null}
         </div>
         <main
           id="main-content"
