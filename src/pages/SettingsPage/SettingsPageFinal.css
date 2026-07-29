@@ -1,0 +1,16 @@
+.settings-final-shell,
+.settings-final-shell > div {
+  height: 100%;
+}
+
+@media (max-width: 1260px) {
+  .settings-final-shell #main-content > div:first-child > header:first-child {
+    display: block;
+  }
+
+  .settings-final-shell #main-content > div:first-child > header:first-child > div:last-child {
+    position: static;
+    justify-content: flex-start;
+    margin-top: 18px;
+  }
+}
