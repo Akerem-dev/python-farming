@@ -11,6 +11,8 @@ const tauriConfig = JSON.parse(
 ) as {
   bundle: { icon: string[] };
 };
+const cargoToml = readFileSync(resolve(root, "src-tauri/Cargo.toml"), "utf-8");
+const tauriLib = readFileSync(resolve(root, "src-tauri/src/lib.rs"), "utf-8");
 
 const iconPaths = [
   "src-tauri/icons/32x32.png",
@@ -43,6 +45,14 @@ describe("application icon pipeline", () => {
     const dimensions = pngDimensions("src-tauri/icons/app-icon-master.png");
     expect(dimensions.width).toBe(dimensions.height);
     expect(dimensions.width).toBeGreaterThanOrEqual(512);
+  });
+
+  it("embeds the brand master as the default runtime window icon", () => {
+    expect(cargoToml).toContain('tauri = { version = "2", features = ["image-png"] }');
+    expect(tauriLib).toContain("let mut context = tauri::generate_context!()");
+    expect(tauriLib).toContain("context.set_default_window_icon");
+    expect(tauriLib).toContain('"icons/app-icon-master.png"');
+    expect(tauriLib).toContain(".run(context)");
   });
 
   it("provides every icon referenced by the Tauri bundle", () => {
