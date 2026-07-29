@@ -121,7 +121,7 @@ export function ProjectsPage() {
             <dl className={styles.heroStats} aria-label="Proje özeti">
               <div><dt>Açık</dt><dd>{availableProjects.length}</dd></div>
               <div><dt>Tamamlanan</dt><dd>{completedProjects.length}</dd></div>
-              <div><dt>Yaklaşan</dt><dd>{lockedProjects.length}</dd></div>
+              <div><dt>Toplam</dt><dd>{projects.length}</dd></div>
             </dl>
           </div>
         </header>
@@ -131,7 +131,7 @@ export function ProjectsPage() {
             <div className={styles.projectNumber}>01</div>
             <div className={styles.nextCopy}>
               <span className={styles.eyebrow}>
-                {nextProject.state === "locked" ? "Yaklaşan proje" : nextProject.state === "current" ? "Kaldığın proje" : "Sıradaki proje"}
+                {nextProject.state === "current" ? "Kaldığın proje" : "Sıradaki proje"}
               </span>
               <h2>{projectTitle(nextProject.lesson)}</h2>
               <p>{nextProject.lesson.summary}</p>
@@ -164,7 +164,7 @@ export function ProjectsPage() {
               <span className={styles.eyebrow}>Proje yolu</span>
               <h2 id="project-roadmap-title">Başlangıçtan portföye</h2>
             </div>
-            <span>{projects.length} doğrulanabilir çalışma</span>
+            <span>{projects.length} proje ve çalışma</span>
           </header>
           <div className={styles.roadmapSteps}>
             <div data-active><i>01</i><strong>Başlangıç</strong><span>Tek dosyalı gerçek problemler</span></div>
@@ -189,9 +189,7 @@ export function ProjectsPage() {
             <div className={styles.projectList}>
               {visibleProjects.map(({ lesson, module, state }, index) => {
                 const fileCount = lesson.editor.files?.length ?? 1;
-                const hiddenCheckCount = lesson.validation.checks.filter(
-                  (check) => check.visibility === "hidden",
-                ).length;
+                const checkCount = lesson.validation.checks.length;
                 return (
                   <article className={styles.projectRow} data-state={state} key={lesson.id}>
                     <div className={styles.projectNumber}>{String(index + 1).padStart(2, "0")}</div>
@@ -204,7 +202,7 @@ export function ProjectsPage() {
                       <p>{lesson.summary}</p>
                       <div className={styles.projectMeta}>
                         <span>{fileCount} dosya</span>
-                        <span>{hiddenCheckCount} doğrulama</span>
+                        <span>{checkCount} kontrol</span>
                         <span>+{lesson.validation.xpReward} XP</span>
                       </div>
                     </div>
