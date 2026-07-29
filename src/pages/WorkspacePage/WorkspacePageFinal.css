@@ -1,7 +1,30 @@
+.workspace-refined-shell #main-content > div:first-child {
+  grid-template-rows: minmax(0, 1fr) 160px;
+}
+
 .workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:first-child > span:first-child {
   display: none;
 }
 
 .workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:first-child::before {
   content: "Ders akışı";
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) {
+  grid-template-rows: 36px minmax(0, 1fr);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) > header {
+  min-height: 36px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(3) pre {
+  padding-top: 11px;
+  padding-bottom: 11px;
+}
+
+@media (max-width: 1040px) {
+  .workspace-refined-shell #main-content > div:first-child {
+    grid-template-rows: auto 480px 185px;
+  }
 }
