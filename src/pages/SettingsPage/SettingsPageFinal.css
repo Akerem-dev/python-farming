@@ -3,6 +3,10 @@
   height: 100%;
 }
 
+.settings-final-shell #main-content [class*="overviewGrid"] > article:first-child [class*="summaryList"] > div:nth-child(2) {
+  display: none;
+}
+
 @media (max-width: 1260px) {
   .settings-final-shell #main-content > div:first-child > header:first-child {
     display: block;
