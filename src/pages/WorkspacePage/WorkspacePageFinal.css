@@ -1,0 +1,7 @@
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:first-child > span:first-child {
+  display: none;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(1) > div:first-child::before {
+  content: "Ders akışı";
+}
