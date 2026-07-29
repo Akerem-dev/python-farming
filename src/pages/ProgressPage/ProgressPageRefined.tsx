@@ -121,7 +121,14 @@ export function ProgressPage() {
         </header>
 
         {nextMilestone ? (
-          <section className={styles.milestone}>
+          <section
+            className={styles.milestone}
+            style={{
+              borderColor: "rgba(var(--color-brand-warm-rgb), 0.18)",
+              background:
+                "linear-gradient(110deg, rgba(244, 232, 211, 0.72), transparent 72%), var(--color-surface)",
+            }}
+          >
             <div className={styles.milestoneIndex}>{String(levelRows.indexOf(nextMilestone) + 1).padStart(2, "0")}</div>
             <div>
               <span className={styles.eyebrow}>Sıradaki hedef</span>
