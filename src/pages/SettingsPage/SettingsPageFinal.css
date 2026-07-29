@@ -7,9 +7,25 @@
   display: none;
 }
 
+.settings-final-shell #main-content > div:first-child > header:first-child > div:first-child {
+  max-width: 680px;
+  padding-bottom: 62px;
+}
+
+.settings-final-shell #main-content > div:first-child > header:first-child > div:last-child {
+  right: auto;
+  left: clamp(28px, 3vw, 44px);
+  bottom: clamp(28px, 3vw, 44px);
+  justify-content: flex-start;
+}
+
 @media (max-width: 1260px) {
   .settings-final-shell #main-content > div:first-child > header:first-child {
     display: block;
+  }
+
+  .settings-final-shell #main-content > div:first-child > header:first-child > div:first-child {
+    padding-bottom: 0;
   }
 
   .settings-final-shell #main-content > div:first-child > header:first-child > div:last-child {
