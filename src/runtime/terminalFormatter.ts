@@ -8,19 +8,14 @@ interface TerminalFormatOptions {
   errorMessage: string | null;
 }
 
-export function formatTerminalOutput({
-  status,
-  health,
-  output,
-  errorMessage,
-}: TerminalFormatOptions) {
+export function formatTerminalOutput({ status, output }: TerminalFormatOptions) {
   if (status === "checking") {
     return ">>> Kod çalışma ortamı hazırlanıyor…";
   }
 
   if ((status === "offline" || status === "error") && !output) {
     return [
-      errorMessage ?? health?.message ?? "Kod çalıştırma şu anda kullanılamıyor.",
+      ">>> Kod çalıştırma şu anda kullanılamıyor.",
       "",
       ">>> Uygulamayı yeniden açıp tekrar dene.",
     ].join("\n");
