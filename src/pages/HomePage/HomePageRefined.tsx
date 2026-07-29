@@ -285,7 +285,19 @@ export function HomePage() {
             </div>
           </section>
 
-          <section className={styles.milestoneCard} data-complete={graduationView.snapshot.graduated || undefined}>
+          <section
+            className={styles.milestoneCard}
+            data-complete={graduationView.snapshot.graduated || undefined}
+            style={
+              graduationView.snapshot.graduated
+                ? undefined
+                : {
+                    borderColor: "rgba(var(--color-brand-warm-rgb), 0.18)",
+                    background:
+                      "linear-gradient(104deg, rgba(244, 232, 211, 0.74), transparent 64%), var(--color-surface)",
+                  }
+            }
+          >
             <div className={styles.scoreBadge}>
               <span>Ustalık</span>
               <strong>{graduationView.snapshot.masteryScore}</strong>
@@ -401,7 +413,7 @@ export function HomePage() {
               }}
             >
               <div>
-                <strong>{publishedProgress}%</strong>
+                <strong>%{publishedProgress}</strong>
                 <span>tamamlandı</span>
               </div>
             </div>
