@@ -107,7 +107,7 @@ export function ProgressPage() {
                 <span>Genel tamamlanma</span>
                 <strong>%{overallPercent}</strong>
               </div>
-              <ProgressBar value={overallPercent} label={`%${overallPercent}`} />
+              <ProgressBar value={overallPercent} accessibleLabel="Genel tamamlanma" />
             </div>
             <button className={styles.primaryAction} onClick={openResumeLesson} type="button" disabled={!resumeLesson}>
               Kaldığın derse dön →
