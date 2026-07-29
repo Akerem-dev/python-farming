@@ -10,6 +10,37 @@
   content: "Ders akışı";
 }
 
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span:last-child {
+  font-size: 0;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span:last-child::after {
+  content: "Kod çalıştırma hazır";
+  font-size: var(--font-size-2xs);
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span[data-status="checking"]::after {
+  content: "Hazırlanıyor…";
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span[data-status="running"]::after {
+  content: "Kod çalışıyor…";
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span[data-status="offline"]::after,
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header > span[data-status="error"]::after {
+  content: "Kontrol gerekli";
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > footer > span:last-child {
+  font-size: 0;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > footer > span:last-child::after {
+  content: "Kodun otomatik kaydediliyor";
+  font-size: var(--font-size-2xs);
+}
+
 .workspace-refined-shell #main-content > div:first-child > section:nth-child(3) {
   grid-template-rows: 36px minmax(0, 1fr);
 }
@@ -25,6 +56,6 @@
 
 @media (max-width: 1040px) {
   .workspace-refined-shell #main-content > div:first-child {
-    grid-template-rows: auto 480px 185px;
+    grid-template-rows: auto 480px 170px;
   }
 }
