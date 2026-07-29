@@ -39,14 +39,14 @@ function formatCheckedAt(value: string | undefined) {
 
   return new Intl.DateTimeFormat("tr-TR", {
     dateStyle: "medium",
-    timeStyle: "medium",
+    timeStyle: "short",
   }).format(new Date(value));
 }
 
 function runtimeSourceLabel(source: "bundled" | "custom" | "system" | undefined) {
-  if (source === "bundled") return "Uygulamaya gömülü";
-  if (source === "custom") return "Geliştirici override";
-  if (source === "system") return "Sistem Python'ı";
+  if (source === "bundled") return "Uygulamayla birlikte geliyor";
+  if (source === "custom") return "Özel geliştirici ayarı";
+  if (source === "system") return "Bu cihazdaki Python";
   return "—";
 }
 
@@ -116,12 +116,23 @@ export function SettingsPage() {
       : runtimeReady
         ? "Kullanıma hazır"
         : browserPreview
-          ? "Masaüstü kontrolü gerekli"
+          ? "Ön izleme açık"
           : runtimeOffline
-            ? "Python bulunamadı"
+            ? "Kod çalıştırma kullanılamıyor"
             : diagnosticsStatus === "error"
-              ? "Kontrol başarısız"
-              : "Bekliyor";
+              ? "Kontrol tamamlanamadı"
+              : "Hazırlanıyor";
+
+  const runtimeMessage =
+    diagnosticsStatus === "checking"
+      ? "Kod çalışma ortamı hazırlanıyor."
+      : runtimeReady
+        ? "Kodlarını çalıştırmak için gereken Python bu cihazda hazır."
+        : browserPreview
+          ? "Bu ön izleme arayüzü gösterir. Kod çalıştırmak için masaüstü uygulamasını aç."
+          : runtimeOffline
+            ? "Kod çalıştırma bileşeni bulunamadı. Uygulamayı yeniden başlatıp durumu tekrar kontrol et."
+            : "Uygulama durumu henüz kontrol edilmedi.";
 
   const progressValue = (value: string | number) =>
     progressStatus === "ready"
@@ -131,87 +142,70 @@ export function SettingsPage() {
         : "Yükleniyor…";
 
   return (
-    <AppShell
-      activeRoute={routes.settings}
-      context="Ayarlar / Sistem Tanılama"
-      compactCurriculum
-    >
+    <AppShell activeRoute={routes.settings} context="Ayarlar">
       <div className={styles.page}>
         <header className={styles.hero}>
           <div>
-            <span className={styles.eyebrow}>Sistem Tanılama</span>
-            <h1>Python ortamını ve uygulama sağlığını kontrol et</h1>
+            <span className={styles.eyebrow}>Ayarlar ve verilerin</span>
+            <h1>Uygulaman hazır, ilerlemen güvende</h1>
             <p>
-              Bu ekran kullanıcı kodunu çalıştırmadan gömülü veya sistem Python yorumlayıcısını,
-              uygulama sürümünü, etkin izolasyon politikasını ve ilerleme kaydını inceler.
+              Kod çalışma durumunu kontrol et, ilerlemeni yedekle ve gerektiğinde başka bir
+              cihazdan geri yükle.
             </p>
           </div>
-          <div className={styles.actions}>
+          <div className={styles.heroActions}>
             <Button
-              variant="secondary"
+              variant="primary"
               onClick={refreshDiagnostics}
               disabled={diagnosticsStatus === "checking"}
             >
-              {diagnosticsStatus === "checking" ? "Kontrol ediliyor…" : "Tanılamayı yenile"}
-            </Button>
-            <Button
-              variant="primary"
-              onClick={copyReport}
-              disabled={!report || diagnosticsStatus === "checking"}
-            >
-              Raporu kopyala
+              {diagnosticsStatus === "checking" ? "Kontrol ediliyor…" : "Durumu yenile"}
             </Button>
           </div>
         </header>
 
         <div className={styles.copyStatus} role="status" aria-live="polite">
           {copyState === "copied"
-            ? "Tanılama raporu panoya kopyalandı."
+            ? "Sorun özeti panoya kopyalandı."
             : copyState === "error"
-              ? "Rapor panoya kopyalanamadı."
-              : progressStatus !== "ready"
-                ? "Rapor için yerel ilerleme kaydının yüklenmesi bekleniyor."
-                : ""}
+              ? "Sorun özeti kopyalanamadı."
+              : ""}
         </div>
 
         {diagnosticsError ? (
           <div className={styles.errorBanner} role="alert">
-            <strong>Sistem kontrolü tamamlanamadı.</strong>
+            <strong>Uygulama durumu kontrol edilemedi.</strong>
             <span>{diagnosticsError}</span>
           </div>
         ) : null}
 
         {progressStatus === "error" ? (
           <div className={styles.errorBanner} role="alert">
-            <strong>İlerleme kaydı yüklenemedi.</strong>
-            <span>{progressError ?? "Yerel SQLite ilerleme bilgisi okunamadı."}</span>
+            <strong>İlerlemen yüklenemedi.</strong>
+            <span>{progressError ?? "Bu cihazdaki ilerleme kaydı okunamadı."}</span>
           </div>
         ) : null}
 
-        <section className={styles.grid} aria-label="Tanılama sonuçları">
+        <section className={styles.overviewGrid} aria-label="Uygulama ve ilerleme özeti">
           <article className={`${styles.panel} ${runtimeReady ? styles.ready : styles.offline}`}>
             <header className={styles.panelHeader}>
               <div>
-                <span>Python çalışma motoru</span>
+                <span>Öğrenme ortamı</span>
                 <h2>{statusLabel}</h2>
               </div>
               <i aria-hidden="true" />
             </header>
             <p className={styles.message} role="status" aria-live="polite">
-              {snapshot?.runtime?.message ?? "Yerel Python kontrolü başlatılmadı."}
+              {runtimeMessage}
             </p>
-            <dl className={styles.details}>
+            <dl className={styles.summaryList}>
               <div>
-                <dt>Sürüm</dt>
-                <dd>{snapshot?.runtime?.version ?? "—"}</dd>
+                <dt>Kod çalıştırma</dt>
+                <dd>{runtimeReady ? "Hazır" : statusLabel}</dd>
               </div>
               <div>
-                <dt>Executable</dt>
-                <dd><code>{snapshot?.runtime?.executable ?? "—"}</code></dd>
-              </div>
-              <div>
-                <dt>Kaynak</dt>
-                <dd>{runtimeSourceLabel(snapshot?.runtime?.source)}</dd>
+                <dt>Python</dt>
+                <dd>{snapshot?.runtime?.version ?? "Kontrol bekleniyor"}</dd>
               </div>
               <div>
                 <dt>Son kontrol</dt>
@@ -220,21 +214,13 @@ export function SettingsPage() {
             </dl>
             {runtimeOffline ? (
               <div className={styles.helpBox}>
-                <strong>Python bulunamıyorsa</strong>
-                <p>
-                  Production installer gömülü Python içermelidir. Geliştirme build'inde
-                  Windows'ta <code>py -3 --version</code>, macOS/Linux'ta
-                  <code> python3 --version</code> kontrol edilebilir; özel yorumlayıcı için
-                  <code> PYTHON_FARMING_PYTHON</code> kullanılabilir.
-                </p>
+                <strong>Tekrar denemeden önce</strong>
+                <p>Uygulamayı kapatıp yeniden aç. Sorun sürerse aşağıdaki gelişmiş ayrıntıları aç.</p>
               </div>
             ) : browserPreview ? (
               <div className={styles.helpBox}>
-                <strong>Tarayıcı ön izlemesi</strong>
-                <p>
-                  Bu ortam Python kurulumunu denetleyemez. Gerçek yorumlayıcı durumunu görmek
-                  için uygulamayı <code>npm run tauri:dev</code> ile aç.
-                </p>
+                <strong>Ön izleme modu</strong>
+                <p>Gerçek kod çalıştırma durumunu masaüstü uygulamasında görebilirsin.</p>
               </div>
             ) : null}
           </article>
@@ -242,115 +228,14 @@ export function SettingsPage() {
           <article className={styles.panel}>
             <header className={styles.panelHeader}>
               <div>
-                <span>Uygulama ve ortam</span>
-                <h2>Çalışan sürüm</h2>
+                <span>İlerlemen</span>
+                <h2>Bu cihazda kayıtlı</h2>
               </div>
             </header>
-            <dl className={styles.details}>
-              <div>
-                <dt>Python Farming</dt>
-                <dd>v{snapshot?.appVersion ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Çalışma ortamı</dt>
-                <dd>{snapshot?.environment === "desktop" ? "Tauri masaüstü" : "Tarayıcı ön izlemesi"}</dd>
-              </div>
-              <div>
-                <dt>Platform</dt>
-                <dd><code>{snapshot?.platform ?? "—"}</code></dd>
-              </div>
-              <div>
-                <dt>Runtime protokolü</dt>
-                <dd>v{runtimeProtocolVersion}</dd>
-              </div>
-            </dl>
-            <p className={styles.note}>
-              Tarayıcı ön izlemesi arayüz geliştirmek içindir; gerçek Python komutları yalnız
-              Tauri masaüstü uygulamasında çalışır.
+            <p className={styles.message}>
+              Derslerin ve XP bilgin uygulama güncellense bile bu cihazda korunur.
             </p>
-          </article>
-
-          <article className={styles.panel}>
-            <header className={styles.panelHeader}>
-              <div>
-                <span>Güvenlik sözleşmesi</span>
-                <h2>İzolasyon ve çalıştırma limitleri</h2>
-              </div>
-            </header>
-            <dl className={styles.details}>
-              <div>
-                <dt>Politika sürümü</dt>
-                <dd>v{security?.policyVersion ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Dosya sistemi</dt>
-                <dd>{security?.filesystemScope === "workspace-only" ? "Yalnız çalışma alanı" : "—"}</dd>
-              </div>
-              <div>
-                <dt>Ağ erişimi</dt>
-                <dd>{security?.networkAccess === "blocked" ? "Kapalı" : "—"}</dd>
-              </div>
-              <div>
-                <dt>Alt süreç erişimi</dt>
-                <dd>{security?.subprocessAccess === "blocked" ? "Kapalı" : "—"}</dd>
-              </div>
-              <div>
-                <dt>Çevre izolasyonu</dt>
-                <dd>{security?.environmentIsolated ? "Etkin" : "—"}</dd>
-              </div>
-              <div>
-                <dt>Süreç ağacı sonlandırma</dt>
-                <dd>{security?.processTreeTermination ? "Etkin" : "—"}</dd>
-              </div>
-              <div>
-                <dt>Çalışma alanı kotası</dt>
-                <dd>{security ? formatBytes(security.maxWorkspaceBytes) : "—"}</dd>
-              </div>
-              <div>
-                <dt>Azami çalışma alanı dosyası</dt>
-                <dd>{security?.maxWorkspaceFiles ?? "—"}</dd>
-              </div>
-              <div>
-                <dt>Tek dosya kaynak kodu</dt>
-                <dd>{formatBytes(runtimeLimits.maxSingleFileSourceBytes)}</dd>
-              </div>
-              <div>
-                <dt>Çok dosyalı proje</dt>
-                <dd>{formatBytes(runtimeLimits.maxProjectSourceBytes)}</dd>
-              </div>
-              <div>
-                <dt>Girdi içerik toplamı</dt>
-                <dd>{formatBytes(runtimeLimits.maxStdinContentBytes)}</dd>
-              </div>
-              <div>
-                <dt>Çıktı / akış</dt>
-                <dd>{formatBytes(runtimeLimits.maxOutputBytesPerStream)}</dd>
-              </div>
-              <div>
-                <dt>Birleşik azami çıktı</dt>
-                <dd>{formatBytes(runtimeLimits.maxCombinedOutputBytes)}</dd>
-              </div>
-              <div>
-                <dt>En uzun çalışma</dt>
-                <dd>{runtimeLimits.maxTimeoutMs / 1000} saniye</dd>
-              </div>
-            </dl>
-            <p className={styles.note}>
-              Tek ve çok dosyalı görevler aynı audit politikasını kullanır. Çalışma alanı dışı
-              dosya erişimi, ağ, alt süreç, fork, sembolik bağlantı ve yerel kütüphane yükleme
-              reddedilir. Timeout veya kota aşımında bütün süreç ağacı durdurulur; stdout ve stderr
-              ayrı ayrı sınırlandırılır.
-            </p>
-          </article>
-
-          <article className={styles.panel}>
-            <header className={styles.panelHeader}>
-              <div>
-                <span>Yerel veri</span>
-                <h2>İlerleme kaydı</h2>
-              </div>
-            </header>
-            <dl className={styles.details}>
+            <dl className={styles.summaryList}>
               <div>
                 <dt>Tamamlanan ders</dt>
                 <dd>{progressValue(completedLessonIds.length)}</dd>
@@ -360,41 +245,160 @@ export function SettingsPage() {
                 <dd>{progressValue(totalXp)}</dd>
               </div>
               <div>
-                <dt>Son açık ders</dt>
-                <dd><code>{progressValue(lastLessonId ?? "Henüz yok")}</code></dd>
+                <dt>Son çalışma</dt>
+                <dd>{progressValue(lastLessonId ? "Kaldığın yer kayıtlı" : "Henüz başlamadın")}</dd>
               </div>
               <div>
-                <dt>Depolama</dt>
-                <dd>Yerel SQLite</dd>
+                <dt>Kaydetme</dt>
+                <dd>Otomatik</dd>
               </div>
             </dl>
-            <p className={styles.note}>
-              <code>git pull</code>, <code>npm ci</code> ve normal uygulama güncellemeleri bu
-              kaydı silmez. Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez.
-            </p>
           </article>
+        </section>
 
+        <section className={styles.dataGrid} aria-label="Yedekleme ve veri işlemleri">
           <ProgressBackupPanel />
           <ProgressDataPanel />
         </section>
 
-        {snapshot?.diagnostics.length ? (
-          <section className={styles.diagnostics} aria-labelledby="diagnostic-messages-title">
-            <header>
-              <span className={styles.eyebrow}>Motor mesajları</span>
-              <h2 id="diagnostic-messages-title">Tanılama ayrıntıları</h2>
-            </header>
-            <ul>
-              {snapshot.diagnostics.map((diagnostic) => (
-                <li key={`${diagnostic.code}-${diagnostic.message}`}>
-                  <span data-severity={diagnostic.severity}>{diagnostic.severity}</span>
-                  <code>{diagnostic.code}</code>
-                  <p>{diagnostic.message}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null}
+        <details className={styles.advancedPanel}>
+          <summary>
+            <span>
+              <small>Gelişmiş</small>
+              <strong>Teknik ayrıntılar ve destek</strong>
+            </span>
+            <em>Yalnız sorun giderirken aç</em>
+          </summary>
+
+          <div className={styles.advancedContent}>
+            <div className={styles.advancedHeader}>
+              <div>
+                <span className={styles.eyebrow}>Destek bilgileri</span>
+                <h2>Uygulama ve güvenlik ayrıntıları</h2>
+                <p>Bu bölüm normal kullanım için gerekli değildir.</p>
+              </div>
+              <Button
+                variant="secondary"
+                onClick={copyReport}
+                disabled={!report || diagnosticsStatus === "checking"}
+              >
+                Sorun özetini kopyala
+              </Button>
+            </div>
+
+            <div className={styles.technicalGrid}>
+              <article className={styles.technicalCard}>
+                <h3>Çalışma ortamı</h3>
+                <dl className={styles.details}>
+                  <div>
+                    <dt>Python Farming</dt>
+                    <dd>v{snapshot?.appVersion ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Ortam</dt>
+                    <dd>{snapshot?.environment === "desktop" ? "Masaüstü uygulaması" : "Tarayıcı ön izlemesi"}</dd>
+                  </div>
+                  <div>
+                    <dt>Platform</dt>
+                    <dd><code>{snapshot?.platform ?? "—"}</code></dd>
+                  </div>
+                  <div>
+                    <dt>Python kaynağı</dt>
+                    <dd>{runtimeSourceLabel(snapshot?.runtime?.source)}</dd>
+                  </div>
+                  <div>
+                    <dt>Executable</dt>
+                    <dd><code>{snapshot?.runtime?.executable ?? "—"}</code></dd>
+                  </div>
+                  <div>
+                    <dt>Runtime protokolü</dt>
+                    <dd>v{runtimeProtocolVersion}</dd>
+                  </div>
+                  <div>
+                    <dt>Son ders kimliği</dt>
+                    <dd><code>{lastLessonId ?? "—"}</code></dd>
+                  </div>
+                </dl>
+                <p className={styles.note}>
+                  Özel yorumlayıcı kullanan geliştiriciler <code>PYTHON_FARMING_PYTHON</code> ayarını
+                  kullanabilir. Tanılama raporu öğrenci kodunu veya ders cevaplarını içermez.
+                </p>
+              </article>
+
+              <article className={styles.technicalCard}>
+                <h3>İzolasyon ve çalıştırma limitleri</h3>
+                <dl className={styles.details}>
+                  <div>
+                    <dt>Politika sürümü</dt>
+                    <dd>v{security?.policyVersion ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Dosya sistemi</dt>
+                    <dd>{security?.filesystemScope === "workspace-only" ? "Yalnız çalışma alanı" : "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Ağ erişimi</dt>
+                    <dd>{security?.networkAccess === "blocked" ? "Kapalı" : "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Alt süreç erişimi</dt>
+                    <dd>{security?.subprocessAccess === "blocked" ? "Kapalı" : "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Çalışma alanı kotası</dt>
+                    <dd>{security ? formatBytes(security.maxWorkspaceBytes) : "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Azami dosya sayısı</dt>
+                    <dd>{security?.maxWorkspaceFiles ?? "—"}</dd>
+                  </div>
+                  <div>
+                    <dt>Tek dosya kaynak kodu</dt>
+                    <dd>{formatBytes(runtimeLimits.maxSingleFileSourceBytes)}</dd>
+                  </div>
+                  <div>
+                    <dt>Çok dosyalı proje</dt>
+                    <dd>{formatBytes(runtimeLimits.maxProjectSourceBytes)}</dd>
+                  </div>
+                  <div>
+                    <dt>Girdi içerik toplamı</dt>
+                    <dd>{formatBytes(runtimeLimits.maxStdinContentBytes)}</dd>
+                  </div>
+                  <div>
+                    <dt>Çıktı / akış</dt>
+                    <dd>{formatBytes(runtimeLimits.maxOutputBytesPerStream)}</dd>
+                  </div>
+                  <div>
+                    <dt>Birleşik azami çıktı</dt>
+                    <dd>{formatBytes(runtimeLimits.maxCombinedOutputBytes)}</dd>
+                  </div>
+                  <div>
+                    <dt>En uzun çalışma</dt>
+                    <dd>{runtimeLimits.maxTimeoutMs / 1000} saniye</dd>
+                  </div>
+                </dl>
+              </article>
+            </div>
+
+            {snapshot?.diagnostics.length ? (
+              <section className={styles.diagnostics} aria-labelledby="diagnostic-messages-title">
+                <header>
+                  <span className={styles.eyebrow}>Motor mesajları</span>
+                  <h2 id="diagnostic-messages-title">Tanılama ayrıntıları</h2>
+                </header>
+                <ul>
+                  {snapshot.diagnostics.map((diagnostic) => (
+                    <li key={`${diagnostic.code}-${diagnostic.message}`}>
+                      <span data-severity={diagnostic.severity}>{diagnostic.severity}</span>
+                      <code>{diagnostic.code}</code>
+                      <p>{diagnostic.message}</p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+          </div>
+        </details>
       </div>
     </AppShell>
   );

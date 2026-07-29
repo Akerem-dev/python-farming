@@ -8,33 +8,28 @@ interface TerminalFormatOptions {
   errorMessage: string | null;
 }
 
-export function formatTerminalOutput({
-  status,
-  health,
-  output,
-  errorMessage,
-}: TerminalFormatOptions) {
+export function formatTerminalOutput({ status, output }: TerminalFormatOptions) {
   if (status === "checking") {
-    return "Python çalışma motoru kontrol ediliyor…";
+    return ">>> Kod çalışma ortamı hazırlanıyor…";
   }
 
   if ((status === "offline" || status === "error") && !output) {
     return [
-      errorMessage ?? health?.message ?? "Python çalışma motoru çevrimdışı.",
+      ">>> Kod çalıştırma şu anda kullanılamıyor.",
       "",
-      "Masaüstü çalışma için: npm run tauri:dev",
+      ">>> Uygulamayı yeniden açıp tekrar dene.",
     ].join("\n");
   }
 
   if (status === "running") {
-    return `${health?.version ?? "Python 3"}\n>>> Kod çalıştırılıyor…`;
+    return ">>> Kodun çalıştırılıyor…";
   }
 
   if (!output) {
-    return `${health?.version ?? "Python 3"}\n>>> Kodunu çalıştırmaya hazır.`;
+    return ">>> Kodunu çalıştırmaya hazır.";
   }
 
-  const sections = [health?.version ?? "Python 3"];
+  const sections: string[] = [];
 
   if (output.result.stdout) {
     sections.push(output.result.stdout.trimEnd());
@@ -47,15 +42,11 @@ export function formatTerminalOutput({
   }
 
   if (output.status === "timeout") {
-    sections.push("[Python Farming] Süre sınırı aşıldı; işlem güvenli biçimde durduruldu.");
+    sections.push("[Süre sınırı aşıldı; işlem güvenli biçimde durduruldu.]");
   }
   if (output.result.truncated) {
-    sections.push("[Python Farming] Çıktının bir bölümü boyut sınırı nedeniyle gösterilmedi.");
+    sections.push("[Çıktı çok uzun olduğu için yalnız bir bölümü gösteriliyor.]");
   }
 
-  sections.push(
-    `[Çıkış kodu: ${output.result.exitCode ?? "yok"} · ${output.result.durationMs} ms]`,
-  );
-
-  return sections.join("\n");
+  return sections.join("\n\n");
 }

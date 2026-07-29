@@ -11,20 +11,36 @@ export function TitleBar({ context }: TitleBarProps) {
 
   return (
     <header className={styles.root}>
-      <div className={styles.brand}>
-        <span className={styles.mark} aria-hidden="true">
-          &lt;/&gt;
+      <div className={styles.brand} aria-label={appConfig.name}>
+        <span className={styles.logoFrame} aria-hidden="true">
+          <img
+            className={styles.logo}
+            src="/assets/brand/logo-mark.png"
+            alt=""
+          />
         </span>
-        <span>{appConfig.name}</span>
+        <span className={styles.brandCopy}>
+          <strong>{appConfig.name}</strong>
+          <small>Kodla öğren, adım adım ilerle</small>
+        </span>
       </div>
 
-      <div className={styles.context}>{context}</div>
+      <div className={styles.context}>
+        <span>Şu anda</span>
+        <strong>{context}</strong>
+      </div>
 
       <div className={styles.metrics} aria-label="Kullanıcı ilerleme bilgileri">
-        <span><strong>7</strong> günlük seri</span>
-        <span className={styles.divider} />
-        <span><strong>{totalXp.toLocaleString("tr-TR")}</strong> XP</span>
-        <span className={styles.mode}>Mod: Öğrenme</span>
+        <span className={styles.metric}>
+          <small>Seri</small>
+          <strong>7 gün</strong>
+        </span>
+        <span className={styles.divider} aria-hidden="true" />
+        <span className={styles.metric}>
+          <small>Toplam</small>
+          <strong>{totalXp.toLocaleString("tr-TR")} XP</strong>
+        </span>
+        <span className={styles.mode}>Öğrenme modu</span>
       </div>
     </header>
   );

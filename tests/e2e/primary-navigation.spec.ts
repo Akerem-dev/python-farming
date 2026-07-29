@@ -19,7 +19,7 @@ const pageJourneys = [
   {
     label: "Ayarlar",
     hash: "#/settings",
-    heading: "Python ortamını ve uygulama sağlığını kontrol et",
+    heading: "Uygulaman hazır, ilerlemen güvende",
   },
 ] as const;
 
@@ -65,7 +65,7 @@ test("an available task opens the actual workspace", async ({ page }) => {
   await navigation.getByRole("link", { name: "Görevler", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1, name: pageJourneys[0].heading })).toBeVisible();
 
-  const openTask = page.getByRole("button", { name: "İlk görevi aç →" });
+  const openTask = page.getByRole("button", { name: /Devam et →|Görevi aç →/ }).first();
   await expect(openTask).toBeEnabled();
   await openTask.click();
 

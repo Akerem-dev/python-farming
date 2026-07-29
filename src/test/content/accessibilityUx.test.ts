@@ -93,9 +93,9 @@ describe("accessibility and first-run UX contract", () => {
     expect(statusBar).toContain('role="status"');
     expect(statusBar).toContain('aria-live="polite"');
     expect(statusBar).toContain("void checkDiagnostics()");
-    expect(statusBar).toContain("Python hazır");
-    expect(statusBar).toContain("Python bulunamadı");
-    expect(statusBar).toContain("Runtime hatası");
+    expect(statusBar).toContain("Kod çalıştırma hazır");
+    expect(statusBar).toContain("Kod çalıştırma kullanılamıyor");
+    expect(statusBar).toContain("Bir sorun oluştu");
     expect(motionStyles).toContain("prefers-reduced-motion: reduce");
     expect(motionStyles).toContain("animation-duration: 0.01ms");
     expect(motionStyles).toContain("transition-duration: 0.01ms");

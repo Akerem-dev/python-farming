@@ -79,7 +79,7 @@ describe("local progress backup contract", () => {
     expect(backupPanel).toContain("Silmeyi onayla");
     expect(backupPanel).toContain("loadProgress");
     expect(backupPanel).toContain('backup.integrityStatus === "ok"');
-    expect(backupPanel).toContain("önce mevcut kayıt otomatik olarak güvenli bir yedeğe");
+    expect(backupPanel).toContain("Şu anki ilerlemen işlemden önce otomatik olarak saklanacak");
     expect(backupPanel).toContain('role="alert"');
     expect(settingsPage).toContain("<ProgressBackupPanel />");
   });

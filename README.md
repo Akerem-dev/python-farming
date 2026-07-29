@@ -13,6 +13,9 @@ Python Farming, Python'ı başlangıçtan uzman seviyeye kadar uygulamalı göre
 - React 19 + TypeScript + Vite arayüzü
 - Tauri 2 masaüstü kabuğu ve Rust çalışma motoru
 - CodeMirror 6 tabanlı Python editörü
+- Krem, yeşil ve kontrollü sıcak vurgulardan oluşan responsive masaüstü tasarım sistemi
+- Ana Sayfa, Kod Alanı, Görevler, Projeler, İlerleme ve Ayarlar için ortak görsel dil
+- GPU dostu kısa geçişler ve `prefers-reduced-motion` desteği
 - Tek ve çok dosyalı Python çalışma alanları
 - Installer'a gömülü, SHA-256 doğrulamalı taşınabilir Python 3 runtime'ı
 - Geliştirme için özel yorumlayıcı ve sistem Python fallback'i
@@ -29,7 +32,7 @@ Python Farming, Python'ı başlangıçtan uzman seviyeye kadar uygulamalı göre
 - Sürümlü JSON ile ilerleme dışa aktarma, içe alma ve güvenli sıfırlama
 - Başlangıç, Orta Seviye, İleri Seviye ve Uzman Seviye bitirme projeleri
 - 6 modüllük Uzman Seviye yolu ve Python Farming Uzman Seviye Mezunu rozeti
-- GitHub Actions üzerinde frontend ve Rust CI
+- GitHub Actions üzerinde frontend, Rust, gerçek tarayıcı yolculukları ve responsive görsel denetim
 - Windows, Linux ve macOS için sürüm kontrollü dry-run ve taslak release üretim akışı
 
 ## Teknoloji yığını
@@ -42,7 +45,7 @@ Python Farming, Python'ı başlangıçtan uzman seviyeye kadar uygulamalı göre
 | Durum yönetimi | Zustand |
 | Yerel çalışma motoru | Rust + gömülü/sistem Python 3 |
 | Kalıcılık | SQLite / rusqlite |
-| Test | Vitest + Rust testleri + gerçek Python entegrasyon testleri |
+| Test | Vitest, Playwright, Rust testleri ve gerçek Python entegrasyon testleri |
 
 ## Gereksinimler
 
@@ -79,6 +82,14 @@ Masaüstü uygulamasını geliştirme modunda çalıştırmak için:
 npm run tauri:dev
 ```
 
+Bu komut önce `src-tauri/icons/app-icon-master.png` dosyasından Windows, Linux ve macOS paket ikonlarını yeniden üretir; ardından Tauri geliştirme uygulamasını başlatır.
+
+İkonları uygulamayı çalıştırmadan yalnızca yeniden üretmek için:
+
+```bash
+npm run icons:generate
+```
+
 Yalnız web arayüzünü ön izlemek için:
 
 ```bash
@@ -100,9 +111,13 @@ Ayrı çalıştırmak gerekirse:
 ```bash
 npm run verify:frontend
 npm run verify:rust
+npm run test:e2e
+npm run test:e2e:visual
 ```
 
-`verify:frontend` typecheck, bütün Vitest testleri ve production frontend build'ini çalıştırır. `verify:rust`, rustfmt ve kilitli bağımlılıklarla bütün Rust hedef testlerini çalıştırır.
+`verify:frontend` typecheck, bütün Vitest testleri ve production frontend build'ini çalıştırır. `verify:rust`, rustfmt ve kilitli bağımlılıklarla bütün Rust hedef testlerini çalıştırır. `test:e2e`, gerçek Chromium tıklama ve navigasyon yolculuklarını; `test:e2e:visual` ise altı ana ekranı `1440×900` ve `1100×760` boyutlarında yakalayan responsive görsel denetimi çalıştırır.
+
+Görsel denetim çıktıları yerelde `artifacts/visual-audit` altında oluşturulur. Pull request CI'ı aynı görüntüleri `responsive-visual-audit` adlı indirilebilir GitHub Actions artifact'i olarak 14 gün saklar.
 
 ## Yerel production build
 
@@ -110,7 +125,7 @@ npm run verify:rust
 npm run tauri:build
 ```
 
-Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçimi işletim sistemine göre değişir.
+Bu komut da paketleme başlamadan önce ana marka ikonundan bütün Tauri ikonlarını yeniden üretir. Paketler `src-tauri/target/release/bundle` altında oluşturulur. Çıktı biçimi işletim sistemine göre değişir.
 
 ## Release akışı
 

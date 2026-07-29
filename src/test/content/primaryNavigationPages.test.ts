@@ -100,10 +100,10 @@ describe("primary navigation pages", () => {
     expect(progressPage).toContain("getResumeLesson");
   });
 
-  it("keeps the production settings and diagnostics page reachable", () => {
+  it("keeps the production settings page reachable", () => {
     expect(settingsPage).toContain("export function SettingsPage");
     expect(settingsPage).toContain("activeRoute={routes.settings}");
-    expect(settingsPage).toContain('context="Ayarlar / Sistem Tanılama"');
+    expect(settingsPage).toContain('context="Ayarlar"');
     expect(router).toContain('<SettingsPage />');
   });
 });

@@ -19,6 +19,7 @@ export interface BeginnerModuleMastery {
 export interface BeginnerGraduationSnapshot {
   graduated: boolean;
   examUnlocked: boolean;
+  projectUnlocked: boolean;
   intermediateUnlocked: boolean;
   masteryScore: number;
   completedCoreLessons: number;
@@ -86,6 +87,7 @@ export function getBeginnerGraduationSnapshot(
   return {
     graduated,
     examUnlocked,
+    projectUnlocked: examUnlocked,
     intermediateUnlocked: graduated,
     masteryScore,
     completedCoreLessons,

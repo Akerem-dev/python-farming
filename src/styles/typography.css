@@ -4,6 +4,69 @@ input,
 textarea,
 select {
   font-family: var(--font-ui);
+  font-variant-numeric: proportional-nums;
+}
+
+body {
+  line-height: var(--line-height-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block-start: 0;
+}
+
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-tight);
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-ui);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-heading);
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+}
+
+p,
+li,
+dd {
+  line-height: var(--line-height-body);
+}
+
+strong,
+b {
+  font-weight: var(--font-weight-semibold);
+}
+
+button,
+input,
+select,
+textarea {
+  font-size: inherit;
+}
+
+button {
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: -0.008em;
+}
+
+small {
+  font-size: var(--font-size-xs);
+  line-height: 1.45;
 }
 
 code,
@@ -11,4 +74,12 @@ pre,
 kbd,
 samp {
   font-family: var(--font-mono);
+  font-variant-ligatures: contextual;
+  font-variant-numeric: tabular-nums;
+}
+
+[data-numeric],
+.numeric,
+time {
+  font-variant-numeric: tabular-nums;
 }

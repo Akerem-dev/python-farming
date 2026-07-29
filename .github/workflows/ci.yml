@@ -30,8 +30,36 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
 
-      - name: Frontend quality gate
-        run: npm run verify:frontend
+      - name: TypeScript typecheck
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee typecheck.log
+
+      - name: Upload typecheck diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-diagnostics
+          path: typecheck.log
+          if-no-files-found: error
+
+      - name: Unit and content tests
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee frontend-tests.log
+
+      - name: Upload frontend test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-test-diagnostics
+          path: frontend-tests.log
+          if-no-files-found: error
+
+      - name: Production frontend build
+        run: npm run build
 
   browser-journeys:
     name: Browser user journeys
@@ -54,6 +82,18 @@ jobs:
 
       - name: Run real navigation journeys
         run: npm run test:e2e
+
+      - name: Capture responsive visual audit
+        run: npm run test:e2e:visual
+
+      - name: Upload responsive visual audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: responsive-visual-audit
+          path: artifacts/visual-audit
+          if-no-files-found: error
+          retention-days: 14
 
   rust-format:
     name: Rust formatting

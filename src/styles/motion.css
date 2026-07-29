@@ -1,6 +1,47 @@
 @keyframes cursorBlink {
-  0%, 46% { opacity: 1; }
-  47%, 100% { opacity: 0; }
+  0%,
+  46% {
+    opacity: 1;
+  }
+
+  47%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes softReveal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes gentleScaleIn {
+  from {
+    opacity: 0;
+    transform: scale3d(0.985, 0.985, 1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.motion-reveal {
+  animation: softReveal var(--motion-slow) both;
+  will-change: transform, opacity;
+}
+
+.motion-scale-in {
+  animation: gentleScaleIn var(--motion-medium) both;
+  will-change: transform, opacity;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -11,5 +52,6 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }

@@ -90,7 +90,7 @@ describe("portable Python runtime contract", () => {
     expect(runtime).toContain("source: Some(interpreter.source.as_str().to_string())");
     expect(runtime).toContain("managed: interpreter.source.is_managed()");
     expect(diagnosticsService).toContain("Python kaynağı");
-    expect(settingsPage).toContain("Uygulamaya gömülü");
+    expect(settingsPage).toContain("Uygulamayla birlikte geliyor");
     expect(settingsPage).toContain("runtimeSourceLabel");
   });
 

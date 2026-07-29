@@ -1,0 +1,25 @@
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header [class*="runtimeStatus"] {
+  font-size: 0;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > header [class*="runtimeStatus"]::after {
+  content: "Kod çalıştırma hazır";
+  color: #c5d0c6;
+  font-size: 10px;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > footer {
+  font-size: 0;
+}
+
+.workspace-refined-shell #main-content > div:first-child > section:nth-child(2) > footer::after {
+  content: "Kodun otomatik kaydediliyor";
+  color: #aeb9af;
+  font-size: 9px;
+}
+
+@media (max-width: 1180px) {
+  .workspace-refined-shell #main-content > div:first-child {
+    grid-template-columns: minmax(330px, 0.78fr) minmax(520px, 1.42fr);
+  }
+}

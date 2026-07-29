@@ -58,7 +58,7 @@ function getRouteLabel(route: string) {
   }
 
   if (route === routes.settings) {
-    return "Ayarlar ve Sistem Tanılama";
+    return "Ayarlar";
   }
 
   return "Sayfa bulunamadı";
@@ -159,7 +159,7 @@ export function AppRouter() {
     );
   } else if (route === routes.settings) {
     page = (
-      <Suspense fallback={<RouteLoadingState label="Sistem tanılama" />}>
+      <Suspense fallback={<RouteLoadingState label="Ayarlar" />}>
         <SettingsPage />
       </Suspense>
     );
