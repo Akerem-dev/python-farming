@@ -7,6 +7,11 @@ fn app_version() -> &'static str {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    let mut context = tauri::generate_context!();
+    context.set_default_window_icon(Some(tauri::include_image!(
+        "icons/app-icon-master.png"
+    )));
+
     tauri::Builder::default()
         .invoke_handler(tauri::generate_handler![
             app_version,
@@ -24,6 +29,6 @@ pub fn run() {
             commands::progress_portability::import_progress_data,
             commands::progress_portability::reset_progress_data,
         ])
-        .run(tauri::generate_context!())
+        .run(context)
         .expect("Python Farming başlatılırken kritik bir hata oluştu");
 }
