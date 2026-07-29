@@ -3,6 +3,31 @@
   height: 100%;
 }
 
+.projects-final-shell #main-content [data-locked] {
+  border-color: rgba(var(--color-brand-warm-rgb), 0.2);
+  background:
+    linear-gradient(108deg, rgba(244, 232, 211, 0.66), transparent 72%),
+    var(--color-surface);
+}
+
+.projects-final-shell #main-content [class*="heroStats"] > div:nth-child(3) dt {
+  font-size: 0;
+}
+
+.projects-final-shell #main-content [class*="heroStats"] > div:nth-child(3) dt::after {
+  content: "Toplam";
+  font-size: var(--font-size-2xs);
+}
+
+.projects-final-shell #main-content [class*="sectionHeader"] > span {
+  font-size: 0;
+}
+
+.projects-final-shell #main-content [class*="sectionHeader"] > span::after {
+  content: "50 proje ve çalışma";
+  font-size: var(--font-size-xs);
+}
+
 @media (max-width: 1100px) {
   .projects-final-shell #main-content > div:first-child > header:first-child {
     min-height: 330px;
