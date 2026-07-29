@@ -30,7 +30,7 @@ describe("formatTerminalOutput", () => {
     ).toContain("Kodunu çalıştırmaya hazır");
   });
 
-  it("combines stdout and execution metadata", () => {
+  it("shows program output without execution metadata", () => {
     const output = formatTerminalOutput({
       status: "ready",
       health,
@@ -48,8 +48,9 @@ describe("formatTerminalOutput", () => {
       },
     });
 
-    expect(output).toContain("Merhaba");
-    expect(output).toContain("Çıkış kodu: 0 · 18 ms");
+    expect(output).toBe("Merhaba");
+    expect(output).not.toContain("Çıkış kodu");
+    expect(output).not.toContain("18 ms");
   });
 
   it("explains when an execution times out", () => {
