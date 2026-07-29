@@ -4,7 +4,7 @@
 }
 
 @media (max-width: 1100px) {
-  .projects-final-shell #main-content > div:first-child > section:first-child {
+  .projects-final-shell #main-content > div:first-child > header:first-child {
     min-height: 330px;
     padding-bottom: 135px;
     background:
