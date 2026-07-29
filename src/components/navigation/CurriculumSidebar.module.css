@@ -29,15 +29,15 @@
 }
 
 .count {
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-medium);
   letter-spacing: normal;
 }
 
 .levelLabel {
-  padding: 12px 10px 7px;
-  color: var(--color-text-dim);
+  padding: 13px 10px 8px;
+  color: var(--color-text-muted);
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.05em;
@@ -46,21 +46,21 @@
 
 .list {
   display: grid;
-  gap: 2px;
+  gap: 3px;
 }
 
 .row {
   width: 100%;
-  min-height: 40px;
+  min-height: 42px;
   display: grid;
   grid-template-columns: 30px minmax(0, 1fr) 18px;
   align-items: center;
   gap: 7px;
-  padding: 5px 10px;
+  padding: 6px 10px;
   border: 1px solid transparent;
   border-radius: var(--radius-control);
   background: transparent;
-  color: var(--color-text-muted);
+  color: var(--color-text-secondary);
   font: inherit;
   font-size: var(--font-size-xs);
   text-align: left;
@@ -78,11 +78,11 @@
 }
 
 .row:disabled {
-  opacity: 0.68;
+  opacity: 0.78;
 }
 
 .active {
-  border-color: rgba(var(--color-accent-rgb), 0.13);
+  border-color: rgba(var(--color-accent-rgb), 0.16);
   background: var(--color-surface-selected);
   color: var(--color-text-primary);
   box-shadow: inset 3px 0 0 var(--color-accent);
@@ -100,15 +100,15 @@
 
 .locked,
 .coming-soon {
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
 }
 
 .coming-soon {
-  opacity: 0.56;
+  opacity: 0.68;
 }
 
 .number {
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   font-family: var(--font-mono);
   font-size: var(--font-size-2xs);
   font-variant-numeric: tabular-nums;
@@ -117,14 +117,14 @@
 .title {
   min-width: 0;
   display: grid;
-  gap: 1px;
+  gap: 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .title small {
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   font-size: var(--font-size-2xs);
   font-weight: var(--font-weight-regular);
   letter-spacing: 0;
@@ -157,6 +157,6 @@
 
 .progressBox p {
   margin: var(--space-3) 0 0;
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
   font-size: var(--font-size-2xs);
 }
